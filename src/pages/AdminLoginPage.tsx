@@ -106,7 +106,7 @@ const AdminLoginPage = () => {
           return;
         }
 
-        toast.error("Invalid credentials. Try master key 'MRBB2026' or your registered admin passkey.");
+        toast.error("Invalid credentials. Please check your username and password.");
       }
     } catch (err) {
       toast.error("An unexpected error occurred during authentication.");

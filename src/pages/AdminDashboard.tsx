@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import OfficeBearers from "@/components/OfficeBearers";
-import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, Image as ImageIcon, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Cpu, Globe, Award, Layers } from "lucide-react";
+import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, Image as ImageIcon, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Cpu, Globe, Award, Layers, Download, Trash2 } from "lucide-react";
 
 type ActivityRow = {
   id: number;
