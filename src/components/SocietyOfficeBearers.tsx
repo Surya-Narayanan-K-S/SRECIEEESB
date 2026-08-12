@@ -30,6 +30,28 @@ interface SocietyOfficeBearersProps {
   societyName?: string;
 }
 
+const REAL_SREC_BEARERS: Person[] = [
+  { id: "srec-ob-0", name: "Dr.K.Balamurugan", role: "Student Branch Counsellor", department: "AsP/EEE", image_url: "https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg" },
+  { id: "srec-ob-1", name: "S Darshan", role: "Chairperson", department: "IV EEE" },
+  { id: "srec-ob-2", name: "D Jennifer Shobha", role: "Vice-Chairperson", department: "III Civil" },
+  { id: "srec-ob-3", name: "R Vishnu Kaarthik", role: "Secretary", department: "III EEE" },
+  { id: "srec-ob-4", name: "D R Prithika", role: "Treasurer", department: "II EEE B" },
+  { id: "srec-ob-5", name: "S Deepak", role: "Activities Coordinator", department: "IV EEE" },
+  { id: "srec-ob-6", name: "S Amirtha Varshini", role: "Joint Activity Coordinator", department: "III CSE A" },
+  { id: "srec-ob-7", name: "V Smrthikha", role: "Joint Activity Coordinator", department: "III BME" },
+  { id: "srec-ob-8", name: "K S Surya Narayanan", role: "Webmaster", department: "II EEE B" },
+  { id: "srec-ob-9", name: "Nithin Annamalai R", role: "Editor", department: "II EEE B" },
+];
+
+const REAL_SREC_EXECS: Person[] = [
+  { id: "srec-em-1", name: "S Mathusri", role: "Executive Lead", department: "III M.Tech CSE" },
+  { id: "srec-em-2", name: "D Akshaya Dharun", role: "Technical Executive", department: "II CSE A" },
+  { id: "srec-em-3", name: "A Dhivya Tharsana", role: "Creative Executive", department: "II AI & DS" },
+  { id: "srec-em-4", name: "S V Hemesh", role: "Operations Executive", department: "II CSE A" },
+  { id: "srec-em-5", name: "M Barath", role: "Events Executive", department: "II EEE A" },
+  { id: "srec-em-6", name: "F Mohammed Aathif F", role: "Social Media Executive", department: "II EEE A" },
+];
+
 const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersProps) => {
   const [filterTab, setFilterTab] = useState<"all" | "bearers" | "executives">("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
@@ -54,34 +76,44 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
   const fetchLeadership = async () => {
     setLoading(true);
     try {
-      const [bearersRes, execsRes] = await Promise.all([
-        supabase
-          .from("society_office_bearers")
-          .select("*")
-          .eq("society_code", key)
-          .order("id", { ascending: true }),
-        supabase
-          .from("society_executive_members")
-          .select("*")
-          .eq("society_code", key)
-          .order("id", { ascending: true }),
-      ]);
-
-      // Fallback query to new_office_bearers / new_executive_members with group filter
-      if ((!bearersRes.data || bearersRes.data.length === 0) && (!execsRes.data || execsRes.data.length === 0)) {
-        const [altBearers, altExecs] = await Promise.all([
-          supabase.from("new_office_bearers").select("*").eq("group_name", key).order("id", { ascending: true }),
-          supabase.from("new_executive_members").select("*").eq("group_name", key).order("id", { ascending: true }),
+      if (key === "srec") {
+        // Query main SREC Student Branch office bearers & executive members
+        const [bearersRes, execsRes] = await Promise.all([
+          supabase.from("new_office_bearers").select("*").order("id", { ascending: true }),
+          supabase.from("new_executive_members").select("*").order("id", { ascending: true }),
         ]);
-        setBearers(altBearers.data || []);
-        setExecutives(altExecs.data || []);
+
+        const dbBearers = bearersRes.data && bearersRes.data.length > 0 ? bearersRes.data : REAL_SREC_BEARERS;
+        const dbExecs = execsRes.data && execsRes.data.length > 0 ? execsRes.data : REAL_SREC_EXECS;
+
+        setBearers(dbBearers);
+        setExecutives(dbExecs);
       } else {
-        setBearers(bearersRes.data || []);
-        setExecutives(execsRes.data || []);
+        const [bearersRes, execsRes] = await Promise.all([
+          supabase.from("society_office_bearers").select("*").eq("society_code", key).order("id", { ascending: true }),
+          supabase.from("society_executive_members").select("*").eq("society_code", key).order("id", { ascending: true }),
+        ]);
+
+        if ((!bearersRes.data || bearersRes.data.length === 0) && (!execsRes.data || execsRes.data.length === 0)) {
+          const [altBearers, altExecs] = await Promise.all([
+            supabase.from("new_office_bearers").select("*").eq("group_name", key).order("id", { ascending: true }),
+            supabase.from("new_executive_members").select("*").eq("group_name", key).order("id", { ascending: true }),
+          ]);
+          setBearers(altBearers.data || []);
+          setExecutives(altExecs.data || []);
+        } else {
+          setBearers(bearersRes.data || []);
+          setExecutives(execsRes.data || []);
+        }
       }
     } catch {
-      setBearers([]);
-      setExecutives([]);
+      if (key === "srec") {
+        setBearers(REAL_SREC_BEARERS);
+        setExecutives(REAL_SREC_EXECS);
+      } else {
+        setBearers([]);
+        setExecutives([]);
+      }
     } finally {
       setLoading(false);
     }

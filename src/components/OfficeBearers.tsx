@@ -269,7 +269,7 @@ const OfficeBearers = () => {
                 setForm({ ...form, group_name: val });
                 setSelectedSocietyFilter(val); // Auto sync filter table view to selected society
               }}
-              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-bold"
+              className="custom-styled-select rounded-xl border-2 border-slate-300 px-4 py-3 text-sm bg-white text-slate-900 font-bold shadow-sm"
               required
             >
               <option value="cs">Computer Society (CS)</option>
@@ -290,7 +290,7 @@ const OfficeBearers = () => {
               placeholder="Full Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
+              className="rounded-xl border-2 border-slate-300 px-4 py-3 text-sm focus:border-blue-600 outline-none bg-white text-slate-900 font-semibold shadow-sm"
               required
             />
           </div>
@@ -307,7 +307,7 @@ const OfficeBearers = () => {
                   setForm({ ...form, role: val });
                 }
               }}
-              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
+              className="custom-styled-select rounded-xl border-2 border-slate-300 px-4 py-3 text-sm bg-white text-slate-900 font-semibold shadow-sm"
               required
             >
               <option value="" disabled>Select a Role</option>
@@ -429,7 +429,7 @@ const OfficeBearers = () => {
             <select
               value={selectedSocietyFilter}
               onChange={(e) => setSelectedSocietyFilter(e.target.value)}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold bg-white text-slate-900 focus:ring-1 focus:ring-blue-600 outline-none"
+              className="custom-styled-select rounded-xl border-2 border-slate-300 px-4 py-2 text-xs font-extrabold bg-white text-slate-900 shadow-sm"
             >
               <option value="all">All Societies ({rawRows.length})</option>
               <option value="cs">Computer Society (CS)</option>
