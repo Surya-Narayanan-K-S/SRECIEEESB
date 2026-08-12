@@ -217,10 +217,19 @@ const OfficeBearers = () => {
 
   const rawRows = activeSubTab === "bearers" ? bearers : executives;
 
+  const isMatchSociety = (memberGroup?: string | null, filter?: string) => {
+    if (!filter || filter === "all") return true;
+    const g = (memberGroup || "srec").toLowerCase().trim();
+    const f = filter.toLowerCase().trim();
+
+    if (f === "srec") {
+      return g === "srec" || g === "ieee sb" || g === "sb" || g === "srec sb" || g.includes("student branch") || !memberGroup;
+    }
+    return g === f;
+  };
+
   // Filter rows based on selected society filter
-  const currentRows = selectedSocietyFilter === "all"
-    ? rawRows
-    : rawRows.filter((r) => r.group_name?.toLowerCase() === selectedSocietyFilter.toLowerCase());
+  const currentRows = rawRows.filter((r) => isMatchSociety(r.group_name, selectedSocietyFilter));
 
   return (
     <div className="space-y-8 font-sans">
