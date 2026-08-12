@@ -883,7 +883,7 @@ const AdminDashboard = () => {
   ] as const;
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-600">
+    <div className="flex min-h-screen bg-[#070e17] font-sans text-slate-100 selection:bg-cyan-500 selection:text-white">
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -893,16 +893,16 @@ const AdminDashboard = () => {
           scrollbar-width: none;
         }
       `}</style>
-      {/* LEFT SIDEBAR (TailAdmin Style) */}
-      <aside className="hidden lg:flex flex-col w-[280px] bg-white border-r border-slate-200 shrink-0 h-screen sticky top-0 overflow-y-auto">
+      {/* LEFT SIDEBAR (Executive Cyber Dark Style) */}
+      <aside className="hidden lg:flex flex-col w-[280px] bg-[#0c1626] border-r border-slate-800/80 shrink-0 h-screen sticky top-0 overflow-y-auto">
         {/* Brand Logo & Name */}
-        <div className="px-6 py-6 flex items-center gap-3 border-b border-slate-100">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-600 text-white shadow-md">
+        <div className="px-6 py-5 flex items-center gap-3 border-b border-slate-800/80 bg-[#09121f]">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 text-white shadow-lg shadow-cyan-500/25">
             <Cpu className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-800">TailAdmin</h1>
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">IEEE SB SREC</p>
+            <h1 className="text-lg font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-indigo-300">IEEE SREC ADMIN</h1>
+            <p className="text-[10px] font-extrabold text-cyan-400/90 uppercase tracking-widest">Executive Portal</p>
           </div>
         </div>
 
@@ -910,14 +910,14 @@ const AdminDashboard = () => {
         <div className="flex-1 px-4 py-6 space-y-7">
           {/* Group 1: MENU */}
           <div className="space-y-2">
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">MENU</p>
+            <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">MENU</p>
             <div className="space-y-1">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === "overview"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white font-extrabold shadow-md shadow-cyan-500/20 border border-cyan-400/30"
+                    : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -930,7 +930,7 @@ const AdminDashboard = () => {
 
           {/* Group 2: WEBSITE CONTENT */}
           <div className="space-y-2">
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">CONTENT</p>
+            <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">CONTENT</p>
             <div className="space-y-1">
               {[
                 { id: "activities", label: "Activities", icon: <Activity size={18} /> },
@@ -946,10 +946,10 @@ const AdminDashboard = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id as any)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     activeTab === item.id
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      ? "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white font-extrabold shadow-md shadow-cyan-500/20 border border-cyan-400/30"
+                      : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -963,7 +963,7 @@ const AdminDashboard = () => {
 
           {/* Group 3: CMS CHANNELS */}
           <div className="space-y-2">
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">CMS PAGES</p>
+            <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">CMS PAGES</p>
             <div className="space-y-1">
               {[
                 { id: "cms_landing", label: "Landing CMS", icon: <FileText size={18} /> },
@@ -974,10 +974,10 @@ const AdminDashboard = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id as any)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     activeTab === item.id
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      ? "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white font-extrabold shadow-md shadow-cyan-500/20 border border-cyan-400/30"
+                      : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -991,14 +991,14 @@ const AdminDashboard = () => {
 
           {/* Group 4: SYSTEM */}
           <div className="space-y-2">
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">SYSTEM</p>
+            <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">SYSTEM</p>
             <div className="space-y-1">
               <button
                 onClick={() => setActiveTab("admin_users")}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === "admin_users"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white font-extrabold shadow-md shadow-cyan-500/20 border border-cyan-400/30"
+                    : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -1011,16 +1011,16 @@ const AdminDashboard = () => {
 
           {/* Group 5: DEVELOPER */}
           <div className="space-y-2">
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">DEVELOPER</p>
+            <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">DEVELOPER</p>
             <div className="space-y-1">
               <a
                 href="https://surya-ruddy.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800/60 hover:text-cyan-400"
               >
                 <div className="flex items-center gap-2.5">
-                  <Globe size={18} className="text-blue-500" />
+                  <Globe size={18} className="text-cyan-400" />
                   <span>My Portfolio</span>
                 </div>
               </a>
@@ -1029,10 +1029,10 @@ const AdminDashboard = () => {
         </div>
 
         {/* Promo Card at bottom of sidebar */}
-        <div className="mx-4 my-6 p-4 bg-slate-50 border border-slate-150 rounded-2xl text-center flex flex-col gap-2">
-          <h4 className="text-xs font-bold text-slate-800">IEEE SB SREC Panel</h4>
-          <p className="text-[10px] text-slate-500">Manage all student chapter updates and records efficiently.</p>
-          <a href="https://ieee.org" target="_blank" rel="noreferrer" className="rounded-lg bg-blue-600 py-2 text-[11px] font-semibold text-white hover:bg-blue-700 transition">
+        <div className="mx-4 my-6 p-4 bg-gradient-to-br from-[#10213b] to-[#0a1526] border border-cyan-500/30 rounded-2xl text-center flex flex-col gap-2">
+          <h4 className="text-xs font-black text-white">IEEE SB SREC Panel</h4>
+          <p className="text-[10px] text-slate-300 font-medium">Manage all student chapter updates & records live.</p>
+          <a href="https://ieee.org" target="_blank" rel="noreferrer" className="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-2 text-[11px] font-bold text-white shadow-md shadow-cyan-500/20 hover:brightness-110 transition">
             Visit IEEE Global
           </a>
         </div>
@@ -1041,49 +1041,44 @@ const AdminDashboard = () => {
       {/* RIGHT CONTENT CONTAINER */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         {/* TOP BAR */}
-        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-35">
-          <div className="flex items-center gap-2 w-96">
-            <Search size={18} className="text-slate-400 shrink-0" />
+        <header className="bg-[#0c1626]/90 border-b border-slate-800/80 h-16 flex items-center justify-between px-6 sticky top-0 z-35 backdrop-blur-xl">
+          <div className="flex items-center gap-2.5 w-96 bg-[#070e17] border border-slate-700/80 rounded-xl px-3.5 py-1.5 focus-within:border-cyan-400 transition-colors">
+            <Search size={16} className="text-cyan-400 shrink-0" />
             <input
               type="text"
               placeholder="Search database or type command..."
-              className="w-full text-sm bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-700 placeholder-slate-400"
+              className="w-full text-sm bg-transparent border-0 focus:outline-none focus:ring-0 text-white placeholder-slate-400"
             />
-            <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-slate-200 bg-slate-50 px-1.5 font-mono text-[10px] font-medium text-slate-400">
+            <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-slate-700 bg-slate-800 px-1.5 font-mono text-[10px] font-medium text-slate-300">
               <span className="text-xs">⌘</span>K
             </kbd>
           </div>
 
           <div className="flex items-center gap-6">
-            {/* Notification icons */}
-            <button className="text-slate-500 hover:text-slate-800 transition relative">
+            {/* Live Indicator */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>LIVE DATABASE</span>
+            </div>
+
+            {/* Notification icon */}
+            <button className="text-slate-300 hover:text-cyan-400 transition relative">
               <Bell size={20} />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full"></span>
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_8px_#38bdf8]"></span>
             </button>
 
-            {/* Mobile Portfolio Link */}
-            <a
-              href="https://surya-ruddy.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="lg:hidden text-slate-500 hover:text-[#00a6d6] transition-colors p-2 flex items-center justify-center border border-slate-200 rounded-lg bg-slate-50"
-              title="My Portfolio"
-            >
-              <Globe size={18} />
-            </a>
-
             {/* Profile Dropdown */}
-            <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
+            <div className="flex items-center gap-3 border-l border-slate-800 pl-6">
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-slate-800">Admin Manager</p>
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">System admin</p>
+                <p className="text-xs font-black text-white">Admin Manager</p>
+                <p className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">IEEE Admin</p>
               </div>
-              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm border border-slate-200">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md border border-cyan-400/30">
                 A
               </div>
               <button
                 onClick={handleLogout}
-                className="text-xs text-red-500 hover:text-red-700 font-bold uppercase tracking-wider flex items-center gap-1 pl-2 border-l border-slate-200"
+                className="text-xs text-rose-400 hover:text-rose-300 font-extrabold uppercase tracking-wider flex items-center gap-1 pl-2 border-l border-slate-800 transition-colors"
               >
                 <LogOut size={14} /> Exit
               </button>
@@ -1091,8 +1086,8 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        {/* MOBILE NAVIGATION BAR (horizontal tabs shown only on mobile screen) */}
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-2 sticky top-16 z-30">
+        {/* MOBILE NAVIGATION BAR */}
+        <div className="lg:hidden bg-[#0c1626] border-b border-slate-800 px-4 py-2 sticky top-16 z-30">
           <nav className="flex overflow-x-auto gap-4 py-1 no-scrollbar snap-x">
             {tabs.map((tab) => (
               <button
@@ -1100,7 +1095,7 @@ const AdminDashboard = () => {
                 onClick={() => { setActiveTab(tab.id as any); window.scrollTo({ top: 0, behavior: "smooth"}); }}
                 className={`flex whitespace-nowrap items-center gap-1.5 py-2 text-xs font-bold transition snap-start border-b-2 ${
                   activeTab === tab.id
-                    ? "text-blue-600 border-blue-600"
+                    ? "text-cyan-400 border-cyan-400"
                     : "text-slate-400 border-transparent"
                 }`}
               >
@@ -1117,129 +1112,129 @@ const AdminDashboard = () => {
               <div className="space-y-6">
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {/* Card 1: Activities */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-blue-600"><Activity size={20} /></div>
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-xl bg-blue-500/15 border border-blue-500/30 p-2.5 text-cyan-400 shadow-[0_0_12px_rgba(56,189,248,0.2)] group-hover:scale-110 transition-transform"><Activity size={20} /></div>
+                      <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
                         <TrendingUp size={10} /> {activitiesGrowthPercent}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{activities.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Activities</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{activities.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Activities</p>
                     </div>
                   </div>
 
                   {/* Card 2: Office Bearers */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-indigo-600"><Briefcase size={20} /></div>
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-indigo-500/15 border border-indigo-500/30 p-2.5 text-indigo-400 shadow-[0_0_12px_rgba(129,140,248,0.2)] group-hover:scale-110 transition-transform"><Briefcase size={20} /></div>
+                      <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
                         <TrendingUp size={10} /> +8%
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{officeRows.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Bearers</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{officeRows.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Bearers</p>
                     </div>
                   </div>
 
                   {/* Card 3: Technical Societies */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-cyan-600"><Layers size={20} /></div>
-                      <span className="text-xs font-bold text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-cyan-500/15 border border-cyan-500/30 p-2.5 text-cyan-400 shadow-[0_0_12px_rgba(56,189,248,0.2)] group-hover:scale-110 transition-transform"><Layers size={20} /></div>
+                      <span className="text-xs font-extrabold text-cyan-400 bg-cyan-500/15 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
                         Active
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{societies.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">IEEE Societies</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{societies.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">IEEE Societies</p>
                     </div>
                   </div>
 
                   {/* Card 4: Student Join Submissions */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-purple-600"><Users size={20} /></div>
-                      <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-purple-500/15 border border-purple-500/30 p-2.5 text-purple-400 shadow-[0_0_12px_rgba(192,132,252,0.2)] group-hover:scale-110 transition-transform"><Users size={20} /></div>
+                      <span className="text-xs font-extrabold text-purple-400 bg-purple-500/15 border border-purple-500/30 px-2.5 py-0.5 rounded-full">
                         New
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{applications.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Join Requests</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{applications.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Join Requests</p>
                     </div>
                   </div>
 
                   {/* Card 5: Awards */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-amber-500/50 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-amber-600"><Award size={20} /></div>
-                      <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.2)] group-hover:scale-110 transition-transform"><Award size={20} /></div>
+                      <span className="text-xs font-extrabold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
                         Honors
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{awards.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Awards</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{awards.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Awards</p>
                     </div>
                   </div>
 
                   {/* Card 6: Senior Members */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-sky-500/50 hover:shadow-2xl hover:shadow-sky-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-sky-600"><ShieldCheck size={20} /></div>
-                      <span className="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-sky-500/15 border border-sky-500/30 p-2.5 text-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.2)] group-hover:scale-110 transition-transform"><ShieldCheck size={20} /></div>
+                      <span className="text-xs font-extrabold text-slate-400 bg-slate-800 border border-slate-700 px-2.5 py-0.5 rounded-full">
                         Stable
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{seniorMembers.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Seniors</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{seniorMembers.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Seniors</p>
                     </div>
                   </div>
 
                   {/* Card 7: Member Track Records */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-emerald-600"><Users size={20} /></div>
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-emerald-500/15 border border-emerald-500/30 p-2.5 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.2)] group-hover:scale-110 transition-transform"><Users size={20} /></div>
+                      <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
                         <TrendingUp size={10} /> {memberGrowthPercent}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{memberRows.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Years Tracked</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{memberRows.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Years Tracked</p>
                     </div>
                   </div>
 
                   {/* Card 8: Funding Requests */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between h-36">
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-rose-500/50 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
                     <div className="flex items-center justify-between">
-                      <div className="rounded-full bg-slate-100 p-2.5 text-rose-600"><Banknote size={20} /></div>
-                      <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <div className="rounded-full bg-rose-500/15 border border-rose-500/30 p-2.5 text-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.2)] group-hover:scale-110 transition-transform"><Banknote size={20} /></div>
+                      <span className="text-xs font-extrabold text-rose-400 bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 rounded-full">
                         Pending
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{fundingRequests.length}</h3>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Funding Req</p>
+                      <h3 className="text-3xl font-black text-white tracking-tight">{fundingRequests.length}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Funding Req</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-8 rounded-2xl bg-gradient-to-r from-[#0b3b8f] to-indigo-800 p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
+                <div className="mt-8 rounded-2xl bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 border border-cyan-500/40 p-6 md:p-8 text-white shadow-2xl relative overflow-hidden">
                   <div className="relative z-10">
-                    <h2 className="text-2xl font-black mb-2 flex items-center gap-2"><TrendingUp size={24} className="text-cyan-400" /> Welcome to your IEEE Dashboard</h2>
-                    <p className="text-blue-100 max-w-2xl">Use the navigation menu on the left to add, edit, or remove website content. Any changes made here are instantly synced and published to the live website database.</p>
+                    <h2 className="text-2xl font-black mb-2 flex items-center gap-2"><TrendingUp size={24} className="text-cyan-400" /> Welcome to IEEE SREC Command Center</h2>
+                    <p className="text-slate-300 max-w-2xl text-sm leading-relaxed">Use the navigation menu on the left to manage student branch activities, office bearer records, annual plans, and website CMS updates in real-time.</p>
                     <div className="mt-8 flex gap-4">
-                      <button onClick={() => setActiveTab("activities")} className="bg-white text-[#0b3b8f] px-6 py-2.5 rounded-lg font-bold shadow hover:bg-slate-50 transition flex items-center gap-2">
+                      <button onClick={() => setActiveTab("activities")} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-cyan-500/25 hover:brightness-110 transition flex items-center gap-2">
                         <Activity size={18} /> Post New Activity
                       </button>
                     </div>
                   </div>
-                  <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
+                  <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4 text-cyan-400">
                     <ShieldCheck size={250} />
                   </div>
                 </div>
@@ -1247,7 +1242,80 @@ const AdminDashboard = () => {
                 {/* Visual Analytics Graphs Grid */}
                 <div className="grid gap-6 md:grid-cols-3 mt-8">
                   {/* Monthly Event Engagement Bar Chart */}
-                  <div className="md:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+                  <div className="md:col-span-2 rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h4 className="text-sm font-black text-white uppercase tracking-wider">Event Engagement</h4>
+                          <p className="text-xs text-slate-400 font-semibold mt-0.5">Real monthly event count from database</p>
+                        </div>
+                        <span className="text-xs font-bold text-cyan-400 bg-cyan-500/15 border border-cyan-500/30 px-3 py-1 rounded-full">
+                          Total Events: {activities.length}
+                        </span>
+                      </div>
+                      
+                      {/* Bar Bars */}
+                      <div className="h-64 flex items-end justify-between gap-2 pt-6">
+                        {(() => {
+                          const maxEventsVal = Math.max(...monthlyEventData.map(d => d.val), 1);
+                          return monthlyEventData.map((item, idx) => (
+                            <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
+                              <div className="w-full bg-slate-900/80 rounded-t-lg relative h-48 flex items-end overflow-hidden border-t border-slate-800">
+                                <div
+                                  style={{ height: `${(item.val / maxEventsVal) * 100}%` }}
+                                  className="w-full bg-gradient-to-t from-blue-600 via-cyan-500 to-cyan-400 rounded-t-lg group-hover:brightness-125 transition-all duration-300 relative shadow-[0_0_12px_rgba(56,189,248,0.3)]"
+                                >
+                                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-800 text-cyan-300 border border-slate-700 text-[10px] font-bold rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap shadow-lg">
+                                    {item.val} Events
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{item.month}</span>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Member Distribution Donut/Radial Mockup */}
+                  <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                      <h4 className="text-sm font-black text-white uppercase tracking-wider mb-1">Members Distribution</h4>
+                      <p className="text-xs text-slate-400 font-semibold mb-6">Real breakdown (latest tracked year)</p>
+
+                      <div className="flex justify-center items-center py-6 relative">
+                        {/* Circular progress SVG */}
+                        <svg className="w-40 h-40 transform -rotate-90">
+                          <circle cx="80" cy="80" r="65" stroke="#1e293b" strokeWidth="14" fill="transparent" />
+                          <circle cx="80" cy="80" r="65" stroke="#00f2fe" strokeWidth="14" fill="transparent"
+                            strokeDasharray="408" strokeDashoffset={Math.round(408 - (408 * memberDistribution.studentPercent) / 100)} strokeLinecap="round" className="transition-all duration-500 shadow-[0_0_15px_#00f2fe]" />
+                        </svg>
+                        <div className="absolute flex flex-col items-center">
+                          <span className="text-3xl font-black text-white">{memberDistribution.studentPercent}%</span>
+                          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mt-0.5">Students</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 pt-6 border-t border-slate-800">
+                        <div className="flex items-center justify-between text-xs font-semibold">
+                          <span className="flex items-center gap-2 text-slate-300">
+                            <span className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8]"></span> Student Members ({memberDistribution.studentCount})
+                          </span>
+                          <span className="text-white font-bold">{memberDistribution.studentPercent}%</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs font-semibold">
+                          <span className="flex items-center gap-2 text-slate-300">
+                            <span className="w-3 h-3 rounded-full bg-slate-700"></span> Professional ({memberDistribution.profCount})
+                          </span>
+                          <span className="text-white font-bold">{memberDistribution.profPercent}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <div>

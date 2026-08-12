@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { Users, Crown, ArrowRight, ExternalLink, Table as TableIcon, LayoutGrid, ShieldCheck, UserCheck, Award, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Users, Crown, ArrowRight, ExternalLink, Table as TableIcon, LayoutGrid, ShieldCheck, UserCheck, Award, Loader2, Plus, X, Upload } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export type Person = {
   id: number | string;
@@ -38,47 +38,120 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
   const [executives, setExecutives] = useState<Person[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Modal State for Adding New Member directly on Society Page
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [memberForm, setMemberForm] = useState({
+    name: "",
+    role: "Chairperson",
+    category: "bearers" as "bearers" | "executives",
+    department: "",
+    image_url: "",
+  });
+
   const key = getSocietyKey(societyName);
 
-  useEffect(() => {
-    const fetchLeadership = async () => {
-      setLoading(true);
-      try {
-        const [bearersRes, execsRes] = await Promise.all([
-          supabase
-            .from("society_office_bearers")
-            .select("*")
-            .eq("society_code", key)
-            .order("id", { ascending: true }),
-          supabase
-            .from("society_executive_members")
-            .select("*")
-            .eq("society_code", key)
-            .order("id", { ascending: true }),
+  const fetchLeadership = async () => {
+    setLoading(true);
+    try {
+      const [bearersRes, execsRes] = await Promise.all([
+        supabase
+          .from("society_office_bearers")
+          .select("*")
+          .eq("society_code", key)
+          .order("id", { ascending: true }),
+        supabase
+          .from("society_executive_members")
+          .select("*")
+          .eq("society_code", key)
+          .order("id", { ascending: true }),
+      ]);
+
+      // Fallback query to new_office_bearers / new_executive_members with group filter
+      if ((!bearersRes.data || bearersRes.data.length === 0) && (!execsRes.data || execsRes.data.length === 0)) {
+        const [altBearers, altExecs] = await Promise.all([
+          supabase.from("new_office_bearers").select("*").eq("group_name", key).order("id", { ascending: true }),
+          supabase.from("new_executive_members").select("*").eq("group_name", key).order("id", { ascending: true }),
         ]);
-
-        // If specific tables aren't set up yet, query new_office_bearers / new_executive_members with group filter
-        if ((!bearersRes.data || bearersRes.data.length === 0) && (!execsRes.data || execsRes.data.length === 0)) {
-          const [altBearers, altExecs] = await Promise.all([
-            supabase.from("new_office_bearers").select("*").eq("group_name", key).order("id", { ascending: true }),
-            supabase.from("new_executive_members").select("*").eq("group_name", key).order("id", { ascending: true }),
-          ]);
-          setBearers(altBearers.data || []);
-          setExecutives(altExecs.data || []);
-        } else {
-          setBearers(bearersRes.data || []);
-          setExecutives(execsRes.data || []);
-        }
-      } catch {
-        setBearers([]);
-        setExecutives([]);
-      } finally {
-        setLoading(false);
+        setBearers(altBearers.data || []);
+        setExecutives(altExecs.data || []);
+      } else {
+        setBearers(bearersRes.data || []);
+        setExecutives(execsRes.data || []);
       }
-    };
+    } catch {
+      setBearers([]);
+      setExecutives([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchLeadership();
   }, [key]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { error } = await supabase.storage.from("office_bearers").upload(fileName, file);
+
+      if (error) throw error;
+      const { data } = supabase.storage.from("office_bearers").getPublicUrl(fileName);
+      setMemberForm((prev) => ({ ...prev, image_url: data.publicUrl }));
+    } catch (err: any) {
+      alert("Error uploading image: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleAddMemberSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!memberForm.name.trim()) return alert("Please enter member name.");
+
+    const isBearer = memberForm.category === "bearers";
+    const primaryTable = isBearer ? "society_office_bearers" : "society_executive_members";
+    const fallbackTable = isBearer ? "new_office_bearers" : "new_executive_members";
+
+    const payload = {
+      society_code: key,
+      group_name: key,
+      name: memberForm.name.trim(),
+      role: memberForm.role.trim(),
+      department: memberForm.department.trim() || "SREC Engineering",
+      academic_year: "2026-2027",
+      year: 2026,
+      image_url: memberForm.image_url.trim() || null,
+    };
+
+    try {
+      // Try inserting into society_office_bearers / society_executive_members
+      let { error } = await supabase.from(primaryTable).insert([payload]);
+      if (error) {
+        // Fallback to new_office_bearers / new_executive_members
+        const fallbackRes = await supabase.from(fallbackTable).insert([payload]);
+        if (fallbackRes.error) throw fallbackRes.error;
+      }
+
+      setMemberForm({
+        name: "",
+        role: "Chairperson",
+        category: "bearers",
+        department: "",
+        image_url: "",
+      });
+      setIsAddModalOpen(false);
+      await fetchLeadership();
+    } catch (err: any) {
+      alert("Failed to add member: " + err.message);
+    }
+  };
 
   // Render a Single Table
   const renderTable = (list: Person[], title: string, badgeText: string, headerGradient: string) => (
@@ -173,7 +246,7 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
   );
 
   return (
-    <div className="w-full col-span-full font-sans">
+    <div className="w-full col-span-full font-sans relative">
       {/* Header Banner */}
       <div className="border border-slate-200 bg-white p-8 md:p-10 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
         <div>
@@ -190,6 +263,16 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
         </div>
 
         <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {/* Add Member CTA Button */}
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-all rounded-lg shadow-md hover:shadow-lg"
+          >
+            <Plus size={15} />
+            <span>Add Member to {key.toUpperCase()}</span>
+          </button>
+
+          {/* View Mode Toggle */}
           <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
             <button
               onClick={() => setViewMode("table")}
@@ -198,7 +281,7 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
               }`}
             >
               <TableIcon size={14} />
-              <span>Table View</span>
+              <span>Table</span>
             </button>
             <button
               onClick={() => setViewMode("grid")}
@@ -207,7 +290,7 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
               }`}
             >
               <LayoutGrid size={14} />
-              <span>Card View</span>
+              <span>Card</span>
             </button>
           </div>
 
@@ -215,7 +298,7 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
             to="/office-bearers"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg"
           >
-            <span>Full Directory</span>
+            <span>Directory</span>
             <ArrowRight size={14} />
           </Link>
         </div>
@@ -339,6 +422,131 @@ const SocietyOfficeBearers = ({ societyName = "Society" }: SocietyOfficeBearersP
           )}
         </div>
       )}
+
+      {/* ADD MEMBER MODAL DIALOG */}
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden p-6 md:p-8"
+            >
+              <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+                <div>
+                  <h3 className="text-lg font-serif font-bold text-slate-900">Add Member to {societyName}</h3>
+                  <p className="text-slate-500 text-xs">Add an official Office Bearer or Executive Member to this society.</p>
+                </div>
+                <button
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddMemberSubmit} className="space-y-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Category *</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMemberForm({ ...memberForm, category: "bearers" })}
+                      className={`py-2 px-3 text-xs font-bold rounded-lg border transition ${
+                        memberForm.category === "bearers" ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-600 border-slate-200"
+                      }`}
+                    >
+                      Office Bearer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMemberForm({ ...memberForm, category: "executives" })}
+                      className={`py-2 px-3 text-xs font-bold rounded-lg border transition ${
+                        memberForm.category === "executives" ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-600 border-slate-200"
+                      }`}
+                    >
+                      Executive Member
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Full Name *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., K S Surya Narayanan"
+                    value={memberForm.name}
+                    onChange={(e) => setMemberForm({ ...memberForm, name: e.target.value })}
+                    className="w-full border rounded-lg px-3.5 py-2.5 text-sm focus:ring-1 focus:ring-blue-600 outline-none"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Role *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Chairperson, Vice-Chairperson, Technical Lead"
+                    value={memberForm.role}
+                    onChange={(e) => setMemberForm({ ...memberForm, role: e.target.value })}
+                    className="w-full border rounded-lg px-3.5 py-2.5 text-sm focus:ring-1 focus:ring-blue-600 outline-none"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Department</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., II EEE B, III CSE A"
+                    value={memberForm.department}
+                    onChange={(e) => setMemberForm({ ...memberForm, department: e.target.value })}
+                    className="w-full border rounded-lg px-3.5 py-2.5 text-sm focus:ring-1 focus:ring-blue-600 outline-none"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">Member Photo (File Upload / URL)</label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex-1 flex items-center justify-between border rounded-lg px-3.5 py-2 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-semibold text-slate-700">
+                      <span className="flex items-center gap-2">
+                        <Upload size={14} />
+                        {uploading ? "Uploading..." : "Choose Image File"}
+                      </span>
+                      <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                    </label>
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="Or paste photo URL here..."
+                    value={memberForm.image_url}
+                    onChange={(e) => setMemberForm({ ...memberForm, image_url: e.target.value })}
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-blue-600 outline-none mt-1"
+                  />
+                </div>
+
+                <div className="pt-4 flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3 rounded-lg transition"
+                  >
+                    Save Member
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddModalOpen(false)}
+                    className="px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider py-3 rounded-lg transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Footer CTA */}
       <div className="mt-8 text-center border-t border-slate-200 pt-8">
