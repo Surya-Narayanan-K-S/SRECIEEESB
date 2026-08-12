@@ -52,6 +52,8 @@ const OfficeBearers = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const [selectedSocietyFilter, setSelectedSocietyFilter] = useState<string>("all");
+
   // Forms
   const [form, setForm] = useState({
     id: null as number | null,
@@ -60,6 +62,7 @@ const OfficeBearers = () => {
     department: "",
     academic_year: "2026-2027",
     year: "2026",
+    group_name: "cs",
     image_url: "",
     email: "",
     phone: "",
