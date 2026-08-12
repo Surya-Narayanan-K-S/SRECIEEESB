@@ -48,7 +48,7 @@ const SocietyDetailPage = () => {
       <main className="flex-1 w-full pt-32 pb-24">
         <div className="max-w-[1200px] mx-auto px-6 md:px-12">
           
-          <Link to="/#societies" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold uppercase tracking-widest text-[10px] transition-colors mb-16">
+          <Link to="/societies" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold uppercase tracking-widest text-[10px] transition-colors mb-16">
             <ArrowLeft size={14} /> Back to Societies
           </Link>
 
