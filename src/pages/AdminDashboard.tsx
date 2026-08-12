@@ -2061,16 +2061,17 @@ const AdminDashboard = () => {
 
 
             {activeTab === "societies" && (
-              <div className="space-y-6">
+              <div className="space-y-12">
                 <div>
                   <h2 className="text-2xl font-black text-slate-800">Societies Management</h2>
-                  <p className="text-sm text-slate-500 mt-1">Add, update, or remove IEEE Technical Societies operating under SREC.</p>
+                  <p className="text-sm text-slate-500 mt-1">Manage IEEE Technical Societies, edit chapter descriptions, and update Office Bearers & Executive Members.</p>
                 </div>
 
+                {/* Section 1: Society Info Editor */}
                 <div className="grid gap-6 lg:grid-cols-3">
                   {/* Form */}
                   <form onSubmit={submitSociety} className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col gap-4 self-start">
-                    <h3 className="text-lg font-bold text-slate-800">{editingSocietyId ? "Edit Society" : "Add New Society"}</h3>
+                    <h3 className="text-lg font-bold text-slate-800">{editingSocietyId ? "Edit Society Info" : "Add New Society"}</h3>
                     
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Society Name</label>
@@ -2198,7 +2199,7 @@ const AdminDashboard = () => {
                           {societies.length === 0 && (
                             <tr>
                               <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400 font-medium">
-                                No societies found in the database.
+                                No technical societies found.
                               </td>
                             </tr>
                           )}
@@ -2206,6 +2207,15 @@ const AdminDashboard = () => {
                       </table>
                     </div>
                   </div>
+                </div>
+
+                {/* Section 2: Dedicated Office Bearers & Executive Members Editor */}
+                <div className="pt-8 border-t border-slate-200">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900">Manage Society Office Bearers & Executive Team</h3>
+                    <p className="text-xs text-slate-500 mt-1">Select any chapter (CS, CIS, ComSoc, EMBS, IMS, PELS, WIE) to add, edit, or delete Office Bearers and Executive Members with photo uploads.</p>
+                  </div>
+                  <OfficeBearers />
                 </div>
               </div>
             )}
