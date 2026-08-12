@@ -1,8 +1,10 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SocietyOfficeBearers from "@/components/SocietyOfficeBearers";
 import { ArrowLeft, Loader2, Target, Calendar, Users, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -21,6 +23,7 @@ const getFocusAreas = (name: string) => {
 
 const SocietyDetailPage = () => {
   const { id } = useParams();
+  const [activeTab, setActiveTab] = useState("overview");
 
   const { data: society, isLoading, error } = useQuery({
     queryKey: ["society", id],
@@ -82,71 +85,95 @@ const SocietyDetailPage = () => {
                 </p>
               </div>
 
-              {/* In-depth Explanation Section */}
-              <div className="border border-slate-200 bg-white p-12 md:p-20 relative">
-                <div className="grid lg:grid-cols-2 gap-16">
-                  
-                  {/* Left Column: Scope and Details */}
-                  <div>
-                    <h2 className="text-3xl font-serif font-bold text-slate-900 mb-6">About the Society</h2>
-                    <div className="h-[1px] w-12 bg-cyan-500 mb-8"></div>
-                    
-                    <div className="text-slate-600 space-y-6 text-lg font-light leading-relaxed">
-                      <p>
-                        The <strong>{society.name}</strong> is dedicated to exploring the fundamental theories and practical applications within its specialized domain. As technology increasingly intersects with daily human life, this society serves as a critical bridge between academic research and industry implementation.
-                      </p>
-                      <p>
-                        Members engage deeply with cutting-edge literature, collaborate on open-source hardware and software projects, and participate in intensive workshops designed to transform theoretical knowledge into tangible engineering solutions. 
-                      </p>
-                      <p>
-                        Whether you are aiming to publish groundbreaking research or simply want to build deployable systems, the society offers the resources, mentorship, and global network necessary to accelerate your technological footprint.
-                      </p>
+              {/* INTERACTIVE WORKSPACE TABS */}
+              <div className="flex gap-4 border-b border-slate-200 mb-12 overflow-x-auto scrollbar-hide">
+                {["overview", "initiatives", "workshops", "office bearers"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-4 px-2 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors relative ${
+                      activeTab === tab ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+                    }`}
+                  >
+                    {tab}
+                    {activeTab === tab && (
+                      <motion.div layoutId="tabMarkerDetail" className="absolute bottom-0 left-0 w-full h-[2px] bg-slate-900" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {activeTab === "office bearers" ? (
+                <SocietyOfficeBearers societyName={society.name} />
+              ) : (
+                <>
+                  {/* In-depth Explanation Section */}
+                  <div className="border border-slate-200 bg-white p-12 md:p-20 relative">
+                    <div className="grid lg:grid-cols-2 gap-16">
+                      
+                      {/* Left Column: Scope and Details */}
+                      <div>
+                        <h2 className="text-3xl font-serif font-bold text-slate-900 mb-6">About the Society</h2>
+                        <div className="h-[1px] w-12 bg-cyan-500 mb-8"></div>
+                        
+                        <div className="text-slate-600 space-y-6 text-lg font-light leading-relaxed">
+                          <p>
+                            The <strong>{society.name}</strong> is dedicated to exploring the fundamental theories and practical applications within its specialized domain. As technology increasingly intersects with daily human life, this society serves as a critical bridge between academic research and industry implementation.
+                          </p>
+                          <p>
+                            Members engage deeply with cutting-edge literature, collaborate on open-source hardware and software projects, and participate in intensive workshops designed to transform theoretical knowledge into tangible engineering solutions. 
+                          </p>
+                          <p>
+                            Whether you are aiming to publish groundbreaking research or simply want to build deployable systems, the society offers the resources, mentorship, and global network necessary to accelerate your technological footprint.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right Column: Focus Areas */}
+                      <div className="bg-[#fafafa] border border-slate-100 p-10">
+                        <h3 className="text-xl font-bold tracking-tight text-slate-900 mb-6">Strategic Focus Areas</h3>
+                        <ul className="space-y-4">
+                          {focusAreas.map((area, idx) => (
+                            <li key={idx} className="flex items-start gap-4">
+                              <div className="mt-1 h-2 w-2 rounded-full bg-slate-400 shrink-0"></div>
+                              <span className="text-slate-600 font-medium">{area}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        <div className="mt-12 pt-10 border-t border-slate-200">
+                           <h3 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-4">Core Objectives</h3>
+                           <p className="text-slate-500 text-sm leading-relaxed">
+                             To foster technological innovation and excellence for the benefit of humanity. We aim to connect professionals, share critical knowledge, and architect the systems of tomorrow safely and efficiently.
+                           </p>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
 
-                  {/* Right Column: Focus Areas */}
-                  <div className="bg-[#fafafa] border border-slate-100 p-10">
-                    <h3 className="text-xl font-bold tracking-tight text-slate-900 mb-6">Strategic Focus Areas</h3>
-                    <ul className="space-y-4">
-                      {focusAreas.map((area, idx) => (
-                        <li key={idx} className="flex items-start gap-4">
-                          <div className="mt-1 h-2 w-2 rounded-full bg-slate-400 shrink-0"></div>
-                          <span className="text-slate-600 font-medium">{area}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Grid Details (Actionable) */}
+                  <div className="grid md:grid-cols-2 gap-8">
                     
-                    <div className="mt-12 pt-10 border-t border-slate-200">
-                       <h3 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-4">Core Objectives</h3>
-                       <p className="text-slate-500 text-sm leading-relaxed">
-                         To foster technological innovation and excellence for the benefit of humanity. We aim to connect professionals, share critical knowledge, and architect the systems of tomorrow safely and efficiently.
-                       </p>
+                    <div className="border border-slate-200 bg-white p-10 hover:shadow-lg transition-shadow duration-500">
+                      <Calendar className="text-slate-400 mb-6" size={32} />
+                      <h3 className="font-bold text-slate-900 mb-4 tracking-tight">Key Activities</h3>
+                      <p className="text-slate-500 text-sm leading-relaxed text-justify">
+                        From regular symposiums and technical bootcamps to global networking events, our activities are heavily project-oriented and collaborative. Members routinely participate in hackathons, design challenges, and peer-reviewed publishing.
+                      </p>
+                    </div>
+
+                    <div className="border border-slate-200 bg-slate-900 text-white p-10 hover:shadow-xl transition-shadow duration-500">
+                      <Users className="text-slate-400 mb-6" size={32} />
+                      <h3 className="font-bold text-white mb-4 tracking-tight">Join the {society.name}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed mb-8">
+                        Become a part of an elite network of engineers and researchers. Gain exclusive access to leading journals, technical libraries, and an unparalleled professional alumni network.
+                      </p>
+                      <Link to="/join" className="uppercase tracking-[0.2em] font-bold text-[10px] pb-1 border-b border-white hover:text-slate-300 hover:border-slate-300 transition-colors inline-block">Submit Application</Link>
                     </div>
                   </div>
-
-                </div>
-              </div>
-
-              {/* Grid Details (Actionable) */}
-              <div className="grid md:grid-cols-2 gap-8">
-                
-                <div className="border border-slate-200 bg-white p-10 hover:shadow-lg transition-shadow duration-500">
-                  <Calendar className="text-slate-400 mb-6" size={32} />
-                  <h3 className="font-bold text-slate-900 mb-4 tracking-tight">Key Activities</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed text-justify">
-                    From regular symposiums and technical bootcamps to global networking events, our activities are heavily project-oriented and collaborative. Members routinely participate in hackathons, design challenges, and peer-reviewed publishing.
-                  </p>
-                </div>
-
-                <div className="border border-slate-200 bg-slate-900 text-white p-10 hover:shadow-xl transition-shadow duration-500">
-                  <Users className="text-slate-400 mb-6" size={32} />
-                  <h3 className="font-bold text-white mb-4 tracking-tight">Join the {society.name}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed mb-8">
-                    Become a part of an elite network of engineers and researchers. Gain exclusive access to leading journals, technical libraries, and an unparalleled professional alumni network.
-                  </p>
-                  <Link to="/join" className="uppercase tracking-[0.2em] font-bold text-[10px] pb-1 border-b border-white hover:text-slate-300 hover:border-slate-300 transition-colors inline-block">Submit Application</Link>
-                </div>
-              </div>
+                </>
+              )}
 
             </motion.div>
           )}

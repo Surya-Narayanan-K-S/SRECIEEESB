@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SocietyOfficeBearers from "@/components/SocietyOfficeBearers";
 import { ArrowLeft, Target, Calendar, Users, Cpu, Network, Activity, ArrowRight, BookOpen, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -34,7 +35,7 @@ const ComsocPage = () => {
               <div className="flex-1">
                 <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest mb-6 inline-block">Official Chapter</span>
                 <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-slate-900 mb-6 leading-tight">
-                  IEEE Communication Society (ComSoc)
+                  IEEE Communications Society (ComSoc)
                 </h1>
                 <div className="h-[2px] w-16 bg-slate-900 mb-6"></div>
                 <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-2xl">
@@ -61,7 +62,7 @@ const ComsocPage = () => {
 
           {/* INTERACTIVE WORKSPACE */}
           <div className="flex gap-4 border-b border-slate-200 mb-12 overflow-x-auto scrollbar-hide">
-            {["overview", "initiatives", "workshops"].map((tab) => (
+            {["overview", "initiatives", "workshops", "office bearers"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -83,51 +84,57 @@ const ComsocPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="grid md:grid-cols-3 gap-6 mb-16"
+            className="mb-16"
           >
-            <div className="md:col-span-2 border border-slate-200 bg-white p-8 md:p-12">
-              <h3 className="text-2xl font-serif font-bold text-slate-900 mb-6 capitalize">{activeTab} Details</h3>
-              <p className="text-slate-600 leading-relaxed mb-6 font-medium">
-                The IEEE Communication Society (ComSoc) organizes high-impact technical symposiums, hands-on industrial workshops, and expert lectures focusing on the bleeding edge of modern engineering.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#fafafa] border border-slate-100 p-6 flex flex-col items-start hover:border-slate-300 transition-colors cursor-default">
-                  <Cpu size={24} className="text-cyan-600 mb-4" />
-                  <p className="font-bold text-slate-900 text-sm mb-1">Technical Excellence</p>
-                  <p className="text-xs text-slate-500">Core engineering focus</p>
+            {activeTab === "office bearers" ? (
+              <SocietyOfficeBearers societyName="IEEE Communications Society (ComSoc)" />
+            ) : (
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 border border-slate-200 bg-white p-8 md:p-12">
+                  <h3 className="text-2xl font-serif font-bold text-slate-900 mb-6 capitalize">{activeTab} Details</h3>
+                  <p className="text-slate-600 leading-relaxed mb-6 font-medium">
+                    The IEEE Communications Society (ComSoc) organizes high-impact technical symposiums, hands-on industrial workshops, and expert lectures focusing on the bleeding edge of modern engineering.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-[#fafafa] border border-slate-100 p-6 flex flex-col items-start hover:border-slate-300 transition-colors cursor-default">
+                      <Cpu size={24} className="text-cyan-600 mb-4" />
+                      <p className="font-bold text-slate-900 text-sm mb-1">Technical Excellence</p>
+                      <p className="text-xs text-slate-500">Core engineering focus</p>
+                    </div>
+                    <div className="bg-[#fafafa] border border-slate-100 p-6 flex flex-col items-start hover:border-slate-300 transition-colors cursor-default">
+                      <Network size={24} className="text-blue-600 mb-4" />
+                      <p className="font-bold text-slate-900 text-sm mb-1">Global Networking</p>
+                      <p className="text-xs text-slate-500">Industry connections</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-[#fafafa] border border-slate-100 p-6 flex flex-col items-start hover:border-slate-300 transition-colors cursor-default">
-                  <Network size={24} className="text-blue-600 mb-4" />
-                  <p className="font-bold text-slate-900 text-sm mb-1">Global Networking</p>
-                  <p className="text-xs text-slate-500">Industry connections</p>
+
+                {/* ACTION SIDEBAR */}
+                <div className="space-y-6">
+                  <div className="border border-slate-200 bg-slate-900 text-white p-8 shadow-xl">
+                    <Users className="text-slate-400 mb-6" size={28} />
+                    <h3 className="font-bold text-white mb-3 text-lg leading-tight">Join the Network</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed mb-8">
+                      Get exclusive access to society resources, journals, and private community networks.
+                    </p>
+                    <Link to="/join" className="group flex items-center justify-between w-full pb-3 border-b border-white/20 text-[10px] font-black uppercase tracking-[0.2em] hover:border-white transition-colors">
+                      Submit Application <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+                    </Link>
+                  </div>
+
+                  <div className="border border-slate-200 bg-white p-8">
+                    <BookOpen className="text-slate-400 mb-6" size={28} />
+                    <h3 className="font-bold text-slate-900 mb-3 text-lg">Browse Vault</h3>
+                    <p className="text-slate-500 text-xs leading-relaxed mb-6">
+                      Review historical documents, project files, and technical records.
+                    </p>
+                    <Link to="/reports" className="group flex items-center justify-between w-full pb-3 border-b border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] hover:border-slate-900 transition-colors">
+                      Open Repository <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* ACTION SIDEBAR */}
-            <div className="space-y-6">
-              <div className="border border-slate-200 bg-slate-900 text-white p-8 shadow-xl">
-                <Users className="text-slate-400 mb-6" size={28} />
-                <h3 className="font-bold text-white mb-3 text-lg leading-tight">Join the Network</h3>
-                <p className="text-slate-400 text-xs leading-relaxed mb-8">
-                  Get exclusive access to society resources, journals, and private community networks.
-                </p>
-                <Link to="/join" className="group flex items-center justify-between w-full pb-3 border-b border-white/20 text-[10px] font-black uppercase tracking-[0.2em] hover:border-white transition-colors">
-                  Submit Application <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </div>
-
-              <div className="border border-slate-200 bg-white p-8">
-                <BookOpen className="text-slate-400 mb-6" size={28} />
-                <h3 className="font-bold text-slate-900 mb-3 text-lg">Browse Vault</h3>
-                <p className="text-slate-500 text-xs leading-relaxed mb-6">
-                  Review historical documents, project files, and technical records.
-                </p>
-                <Link to="/reports" className="group flex items-center justify-between w-full pb-3 border-b border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] hover:border-slate-900 transition-colors">
-                  Open Repository <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </div>
-            </div>
+            )}
           </motion.div>
 
         </div>
