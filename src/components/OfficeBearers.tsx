@@ -34,6 +34,7 @@ type Person = {
   department: string | null;
   academic_year: string | null;
   year: number;
+  group_name?: string | null;
   image_url: string | null;
   photo: string | null;
   photo_url: string | null;
@@ -130,6 +131,7 @@ const OfficeBearers = () => {
       department: "",
       academic_year: "2026-2027",
       year: "2026",
+      group_name: "cs",
       image_url: "",
       email: "",
       phone: "",
@@ -148,6 +150,7 @@ const OfficeBearers = () => {
       department: form.department || null,
       academic_year: form.academic_year || null,
       year: Number(form.year),
+      group_name: form.group_name || "cs",
       image_url: form.image_url || null,
       email: form.email || null,
       phone: form.phone || null,
@@ -178,8 +181,9 @@ const OfficeBearers = () => {
       name: p.name || "",
       role: p.role || "",
       department: p.department || "",
-      academic_year: p.academic_year || "2025-2026",
+      academic_year: p.academic_year || "2026-2027",
       year: String(p.year),
+      group_name: p.group_name || "cs",
       image_url: p.image_url || p.photo || p.photo_url || "",
       email: p.email || "",
       phone: p.phone || "",
@@ -244,6 +248,25 @@ const OfficeBearers = () => {
         </h3>
 
         <div className="grid gap-5 md:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase">Target Society Chapter *</label>
+            <select
+              value={form.group_name}
+              onChange={(e) => setForm({ ...form, group_name: e.target.value })}
+              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
+              required
+            >
+              <option value="cs">Computer Society (CS)</option>
+              <option value="cis">Computational Intelligence Society (CIS)</option>
+              <option value="comsoc">Communications Society (ComSoc)</option>
+              <option value="embs">Engineering in Medicine & Biology Society (EMBS)</option>
+              <option value="im">Instrumentation & Measurement Society (IMS)</option>
+              <option value="pels">Power Electronics Society (PELS)</option>
+              <option value="wie">Women in Engineering (WIE)</option>
+              <option value="srec">IEEE SREC Student Branch (Main SB)</option>
+            </select>
+          </div>
+
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-slate-500 uppercase">Name *</label>
             <input
