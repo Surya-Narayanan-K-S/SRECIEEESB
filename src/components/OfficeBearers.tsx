@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Loader2, Plus, Edit2, Trash2, Upload, FileUser, X, Link2, Mail, Phone, Globe, ChevronRight } from "lucide-react";
+import { Loader2, Edit2, Trash2, Upload, FileUser, X, Link2, Mail, Phone, Globe, Filter, Building2 } from "lucide-react";
 
 const BEARER_ROLES = [
   "President",
@@ -24,7 +24,12 @@ const BEARER_ROLES = [
 const EXECUTIVE_ROLES = [
   "Executive Members",
   "Executive Member",
-  "Joint Activities Co-ordinator"
+  "Joint Activities Co-ordinator",
+  "Technical Executive",
+  "Creative Executive",
+  "Operations Executive",
+  "Events Executive",
+  "Social Media Executive"
 ];
 
 type Person = {
@@ -210,10 +215,15 @@ const OfficeBearers = () => {
   const isPredefined = rolesList.includes(form.role);
   const selectValue = form.role === "" ? "" : (isPredefined ? form.role : "Custom");
 
-  const currentRows = activeSubTab === "bearers" ? bearers : executives;
+  const rawRows = activeSubTab === "bearers" ? bearers : executives;
+
+  // Filter rows based on selected society filter
+  const currentRows = selectedSocietyFilter === "all"
+    ? rawRows
+    : rawRows.filter((r) => r.group_name?.toLowerCase() === selectedSocietyFilter.toLowerCase());
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-sans">
       {/* Sub Tabs */}
       <div className="flex border-b border-slate-200">
         <button
@@ -241,7 +251,7 @@ const OfficeBearers = () => {
       </div>
 
       {/* Main Form */}
-      <form onSubmit={handleSubmit} className="rounded-xl bg-white p-6 md:p-8 shadow-sm border border-slate-200">
+      <form onSubmit={handleSubmit} className="rounded-xl bg-[#fafafa] p-6 md:p-8 shadow-sm border border-slate-200">
         <h3 className="mb-6 text-xl font-bold text-slate-900 flex items-center gap-2">
           <FileUser size={20} className="text-blue-600" />
           {form.id ? `Edit ${activeSubTab === "bearers" ? "Office Bearer" : "Executive Member"}` : `Add New ${activeSubTab === "bearers" ? "Office Bearer" : "Executive Member"}`}
@@ -249,11 +259,17 @@ const OfficeBearers = () => {
 
         <div className="grid gap-5 md:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Target Society Chapter *</label>
+            <label className="text-xs font-bold text-slate-700 uppercase flex items-center gap-1">
+              <Building2 size={13} className="text-blue-600" /> Target Society Chapter *
+            </label>
             <select
               value={form.group_name}
-              onChange={(e) => setForm({ ...form, group_name: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
+              onChange={(e) => {
+                const val = e.target.value;
+                setForm({ ...form, group_name: val });
+                setSelectedSocietyFilter(val); // Auto sync filter table view to selected society
+              }}
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-bold"
               required
             >
               <option value="cs">Computer Society (CS)</option>
@@ -268,19 +284,19 @@ const OfficeBearers = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Name *</label>
+            <label className="text-xs font-bold text-slate-700 uppercase">Name *</label>
             <input
               type="text"
               placeholder="Full Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
               required
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Role *</label>
+            <label className="text-xs font-bold text-slate-700 uppercase">Role *</label>
             <select
               value={selectValue}
               onChange={(e) => {
@@ -291,7 +307,7 @@ const OfficeBearers = () => {
                   setForm({ ...form, role: val });
                 }
               }}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
               required
             >
               <option value="" disabled>Select a Role</option>
@@ -307,58 +323,58 @@ const OfficeBearers = () => {
                 placeholder="Type custom role name..."
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="mt-2 rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                className="mt-2 rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900"
                 required
               />
             )}
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Department</label>
+            <label className="text-xs font-bold text-slate-700 uppercase">Department</label>
             <input
               type="text"
-              placeholder="e.g., CSE, ECE, BME"
+              placeholder="e.g., II EEE B, III CSE A"
               value={form.department}
               onChange={(e) => setForm({ ...form, department: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Academic Year</label>
+            <label className="text-xs font-bold text-slate-700 uppercase">Academic Year</label>
             <input
               type="text"
-              placeholder="e.g., 2025-2026"
+              placeholder="e.g., 2026-2027"
               value={form.academic_year}
               onChange={(e) => setForm({ ...form, academic_year: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Calendar Year *</label>
+            <label className="text-xs font-bold text-slate-700 uppercase">Calendar Year *</label>
             <input
               type="number"
-              placeholder="e.g., 2025"
+              placeholder="e.g., 2026"
               value={form.year}
               onChange={(e) => setForm({ ...form, year: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white text-slate-900 font-semibold"
               required
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase">Profile Picture (Supabase Storage)</label>
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-xs font-bold text-slate-700 uppercase">Profile Picture (Supabase Storage)</label>
             <div className="flex items-center gap-3">
-              <label className="flex-1 flex items-center justify-between border rounded-lg px-4 py-2.5 bg-slate-50 hover:bg-slate-100 cursor-pointer text-sm font-semibold transition text-slate-600">
+              <label className="flex-1 flex items-center justify-between border border-slate-300 rounded-lg px-4 py-2.5 bg-white hover:bg-slate-50 cursor-pointer text-sm font-semibold transition text-slate-700">
                 <span className="flex items-center gap-2">
                   <Upload size={16} />
-                  {uploading ? "Uploading..." : "Choose Profile Pic"}
+                  {uploading ? "Uploading..." : "Choose Profile Pic File"}
                 </span>
                 <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
               </label>
               {form.image_url && (
-                <div className="relative w-11 h-11 rounded-lg border overflow-hidden shrink-0">
+                <div className="relative w-11 h-11 rounded-lg border border-slate-300 overflow-hidden shrink-0">
                   <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
                   <button
                     type="button"
@@ -370,49 +386,12 @@ const OfficeBearers = () => {
                 </div>
               )}
             </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Mail size={12}/> Email</label>
-            <input
-              type="email"
-              placeholder="email@example.com"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Phone size={12}/> Phone</label>
-            <input
-              type="text"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Globe size={12}/> Portfolio Website</label>
             <input
               type="url"
-              placeholder="https://..."
-              value={form.website}
-              onChange={(e) => setForm({ ...form, website: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Link2 size={12}/> LinkedIn Profile</label>
-            <input
-              type="url"
-              placeholder="https://linkedin.com/in/..."
-              value={form.linkedin_url}
-              onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })}
-              className="rounded-lg border px-4 py-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="Or paste image URL here..."
+              value={form.image_url}
+              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+              className="mt-1 rounded-lg border border-slate-300 px-4 py-2.5 text-xs focus:border-blue-500 outline-none bg-white text-slate-900"
             />
           </div>
         </div>
@@ -420,16 +399,16 @@ const OfficeBearers = () => {
         <div className="mt-6 flex gap-3">
           <button
             type="submit"
-            className="rounded-lg bg-blue-600 hover:bg-blue-700 px-6 py-3 font-semibold text-white text-sm transition-all"
+            className="rounded-lg bg-blue-600 hover:bg-blue-700 px-6 py-3 font-bold text-white text-sm transition-all shadow-md"
             disabled={uploading}
           >
-            {form.id ? "Update Member" : "Add Member"}
+            {form.id ? "Update Member Record" : "Add Member Record"}
           </button>
           {form.id && (
             <button
               type="button"
               onClick={resetForm}
-              className="rounded-lg bg-slate-100 hover:bg-slate-200 px-6 py-3 font-semibold text-sm transition-all"
+              className="rounded-lg bg-slate-200 hover:bg-slate-300 px-6 py-3 font-semibold text-sm text-slate-800 transition-all"
             >
               Cancel
             </button>
@@ -437,65 +416,100 @@ const OfficeBearers = () => {
         </div>
       </form>
 
-      {/* List Table */}
-      <div className="overflow-x-auto rounded-xl bg-white border border-slate-200 shadow-sm">
-        {loading ? (
-          <div className="p-12 flex justify-center items-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      {/* FILTER & TABLE SECTION WITH MILK WHITE BACKGROUND AND DEEP DARK TEXT */}
+      <div className="rounded-xl bg-[#fafafa] border border-slate-200 p-6 shadow-sm">
+        {/* Table Filter Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+          <div className="flex items-center gap-2">
+            <Filter size={16} className="text-blue-600" />
+            <h4 className="font-serif font-bold text-slate-900 text-lg">Filter Table by Society</h4>
           </div>
-        ) : currentRows.length === 0 ? (
-          <div className="p-12 text-center text-slate-400 font-medium">No personnel added yet.</div>
-        ) : (
-          <table className="w-full border-collapse">
-            <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-slate-200">
-              <tr>
-                <th className="px-5 py-3.5 text-left">Member</th>
-                <th className="px-5 py-3.5 text-left">Role</th>
-                <th className="px-5 py-3.5 text-left">Department</th>
-                <th className="px-5 py-3.5 text-center">Calendar Year</th>
-                <th className="px-5 py-3.5 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRows.map((row) => (
-                <tr key={row.id} className="border-b hover:bg-slate-50/55 transition-colors">
-                  <td className="px-5 py-3.5 text-sm font-semibold text-slate-800 flex items-center gap-3">
-                    <img
-                      src={row.image_url || row.photo || row.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name)}&background=E0F2FE&color=0369A1`}
-                      alt={row.name}
-                      className="w-10 h-10 rounded-lg object-cover border border-slate-100 bg-slate-50 shrink-0"
-                    />
-                    <div>
-                      <div className="text-slate-900">{row.name}</div>
-                      <div className="text-[10px] text-slate-400 font-bold uppercase">{row.academic_year || "N/A"}</div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-sm text-slate-650 font-medium">{row.role}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-650 font-medium">{row.department || "General"}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-650 font-medium text-center">{row.year}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-650 font-medium text-center">
-                    <div className="flex gap-2 justify-center">
-                      <button
-                        onClick={() => handleEdit(row)}
-                        className="p-2 hover:bg-slate-100 text-amber-600 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row.id)}
-                        className="p-2 hover:bg-slate-100 text-red-600 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase text-slate-500">Society:</span>
+            <select
+              value={selectedSocietyFilter}
+              onChange={(e) => setSelectedSocietyFilter(e.target.value)}
+              className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold bg-white text-slate-900 focus:ring-1 focus:ring-blue-600 outline-none"
+            >
+              <option value="all">All Societies ({rawRows.length})</option>
+              <option value="cs">Computer Society (CS)</option>
+              <option value="cis">Computational Intelligence (CIS)</option>
+              <option value="comsoc">Communications Society (ComSoc)</option>
+              <option value="embs">EMBS</option>
+              <option value="im">Instrumentation & Measurement (IMS)</option>
+              <option value="pels">Power Electronics (PELS)</option>
+              <option value="wie">Women in Engineering (WIE)</option>
+              <option value="srec">IEEE SREC Student Branch</option>
+            </select>
+          </div>
+        </div>
+
+        {/* List Table */}
+        <div className="overflow-x-auto rounded-xl bg-white border border-slate-200 shadow-sm">
+          {loading ? (
+            <div className="p-12 flex justify-center items-center">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+          ) : currentRows.length === 0 ? (
+            <div className="p-12 text-center text-slate-600 font-bold text-base">
+              No personnel found for this society filter.
+            </div>
+          ) : (
+            <table className="w-full border-collapse text-left">
+              <thead className="bg-slate-900 text-white text-xs uppercase tracking-wider font-black border-b border-slate-800">
+                <tr>
+                  <th className="px-5 py-4">Member Name</th>
+                  <th className="px-5 py-4">Role</th>
+                  <th className="px-5 py-4">Department</th>
+                  <th className="px-5 py-4 text-center">Calendar Year</th>
+                  <th className="px-5 py-4 text-center">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {currentRows.map((row) => (
+                  <tr key={row.id} className="hover:bg-blue-50/50 transition-colors group">
+                    <td className="px-5 py-4 text-sm font-semibold text-slate-900 flex items-center gap-3">
+                      <img
+                        src={row.image_url || row.photo || row.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name)}&background=0F172A&color=FFFFFF`}
+                        alt={row.name}
+                        className="w-10 h-10 rounded-lg object-cover border border-slate-200 bg-slate-100 shrink-0"
+                      />
+                      <div>
+                        <div className="text-slate-900 font-serif font-bold text-base group-hover:text-blue-700 transition-colors">{row.name}</div>
+                        <div className="text-[11px] text-slate-700 font-extrabold uppercase tracking-wider">{row.academic_year || "2026-2027"}</div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className="inline-block px-3 py-1 bg-slate-100 border border-slate-300 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-md">
+                        {row.role}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-slate-900 font-bold">{row.department || "SREC Engineering"}</td>
+                    <td className="px-5 py-4 text-sm text-slate-900 font-bold text-center">{row.year}</td>
+                    <td className="px-5 py-4 text-sm text-slate-900 font-bold text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={() => handleEdit(row)}
+                          className="p-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg transition-colors"
+                          title="Edit Member"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(row.id)}
+                          className="p-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg transition-colors"
+                          title="Delete Member"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );
