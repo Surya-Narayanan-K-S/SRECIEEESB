@@ -130,6 +130,7 @@ const AdminDashboard = () => {
   });
 
   const [appSearch, setAppSearch] = useState("");
+  const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
 
   type PageContentRow = {
     id: number;
@@ -764,6 +765,58 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("awards").delete().eq("id", id);
     if (error) { alert("Error: " + error.message); return; }
     fetchAwards();
+  };
+
+  const deleteSelectedApplications = async () => {
+    if (selectedAppIds.length === 0) return alert("No applications selected.");
+    if (!confirm(`Are you sure you want to delete ${selectedAppIds.length} selected applications?`)) return;
+
+    try {
+      const { error } = await supabase.from("applications").delete().in("id", selectedAppIds);
+      if (error) {
+        await supabase.from("student_applications").delete().in("id", selectedAppIds);
+      }
+      setSelectedAppIds([]);
+      await fetchApplications();
+      alert(`Successfully deleted ${selectedAppIds.length} applications.`);
+    } catch (err: any) {
+      alert("Error deleting applications: " + err.message);
+    }
+  };
+
+  const downloadSelectedReceipts = () => {
+    if (selectedAppIds.length === 0) return alert("No applications selected for receipt download.");
+
+    const selectedApps = applications.filter(a => selectedAppIds.includes(a.id));
+    
+    let content = `====================================================\n`;
+    content += `       IEEE SREC STUDENT BRANCH - OFFICIAL RECEIPT     \n`;
+    content += `====================================================\n\n`;
+    content += `Generated Date: ${new Date().toLocaleString()}\n`;
+    content += `Total Records Selected: ${selectedApps.length}\n\n`;
+
+    selectedApps.forEach((app, idx) => {
+      content += `----------------------------------------------------\n`;
+      content += `RECEIPT #${idx + 1}\n`;
+      content += `Application ID : ${app.id}\n`;
+      content += `Student Name   : ${app.first_name} ${app.last_name}\n`;
+      content += `Email          : ${app.email}\n`;
+      content += `Department     : ${app.department} (${app.year_of_study || 'N/A'})\n`;
+      content += `Target Society : ${app.target_society || 'IEEE SREC SB'}\n`;
+      content += `Submission Date: ${app.created_at ? new Date(app.created_at).toLocaleString() : 'N/A'}\n`;
+      content += `Notes / SOP    : ${app.statement_of_purpose || 'N/A'}\n`;
+      content += `----------------------------------------------------\n\n`;
+    });
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `IEEE_SREC_Student_Receipts_${Date.now()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const resetContentForm = () => {
@@ -2233,8 +2286,74 @@ const AdminDashboard = () => {
                       placeholder="Filter by name, email, society..."
                       value={appSearch}
                       onChange={(e) => setAppSearch(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 px-4 py-2 text-xs bg-white focus:outline-none focus:border-blue-500"
+                      className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-xs bg-white text-slate-900 font-bold focus:outline-none focus:border-blue-600 shadow-sm"
                     />
+                  </div>
+                </div>
+
+                {/* Batch Actions Toolbar */}
+                <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const filtered = applications.filter(app => {
+                          const q = appSearch.trim().toLowerCase();
+                          if (!q) return true;
+                          return (
+                            app.first_name?.toLowerCase().includes(q) ||
+                            app.last_name?.toLowerCase().includes(q) ||
+                            app.email?.toLowerCase().includes(q) ||
+                            app.target_society?.toLowerCase().includes(q) ||
+                            app.department?.toLowerCase().includes(q)
+                          );
+                        });
+                        if (selectedAppIds.length === filtered.length) {
+                          setSelectedAppIds([]);
+                        } else {
+                          setSelectedAppIds(filtered.map(a => a.id));
+                        }
+                      }}
+                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-2"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={applications.length > 0 && selectedAppIds.length === applications.length}
+                        readOnly
+                        className="rounded accent-blue-600 cursor-pointer"
+                      />
+                      <span>Select All ({selectedAppIds.length}/{applications.length})</span>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={downloadSelectedReceipts}
+                      disabled={selectedAppIds.length === 0}
+                      className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-sm flex items-center gap-2 ${
+                        selectedAppIds.length > 0
+                          ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                          : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <Download size={14} />
+                      <span>Download Receipts ({selectedAppIds.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={deleteSelectedApplications}
+                      disabled={selectedAppIds.length === 0}
+                      className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-sm flex items-center gap-2 ${
+                        selectedAppIds.length > 0
+                          ? "bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                          : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete Selected ({selectedAppIds.length})</span>
+                    </button>
                   </div>
                 </div>
 
@@ -2251,57 +2370,79 @@ const AdminDashboard = () => {
                         app.department?.toLowerCase().includes(q)
                       );
                     })
-                    .map((app) => (
-                      <div key={app.id} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition">
-                        <div className="space-y-4">
-                          <div className="flex justify-between items-start">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">
-                              {app.target_society || "IEEE SB"}
-                            </span>
-                            <span className="text-[10px] font-semibold text-slate-400">
-                              {app.created_at ? new Date(app.created_at).toLocaleDateString() : "Recent"}
-                            </span>
-                          </div>
-
-                          <div>
-                            <h3 className="text-base font-bold text-slate-900">{app.first_name} {app.last_name}</h3>
-                            <p className="text-xs text-slate-500 font-medium">{app.email}</p>
-                            <p className="text-xs text-slate-400 mt-1">Dept: <strong>{app.department}</strong> • Year: <strong>{app.year_of_study}</strong></p>
-                          </div>
-
-                          {app.skills && app.skills.length > 0 && (
-                            <div className="flex flex-wrap gap-1 pt-1">
-                              {app.skills.map((skill, idx) => (
-                                <span key={idx} className="text-[9px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                                  {skill}
+                    .map((app) => {
+                      const isSelected = selectedAppIds.includes(app.id);
+                      return (
+                        <div
+                          key={app.id}
+                          className={`rounded-2xl border ${
+                            isSelected ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/20" : "border-slate-200 bg-white"
+                          } p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition relative group`}
+                        >
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-start">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {
+                                    setSelectedAppIds(prev =>
+                                      prev.includes(app.id) ? prev.filter(id => id !== app.id) : [...prev, app.id]
+                                    );
+                                  }}
+                                  className="w-4 h-4 rounded accent-blue-600 cursor-pointer"
+                                />
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full">
+                                  {app.target_society || "IEEE SB"}
                                 </span>
-                              ))}
-                            </div>
-                          )}
+                              </label>
 
-                          {app.statement_of_purpose && (
-                            <div className="p-3 bg-slate-50 border border-slate-100 rounded-lg">
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Statement of Purpose</p>
-                              <p className="text-xs text-slate-600 leading-relaxed italic line-clamp-3">"{app.statement_of_purpose}"</p>
+                              <span className="text-[10px] font-bold text-slate-500">
+                                {app.created_at ? new Date(app.created_at).toLocaleDateString() : "Recent"}
+                              </span>
                             </div>
-                          )}
-                        </div>
 
-                        <div className="pt-4 mt-4 border-t border-slate-100 flex justify-end">
-                          <button
-                            type="button"
-                            onClick={() => deleteApplication(app.id)}
-                            className="text-xs text-red-600 hover:text-red-800 font-bold uppercase tracking-wider transition"
-                          >
-                            Delete Application
-                          </button>
+                            <div>
+                              <h3 className="text-base font-bold text-slate-900">{app.first_name} {app.last_name}</h3>
+                              <p className="text-xs text-slate-700 font-bold mt-0.5">{app.email}</p>
+                              <p className="text-xs text-slate-600 font-semibold mt-1">Dept: <strong className="text-slate-900">{app.department}</strong> • Year: <strong className="text-slate-900">{app.year_of_study}</strong></p>
+                            </div>
+
+                            {app.skills && app.skills.length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-1">
+                                {app.skills.map((skill, idx) => (
+                                  <span key={idx} className="text-[9px] font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {app.statement_of_purpose && (
+                              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Statement of Purpose</p>
+                                <p className="text-xs text-slate-800 font-medium leading-relaxed italic line-clamp-3">"{app.statement_of_purpose}"</p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-slate-400">ID: {app.id.slice(0, 8)}...</span>
+                            <button
+                              type="button"
+                              onClick={() => deleteApplication(app.id)}
+                              className="text-xs text-red-600 hover:text-red-800 font-bold uppercase tracking-wider transition"
+                            >
+                              Delete Application
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                   {applications.length === 0 && (
                     <div className="col-span-full py-16 text-center bg-white border border-slate-200 rounded-2xl">
-                      <p className="text-slate-400 font-medium text-sm">No student applications received yet.</p>
+                      <p className="text-slate-500 font-bold text-sm">No student applications received yet.</p>
                     </div>
                   )}
                 </div>
