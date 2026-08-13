@@ -53,10 +53,10 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
           .select("content_text")
           .eq("page_key", "system")
           .eq("content_key", "registration_open")
-          .single();
+          .maybeSingle();
 
         if (data && data.content_text) {
-          const remoteOpen = data.content_text === "true";
+          const remoteOpen = data.content_text !== "false";
           localStorage.setItem("ieee_registration_open", String(remoteOpen));
           setIsOpenRegistration(remoteOpen);
         }
@@ -139,10 +139,10 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
                   <span>Registrations Disabled</span>
                 </div>
                 <h3 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-                  Registrations Currently Closed
+                  Registrations Opening Soon!
                 </h3>
                 <p className="text-slate-600 text-sm mt-3 leading-relaxed max-w-sm mx-auto">
-                  IEEE SREC Membership registrations for the current academic cycle are currently <strong>CLOSED</strong> by the branch administration.
+                  IEEE SREC Membership registrations for the upcoming academic cycle will open shortly. Stay tuned!
                 </p>
               </div>
 

@@ -193,6 +193,53 @@ const MembershipRegistrationPage = () => {
   const [transactionRef, setTransactionRef] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  // Registration Open/Closed status state
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState<boolean>(() => {
+    const localVal = localStorage.getItem("ieee_registration_open");
+    if (localVal !== null) {
+      return localVal === "true";
+    }
+    return true; // Default to open
+  });
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const { data } = await supabase
+          .from("page_contents")
+          .select("content_text")
+          .eq("page_key", "system")
+          .eq("content_key", "registration_open")
+          .maybeSingle();
+
+        if (data && data.content_text) {
+          const remoteOpen = data.content_text !== "false";
+          setIsRegistrationOpen(remoteOpen);
+          localStorage.setItem("ieee_registration_open", String(remoteOpen));
+        }
+      } catch (e) {
+        console.error("Failed to fetch registration status", e);
+      }
+    };
+
+    fetchStatus();
+
+    const handleStatusChange = () => {
+      const localVal = localStorage.getItem("ieee_registration_open");
+      if (localVal !== null) {
+        setIsRegistrationOpen(localVal === "true");
+      }
+    };
+
+    window.addEventListener("registration_status_changed", handleStatusChange);
+    window.addEventListener("storage", handleStatusChange);
+
+    return () => {
+      window.removeEventListener("registration_status_changed", handleStatusChange);
+      window.removeEventListener("storage", handleStatusChange);
+    };
+  }, []);
+
   // Handle society toggle (multi-select with mandatory safeguards)
   const handleSocietyToggle = (socId: string) => {
     const targetSoc = societiesList.find(s => s.id === socId);
@@ -459,7 +506,56 @@ const MembershipRegistrationPage = () => {
       <main className="flex-1 w-full py-16">
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-12">
 
-          {isSubmitted ? (
+          {!isRegistrationOpen ? (
+            /* REGISTRATION CLOSED ALERT VIEW */
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-8 sm:p-12 text-center font-sans my-8"
+            >
+              <div className="w-20 h-20 rounded-3xl bg-red-50 border-2 border-red-200 text-red-600 flex items-center justify-center mx-auto shadow-inner mb-6">
+                <ShieldAlert size={40} />
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 border border-red-200 text-red-700 font-extrabold text-xs uppercase tracking-wider mb-4">
+                <Lock size={14} />
+                <span>Registrations Disabled</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-serif font-black text-slate-900 tracking-tight">
+                Registrations Opening Soon!
+              </h2>
+
+              <p className="text-slate-600 text-base mt-4 leading-relaxed max-w-lg mx-auto font-medium">
+                IEEE SREC Membership registrations for the upcoming academic cycle are currently <strong>CLOSED</strong> by the branch administration.
+              </p>
+
+              <div className="mt-8 p-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-sm font-medium leading-relaxed text-left flex items-start gap-4 shadow-sm">
+                <Sparkles size={24} className="text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold block text-amber-900 mb-1">Need assistance or membership inquiries?</span>
+                  Please check back during the next registration window or contact the IEEE Student Branch Counsellor for direct onboarding assistance.
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  to="/contact"
+                  className="px-8 py-4 bg-[#003366] hover:bg-[#002244] text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition shadow-lg flex items-center justify-center gap-2"
+                >
+                  <Phone size={16} />
+                  <span>Contact Branch Counsellor</span>
+                </Link>
+                <Link
+                  to="/"
+                  className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs uppercase tracking-widest rounded-xl transition flex items-center justify-center gap-2 border border-slate-200"
+                >
+                  <span>Return to Home</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </motion.div>
+          ) : isSubmitted ? (
             /* OFFICIAL IEEE SREC PRINTABLE REGISTRATION RECEIPT — REDESIGNED */
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}

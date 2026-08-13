@@ -2280,14 +2280,44 @@ const AdminDashboard = () => {
                     <h2 className="text-2xl font-black text-slate-800">Student Join Submissions</h2>
                     <p className="text-sm text-slate-500 mt-1">Review student applications submitted from the /join portal.</p>
                   </div>
-                  <div className="w-full sm:w-72">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                     <input
                       type="text"
                       placeholder="Filter by name, email, society..."
                       value={appSearch}
                       onChange={(e) => setAppSearch(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-xs bg-white text-slate-900 font-bold focus:outline-none focus:border-blue-600 shadow-sm"
+                      className="w-full sm:w-72 rounded-xl border border-slate-300 px-4 py-2.5 text-xs bg-white text-slate-900 font-bold focus:outline-none focus:border-blue-600 shadow-sm"
                     />
+                    
+                    <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-300 shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-slate-900">Registration Status</span>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={pageContents.find(c => c.page_key === "system" && c.content_key === "registration_open")?.content_text !== "false"}
+                          onChange={async (e) => {
+                            const newStatus = e.target.checked ? "true" : "false";
+                            localStorage.setItem("ieee_registration_open", newStatus);
+                            window.dispatchEvent(new Event("registration_status_changed"));
+                            await upsertContent("system", "registration_open", newStatus);
+                            setPageContents(prev => {
+                              const existing = prev.findIndex(c => c.page_key === "system" && c.content_key === "registration_open");
+                              if (existing >= 0) {
+                                const newContents = [...prev];
+                                newContents[existing] = { ...newContents[existing], content_text: newStatus };
+                                return newContents;
+                              } else {
+                                return [...prev, { id: Date.now(), page_key: "system", content_key: "registration_open", content_text: newStatus }];
+                              }
+                            });
+                          }}
+                        />
+                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
