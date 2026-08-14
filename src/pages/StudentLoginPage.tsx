@@ -271,7 +271,48 @@ const StudentLoginPage = () => {
         return;
       }
 
-      // 2. Query Supabase `applications` or `student_applications` table
+      // 2. Query Supabase `student_members` table
+      try {
+        const { data: memberData } = await supabase
+          .from("student_members")
+          .select("*")
+          .or(`ieee_id.eq.${query},roll_number.ilike.${query},email.ilike.${query}`)
+          .maybeSingle();
+
+        if (memberData) {
+          const memberObj: StudentMemberData = {
+            id: memberData.id,
+            ieee_id: memberData.ieee_id,
+            roll_number: memberData.roll_number,
+            first_name: memberData.first_name,
+            last_name: memberData.last_name,
+            email: memberData.email,
+            phone: memberData.phone || "+91 90000 00000",
+            department: memberData.department,
+            year_of_study: memberData.year_of_study,
+            member_type: memberData.member_type || "Student Member",
+            join_date: memberData.join_date || "2025",
+            valid_thru: memberData.valid_thru || "DEC 2026",
+            membership_status: (memberData.membership_status as any) || "ACTIVE",
+            target_societies: memberData.target_societies || ["IEEE Student Branch SREC"],
+            skills: memberData.skills || ["Engineering & Technology"],
+            bio_sop: memberData.bio_sop || "",
+            avatar_url: memberData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(memberData.first_name + " " + memberData.last_name)}&background=00629B&color=fff&size=512`,
+            events_attended: [
+              { title: "IEEE Student Branch Induction", date: "2025", category: "Branch Activity" }
+            ],
+            awards_count: 1
+          };
+
+          handleLoginSuccess(memberObj);
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        // Continue to fallback if table doesn't exist yet
+      }
+
+      // 3. Query Supabase `applications` or `student_applications` table
       const { data: appData, error: appErr } = await supabase
         .from("applications")
         .select("*")
