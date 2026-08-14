@@ -35,7 +35,8 @@ import {
   Lock,
   ShieldAlert,
   Download,
-  Globe
+  Globe,
+  IdCard
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -491,14 +492,19 @@ const MembershipRegistrationPage = () => {
             
             <span className="text-slate-300 font-light text-lg">|</span>
             
-            {/* Title Part - Modern Bold Sans in Royal Blue */}
             <span className="font-extrabold font-sans text-sm sm:text-base md:text-lg uppercase tracking-wider text-[#003366]">
               Membership Registration
             </span>
 
             <span className="text-slate-300 font-light text-lg hidden sm:inline">•</span>
 
-
+            <Link
+              to="/student-login"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#003366] hover:bg-[#002244] text-white text-xs font-black uppercase tracking-wider shadow-sm transition-all active:scale-95"
+            >
+              <IdCard size={14} className="text-cyan-300" />
+              <span>Already Registered? Member Login &amp; ID Card</span>
+            </Link>
           </motion.div>
         </div>
       </section>

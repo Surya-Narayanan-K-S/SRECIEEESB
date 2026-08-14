@@ -13,6 +13,7 @@ const linkGroups = [
       { label: "About Us", href: "/about" },
       { label: "Our Activities", href: "/activities" },
       { label: "Societies", href: "/societies" },
+      { label: "Student Member Portal", href: "/student-login" },
       { label: "Membership Registration", href: "/membership-registration" },
       { label: "Gallery", href: "/gallery" },
     ]
@@ -140,6 +141,8 @@ const Footer = () => (
           <span>School Code: 41347756</span>
           <span className="w-1 h-1 rounded-full bg-slate-600 inline-block"></span>
           <span>Branch Code: 61491</span>
+          <span className="w-1 h-1 rounded-full bg-slate-600 inline-block"></span>
+          <Link to="/student-login" className="hover:text-cyan-300 transition-colors text-cyan-400 font-bold">Member Portal</Link>
           <span className="w-1 h-1 rounded-full bg-slate-600 inline-block"></span>
           <Link to="/admin-login" className="hover:text-cyan-300 transition-colors text-slate-300 font-bold">Admin Portal</Link>
         </div>

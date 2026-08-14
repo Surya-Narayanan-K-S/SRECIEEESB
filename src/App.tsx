@@ -36,6 +36,7 @@ import AnnualPlansPage from "./pages/AnnualPlansPage.tsx";
 import FundingsPlanPage from "./pages/FundingsPlanPage.tsx";
 import GalleryPage from "./pages/GalleryPage.tsx";
 import GodDayPage from "./pages/GodDayPage.tsx";
+import StudentLoginPage from "./pages/StudentLoginPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,10 @@ const AnimatedRoutes = () => {
           <Route path="/join" element={<PageTransition><JoinPage /></PageTransition>} />
           <Route path="/membership-registration" element={<PageTransition><MembershipRegistrationPage /></PageTransition>} />
           <Route path="/register" element={<PageTransition><MembershipRegistrationPage /></PageTransition>} />
+          <Route path="/student-login" element={<PageTransition><StudentLoginPage /></PageTransition>} />
+          <Route path="/student-portal" element={<PageTransition><StudentLoginPage /></PageTransition>} />
+          <Route path="/member-portal" element={<PageTransition><StudentLoginPage /></PageTransition>} />
+          <Route path="/member-card" element={<PageTransition><StudentLoginPage /></PageTransition>} />
           <Route path="/societies/:id" element={<PageTransition><SocietyDetailPage /></PageTransition>} />
           <Route path="/godday" element={<PageTransition><GodDayPage /></PageTransition>} />
           <Route path="/god-day" element={<PageTransition><GodDayPage /></PageTransition>} />

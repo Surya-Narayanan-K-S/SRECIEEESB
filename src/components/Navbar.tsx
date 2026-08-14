@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown,
-  Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass
+  Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard
 } from "lucide-react";
 import ieeeLogo from "@/assets/ieee-logo.png";
 import ieeeStamp from "@/assets/ieees.png";
@@ -26,6 +26,7 @@ const primaryNavLinks = [
 
 // "More" dropdown links for desktop
 const moreLinks = [
+  { label: "Student Portal", href: "/student-login", icon: IdCard, desc: "Member login & digital ID card" },
   { label: "Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Annual activity plans" },
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with us" },
 ];
@@ -352,6 +353,14 @@ const Navbar = () => {
               </a>
 
               <Link
+                to="/student-login"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95 shadow-[0_0_15px_rgba(0,210,255,0.2)]"
+              >
+                <IdCard size={13} className="text-cyan-400" />
+                <span>Member Portal</span>
+              </Link>
+
+              <Link
                 to="/admin-login"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95"
               >
@@ -513,11 +522,39 @@ const Navbar = () => {
                   <ExternalLink size={16} className="text-slate-950" />
                 </motion.a>
 
-                {/* Membership Registration */}
+                {/* Student Member Login & Digital ID */}
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.35 }}
+                >
+                  <Link
+                    to="/student-login"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#001c3d]/90 to-[#002b5c]/90 backdrop-blur-2xl border border-cyan-400/40 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-300 shadow-md"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
+                        <IdCard size={18} />
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
+                          Student Member Portal
+                        </p>
+                        <p className="text-[9px] text-cyan-300/80 font-medium tracking-wide mt-1">
+                          Member login, ID card &amp; full details
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-cyan-400" />
+                  </Link>
+                </motion.div>
+
+                {/* Membership Registration */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.38 }}
                 >
                   <Link
                     to="/membership-registration"
