@@ -605,7 +605,7 @@ export const MobileAppPage: React.FC = () => {
 
   const idCardRef = useRef<HTMLDivElement>(null);
 
-  // Check saved session on mount (Permanent Persistent Login)
+  // Check saved session and load all members from Supabase database on mount
   useEffect(() => {
     const saved = localStorage.getItem("srec_ieee_app_user") || localStorage.getItem("ieee_student_session");
     if (saved) {
@@ -619,17 +619,39 @@ export const MobileAppPage: React.FC = () => {
         localStorage.removeItem("srec_ieee_app_user");
       }
     }
+
+    // Fetch live member directory from Supabase
+    const fetchDbMembers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("student_members")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (data && data.length > 0) {
+          setMembers(data as StudentMember[]);
+          // If no user selected yet, select the first from DB
+          if (!saved) {
+            setSelectedMember(data[0] as StudentMember);
+          }
+        }
+      } catch (err) {
+        console.warn("Supabase fetch student_members note:", err);
+      }
+    };
+
+    fetchDbMembers();
   }, []);
 
   const handleRegisterMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regForm.firstName || !regForm.rollNumber || !regForm.email) {
-      alert("Please fill in all required fields (Name, Roll Number, Email).");
+    if (!regForm.firstName || !regForm.rollNumber || !regForm.email || !regForm.ieeeId) {
+      alert("Please fill in all mandatory fields (IEEE Membership ID, Name, Roll Number, Email).");
       return;
     }
 
     setIsRegSubmitting(true);
-    const assignedIeeeId = regForm.ieeeId.trim() || `98${Math.floor(100000 + Math.random() * 900000)}`;
+    const assignedIeeeId = regForm.ieeeId.trim();
     const newMemberRecord: StudentMember = {
       id: "mem-" + Date.now(),
       first_name: regForm.firstName.trim(),
