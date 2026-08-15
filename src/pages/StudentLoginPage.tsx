@@ -36,7 +36,8 @@ import {
   Globe,
   Share2,
   KeyRound,
-  IdCard
+  IdCard,
+  Users
 } from "lucide-react";
 import ieeeLogo from "@/assets/ieee-logo.png";
 import ieeeStamp from "@/assets/ieees.png";
@@ -464,7 +465,7 @@ const StudentLoginPage = () => {
         {/* ── NOT LOGGED IN: STUDENT LOGIN PORTAL ── */}
         {!currentUser ? (
           <div className="max-w-4xl mx-auto pt-6 md:pt-12">
-            
+
             {/* Header Title Section */}
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-black uppercase tracking-widest mb-4 shadow-[0_0_20px_rgba(0,210,255,0.2)]">
@@ -477,11 +478,30 @@ const StudentLoginPage = () => {
               <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto mt-3">
                 Sign in to view your verified IEEE Membership Number, access your holographic 3D Digital Member ID Card, and explore branch credentials.
               </p>
+
+              {/* Dedicated Mobile App Hub Banner */}
+              <div className="mt-4 flex items-center justify-center gap-3">
+                <Link
+                  to="/app?tab=directory"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400/50 hover:bg-cyan-500/30 text-cyan-300 hover:text-white text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(0,210,255,0.2)] transition-all active:scale-95"
+                >
+                  <Users size={14} className="text-cyan-400" />
+                  <span>Explore Member Directory Table</span>
+                  <ChevronRight size={13} />
+                </Link>
+                <Link
+                  to="/app"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95"
+                >
+                  <Sparkles size={14} />
+                  <span>Open Mobile App Hub</span>
+                </Link>
+              </div>
             </div>
 
             {/* Login Card & Demo Switcher Container */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
+
               {/* Left Column: Interactive Login Form (7 cols) */}
               <div className="lg:col-span-7 bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
@@ -650,7 +670,7 @@ const StudentLoginPage = () => {
 
           /* ── LOGGED IN: STUDENT DASHBOARD & DIGITAL ID CARD ── */
           <div className="space-y-8 animate-fadeIn">
-            
+
             {/* Top Member Header Bar */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 shadow-2xl">
               <div className="flex items-center gap-4 min-w-0">
@@ -731,11 +751,10 @@ const StudentLoginPage = () => {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 ${
-                      isActive
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 ${isActive
                         ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,210,255,0.4)]"
                         : "text-slate-300 hover:text-white hover:bg-white/5"
-                    }`}
+                      }`}
                   >
                     <Icon size={14} />
                     <span>{tab.label}</span>
@@ -747,10 +766,10 @@ const StudentLoginPage = () => {
             {/* ── TAB 1: 3D DIGITAL MEMBERSHIP CARD ── */}
             {activeTab === "card" && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                
+
                 {/* Left (7 cols): The 3D Digital Card Container */}
                 <div className="lg:col-span-7 flex flex-col items-center">
-                  
+
                   {/* Flip Controller & Badge Controls */}
                   <div className="w-full flex items-center justify-between mb-4 px-2">
                     <span className="text-xs font-black uppercase tracking-widest text-cyan-400 flex items-center gap-1.5">
@@ -935,11 +954,10 @@ const StudentLoginPage = () => {
                           key={theme.id}
                           type="button"
                           onClick={() => setSelectedTheme(theme.id)}
-                          className={`p-2 rounded-xl border text-left transition-all text-xs font-bold flex flex-col justify-between ${
-                            selectedTheme === theme.id
+                          className={`p-2 rounded-xl border text-left transition-all text-xs font-bold flex flex-col justify-between ${selectedTheme === theme.id
                               ? "bg-cyan-500/20 border-cyan-400 text-white shadow-[0_0_12px_rgba(0,210,255,0.3)]"
                               : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white"
-                          }`}
+                            }`}
                         >
                           <span className="truncate text-[10px]">{theme.name}</span>
                           <span className={`w-full h-2 rounded-full mt-1.5 bg-gradient-to-r ${theme.gradient}`} />
@@ -1052,7 +1070,7 @@ const StudentLoginPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  
+
                   <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Full Name</span>
                     <p className="text-base font-black text-white">{currentUser.first_name} {currentUser.last_name}</p>

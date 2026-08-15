@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown,
-  Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard
+  Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Smartphone
 } from "lucide-react";
 import ieeeLogo from "@/assets/ieee-logo.png";
 import ieeeStamp from "@/assets/ieees.png";
@@ -26,6 +26,7 @@ const primaryNavLinks = [
 
 // "More" dropdown links for desktop
 const moreLinks = [
+  { label: "Mobile App Hub", href: "/app", icon: Smartphone, desc: "Dedicated mobile app & ID tables" },
   { label: "Student Portal", href: "/student-login", icon: IdCard, desc: "Member login & digital ID card" },
   { label: "Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Annual activity plans" },
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with us" },
@@ -34,6 +35,7 @@ const moreLinks = [
 // Grid links for futuristic mobile overlay menu
 const mobileGridLinks = [
   { label: "Home", href: "/", icon: Home, desc: "Main landing page" },
+  { label: "Mobile App", href: "/app", icon: Smartphone, desc: "Dedicated App & ID Table" },
   { label: "About", href: "/about", icon: Info, desc: "Our history & vision" },
   { label: "Societies", href: "/societies", icon: Users, desc: "Technical chapters" },
   { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
@@ -233,19 +235,19 @@ const Navbar = () => {
 
         </div>
 
-        {/* DESKTOP ONLY - ROW 2: Navigation Bar (Center Aligned) */}
+        {/* DESKTOP ONLY - ROW 2: Navigation Bar (Fully Center Aligned) */}
         <div className="hidden xl:block w-full pointer-events-auto z-50 bg-[#000d20]/95 backdrop-blur-2xl border-b border-cyan-500/35 shadow-[0_12px_40px_rgba(0,13,32,0.9)]">
-          <div className="relative w-full max-w-[1700px] mx-auto flex items-center justify-center px-8 md:px-12 py-2 min-h-[48px]">
+          <div className="w-full max-w-[1800px] mx-auto flex items-center justify-center px-4 md:px-6 py-2 min-h-[48px]">
 
-            {/* Desktop Navigation (Perfectly Center Aligned) */}
-            <nav className="flex items-center justify-center gap-1 relative">
+            {/* Desktop Navigation (All Items Perfectly Symmetrically Centered) */}
+            <nav className="flex items-center justify-center gap-1 2xl:gap-1.5 flex-nowrap">
               {primaryNavLinks.map((l) => {
                 const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
                 return (
                   <Link
                     key={l.label}
                     to={l.href}
-                    className={`relative px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-colors duration-200 ${isActive ? "text-white" : "text-slate-300 hover:text-white hover:bg-white/10"
+                    className={`relative px-2.5 2xl:px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${isActive ? "text-white" : "text-slate-300 hover:text-white hover:bg-white/10"
                       }`}
                   >
                     {isActive && (
@@ -264,7 +266,7 @@ const Navbar = () => {
               <div className="relative" ref={moreRef}>
                 <button
                   onClick={() => setMoreOpen((p) => !p)}
-                  className={`relative flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all duration-200 ${isMoreActive || moreOpen
+                  className={`relative flex items-center gap-1 px-2.5 2xl:px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all duration-200 whitespace-nowrap ${isMoreActive || moreOpen
                     ? "text-white bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(0,210,255,0.5)]"
                     : "text-slate-300 hover:text-white hover:bg-white/10"
                     }`}
@@ -338,15 +340,16 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
-            </nav>
 
-            {/* Right Action Buttons */}
-            <div className="flex absolute right-4 sm:right-8 md:right-12 items-center gap-1.5 sm:gap-2">
+              {/* Subtle Elegant Separator */}
+              <div className="w-[1px] h-4 bg-white/20 mx-1 shrink-0" />
+
+              {/* Action Buttons */}
               <a
                 href="http://aectsd2027.srecieee.org/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-400 hover:to-orange-500 transition-all shadow-md active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-xs uppercase tracking-wider hover:from-amber-400 hover:to-orange-500 transition-all shadow-md active:scale-95 whitespace-nowrap shrink-0"
               >
                 <Sparkles size={13} className="animate-pulse" />
                 <span>AECTSD 2027</span>
@@ -354,7 +357,7 @@ const Navbar = () => {
 
               <Link
                 to="/student-login"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95 shadow-[0_0_15px_rgba(0,210,255,0.2)]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95 shadow-[0_0_15px_rgba(0,210,255,0.2)] whitespace-nowrap shrink-0"
               >
                 <IdCard size={13} className="text-cyan-400" />
                 <span>Member Portal</span>
@@ -362,12 +365,12 @@ const Navbar = () => {
 
               <Link
                 to="/admin-login"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95 whitespace-nowrap shrink-0"
               >
                 <Shield size={13} className="text-cyan-400" />
                 <span>Admin</span>
               </Link>
-            </div>
+            </nav>
 
           </div>
         </div>
@@ -521,6 +524,34 @@ const Navbar = () => {
                   </div>
                   <ExternalLink size={16} className="text-slate-950" />
                 </motion.a>
+
+                {/* Dedicated SREC Mobile App Hub */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.32 }}
+                >
+                  <Link
+                    to="/app"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-cyan-600/90 via-blue-600/90 to-indigo-600/90 backdrop-blur-2xl border border-cyan-300/50 text-white font-bold active:scale-[0.98] transition-all shadow-[0_0_25px_rgba(0,210,255,0.3)]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-xl bg-white/20 text-white shadow-sm">
+                        <Smartphone size={18} />
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
+                          Dedicated Mobile App
+                        </p>
+                        <p className="text-[9px] text-cyan-100 font-medium tracking-wide mt-1">
+                          Native app, Member table, 3D ID &amp; all pages
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-white" />
+                  </Link>
+                </motion.div>
 
                 {/* Student Member Login & Digital ID */}
                 <motion.div
