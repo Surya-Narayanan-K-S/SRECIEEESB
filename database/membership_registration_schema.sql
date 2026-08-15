@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS student_members (
     last_name TEXT NOT NULL,
     phone TEXT,
     gender TEXT,
+    tshirt_size TEXT DEFAULT 'L',
     avatar_url TEXT,
     
     -- Academic & Membership Details
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS student_members (
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS password TEXT DEFAULT 'srecieee@1234';
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS security_pin TEXT DEFAULT '1234';
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS gender TEXT;
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS tshirt_size TEXT DEFAULT 'L';
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS designation TEXT DEFAULT 'Student Member';
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS applicant_type TEXT DEFAULT 'undergraduate';
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS membership_type TEXT DEFAULT 'new';

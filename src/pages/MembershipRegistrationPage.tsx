@@ -178,6 +178,7 @@ const MembershipRegistrationPage = () => {
   const [yearOfStudy, setYearOfStudy] = useState("");
   const [gender, setGender] = useState("");
   const [designation, setDesignation] = useState("");
+  const [tshirtSize, setTshirtSize] = useState("L");
 
   // Avatar / Member Photo State
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -455,7 +456,7 @@ const MembershipRegistrationPage = () => {
 
     try {
       // Formatted statement of purpose including extra metadata safely
-      const enrichedSop = `[Type: ${membershipType.toUpperCase()}] [Societies: ${selectedSocieties.join(", ")}] ${ieeeMemberId ? `[IEEE ID: ${ieeeMemberId}] ` : ''}${phone ? `[Phone: ${phone}] ` : ''}${rollNumber ? `[Roll No: ${rollNumber}] ` : ''}${transactionRef ? `[Txn Ref: ${transactionRef}] ` : ''}\n\nStatement of Purpose: ${sop || 'N/A'}`;
+      const enrichedSop = `[Type: ${membershipType.toUpperCase()}] [Societies: ${selectedSocieties.join(", ")}] [T-Shirt: ${tshirtSize}] ${ieeeMemberId ? `[IEEE ID: ${ieeeMemberId}] ` : ''}${phone ? `[Phone: ${phone}] ` : ''}${rollNumber ? `[Roll No: ${rollNumber}] ` : ''}${transactionRef ? `[Txn Ref: ${transactionRef}] ` : ''}\n\nStatement of Purpose: ${sop || 'N/A'}`;
 
       // 1. Insert into applications table
       const { error: appError } = await supabase.from('applications').insert([
@@ -517,6 +518,7 @@ const MembershipRegistrationPage = () => {
         department: department,
         year_of_study: yearOfStudy,
         gender: gender || "",
+        tshirt_size: tshirtSize || "L",
         designation: designation || (applicantType === "professional" ? "Professional Member" : "Student Member"),
         applicant_type: applicantType || "undergraduate",
         membership_type: membershipType,
@@ -1240,11 +1242,11 @@ const MembershipRegistrationPage = () => {
                           </div>
                         </div>
 
-                        {/* WhatsApp Mobile No & Gender */}
-                        <div className="grid sm:grid-cols-2 gap-6">
+                        {/* WhatsApp Mobile No, Gender & T-Shirt Size (Swag Kit) */}
+                        <div className="grid sm:grid-cols-3 gap-6">
                           <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                              <Phone size={14} className="text-[#00629b]" /> WhatsApp Mobile No. <span className="text-red-500">*</span>
+                              <Phone size={14} className="text-[#00629b]" /> WhatsApp Mobile <span className="text-red-500">*</span>
                             </label>
                             <input
                               required
@@ -1255,6 +1257,7 @@ const MembershipRegistrationPage = () => {
                               className="w-full rounded-xl custom-input-field px-4 py-3.5 text-sm font-medium"
                             />
                           </div>
+
                           <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                               <User size={14} className="text-[#00629b]" /> Gender
@@ -1268,6 +1271,25 @@ const MembershipRegistrationPage = () => {
                               <option value="Male">Male</option>
                               <option value="Female">Female</option>
                               <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                              <Sparkles size={14} className="text-[#00629b]" /> T-Shirt Size (Kit) <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              required
+                              value={tshirtSize}
+                              onChange={(e) => setTshirtSize(e.target.value)}
+                              className="w-full rounded-xl custom-input-field px-4 py-3.5 text-sm font-medium cursor-pointer font-bold text-slate-900"
+                            >
+                              <option value="S">S (38 in / Small)</option>
+                              <option value="M">M (40 in / Medium)</option>
+                              <option value="L">L (42 in / Large)</option>
+                              <option value="XL">XL (44 in / Extra Large)</option>
+                              <option value="XXL">XXL (46 in / Double XL)</option>
+                              <option value="3XL">3XL (48 in / 3XL)</option>
                             </select>
                           </div>
                         </div>
