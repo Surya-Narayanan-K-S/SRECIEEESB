@@ -471,16 +471,16 @@ const SEED_MEMBERS: StudentMember[] = [
   }
 ];
 
-// Societies Data
+// Societies Data with Exact Real IEEE Student Membership Pricing
 const SOCIETIES_DATA = [
-  { id: "srec", code: "IEEE SB SREC", name: "IEEE Student Branch SREC", logo: srecLogo, category: "Parent Branch", advisor: "Dr. K. Balamurugan", chair: "S Darshan", members: "180+", feeUSD: "$7.00", badge: "Core Chapter", href: "/societies/srec", description: "Main governing student branch offering access to all section activities and IEEE benefits." },
-  { id: "cs", code: "CS", name: "IEEE Computer Society", logo: csLogo, category: "Computing & Software", advisor: "Dr. S. Hariharan", chair: "R Vishnu Kaarthik", members: "95+", feeUSD: "$8.00", badge: "Most Popular", href: "/societies/cs", description: "Premier technical community for computing, software systems, algorithms, and AI." },
-  { id: "cis", code: "CIS", name: "Computational Intelligence Society", logo: cisLogo, category: "AI & Deep Learning", advisor: "Dr. R. Kingsy Grace", chair: "D Akshaya Dharun", members: "60+", feeUSD: "$4.00", badge: "AI Frontier", href: "/societies/cis", description: "Focusing on neural networks, evolutionary computing, fuzzy logic, and deep learning." },
-  { id: "comsoc", code: "ComSoc", name: "Communication Society", logo: comsocLogo, category: "5G & Telecommunications", advisor: "Dr. M. Kathirvelu", chair: "S Deepak", members: "50+", feeUSD: "$1.00", badge: "Next-Gen Comms", href: "/societies/comsoc", description: "Connecting engineers in telecommunications, optical networking, 5G/6G, and RF." },
-  { id: "embs", code: "EMBS", name: "Engineering in Medicine & Biology", logo: embsLogo, category: "Biotech & Healthcare", advisor: "Dr. J. S. Prasath", chair: "V Smrthikha", members: "45+", feeUSD: "$1.00", badge: "HealthTech", href: "/societies/embs", description: "Bridging engineering with medical sciences, healthcare instrumentation, and biosensors." },
-  { id: "pels", code: "PELS", name: "Power Electronics Society", logo: pelsLogo, category: "EV & Green Energy", advisor: "Dr. C. Kathirvel", chair: "S Darshan", members: "55+", feeUSD: "$2.00", badge: "Clean Tech", href: "/societies/pels", description: "Dedicated to power conversion, renewable energy grids, motor drives, and EV systems." },
-  { id: "im", code: "IM", name: "Instrumentation & Measurement", logo: imLogo, category: "Sensors & Precision", advisor: "Dr. S. Mythili", chair: "Nithin Annamalai R", members: "40+", feeUSD: "$1.00", badge: "Smart Sensors", href: "/societies/im", description: "Advancing precision sensors, automated testing, smart instrumentation, and metrology." },
-  { id: "wie", code: "WIE", name: "Women in Engineering Affinity Group", logo: wieLogo, category: "Diversity & STEM", advisor: "Dr. N. Saranya", chair: "D Jennifer Shobha", members: "110+", feeUSD: "$0.00 (FREE)", badge: "Empowerment", href: "/societies/wie", description: "Global network inspiring, encouraging, and empowering women in engineering." }
+  { id: "srec", code: "IEEE SB SREC", name: "IEEE Student Branch SREC", logo: srecLogo, category: "Parent Branch", advisor: "Dr. K. Balamurugan", chair: "S Darshan", members: "180+", feeUSD: "$7.00 USD (≈ ₹580)", badge: "Core Chapter", href: "/societies/srec", description: "Primary membership giving full access to all SB flagship events, workshops, and IEEE global portal." },
+  { id: "cs", code: "CS", name: "IEEE Computer Society", logo: csLogo, category: "Computing & Software", advisor: "Dr. S. Hariharan", chair: "R Vishnu Kaarthik", members: "95+", feeUSD: "$8.00 USD (≈ ₹664)", badge: "Most Popular", href: "/societies/cs", description: "Premier technical community for computing, software systems, algorithms, cybersecurity, and AI." },
+  { id: "cis", code: "CIS", name: "Computational Intelligence Society", logo: cisLogo, category: "AI & Deep Learning", advisor: "Dr. R. Kingsy Grace", chair: "D Akshaya Dharun", members: "60+", feeUSD: "$4.00 USD (≈ ₹332)", badge: "AI Frontier", href: "/societies/cis", description: "Focusing on neural networks, evolutionary computing, fuzzy logic, deep learning, and intelligent agents." },
+  { id: "comsoc", code: "ComSoc", name: "Communication Society", logo: comsocLogo, category: "5G & Telecommunications", advisor: "Dr. M. Kathirvelu", chair: "S Deepak", members: "50+", feeUSD: "$1.00 USD (≈ ₹83)", badge: "Next-Gen Comms", href: "/societies/comsoc", description: "Connecting engineers in telecommunications, optical networking, 5G/6G, and RF wireless protocols." },
+  { id: "embs", code: "EMBS", name: "Engineering in Medicine & Biology", logo: embsLogo, category: "Biotech & Healthcare", advisor: "Dr. J. S. Prasath", chair: "V Smrthikha", members: "45+", feeUSD: "$1.00 USD (≈ ₹83)", badge: "HealthTech", href: "/societies/embs", description: "Bridging engineering with medical sciences, healthcare instrumentation, bioinformatics, and biosensors." },
+  { id: "pels", code: "PELS", name: "Power Electronics Society", logo: pelsLogo, category: "EV & Green Energy", advisor: "Dr. C. Kathirvel", chair: "S Darshan", members: "55+", feeUSD: "$5.00 USD (≈ ₹415)", badge: "Clean Tech", href: "/societies/pels", description: "Dedicated to power conversion, renewable energy grids, motor drives, EV systems, and power chips." },
+  { id: "im", code: "IM", name: "Instrumentation & Measurement", logo: imLogo, category: "Sensors & Precision", advisor: "Dr. S. Mythili", chair: "Nithin Annamalai R", members: "40+", feeUSD: "$5.00 USD (≈ ₹415)", badge: "Smart Sensors", href: "/societies/im", description: "Advancing precision sensors, automated testing, smart instrumentation, calibration, and metrology." },
+  { id: "wie", code: "WIE", name: "Women in Engineering Affinity Group", logo: wieLogo, category: "Diversity & STEM", advisor: "Dr. N. Saranya", chair: "D Jennifer Shobha", members: "110+", feeUSD: "$0.00 (FREE for Students)", badge: "Empowerment", href: "/societies/wie", description: "Global network inspiring, encouraging, and empowering women scientists and engineers in STEM." }
 ];
 
 // Past Bearers Data
@@ -529,6 +529,123 @@ const CONTACT_DIRECTORY = [
   { title: "Campus Location", contact: "Sri Ramakrishna Engineering College", detail: "Vattamalaipalayam, NGGO Colony, Coimbatore - 641022", email: "info@srec.ac.in" }
 ];
 
+// Rich Events & Activities Directory for Mobile App
+export interface IEEEEventItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: "Conference" | "Symposium" | "Hackathon" | "Workshop" | "Celebration" | "Outreach";
+  date: string;
+  time: string;
+  venue: string;
+  society: string;
+  badge: string;
+  status: "Upcoming" | "Active" | "Completed";
+  color: string;
+  image: string;
+  link: string;
+  description: string;
+}
+
+const EVENTS_DATA: IEEEEventItem[] = [
+  {
+    id: "aectsd-2027",
+    title: "AECTSD 2027: International Conference",
+    subtitle: "Advances in Electrical, Communication & Thermal Systems for Sustainable Development",
+    category: "Conference",
+    date: "Feb 18-20, 2027",
+    time: "09:00 AM - 05:30 PM",
+    venue: "SREC Main Auditorium & Mechanical Seminar Hall",
+    society: "IEEE SREC SB",
+    badge: "Flagship 2027",
+    status: "Upcoming",
+    color: "from-amber-500 to-red-500",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80",
+    link: "http://aectsd2027.srecieee.org/",
+    description: "Premier IEEE international conference featuring keynote researchers from NUS Singapore, IIT Madras, and international power engineers."
+  },
+  {
+    id: "visionx-2025",
+    title: "VisionX 2025: National Level Technical Symposium",
+    subtitle: "AI Hackathons, Paper Presentations, Web Dev & Coding Wars",
+    category: "Symposium",
+    date: "August 29, 2025",
+    time: "09:00 AM - 04:30 PM",
+    venue: "CSE & IT Department Complex",
+    society: "IEEE CS & CIS",
+    badge: "National Symposium",
+    status: "Completed",
+    color: "from-blue-600 to-cyan-500",
+    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80",
+    link: "/activities",
+    description: "Annual national tech fest hosting 800+ engineering participants across 12 inter-collegiate competitive tracks."
+  },
+  {
+    id: "ieee-xtreme",
+    title: "IEEE Xtreme 19.0: Global 24-Hour Hackathon",
+    subtitle: "World-wide virtual programming contest with 10,000+ teams",
+    category: "Hackathon",
+    date: "October 2025",
+    time: "24 Hours Continuous",
+    venue: "SREC Central Computing Labs",
+    society: "IEEE Computer Society",
+    badge: "Global Coding",
+    status: "Completed",
+    color: "from-indigo-600 to-purple-600",
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&auto=format&fit=crop&q=80",
+    link: "/activities",
+    description: "Proctored 24-hour non-stop algorithmic problem solving contest on HackerRank with worldwide IEEE ranking."
+  },
+  {
+    id: "ieee-day-2025",
+    title: "Global IEEE Day 2025 Celebrations",
+    subtitle: "Project Expo, Tech Quiz, Cake Cutting & Alumni Keynote",
+    category: "Celebration",
+    date: "October 03, 2025",
+    time: "10:00 AM - 04:00 PM",
+    venue: "SREC Campus Plaza",
+    society: "All 8 Chapters",
+    badge: "IEEE Day",
+    status: "Completed",
+    color: "from-emerald-500 to-teal-600",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80",
+    link: "/activities",
+    description: "Commemorating the first time IEEE members gathered worldwide to share technical ideas in 1884."
+  },
+  {
+    id: "smart-grid-workshop",
+    title: "Renewable Energy & EV Smart Grid Lab",
+    subtitle: "Hands-on MATLAB & Hardware Inverter Design",
+    category: "Workshop",
+    date: "January 2025",
+    time: "09:30 AM - 04:00 PM",
+    venue: "EEE Power Electronics Research Lab",
+    society: "IEEE PELS",
+    badge: "Clean Tech",
+    status: "Completed",
+    color: "from-amber-600 to-yellow-500",
+    image: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&auto=format&fit=crop&q=80",
+    link: "/societies/pels",
+    description: "Hands-on training on photovoltaic converters, battery management systems, and brushless DC motor controllers."
+  },
+  {
+    id: "wie-stem-outreach",
+    title: "WIE Star Outreach: School STEM Drive",
+    subtitle: "Inspiring Young Women Students in Science & Robotics",
+    category: "Outreach",
+    date: "February 2025",
+    time: "10:00 AM - 03:30 PM",
+    venue: "Government Higher Secondary School, Coimbatore",
+    society: "IEEE WIE",
+    badge: "Empowerment",
+    status: "Completed",
+    color: "from-pink-500 to-rose-600",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&auto=format&fit=crop&q=80",
+    link: "/societies/wie",
+    description: "Empowering 120+ school girls with fundamental science experiments, robotics kits, and coding basics."
+  }
+];
+
 // ── Card Theme Customizer ─────────────────────────────────────────────
 type CardTheme = "classic" | "cyber" | "gold" | "titanium";
 const CARD_THEMES: { id: CardTheme; name: string; gradient: string; border: string; text: string }[] = [
@@ -561,6 +678,9 @@ export const MobileAppPage: React.FC = () => {
 
   // Office Bearers Category Filter: all | leadership | core | tech_design | exec
   const [officerCategory, setOfficerCategory] = useState<string>("all");
+
+  // Events Category Filter: all | Upcoming | Symposium | Hackathon | Workshop | Celebration | Outreach
+  const [eventCategoryFilter, setEventCategoryFilter] = useState<string>("All");
 
   // View Mode toggle: "table" vs "cards"
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
@@ -1222,8 +1342,8 @@ export const MobileAppPage: React.FC = () => {
             <div className="overflow-x-auto no-scrollbar flex items-center gap-3 py-1 -mx-3 px-3">
               {[
                 { title: "Office Bearers", tag: "2026-27", color: "from-amber-400 to-orange-500", action: () => { handleTabChange("menu"); setAllPagesCategory("office-bearers"); } },
-                { title: "Digital ID", tag: "Lookup", color: "from-blue-600 to-cyan-500", action: () => handleTabChange("id") },
-                { title: "Directory", tag: "Members", color: "from-indigo-600 to-blue-500", action: () => handleTabChange("directory") },
+                { title: "Events", tag: "Flagship", color: "from-indigo-600 to-blue-500", action: () => handleTabChange("events") },
+                { title: "Digital ID", tag: "3D Card", color: "from-blue-600 to-cyan-500", action: () => handleTabChange("id") },
                 { title: "My Societies", tag: "Enrolled", color: "from-emerald-500 to-teal-600", action: () => handleTabChange("societies") },
                 { title: "Full Website", tag: "Desktop", color: "from-blue-600 to-indigo-600", link: "/" },
                 { title: "AECTSD '27", tag: "Flagship", color: "from-rose-500 to-red-600", link: "http://aectsd2027.srecieee.org/" }
@@ -1425,9 +1545,9 @@ export const MobileAppPage: React.FC = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════
-            TAB 2: MEMBER DIRECTORY TABLE (WHITE THEME)
+            TAB 2: EVENTS & ACTIVITIES (WHITE THEME)
         ════════════════════════════════════════════════════════════════════ */}
-        {activeTab === "directory" && (
+        {activeTab === "events" && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1439,187 +1559,130 @@ export const MobileAppPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Users size={16} className="text-[#002855]" />
-                    Student Members Directory
+                    <Calendar size={16} className="text-[#002855]" />
+                    Events &amp; Activities Hub
                   </h2>
                   <p className="text-[10px] text-slate-500">
-                    Showing {filteredMembers.length} verified IEEE SREC members
+                    Flagship conferences, symposiums, hackathons &amp; workshops
                   </p>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
-                  {members.length} Total
+                  {EVENTS_DATA.length} Events
                 </span>
               </div>
 
-              {/* Search input */}
-              <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search by Name, Roll No, IEEE ID, Dept..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#002855] focus:bg-white"
-                />
-              </div>
-
-              {/* Department pills */}
+              {/* Category Pills Filter */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                {["All", "Computer Science", "Electrical", "Electronics", "Biomedical", "Information Technology", "AI & Data"].map((d) => (
+                {["All", "Conference", "Symposium", "Hackathon", "Workshop", "Celebration", "Outreach"].map((cat) => (
                   <button
-                    key={d}
-                    onClick={() => setDeptFilter(d === deptFilter ? "All" : d)}
-                    className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase whitespace-nowrap transition-all ${
-                      deptFilter === d
+                    key={cat}
+                    onClick={() => setEventCategoryFilter(cat)}
+                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase whitespace-nowrap transition-all ${
+                      eventCategoryFilter === cat
                         ? "bg-[#002855] text-white shadow-sm"
-                        : "bg-slate-100 border border-slate-200 text-slate-600"
+                        : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900"
                     }`}
                   >
-                    {d}
+                    {cat === "All" ? "All Events" : cat}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* TABULAR VIEW OF MEMBERS */}
-            {viewMode === "table" ? (
-              <div className="rounded-2xl border border-slate-200/90 overflow-hidden bg-white shadow-sm">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-[520px]">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
-                        <th className="py-2.5 px-3">Member / Roll</th>
-                        <th className="py-2.5 px-3">IEEE ID</th>
-                        <th className="py-2.5 px-3">Department &amp; Year</th>
-                        <th className="py-2.5 px-3 text-center">Status</th>
-                        <th className="py-2.5 px-3 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-xs">
-                      {filteredMembers.map((member) => (
-                        <tr
-                          key={member.id}
-                          className="hover:bg-blue-50/50 transition-colors cursor-pointer"
-                          onClick={() => {
-                            setSelectedMember(member);
-                            handleTabChange("id");
-                          }}
-                        >
-                          <td className="py-2.5 px-3">
-                            <div className="flex items-center gap-2">
-                              <img
-                                src={member.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"}
-                                alt={member.first_name}
-                                className="w-7 h-7 rounded-full object-cover border border-slate-200"
-                              />
-                              <div>
-                                <p className="font-extrabold text-slate-900 leading-tight">
-                                  {member.first_name} {member.last_name}
-                                </p>
-                                <p className="text-[10px] text-[#002855] font-mono font-bold">
-                                  {member.roll_number}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600 font-bold">
-                            {member.ieee_id}
-                          </td>
-                          <td className="py-2.5 px-3">
-                            <p className="text-[11px] text-slate-800 font-medium truncate max-w-[150px]">
-                              {member.department}
-                            </p>
-                            <p className="text-[9px] text-slate-400">{member.year_of_study}</p>
-                          </td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-black border border-emerald-200">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              ACTIVE
-                            </span>
-                          </td>
-                          <td className="py-2.5 px-3 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDetailModalMember(member);
-                                }}
-                                className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600"
-                                title="View Dossier"
-                              >
-                                <Info size={13} />
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedMember(member);
-                                  handleTabChange("id");
-                                }}
-                                className="px-2 py-1 rounded-lg bg-[#002855] text-white font-bold text-[9px] uppercase hover:bg-[#001c3d] flex items-center gap-1"
-                              >
-                                <IdCard size={11} /> ID
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              /* CARD VIEW */
-              <div className="space-y-2.5">
-                {filteredMembers.map((member) => (
-                  <div
-                    key={member.id}
-                    onClick={() => {
-                      setSelectedMember(member);
-                      handleTabChange("id");
-                    }}
-                    className="p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-[#002855]/40 shadow-sm cursor-pointer active:scale-[0.99] transition-all"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={member.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120"}
-                          alt={member.first_name}
-                          className="w-11 h-11 rounded-2xl object-cover border border-slate-200 shadow-sm"
-                        />
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <h3 className="font-extrabold text-slate-900 text-sm">
-                              {member.first_name} {member.last_name}
-                            </h3>
-                            <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 text-[8px] font-black border border-emerald-200">
-                              ACTIVE
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-[#002855] font-mono font-bold">
-                            {member.roll_number} · IEEE #{member.ieee_id}
-                          </p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">
-                            {member.department} ({member.year_of_study})
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight size={16} className="text-slate-400" />
+            {/* Events Card Grid */}
+            <div className="space-y-3">
+              {EVENTS_DATA.filter((e) =>
+                eventCategoryFilter === "All" ? true : e.category === eventCategoryFilter
+              ).map((event) => (
+                <div
+                  key={event.id}
+                  className="rounded-3xl bg-white border border-slate-200/90 shadow-sm overflow-hidden flex flex-col hover:border-[#002855]/40 transition-all group"
+                >
+                  {/* Event Banner Image with Badges */}
+                  <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-slate-900">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30" />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-slate-900 text-[9px] font-black uppercase tracking-wider shadow-sm">
+                        {event.badge}
+                      </span>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md ${
+                          event.status === "Upcoming"
+                            ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
+                            : "bg-emerald-500/90 text-white"
+                        }`}
+                      >
+                        {event.status}
+                      </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1 mt-2.5 pt-2 border-t border-slate-100">
-                      {member.target_societies.map((s, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-0.5 rounded-lg bg-slate-100 text-[9px] text-slate-700 font-medium"
-                        >
-                          {s}
-                        </span>
-                      ))}
+                    {/* Bottom Title on Image */}
+                    <div className="absolute bottom-2.5 left-3 right-3">
+                      <span className="text-[9px] font-bold text-sky-200 uppercase tracking-widest block">
+                        {event.society}
+                      </span>
+                      <h3 className="text-sm sm:text-base font-black text-white leading-tight drop-shadow truncate">
+                        {event.title}
+                      </h3>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
+
+                  {/* Event Details Content */}
+                  <div className="p-3.5 space-y-2.5">
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {event.description}
+                    </p>
+
+                    {/* Schedule & Venue Meta */}
+                    <div className="grid grid-cols-2 gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-[10px]">
+                      <div>
+                        <span className="text-slate-400 font-bold uppercase block text-[8.5px]">Date &amp; Time</span>
+                        <span className="font-bold text-slate-900 leading-tight block">{event.date}</span>
+                        <span className="text-slate-500 text-[9px]">{event.time}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 font-bold uppercase block text-[8.5px]">Location</span>
+                        <span className="font-semibold text-slate-800 leading-tight line-clamp-2">{event.venue}</span>
+                      </div>
+                    </div>
+
+                    {/* Action Bar */}
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[10px] font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                        {event.category}
+                      </span>
+
+                      {event.link.startsWith("http") ? (
+                        <a
+                          href={event.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase shadow-sm active:scale-95 transition-all"
+                        >
+                          <span>Conference Portal</span>
+                          <ExternalLink size={12} />
+                        </a>
+                      ) : (
+                        <button
+                          onClick={() => navigate(event.link)}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase shadow-sm active:scale-95 transition-all"
+                        >
+                          <span>Explore Details</span>
+                          <ArrowRight size={12} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </motion.div>
         )}
 
@@ -3072,49 +3135,83 @@ export const MobileAppPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Technical Societies Selector */}
+                {/* Technical Societies Selector with Real Prices & Total Live Calculation */}
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1.5">
-                    Select Technical Societies
-                  </label>
-                  <div className="grid grid-cols-2 gap-1.5 max-h-28 overflow-y-auto p-2 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-700">
+                      Select Societies to Enroll ({regForm.selectedSocieties.length} Selected)
+                    </label>
+                    <span className="text-[10px] font-mono font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                      Total: ${
+                        regForm.selectedSocieties.reduce((acc, name) => {
+                          if (name.includes("Student Branch")) return acc + 7;
+                          if (name.includes("Computer Society")) return acc + 8;
+                          if (name.includes("Computational Intelligence")) return acc + 4;
+                          if (name.includes("Communication Society")) return acc + 1;
+                          if (name.includes("Medicine and Biology")) return acc + 1;
+                          if (name.includes("Power Electronics")) return acc + 5;
+                          if (name.includes("Instrumentation")) return acc + 5;
+                          return acc;
+                        }, 0)
+                      } USD (≈ ₹{
+                        regForm.selectedSocieties.reduce((acc, name) => {
+                          if (name.includes("Student Branch")) return acc + 7;
+                          if (name.includes("Computer Society")) return acc + 8;
+                          if (name.includes("Computational Intelligence")) return acc + 4;
+                          if (name.includes("Communication Society")) return acc + 1;
+                          if (name.includes("Medicine and Biology")) return acc + 1;
+                          if (name.includes("Power Electronics")) return acc + 5;
+                          if (name.includes("Instrumentation")) return acc + 5;
+                          return acc;
+                        }, 0) * 83
+                      })
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-2xl bg-slate-50 border border-slate-200">
                     {[
-                      "IEEE Student Branch SREC",
-                      "IEEE Computer Society (CS)",
-                      "IEEE Women in Engineering (WIE)",
-                      "IEEE Computational Intelligence Society (CIS)",
-                      "IEEE Communication Society (ComSoc)",
-                      "IEEE Engineering in Medicine and Biology (EMBS)",
-                      "IEEE Power Electronics Society (PELS)",
-                      "IEEE Instrumentation and Measurement (IM)"
+                      { id: "IEEE Student Branch SREC", name: "IEEE Student Branch SREC", fee: "$7 (Base)", mandatory: true },
+                      { id: "IEEE Women in Engineering (WIE)", name: "IEEE Women in Engineering (WIE)", fee: "FREE ($0)" },
+                      { id: "IEEE Computer Society (CS)", name: "IEEE Computer Society (CS)", fee: "+$8 USD" },
+                      { id: "IEEE Computational Intelligence Society (CIS)", name: "IEEE Computational Intelligence (CIS)", fee: "+$4 USD" },
+                      { id: "IEEE Communication Society (ComSoc)", name: "IEEE Communication Society (ComSoc)", fee: "+$1 USD" },
+                      { id: "IEEE Engineering in Medicine and Biology (EMBS)", name: "IEEE EMBS (MedTech)", fee: "+$1 USD" },
+                      { id: "IEEE Power Electronics Society (PELS)", name: "IEEE Power Electronics (PELS)", fee: "+$5 USD" },
+                      { id: "IEEE Instrumentation and Measurement (IM)", name: "IEEE Instrumentation (IM)", fee: "+$5 USD" }
                     ].map((soc) => {
-                      const isChecked = regForm.selectedSocieties.includes(soc);
+                      const isChecked = regForm.selectedSocieties.includes(soc.id);
                       return (
                         <label
-                          key={soc}
-                          className={`flex items-center gap-1.5 p-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-all ${
-                            isChecked ? "bg-blue-100/80 text-[#002855]" : "text-slate-600 hover:bg-slate-100"
+                          key={soc.id}
+                          className={`flex items-center justify-between p-2 rounded-xl text-xs font-bold cursor-pointer transition-all border ${
+                            isChecked ? "bg-blue-50 border-[#002855] text-[#002855] shadow-xs" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"
                           }`}
                         >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setRegForm({
-                                  ...regForm,
-                                  selectedSocieties: [...regForm.selectedSocieties, soc]
-                                });
-                              } else {
-                                setRegForm({
-                                  ...regForm,
-                                  selectedSocieties: regForm.selectedSocieties.filter((s) => s !== soc)
-                                });
-                              }
-                            }}
-                            className="rounded border-slate-300 text-[#002855] focus:ring-0"
-                          />
-                          <span className="truncate">{soc.replace("IEEE ", "")}</span>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              disabled={soc.mandatory}
+                              onChange={(e) => {
+                                if (soc.mandatory) return;
+                                if (e.target.checked) {
+                                  setRegForm({
+                                    ...regForm,
+                                    selectedSocieties: [...regForm.selectedSocieties, soc.id]
+                                  });
+                                } else {
+                                  setRegForm({
+                                    ...regForm,
+                                    selectedSocieties: regForm.selectedSocieties.filter((s) => s !== soc.id)
+                                  });
+                                }
+                              }}
+                              className="rounded border-slate-300 text-[#002855] focus:ring-0"
+                            />
+                            <span className="truncate text-[11px]">{soc.name.replace("IEEE ", "")}</span>
+                          </div>
+                          <span className="text-[9px] font-mono font-black px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 shrink-0">
+                            {soc.fee}
+                          </span>
                         </label>
                       );
                     })}

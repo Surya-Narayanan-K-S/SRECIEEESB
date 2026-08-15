@@ -1,8 +1,8 @@
 import React from "react";
-import { Home, Users, IdCard, Cpu, LayoutGrid } from "lucide-react";
+import { Home, Calendar, IdCard, Cpu, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 
-export type MobileTabType = "home" | "directory" | "id" | "societies" | "menu";
+export type MobileTabType = "home" | "events" | "id" | "societies" | "menu";
 
 interface MobileBottomNavProps {
   activeTab: MobileTabType;
@@ -12,7 +12,7 @@ interface MobileBottomNavProps {
 
 const NAV_ITEMS: { id: MobileTabType; label: string; icon: React.ElementType }[] = [
   { id: "home", label: "Home", icon: Home },
-  { id: "directory", label: "Members", icon: Users },
+  { id: "events", label: "Events", icon: Calendar },
   { id: "id", label: "My ID", icon: IdCard },
   { id: "societies", label: "Societies", icon: Cpu },
   { id: "menu", label: "All Pages", icon: LayoutGrid },

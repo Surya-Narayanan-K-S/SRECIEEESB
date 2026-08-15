@@ -492,26 +492,21 @@ const StudentLoginPage = () => {
 
   const currentThemeObj = CARD_THEMES.find((t) => t.id === selectedTheme) || CARD_THEMES[0];
 
-  function copyText(ieee_id: string, arg1: string): void {
-    throw new Error("Function not implemented.");
-  }
+  const copyText = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   return (
-    <div className="min-h-screen bg-[#000814] text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col font-sans selection:bg-[#002855] selection:text-white">
       <Navbar />
 
-      {/* Decorative Cyber Grid & Radial Glows */}
+      {/* Decorative Subtle Ambient Glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px]" />
-        <div className="absolute top-1/3 -right-40 w-[550px] h-[550px] bg-blue-600/15 rounded-full blur-[160px]" />
-        <div className="absolute -bottom-40 left-1/4 w-[700px] h-[700px] bg-indigo-600/10 rounded-full blur-[180px]" />
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(#00d2ff 1px, transparent 1px)`,
-            backgroundSize: "32px 32px"
-          }}
-        />
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 -right-40 w-[550px] h-[550px] bg-indigo-500/5 rounded-full blur-[160px]" />
+        <div className="absolute -bottom-40 left-1/4 w-[700px] h-[700px] bg-sky-500/5 rounded-full blur-[180px]" />
       </div>
 
       <main className="relative z-10 flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-10 pt-6 pb-20">
@@ -522,34 +517,35 @@ const StudentLoginPage = () => {
 
             {/* Header Title Section */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-black uppercase tracking-widest mb-4 shadow-[0_0_20px_rgba(0,210,255,0.2)]">
-                <ShieldCheck size={15} className="text-cyan-400" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-xs font-black uppercase tracking-widest mb-4 shadow-sm">
+                <ShieldCheck size={15} className="text-[#002855]" />
                 <span>IEEE SREC · Member Authentication Hub</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
-                Student <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Member Portal</span>
+              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight uppercase">
+                Student <span className="bg-gradient-to-r from-[#002855] via-[#004b87] to-[#0072ce] bg-clip-text text-transparent">Member Portal</span>
               </h1>
-              <p className="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto mt-2">
+              <p className="text-slate-500 text-xs sm:text-sm max-w-lg mx-auto mt-2 font-medium">
                 Sign in with your IEEE Membership ID / Roll Number and Password to access your official holographic 3D Digital ID Card.
               </p>
             </div>
 
             {/* Auth Box with Sign In / Register Tab Toggle */}
-            <div className="bg-[#001026]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#002855] via-[#00629b] to-sky-500" />
 
               {/* Mode Toggle Tabs */}
-              <div className="grid grid-cols-2 p-1 bg-[#000814] rounded-2xl border border-slate-800 mb-6">
+              <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200 mb-6">
                 <button
                   type="button"
                   onClick={() => {
                     setAuthMode("login");
                     setLoginError(null);
                   }}
-                  className={`py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${authMode === "login"
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
-                      : "text-slate-400 hover:text-white"
-                    }`}
+                  className={`py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                    authMode === "login"
+                      ? "bg-[#002855] text-white shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
                   <Lock size={15} />
                   <span>Member Sign In</span>
@@ -561,10 +557,11 @@ const StudentLoginPage = () => {
                     setAuthMode("register");
                     setLoginError(null);
                   }}
-                  className={`py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${authMode === "register"
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
-                      : "text-slate-400 hover:text-white"
-                    }`}
+                  className={`py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                    authMode === "register"
+                      ? "bg-[#002855] text-white shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
                   <User size={15} />
                   <span>Register as Member</span>
@@ -575,38 +572,38 @@ const StudentLoginPage = () => {
               {authMode === "login" && (
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2">
-                      IEEE Member ID / SREC Roll Number / Email
+                    <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-2">
+                      IEEE Member ID / SREC Roll Number / Email *
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <User size={18} className="text-cyan-400" />
+                        <User size={18} className="text-[#002855]" />
                       </div>
                       <input
                         type="text"
                         value={loginInput}
                         onChange={(e) => setLoginInput(e.target.value)}
                         placeholder="e.g. 98421045 or 23EE104"
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#000814]/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-sm font-medium transition-all"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#002855] focus:ring-2 focus:ring-blue-500/10 text-sm font-medium transition-all"
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2">
-                      Password / Security PIN
+                    <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-2">
+                      Password / Security PIN *
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Lock size={18} className="text-cyan-400" />
+                        <Lock size={18} className="text-[#002855]" />
                       </div>
                       <input
                         type="password"
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="Enter your password / PIN"
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#000814]/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-sm font-medium transition-all"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#002855] focus:ring-2 focus:ring-blue-500/10 text-sm font-medium transition-all"
                         required
                       />
                     </div>
@@ -616,7 +613,7 @@ const StudentLoginPage = () => {
                     <motion.div
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-3.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium flex items-center gap-2"
+                      className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2"
                     >
                       <span>⚠️</span>
                       <span>{loginError}</span>
@@ -626,11 +623,11 @@ const StudentLoginPage = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(0,210,255,0.4)] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#002855] via-[#003870] to-[#00629b] hover:from-[#001c3d] hover:to-[#004b87] text-white font-black text-sm uppercase tracking-wider shadow-md transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
                   >
                     {isLoading ? (
                       <>
-                        <RotateCw size={18} className="animate-spin text-slate-950" />
+                        <RotateCw size={18} className="animate-spin text-white" />
                         <span>Verifying Credentials...</span>
                       </>
                     ) : (
@@ -648,7 +645,7 @@ const StudentLoginPage = () => {
                 <form onSubmit={handleRegisterMember} className="space-y-3.5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         First Name *
                       </label>
                       <input
@@ -656,12 +653,12 @@ const StudentLoginPage = () => {
                         value={regFirstName}
                         onChange={(e) => setRegFirstName(e.target.value)}
                         placeholder="e.g. Rahul"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         Last Name *
                       </label>
                       <input
@@ -669,7 +666,7 @@ const StudentLoginPage = () => {
                         value={regLastName}
                         onChange={(e) => setRegLastName(e.target.value)}
                         placeholder="e.g. Sharma"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                         required
                       />
                     </div>
@@ -677,7 +674,7 @@ const StudentLoginPage = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         SREC Roll Number *
                       </label>
                       <input
@@ -685,27 +682,28 @@ const StudentLoginPage = () => {
                         value={regRollNo}
                         onChange={(e) => setRegRollNo(e.target.value)}
                         placeholder="e.g. 23EE105"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none uppercase"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none uppercase"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
-                        IEEE Member ID (Optional)
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
+                        IEEE Member ID * (Mandatory)
                       </label>
                       <input
                         type="text"
                         value={regIeeeId}
                         onChange={(e) => setRegIeeeId(e.target.value)}
                         placeholder="e.g. 98421045"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
+                        required
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         College Email *
                       </label>
                       <input
@@ -713,12 +711,12 @@ const StudentLoginPage = () => {
                         value={regEmail}
                         onChange={(e) => setRegEmail(e.target.value)}
                         placeholder="e.g. student.230105@srec.ac.in"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         Phone Number
                       </label>
                       <input
@@ -726,20 +724,20 @@ const StudentLoginPage = () => {
                         value={regPhone}
                         onChange={(e) => setRegPhone(e.target.value)}
                         placeholder="+91 98765 43210"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         Department
                       </label>
                       <select
                         value={regDept}
                         onChange={(e) => setRegDept(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                       >
                         <option value="Electrical & Electronics Engineering">Electrical & Electronics (EEE)</option>
                         <option value="Computer Science & Engineering">Computer Science (CSE)</option>
@@ -751,13 +749,13 @@ const StudentLoginPage = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                         Year of Study
                       </label>
                       <select
                         value={regYear}
                         onChange={(e) => setRegYear(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                       >
                         <option value="I Year (2025-2029)">I Year (2025-2029)</option>
                         <option value="II Year (2024-2028)">II Year (2024-2028)</option>
@@ -767,8 +765,85 @@ const StudentLoginPage = () => {
                     </div>
                   </div>
 
+                  {/* Technical Societies Selector with Real Prices & Live Total Calculation */}
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700">
+                        Select Societies to Enroll ({regSocieties.length} Selected)
+                      </label>
+                      <span className="text-[10px] font-mono font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                        Total: ${
+                          regSocieties.reduce((acc, name) => {
+                            if (name.includes("Student Branch")) return acc + 7;
+                            if (name.includes("Computer Society")) return acc + 8;
+                            if (name.includes("Computational Intelligence")) return acc + 4;
+                            if (name.includes("Communication Society")) return acc + 1;
+                            if (name.includes("Medicine and Biology")) return acc + 1;
+                            if (name.includes("Power Electronics")) return acc + 5;
+                            if (name.includes("Instrumentation")) return acc + 5;
+                            return acc;
+                          }, 0)
+                        } USD (≈ ₹{
+                          regSocieties.reduce((acc, name) => {
+                            if (name.includes("Student Branch")) return acc + 7;
+                            if (name.includes("Computer Society")) return acc + 8;
+                            if (name.includes("Computational Intelligence")) return acc + 4;
+                            if (name.includes("Communication Society")) return acc + 1;
+                            if (name.includes("Medicine and Biology")) return acc + 1;
+                            if (name.includes("Power Electronics")) return acc + 5;
+                            if (name.includes("Instrumentation")) return acc + 5;
+                            return acc;
+                          }, 0) * 83
+                        })
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-2xl bg-slate-50 border border-slate-200">
+                      {[
+                        { id: "IEEE Student Branch SREC", name: "IEEE Student Branch SREC", fee: "$7 (Base)", mandatory: true },
+                        { id: "IEEE Women in Engineering (WIE)", name: "IEEE Women in Engineering (WIE)", fee: "FREE ($0)" },
+                        { id: "IEEE Computer Society (CS)", name: "IEEE Computer Society (CS)", fee: "+$8 USD" },
+                        { id: "IEEE Computational Intelligence Society (CIS)", name: "IEEE Computational Intelligence (CIS)", fee: "+$4 USD" },
+                        { id: "IEEE Communication Society (ComSoc)", name: "IEEE Communication Society (ComSoc)", fee: "+$1 USD" },
+                        { id: "IEEE Engineering in Medicine and Biology (EMBS)", name: "IEEE EMBS (MedTech)", fee: "+$1 USD" },
+                        { id: "IEEE Power Electronics Society (PELS)", name: "IEEE Power Electronics (PELS)", fee: "+$5 USD" },
+                        { id: "IEEE Instrumentation and Measurement (IM)", name: "IEEE Instrumentation (IM)", fee: "+$5 USD" }
+                      ].map((soc) => {
+                        const isChecked = regSocieties.includes(soc.id);
+                        return (
+                          <label
+                            key={soc.id}
+                            className={`flex items-center justify-between p-2 rounded-xl text-xs font-bold cursor-pointer transition-all border ${
+                              isChecked ? "bg-blue-50 border-[#002855] text-[#002855] shadow-xs" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                disabled={soc.mandatory}
+                                onChange={(e) => {
+                                  if (soc.mandatory) return;
+                                  if (e.target.checked) {
+                                    setRegSocieties([...regSocieties, soc.id]);
+                                  } else {
+                                    setRegSocieties(regSocieties.filter((s) => s !== soc.id));
+                                  }
+                                }}
+                                className="rounded border-slate-300 text-[#002855] focus:ring-0"
+                              />
+                              <span className="truncate text-[11px]">{soc.name.replace("IEEE ", "")}</span>
+                            </div>
+                            <span className="text-[9px] font-mono font-black px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 shrink-0">
+                              {soc.fee}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
                       Create Password / PIN *
                     </label>
                     <input
@@ -776,7 +851,7 @@ const StudentLoginPage = () => {
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
                       placeholder="Create a secure password"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:border-[#002855] focus:outline-none"
                       required
                     />
                   </div>
@@ -785,7 +860,7 @@ const StudentLoginPage = () => {
                     <motion.div
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium flex items-center gap-2"
+                      className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2"
                     >
                       <span>⚠️</span>
                       <span>{loginError}</span>
@@ -795,11 +870,11 @@ const StudentLoginPage = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_30px_rgba(0,210,255,0.4)] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 mt-1"
+                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#002855] via-[#003870] to-[#00629b] hover:from-[#001c3d] hover:to-[#004b87] text-white font-black text-xs uppercase tracking-wider shadow-md transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 mt-1"
                   >
                     {isLoading ? (
                       <>
-                        <RotateCw size={16} className="animate-spin text-slate-950" />
+                        <RotateCw size={16} className="animate-spin text-white" />
                         <span>Creating Membership...</span>
                       </>
                     ) : (
@@ -821,34 +896,34 @@ const StudentLoginPage = () => {
           <div className="space-y-8 animate-fadeIn">
 
             {/* Top Member Header Bar */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 shadow-2xl">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm">
               <div className="flex items-center gap-4 min-w-0">
                 <div className="relative shrink-0">
                   <img
-                    src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=00629B&color=fff&size=512`}
+                    src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=512`}
                     alt={currentUser.first_name}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,210,255,0.4)]"
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-[#002855]/20 shadow-sm"
                   />
-                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[#001026] flex items-center justify-center text-slate-950" title="Verified Member">
+                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white" title="Verified Member">
                     <Check size={11} className="stroke-[3]" />
                   </span>
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight truncate">
+                    <h1 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight truncate">
                       {currentUser.first_name} {currentUser.last_name}
                     </h1>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10px] font-black uppercase tracking-wider">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
                       {currentUser.membership_status}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300 font-medium truncate mt-0.5">
+                  <p className="text-xs text-slate-600 font-medium truncate mt-0.5">
                     {currentUser.department} · {currentUser.year_of_study}
                   </p>
-                  <div className="flex items-center gap-3 text-xs mt-1 text-cyan-400 font-mono">
-                    <span>IEEE ID: <strong className="text-white">#{currentUser.ieee_id}</strong></span>
+                  <div className="flex items-center gap-3 text-xs mt-1 text-[#002855] font-mono font-bold">
+                    <span>IEEE ID: <strong className="text-slate-900">#{currentUser.ieee_id}</strong></span>
                     <span>•</span>
-                    <span>Roll: <strong className="text-white">{currentUser.roll_number}</strong></span>
+                    <span>Roll: <strong className="text-slate-900">{currentUser.roll_number}</strong></span>
                   </div>
                 </div>
               </div>
@@ -859,7 +934,7 @@ const StudentLoginPage = () => {
                   type="button"
                   onClick={handleDownloadCard}
                   disabled={isExporting}
-                  className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5"
                 >
                   <Download size={15} />
                   <span>{isExporting ? "Saving..." : "Download Card"}</span>
@@ -867,7 +942,7 @@ const StudentLoginPage = () => {
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
                   title="Print ID Card"
                 >
                   <Printer size={15} />
@@ -876,7 +951,7 @@ const StudentLoginPage = () => {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-3.5 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-300 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
                   title="Logout Session"
                 >
                   <LogOut size={15} />
@@ -886,7 +961,7 @@ const StudentLoginPage = () => {
             </div>
 
             {/* Dashboard Tabs */}
-            <div className="flex items-center gap-2 border-b border-cyan-500/20 pb-2 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
               {[
                 { id: "card", label: "Digital ID Card", icon: IdCard },
                 { id: "profile", label: "Academic Profile & Info", icon: User },
@@ -900,10 +975,11 @@ const StudentLoginPage = () => {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 ${isActive
-                      ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,210,255,0.4)]"
-                      : "text-slate-300 hover:text-white hover:bg-white/5"
-                      }`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 ${
+                      isActive
+                        ? "bg-[#002855] text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                    }`}
                   >
                     <Icon size={14} />
                     <span>{tab.label}</span>
@@ -921,14 +997,14 @@ const StudentLoginPage = () => {
 
                   {/* Flip Controller & Badge Controls */}
                   <div className="w-full flex items-center justify-between mb-4 px-2">
-                    <span className="text-xs font-black uppercase tracking-widest text-cyan-400 flex items-center gap-1.5">
+                    <span className="text-xs font-black uppercase tracking-widest text-[#002855] flex items-center gap-1.5">
                       <Sparkles size={14} />
                       <span>Interactive 3D Smart Card</span>
                     </span>
                     <button
                       type="button"
                       onClick={() => setIsFlipped(!isFlipped)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#002855] text-xs font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm"
                     >
                       <RotateCw size={13} className={isFlipped ? "rotate-180 transition-transform" : "transition-transform"} />
                       <span>{isFlipped ? "View Front Face" : "Flip to Back Face"}</span>
@@ -945,7 +1021,7 @@ const StudentLoginPage = () => {
                       {/* ════════ CARD FRONT FACE ════════ */}
                       <div
                         ref={!isFlipped ? cardRef : null}
-                        className={`w-full aspect-[1.58/1] rounded-3xl p-5 sm:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(0,210,255,0.25)] border ${currentThemeObj.border} bg-gradient-to-br ${currentThemeObj.gradient} text-white relative overflow-hidden flex flex-col justify-between select-none [backface-visibility:hidden]`}
+                        className={`w-full aspect-[1.58/1] rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,16,38,0.4)] border ${currentThemeObj.border} bg-gradient-to-br ${currentThemeObj.gradient} text-white relative overflow-hidden flex flex-col justify-between select-none [backface-visibility:hidden]`}
                       >
                         {/* Holographic Security Overlay Pattern */}
                         <div
@@ -982,7 +1058,7 @@ const StudentLoginPage = () => {
                           {/* Student Avatar */}
                           <div className="relative shrink-0">
                             <img
-                              src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=00629B&color=fff&size=512`}
+                              src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=512`}
                               alt={currentUser.first_name}
                               className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-white/60 shadow-md"
                             />
@@ -1040,7 +1116,7 @@ const StudentLoginPage = () => {
                       {/* ════════ CARD BACK FACE ════════ */}
                       <div
                         ref={isFlipped ? cardRef : null}
-                        className={`w-full aspect-[1.58/1] rounded-3xl p-5 sm:p-6 shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(0,210,255,0.25)] border ${currentThemeObj.border} bg-gradient-to-br ${currentThemeObj.gradient} text-white absolute inset-0 select-none [transform:rotateY(180deg)] [backface-visibility:hidden] flex flex-col justify-between overflow-hidden`}
+                        className={`w-full aspect-[1.58/1] rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,16,38,0.4)] border ${currentThemeObj.border} bg-gradient-to-br ${currentThemeObj.gradient} text-white absolute inset-0 select-none [transform:rotateY(180deg)] [backface-visibility:hidden] flex flex-col justify-between overflow-hidden`}
                       >
                         {/* Magnetic Strip Header Graphic */}
                         <div className="w-full h-7 bg-slate-950/80 -mx-6 -mt-6 mb-2 border-b border-white/10" />
@@ -1093,8 +1169,8 @@ const StudentLoginPage = () => {
                   </div>
 
                   {/* Card Customization & Theme Picker */}
-                  <div className="w-full max-w-[500px] mt-6 p-4 rounded-2xl bg-[#001026]/70 border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2.5">
+                  <div className="w-full max-w-[500px] mt-6 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 block mb-2.5">
                       🎨 Choose Card Theme Color
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1103,10 +1179,11 @@ const StudentLoginPage = () => {
                           key={theme.id}
                           type="button"
                           onClick={() => setSelectedTheme(theme.id)}
-                          className={`p-2 rounded-xl border text-left transition-all text-xs font-bold flex flex-col justify-between ${selectedTheme === theme.id
-                            ? "bg-cyan-500/20 border-cyan-400 text-white shadow-[0_0_12px_rgba(0,210,255,0.3)]"
-                            : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white"
-                            }`}
+                          className={`p-2 rounded-xl border text-left transition-all text-xs font-bold flex flex-col justify-between ${
+                            selectedTheme === theme.id
+                              ? "bg-blue-50 border-[#002855] text-[#002855] shadow-sm"
+                              : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900"
+                          }`}
                         >
                           <span className="truncate text-[10px]">{theme.name}</span>
                           <span className={`w-full h-2 rounded-full mt-1.5 bg-gradient-to-r ${theme.gradient}`} />
@@ -1119,75 +1196,75 @@ const StudentLoginPage = () => {
 
                 {/* Right (5 cols): Quick Credentials Panel */}
                 <div className="lg:col-span-5 space-y-4">
-                  <div className="bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 shadow-2xl">
-                    <h3 className="text-sm font-black uppercase tracking-wider text-white mb-4 flex items-center gap-2">
-                      <KeyRound size={16} className="text-cyan-400" />
+                  <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm">
+                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 mb-4 flex items-center gap-2">
+                      <KeyRound size={16} className="text-[#002855]" />
                       <span>Verified Member ID Summary</span>
                     </h3>
 
                     <div className="space-y-3 text-xs">
-                      <div className="p-3 rounded-2xl bg-[#000a18] border border-slate-800 flex items-center justify-between">
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">IEEE Member ID</span>
-                          <span className="font-mono text-base font-black text-white">{currentUser.ieee_id}</span>
+                          <span className="text-[10px] text-slate-500 uppercase font-black tracking-wider block">IEEE Member ID</span>
+                          <span className="font-mono text-base font-black text-[#002855]">{currentUser.ieee_id}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => copyText(currentUser.ieee_id, "id")}
-                          className="p-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 transition-all active:scale-90"
+                          className="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#002855] transition-all active:scale-90"
                           title="Copy IEEE ID"
                         >
-                          {copiedField === "id" ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                          {copiedField === "id" ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
                         </button>
                       </div>
 
-                      <div className="p-3 rounded-2xl bg-[#000a18] border border-slate-800 flex items-center justify-between">
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">SREC Roll Number</span>
-                          <span className="font-mono text-sm font-bold text-white">{currentUser.roll_number}</span>
+                          <span className="text-[10px] text-slate-500 uppercase font-black tracking-wider block">SREC Roll Number</span>
+                          <span className="font-mono text-sm font-bold text-slate-900">{currentUser.roll_number}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => copyText(currentUser.roll_number, "roll")}
-                          className="p-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 transition-all active:scale-90"
+                          className="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#002855] transition-all active:scale-90"
                           title="Copy Roll Number"
                         >
-                          {copiedField === "roll" ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                          {copiedField === "roll" ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
                         </button>
                       </div>
 
-                      <div className="p-3 rounded-2xl bg-[#000a18] border border-slate-800 flex items-center justify-between">
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">Registered Email</span>
-                          <span className="font-mono text-xs font-medium text-slate-200 truncate block max-w-[200px]">{currentUser.email}</span>
+                          <span className="text-[10px] text-slate-500 uppercase font-black tracking-wider block">Registered Email</span>
+                          <span className="font-mono text-xs font-medium text-slate-800 truncate block max-w-[200px]">{currentUser.email}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => copyText(currentUser.email, "email")}
-                          className="p-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 transition-all active:scale-90"
+                          className="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#002855] transition-all active:scale-90"
                           title="Copy Email"
                         >
-                          {copiedField === "email" ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                          {copiedField === "email" ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
                         </button>
                       </div>
 
-                      <div className="p-3 rounded-2xl bg-[#000a18] border border-slate-800 flex items-center justify-between">
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">Membership Validity</span>
-                          <span className="text-xs font-black text-emerald-300 uppercase">Valid Through {currentUser.valid_thru}</span>
+                          <span className="text-[10px] text-slate-500 uppercase font-black tracking-wider block">Membership Validity</span>
+                          <span className="text-xs font-black text-emerald-700 uppercase">Valid Through {currentUser.valid_thru}</span>
                         </div>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold text-[10px]">
                           VERIFIED
                         </span>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col gap-2">
+                    <div className="mt-5 pt-4 border-t border-slate-200 flex flex-col gap-2">
                       <button
                         type="button"
                         onClick={handleDownloadCard}
                         disabled={isExporting}
-                        className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 active:scale-98"
+                        className="w-full py-3 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all flex items-center justify-center gap-2 active:scale-98"
                       >
                         <Download size={15} />
                         <span>{isExporting ? "Rendering Image..." : "Save High-Res Card (PNG)"}</span>
@@ -1195,7 +1272,7 @@ const StudentLoginPage = () => {
 
                       <Link
                         to="/membership-registration"
-                        className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold uppercase tracking-wider text-center transition-all block"
+                        className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider text-center transition-all block"
                       >
                         Renew or Register Additional Societies
                       </Link>
@@ -1209,74 +1286,74 @@ const StudentLoginPage = () => {
 
             {/* ── TAB 2: FULL ACADEMIC & PERSONAL PROFILE ── */}
             {activeTab === "profile" && (
-              <div className="bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
                 <div>
-                  <h3 className="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                    <User size={18} className="text-cyan-400" />
+                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <User size={18} className="text-[#002855]" />
                     <span>Complete Student Academic Record</span>
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">Verified institutional data recorded at Sri Ramakrishna Engineering College</p>
+                  <p className="text-xs text-slate-500 mt-1 font-medium">Verified institutional data recorded at Sri Ramakrishna Engineering College</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Full Name</span>
-                    <p className="text-base font-black text-white">{currentUser.first_name} {currentUser.last_name}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Full Name</span>
+                    <p className="text-base font-black text-slate-900">{currentUser.first_name} {currentUser.last_name}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">IEEE Member ID</span>
-                    <p className="text-base font-mono font-black text-cyan-400">#{currentUser.ieee_id}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">IEEE Member ID</span>
+                    <p className="text-base font-mono font-black text-[#002855]">#{currentUser.ieee_id}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">SREC Roll Number</span>
-                    <p className="text-base font-mono font-black text-white">{currentUser.roll_number}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">SREC Roll Number</span>
+                    <p className="text-base font-mono font-black text-slate-900">{currentUser.roll_number}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Academic Department</span>
-                    <p className="text-sm font-bold text-white">{currentUser.department}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Academic Department</span>
+                    <p className="text-sm font-bold text-slate-900">{currentUser.department}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Year of Study</span>
-                    <p className="text-sm font-bold text-white">{currentUser.year_of_study}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Year of Study</span>
+                    <p className="text-sm font-bold text-slate-900">{currentUser.year_of_study}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Member Role / Designation</span>
-                    <p className="text-sm font-bold text-sky-300">{currentUser.member_type}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Member Role / Designation</span>
+                    <p className="text-sm font-bold text-[#002855]">{currentUser.member_type}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Academic Email</span>
-                    <p className="text-xs font-mono font-medium text-slate-200 truncate">{currentUser.email}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Academic Email</span>
+                    <p className="text-xs font-mono font-medium text-slate-800 truncate">{currentUser.email}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Mobile Phone</span>
-                    <p className="text-xs font-mono font-medium text-slate-200">{currentUser.phone}</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Mobile Phone</span>
+                    <p className="text-xs font-mono font-medium text-slate-800">{currentUser.phone}</p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#000a18] border border-slate-800">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Institution</span>
-                    <p className="text-xs font-bold text-slate-200">Sri Ramakrishna Engineering College</p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">Institution</span>
+                    <p className="text-xs font-bold text-slate-800">Sri Ramakrishna Engineering College</p>
                   </div>
 
                 </div>
 
                 {/* Skills & Technical Interests */}
-                <div className="p-5 rounded-2xl bg-[#000a18] border border-slate-800 space-y-3">
-                  <span className="text-xs font-black uppercase tracking-wider text-cyan-400 block">
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <span className="text-xs font-black uppercase tracking-wider text-[#002855] block">
                     Technical Skills &amp; Focus Areas
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {currentUser.skills.map((skill, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-bold"
+                        className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-xs font-bold"
                       >
                         {skill}
                       </span>
@@ -1286,11 +1363,11 @@ const StudentLoginPage = () => {
 
                 {/* Statement of Purpose / Bio */}
                 {currentUser.bio_sop && (
-                  <div className="p-5 rounded-2xl bg-[#000a18] border border-slate-800 space-y-2">
-                    <span className="text-xs font-black uppercase tracking-wider text-cyan-400 block">
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                    <span className="text-xs font-black uppercase tracking-wider text-[#002855] block">
                       Member Statement / Bio
                     </span>
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+                    <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
                       {currentUser.bio_sop}
                     </p>
                   </div>
@@ -1301,13 +1378,13 @@ const StudentLoginPage = () => {
 
             {/* ── TAB 3: CHAPTERS & TECHNICAL SOCIETIES ── */}
             {activeTab === "societies" && (
-              <div className="bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
                 <div>
-                  <h3 className="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                    <Award size={18} className="text-cyan-400" />
+                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <Award size={18} className="text-[#002855]" />
                     <span>Affiliated Chapters &amp; Technical Societies</span>
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">Active chapter memberships enrolled with IEEE Student Branch SREC</p>
+                  <p className="text-xs text-slate-500 mt-1 font-medium">Active chapter memberships enrolled with IEEE Student Branch SREC</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1316,20 +1393,20 @@ const StudentLoginPage = () => {
                     return (
                       <div
                         key={idx}
-                        className="p-5 rounded-2xl bg-[#000a18] border border-slate-800 hover:border-cyan-400/50 transition-all flex items-center gap-4 shadow-lg group"
+                        className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#002855]/40 transition-all flex items-center gap-4 shadow-sm group"
                       >
-                        <div className="w-14 h-14 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md shrink-0">
+                        <div className="w-14 h-14 rounded-xl bg-white p-1.5 flex items-center justify-center border border-slate-200 shadow-sm shrink-0">
                           <img src={logo} alt={socName} className="max-h-full max-w-full object-contain" />
                         </div>
                         <div className="min-w-0">
-                          <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-extrabold uppercase tracking-wider">
+                          <span className="px-2 py-0.5 rounded bg-blue-50 text-[#002855] text-[9px] font-extrabold uppercase tracking-wider border border-blue-200">
                             Active Chapter
                           </span>
-                          <h4 className="text-xs font-black text-white uppercase tracking-wide truncate mt-1 group-hover:text-cyan-300 transition-colors">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide truncate mt-1 group-hover:text-[#002855] transition-colors">
                             {socName}
                           </h4>
-                          <p className="text-[10px] text-slate-400 mt-0.5">
-                            Status: <strong className="text-emerald-400 font-bold">Good Standing</strong>
+                          <p className="text-[10px] text-slate-500 mt-0.5">
+                            Status: <strong className="text-emerald-700 font-bold">Good Standing</strong>
                           </p>
                         </div>
                       </div>
@@ -1338,14 +1415,14 @@ const StudentLoginPage = () => {
                 </div>
 
                 {/* Society Benefits Banner */}
-                <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-950/60 to-cyan-950/40 border border-cyan-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="p-5 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <h4 className="text-sm font-black text-white uppercase tracking-wide">Explore All 8 SREC Technical Chapters</h4>
-                    <p className="text-xs text-slate-300 mt-0.5">Read about IEEE CS, WIE, EMBS, ComSoc, PELS, CIS and IM activities.</p>
+                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-wide">Explore All 8 SREC Technical Chapters</h4>
+                    <p className="text-xs text-slate-600 mt-0.5 font-medium">Read about IEEE CS, WIE, EMBS, ComSoc, PELS, CIS and IM activities.</p>
                   </div>
                   <Link
                     to="/societies"
-                    className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md transition-all shrink-0"
+                    className="px-4 py-2 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all shrink-0"
                   >
                     View Societies Directory
                   </Link>
@@ -1356,16 +1433,16 @@ const StudentLoginPage = () => {
 
             {/* ── TAB 4: EVENTS & ATTENDANCE RECORD ── */}
             {activeTab === "events" && (
-              <div className="bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
-                      <Calendar size={18} className="text-cyan-400" />
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                      <Calendar size={18} className="text-[#002855]" />
                       <span>Event Participation &amp; Badges</span>
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1">Verified attendance logs and competition milestones</p>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">Verified attendance logs and competition milestones</p>
                   </div>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-bold">
+                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-bold">
                     {currentUser.events_attended?.length || 1} Events Logged
                   </span>
                 </div>
@@ -1376,22 +1453,22 @@ const StudentLoginPage = () => {
                   ]).map((event, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-2xl bg-[#000a18] border border-slate-800 flex items-center justify-between gap-4"
+                      className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4"
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
                           <CheckCircle2 size={20} />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="text-xs sm:text-sm font-black text-white uppercase tracking-wide truncate">
+                          <h4 className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide truncate">
                             {event.title}
                           </h4>
-                          <p className="text-[10px] text-slate-400 mt-0.5">
-                            Category: <span className="text-cyan-300 font-bold">{event.category}</span> · {event.date}
+                          <p className="text-[10px] text-slate-500 mt-0.5">
+                            Category: <span className="text-[#002855] font-bold">{event.category}</span> · {event.date}
                           </p>
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-wider shrink-0">
+                      <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black uppercase tracking-wider shrink-0">
                         Verified Attendance
                       </span>
                     </div>
@@ -1399,21 +1476,21 @@ const StudentLoginPage = () => {
                 </div>
 
                 {/* Upcoming Events Callout */}
-                <div className="p-5 rounded-2xl bg-[#000a18] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <Sparkles size={20} className="text-amber-400 animate-pulse shrink-0" />
+                    <Sparkles size={20} className="text-amber-500 animate-pulse shrink-0" />
                     <div>
-                      <h4 className="text-xs sm:text-sm font-black text-white uppercase tracking-wide">
+                      <h4 className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide">
                         AECTSD 2027 &amp; Upcoming Workshops
                       </h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-slate-600 mt-0.5 font-medium">
                         Your member ID #{currentUser.ieee_id} qualifies you for discounted registration at all IEEE SREC international symposiums.
                       </p>
                     </div>
                   </div>
                   <Link
                     to="/activities"
-                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all shrink-0"
+                    className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-900 font-bold text-xs uppercase tracking-wider transition-all shrink-0 shadow-sm"
                   >
                     View All Activities
                   </Link>
