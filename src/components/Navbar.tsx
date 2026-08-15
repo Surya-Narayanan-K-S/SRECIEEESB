@@ -356,13 +356,6 @@ const Navbar = () => {
                 <span>AECTSD 2027</span>
               </a>
 
-              <Link
-                to="/student-login"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-bold text-xs uppercase tracking-wider transition-all backdrop-blur-md active:scale-95 shadow-[0_0_15px_rgba(0,210,255,0.2)] whitespace-nowrap shrink-0"
-              >
-                <IdCard size={13} className="text-cyan-400" />
-                <span>Member Portal</span>
-              </Link>
 
               <Link
                 to="/admin-login"

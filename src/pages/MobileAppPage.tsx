@@ -1737,137 +1737,202 @@ export const MobileAppPage: React.FC = () => {
               </div>
             </div>
 
-            {/* 3D Flippable Digital ID Card Container (Single Official IEEE Navy & Gold Style) */}
+            {/* 3D Flippable Digital ID Card Container (Luxury Holographic PVC Smart Card) */}
             <div
-              className="relative w-full aspect-[1.586] select-none cursor-pointer"
-              style={{ perspective: 1200 }}
+              className="relative w-full aspect-[1.586] select-none cursor-pointer group"
+              style={{ perspective: 1400 }}
               onClick={() => setIsFlipped(!isFlipped)}
             >
               <div
                 ref={idCardRef}
-                className="w-full h-full relative transition-transform duration-700"
+                className="w-full h-full relative transition-transform duration-700 [transform-style:preserve-3d]"
                 style={{
-                  transformStyle: "preserve-3d",
                   transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)"
                 }}
               >
-                {/* ── CARD FRONT (Ultra-Professional IEEE Navy & Gold Metallic Holographic ID) ── */}
+                {/* ═══════════════════════════════════════════════════════════════
+                    CARD FRONT: ULTRA-LUXURY HOLOGRAPHIC SMART PVC ID
+                ═══════════════════════════════════════════════════════════════ */}
                 <div
-                  className="absolute inset-0 rounded-3xl p-4 bg-gradient-to-br from-[#001026] via-[#002244] to-[#004b87] border-2 border-amber-300/40 shadow-[0_20px_50px_rgba(0,16,38,0.7)] flex flex-col justify-between overflow-hidden text-white relative"
+                  className="absolute inset-0 rounded-[28px] p-4 sm:p-5 bg-gradient-to-br from-[#000a17] via-[#001c3d] to-[#003870] border-[1.5px] border-amber-300/60 shadow-[0_25px_60px_rgba(0,10,25,0.7),0_0_35px_rgba(0,114,206,0.25)] flex flex-col justify-between overflow-hidden text-white relative select-none"
                   style={{ backfaceVisibility: "hidden" }}
                 >
-                  {/* Holographic Sheen & Radial Watermark */}
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-amber-400/15 via-cyan-400/10 to-transparent rounded-full blur-2xl pointer-events-none" />
-                  <img src={ieeeStamp} alt="Watermark" className="absolute -right-8 -bottom-8 w-44 h-44 opacity-15 object-contain pointer-events-none brightness-200" />
+                  {/* Holographic Security Shimmer Layer */}
+                  <div
+                    className="absolute inset-0 opacity-25 pointer-events-none"
+                    style={{
+                      backgroundImage: `radial-gradient(circle at 80% 20%, rgba(255,215,0,0.4) 0%, transparent 45%), linear-gradient(135deg, transparent 35%, rgba(0,210,255,0.3) 48%, rgba(255,255,255,0.4) 50%, transparent 65%)`
+                    }}
+                  />
 
-                  {/* Top Row: Logos, EMV Chip & Verification Badge */}
-                  <div className="flex items-start justify-between relative z-10">
+                  {/* Micro-Circuit & Guilloche Security Mesh Background */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                    style={{
+                      backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
+                      backgroundSize: "16px 16px"
+                    }}
+                  />
+
+                  {/* Watermark IEEE Diamond Crest */}
+                  <img
+                    src={ieeeStamp}
+                    alt="Watermark"
+                    className="absolute -right-6 -bottom-6 w-48 h-48 opacity-[0.08] object-contain pointer-events-none brightness-200"
+                  />
+
+                  {/* Laser Holographic Security Ribbon */}
+                  <div className="absolute top-0 right-14 w-8 h-full bg-gradient-to-b from-amber-300/10 via-cyan-300/15 to-transparent pointer-events-none opacity-40 blur-[1px]" />
+
+                  {/* ── TOP HEADER BAR: SREC Emblem + IEEE Diamond + Status ── */}
+                  <div className="flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-2">
-                      <div className="px-2 py-1 rounded-xl bg-white/95 border border-white/80 shadow-md flex items-center gap-1.5">
-                        <img src={srecLogo} alt="SREC" className="h-6 w-auto object-contain" />
-                        <div className="w-[1px] h-4 bg-slate-300" />
-                        <img src={ieeeLogo} alt="IEEE" className="h-6 w-auto object-contain" />
+                      <div className="px-2.5 py-1 rounded-xl bg-white/95 border border-white/80 shadow-md flex items-center gap-2 backdrop-blur-sm">
+                        <img src={srecLogo} alt="SREC" className="h-5 sm:h-6 w-auto object-contain" />
+                        <div className="w-[1px] h-3.5 bg-slate-300" />
+                        <img src={ieeeLogo} alt="IEEE" className="h-4 sm:h-5 w-auto object-contain" />
                       </div>
-                      {/* Gold EMV Smart Chip Graphic */}
-                      <div className="w-8 h-6 rounded-md bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 border border-amber-200/60 shadow-sm flex items-center justify-center relative overflow-hidden">
-                        <div className="w-full h-[1px] bg-amber-800/40 absolute top-2" />
-                        <div className="w-full h-[1px] bg-amber-800/40 absolute bottom-2" />
-                        <div className="h-full w-[1px] bg-amber-800/40 absolute left-2.5" />
-                        <div className="h-full w-[1px] bg-amber-800/40 absolute right-2.5" />
-                      </div>
+
+                      {/* Contactless Wave Icon in Gold */}
+                      <span className="text-amber-300/80 text-[11px] font-mono tracking-tighter" title="NFC Contactless Enabled">
+                        (((•)))
+                      </span>
                     </div>
 
-                    <div className="text-right">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/50 font-black text-[9px] uppercase tracking-wider shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 font-black text-[9px] uppercase tracking-wider shadow-sm backdrop-blur-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         ACTIVE
                       </span>
-                      <p className="text-[8px] text-amber-200/90 font-mono font-bold mt-0.5 tracking-wider">
-                        THRU {selectedMember.valid_thru}
-                      </p>
+                      <span className="text-[8px] font-mono text-amber-200/90 font-bold">
+                        {selectedMember.valid_thru}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Middle Row: Member Avatar & Details */}
-                  <div className="flex items-center gap-3.5 relative z-10 my-auto">
+                  {/* ── MIDDLE ROW: Portrait + Smart Chip + Member Details ── */}
+                  <div className="flex items-center gap-3.5 relative z-10 my-auto py-1">
+                    {/* Portrait Photo Frame */}
                     <div className="relative shrink-0">
-                      <img
-                        src={selectedMember.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"}
-                        alt="Photo"
-                        className="w-16 h-16 rounded-2xl object-cover border-2 border-amber-300/80 shadow-[0_0_15px_rgba(251,191,36,0.3)]"
-                      />
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#001026] flex items-center justify-center">
-                        <Check size={9} className="text-white" />
+                      <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl p-[2px] bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_15px_rgba(251,191,36,0.35)]">
+                        <img
+                          src={
+                            selectedMember.avatar_url ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              selectedMember.first_name + " " + selectedMember.last_name
+                            )}&background=002855&color=fff&size=512`
+                          }
+                          alt={selectedMember.first_name}
+                          className="w-full h-full rounded-[14px] object-cover bg-slate-900"
+                        />
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#000a17] flex items-center justify-center text-white shadow">
+                        <Check size={9} className="stroke-[3]" />
                       </div>
                     </div>
 
-                    <div className="leading-tight min-w-0">
-                      <h2 className="text-base font-black text-white tracking-wide truncate">
-                        {selectedMember.first_name} {selectedMember.last_name}
-                      </h2>
-                      <p className="text-xs font-black text-amber-300 font-mono tracking-wider">
-                        ROLL: {selectedMember.roll_number}
-                      </p>
-                      <p className="text-[10px] text-slate-200 font-medium mt-0.5 truncate max-w-[200px]">
+                    {/* Member Credentials Info */}
+                    <div className="leading-tight min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-base sm:text-lg font-black text-white tracking-wide uppercase truncate drop-shadow-sm">
+                          {selectedMember.first_name} {selectedMember.last_name}
+                        </h2>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-300/40 text-amber-300 font-mono text-[10px] font-black tracking-wider">
+                          ROLL: {selectedMember.roll_number}
+                        </span>
+                      </div>
+
+                      <p className="text-[10.5px] text-slate-200 font-semibold mt-1 truncate max-w-[210px]">
                         {selectedMember.department}
                       </p>
-                      <p className="text-[9px] text-cyan-300 font-bold uppercase tracking-wider mt-0.5">
+
+                      <p className="text-[9px] text-sky-300 uppercase tracking-widest font-black mt-0.5">
                         {selectedMember.member_type} · {selectedMember.year_of_study}
                       </p>
                     </div>
+
+                    {/* Gold 3D EMV Smart Chip */}
+                    <div className="hidden xs:flex flex-col items-center justify-center w-10 h-8 rounded-lg bg-gradient-to-br from-amber-100 via-amber-300 to-amber-500 p-0.5 border border-amber-200/80 shadow-[inset_0_1px_2px_rgba(255,255,255,0.8),0_2px_4px_rgba(0,0,0,0.4)] shrink-0">
+                      <div className="w-full h-full border border-amber-900/30 rounded flex flex-col justify-between p-0.5 relative">
+                        <div className="w-full h-[1px] bg-amber-900/30" />
+                        <div className="w-2 h-2 rounded-full border border-amber-900/40 mx-auto" />
+                        <div className="w-full h-[1px] bg-amber-900/30" />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Footer Row: IEEE Member ID & QR Code */}
-                  <div className="flex items-end justify-between relative z-10 pt-2 border-t border-white/20">
+                  {/* ── BOTTOM ROW: Embossed Member ID & Security QR ── */}
+                  <div className="flex items-end justify-between relative z-10 pt-2 border-t border-white/15">
                     <div>
-                      <p className="text-[8px] uppercase tracking-widest text-amber-300/80 font-black">
-                        OFFICIAL IEEE MEMBER ID
-                      </p>
-                      <p className="text-sm font-black font-mono text-white tracking-widest">
+                      <span className="text-[7.5px] uppercase tracking-[0.2em] text-amber-300/90 font-black block leading-none">
+                        OFFICIAL IEEE MEMBERSHIP ID
+                      </span>
+                      <span className="text-sm sm:text-base font-black font-mono tracking-widest text-white drop-shadow-md">
                         {selectedMember.ieee_id}
-                      </p>
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <div className="text-right">
-                        <span className="text-[8px] font-mono text-cyan-200 block font-bold">STB32131</span>
-                        <span className="text-[7px] text-white/60 font-mono">SB 64581</span>
+                      <div className="text-right leading-none">
+                        <span className="text-[8px] font-mono text-sky-200 block font-bold">STB32131</span>
+                        <span className="text-[7px] text-slate-300 font-mono">SB 64581</span>
                       </div>
                       <div className="p-1 rounded-xl bg-white text-slate-950 shadow-md">
-                        <QrCode size={20} />
+                        <QrCode size={22} className="text-slate-950" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* ── CARD BACK (Official Security Hologram & Societies) ── */}
+                {/* ═══════════════════════════════════════════════════════════════
+                    CARD BACK: OFFICIAL PASS AUTHORIZATION & SOCIETIES
+                ═══════════════════════════════════════════════════════════════ */}
                 <div
-                  className="absolute inset-0 rounded-3xl p-4 bg-gradient-to-br from-[#001026] via-[#002244] to-[#004b87] border-2 border-amber-300/40 shadow-[0_20px_50px_rgba(0,16,38,0.7)] flex flex-col justify-between overflow-hidden text-white"
+                  className="absolute inset-0 rounded-[28px] p-4 sm:p-5 bg-gradient-to-br from-[#000a17] via-[#001c3d] to-[#003870] border-[1.5px] border-amber-300/60 shadow-[0_25px_60px_rgba(0,10,25,0.7)] flex flex-col justify-between overflow-hidden text-white select-none"
                   style={{
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)"
                   }}
                 >
-                  {/* Top Magnetic Stripe Simulation */}
-                  <div className="w-[calc(100%+2rem)] -mx-4 -mt-1 h-7 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-y border-amber-400/30 flex items-center justify-between px-4">
+                  {/* Top Magnetic Security Stripe */}
+                  <div className="w-[calc(100%+2.5rem)] -mx-5 -mt-2 h-7 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-y border-amber-400/30 flex items-center justify-between px-4">
                     <span className="text-[7px] font-mono text-amber-300 tracking-widest font-black uppercase">
                       ★ IEEE MADRAS SECTION · SREC STUDENT BRANCH ★
                     </span>
-                    <span className="text-[7px] font-mono text-slate-400">R10-APAC</span>
+                    <span className="text-[7px] font-mono text-slate-400">REGION 10 APAC</span>
                   </div>
 
-                  <div className="space-y-1 text-[10px] text-slate-200">
-                    <p><span className="text-amber-300/80 font-bold">College Email: </span>{selectedMember.email}</p>
-                    <p><span className="text-amber-300/80 font-bold">Emergency Contact: </span>{selectedMember.phone}</p>
-                    <p className="truncate"><span className="text-amber-300/80 font-bold">Enrolled Societies: </span>{selectedMember.target_societies.join(", ")}</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-white/20 flex items-center justify-between text-[8px] text-white/70">
-                    <div>
-                      <p className="font-mono font-bold text-amber-200">AUTH: {selectedMember.ieee_id}-SB64581</p>
-                      <p className="text-[7px] text-slate-400">Issued by Sri Ramakrishna Engineering College</p>
+                  {/* Middle: Signature & Enrolled Societies */}
+                  <div className="space-y-1.5 text-[9.5px] text-slate-200 my-auto">
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-300 font-bold">Institution:</span>
+                      <span className="text-white font-medium">Sri Ramakrishna Engineering College</span>
                     </div>
-                    <img src={snrLogo} alt="SNR" className="h-6 w-auto object-contain brightness-110" />
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-300 font-bold">College Email:</span>
+                      <span className="font-mono text-sky-200 truncate max-w-[180px]">{selectedMember.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-300 font-bold">Enrolled Chapters:</span>
+                      <span className="text-white font-semibold truncate max-w-[180px]">
+                        {selectedMember.target_societies.join(", ")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Counselor & Authorization Footer */}
+                  <div className="pt-2 border-t border-white/15 flex items-center justify-between text-[8px] text-slate-300">
+                    <div>
+                      <span className="font-mono font-black text-amber-300 block">AUTH: {selectedMember.ieee_id}-SB64581</span>
+                      <span className="text-[7px] text-slate-400">Valid for IEEE &amp; Collegiate Technical Events</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-serif italic text-amber-200 text-[10px] block leading-none">Dr. K. Balamurugan</span>
+                      <span className="text-[7px] text-sky-200 uppercase font-bold tracking-wider">Branch Counselor</span>
+                    </div>
                   </div>
                 </div>
               </div>
