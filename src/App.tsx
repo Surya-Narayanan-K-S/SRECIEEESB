@@ -85,6 +85,28 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => (
   </motion.div>
 );
 
+// Smart Responsive Home:
+// 1. When INSTALLED (Native Capacitor APK, Android/iOS Standalone PWA) -> Opens the dedicated Mobile App
+// 2. When in WEB BROWSER (Phone or PC Chrome/Safari/Edge) -> Opens the Full Website
+const ResponsiveHome = () => {
+  // Check if running as native mobile app (Capacitor Android/iOS)
+  const isNativeApp = Capacitor.isNativePlatform();
+
+  // Check if running as installed standalone PWA on phone home screen
+  const isInstalledPWA =
+    typeof window !== "undefined" &&
+    (window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any)?.standalone === true ||
+      (typeof document !== "undefined" && document.referrer.includes("android-app://")));
+
+  if (isNativeApp || isInstalledPWA) {
+    return <MobileAppPage />;
+  }
+
+  // Regular Web Browser on phone or PC
+  return <Index />;
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
@@ -92,7 +114,9 @@ const AnimatedRoutes = () => {
       <ScrollToTop />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+          <Route path="/" element={<PageTransition><ResponsiveHome /></PageTransition>} />
+          <Route path="/web" element={<PageTransition><Index /></PageTransition>} />
+          <Route path="/desktop" element={<PageTransition><Index /></PageTransition>} />
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
           <Route path="/activities" element={<PageTransition><ActivitiesPage /></PageTransition>} />
           <Route path="/team" element={<PageTransition><TeamPage /></PageTransition>} />

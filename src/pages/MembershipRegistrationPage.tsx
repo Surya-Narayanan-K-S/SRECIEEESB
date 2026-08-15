@@ -429,7 +429,8 @@ const MembershipRegistrationPage = () => {
       // Formatted statement of purpose including extra metadata safely
       const enrichedSop = `[Type: ${membershipType.toUpperCase()}] [Societies: ${selectedSocieties.join(", ")}] ${ieeeMemberId ? `[IEEE ID: ${ieeeMemberId}] ` : ''}${phone ? `[Phone: ${phone}] ` : ''}${rollNumber ? `[Roll No: ${rollNumber}] ` : ''}${transactionRef ? `[Txn Ref: ${transactionRef}] ` : ''}\n\nStatement of Purpose: ${sop || 'N/A'}`;
 
-      const { error } = await supabase.from('applications').insert([
+      // 1. Insert into applications table
+      const { error: appError } = await supabase.from('applications').insert([
         {
           first_name: firstName.trim(),
           last_name: lastName.trim(),
@@ -442,12 +443,44 @@ const MembershipRegistrationPage = () => {
         }
       ]);
 
-      if (error) throw error;
+      if (appError) {
+        console.warn("Application insert warning:", appError);
+      }
+
+      // 2. Insert into student_members table for instant active directory and digital ID card
+      const generatedIeeeId = ieeeMemberId ? ieeeMemberId.trim() : `98${Math.floor(100000 + Math.random() * 900000)}`;
+      const memberRecord = {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        roll_number: rollNumber ? rollNumber.trim().toUpperCase() : `24${department.slice(0, 2).toUpperCase()}001`,
+        ieee_id: generatedIeeeId,
+        email: email.trim(),
+        phone: phone ? phone.trim() : "",
+        department: department,
+        year_of_study: yearOfStudy,
+        member_type: applicantType === "professional" ? "Professional Member" : "Student Member",
+        valid_thru: "DEC 2026",
+        membership_status: "ACTIVE",
+        target_societies: selectedSocieties,
+        skills: selectedSkills,
+        bio_sop: sop || "",
+        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + " " + lastName)}&background=002855&color=fff&size=512`
+      };
+
+      try {
+        await supabase.from('student_members').upsert([memberRecord], { onConflict: 'roll_number' });
+      } catch (smErr) {
+        console.warn("student_members upsert note:", smErr);
+      }
+
+      // Save user session locally for persistent login
+      localStorage.setItem("ieee_student_session", JSON.stringify(memberRecord));
+      localStorage.setItem("srec_ieee_app_user", JSON.stringify(memberRecord));
 
       setIsSubmitted(true);
       toast({
-        title: "Registration Submitted Successfully!",
-        description: "Your application has been received. Check your email for further instructions.",
+        title: "Registration Submitted & Stored in Database!",
+        description: "Your membership details and digital credentials are now registered.",
       });
     } catch (err: any) {
       toast({

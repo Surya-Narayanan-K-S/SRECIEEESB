@@ -215,9 +215,9 @@ const StudentLoginPage = () => {
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Check saved session on mount
+  // Check saved session on mount (Permanent Persistent Login)
   useEffect(() => {
-    const saved = localStorage.getItem("ieee_student_session");
+    const saved = localStorage.getItem("ieee_student_session") || localStorage.getItem("srec_ieee_app_user");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -234,11 +234,13 @@ const StudentLoginPage = () => {
   const handleLoginSuccess = (user: StudentMemberData) => {
     setCurrentUser(user);
     localStorage.setItem("ieee_student_session", JSON.stringify(user));
+    localStorage.setItem("srec_ieee_app_user", JSON.stringify(user));
     setLoginError(null);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("ieee_student_session");
+    localStorage.removeItem("srec_ieee_app_user");
     setCurrentUser(null);
     setIsFlipped(false);
     setActiveTab("card");
@@ -478,25 +480,6 @@ const StudentLoginPage = () => {
               <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto mt-3">
                 Sign in to view your verified IEEE Membership Number, access your holographic 3D Digital Member ID Card, and explore branch credentials.
               </p>
-
-              {/* Dedicated Mobile App Hub Banner */}
-              <div className="mt-4 flex items-center justify-center gap-3">
-                <Link
-                  to="/app?tab=directory"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400/50 hover:bg-cyan-500/30 text-cyan-300 hover:text-white text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(0,210,255,0.2)] transition-all active:scale-95"
-                >
-                  <Users size={14} className="text-cyan-400" />
-                  <span>Explore Member Directory Table</span>
-                  <ChevronRight size={13} />
-                </Link>
-                <Link
-                  to="/app"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95"
-                >
-                  <Sparkles size={14} />
-                  <span>Open Mobile App Hub</span>
-                </Link>
-              </div>
             </div>
 
             {/* Login Card & Demo Switcher Container */}

@@ -1,21 +1,28 @@
 {
+  "id": "/",
   "short_name": "SREC IEEE",
-  "name": "SREC IEEE Student Branch",
+  "name": "IEEE Student Branch SREC",
+  "description": "Official Mobile App for IEEE Student Branch SREC STB32131. Access 3D Digital Member Cards, Student Directory, and Societies.",
   "icons": [
     {
-      "src": "ieee.png",
+      "src": "/ieee.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "ieee-logo.png",
+      "src": "/ieee-logo.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
+  "scope": "/",
   "background_color": "#002855",
   "theme_color": "#002855",
   "display": "standalone",
-  "orientation": "portrait"
+  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  "orientation": "portrait",
+  "categories": ["education", "utilities", "productivity"]
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown,
-  Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Smartphone
+  Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Smartphone, Download
 } from "lucide-react";
 import ieeeLogo from "@/assets/ieee-logo.png";
 import ieeeStamp from "@/assets/ieees.png";
@@ -9,6 +9,7 @@ import srecLogo from "@/assets/srec-logo.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import DownloadAppModal from "@/components/DownloadAppModal";
 
 // Main nav links (always visible on desktop)
 const primaryNavLinks = [
@@ -26,7 +27,6 @@ const primaryNavLinks = [
 
 // "More" dropdown links for desktop
 const moreLinks = [
-  { label: "Mobile App Hub", href: "/app", icon: Smartphone, desc: "Dedicated mobile app & ID tables" },
   { label: "Student Portal", href: "/student-login", icon: IdCard, desc: "Member login & digital ID card" },
   { label: "Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Annual activity plans" },
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with us" },
@@ -35,7 +35,6 @@ const moreLinks = [
 // Grid links for futuristic mobile overlay menu
 const mobileGridLinks = [
   { label: "Home", href: "/", icon: Home, desc: "Main landing page" },
-  { label: "Mobile App", href: "/app", icon: Smartphone, desc: "Dedicated App & ID Table" },
   { label: "About", href: "/about", icon: Info, desc: "Our history & vision" },
   { label: "Societies", href: "/societies", icon: Users, desc: "Technical chapters" },
   { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
@@ -60,6 +59,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -159,7 +159,7 @@ const Navbar = () => {
         <motion.div
           animate={{ height: scrolled ? 0 : "auto", opacity: scrolled ? 0 : 1, scale: scrolled ? 0.98 : 1 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="hidden xl:block w-full pointer-events-auto overflow-hidden z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/90 shadow-md"
+          className="hidden xl:block w-full pointer-events-auto overflow-hidden z-40 bg-white/80 backdrop-blur-2xl border-b border-white/60 shadow-[0_4px_25px_rgba(0,40,85,0.06)]"
         >
           <div className="w-full max-w-[1700px] mx-auto px-8 md:px-12 py-3 flex items-center justify-center gap-14 md:gap-20">
             <Link to="/" className="flex items-center shrink">
@@ -180,7 +180,7 @@ const Navbar = () => {
         <div className="xl:hidden w-full pointer-events-auto z-50 flex flex-col items-center">
           
           {/* Row 1: Separate Line Above for ALL THREE Institutional Logos */}
-          <div className="w-full bg-white border-b border-slate-200/90 py-2 px-3 sm:px-6 flex items-center justify-center gap-3.5 sm:gap-8 shadow-sm">
+          <div className="w-full bg-white/85 backdrop-blur-2xl border-b border-slate-200/60 py-2 px-3 sm:px-6 flex items-center justify-center gap-3.5 sm:gap-8 shadow-sm">
             <Link to="/" className="flex items-center shrink-0">
               <img src={srecLogo} alt="SREC Logo" className="h-9 sm:h-12 w-auto object-contain hover:scale-105 transition-transform" />
             </Link>
@@ -195,7 +195,7 @@ const Navbar = () => {
           </div>
 
           {/* Row 2: Dark Action Navigation Bar */}
-          <div className="w-full bg-[#000d20]/95 backdrop-blur-2xl border-b border-cyan-500/35 shadow-[0_8px_30px_rgba(0,13,32,0.9)] px-3.5 sm:px-6 py-2">
+          <div className="w-full bg-[#000d20]/80 backdrop-blur-2xl border-b border-cyan-500/30 shadow-[0_8px_30px_rgba(0,13,32,0.8)] px-3.5 sm:px-6 py-2">
             <div className="w-full flex items-center justify-between">
               
               {/* Left: IEEE SREC Title */}
@@ -302,6 +302,7 @@ const Navbar = () => {
                         {moreLinks.map((l) => {
                           const ItemIcon = l.icon;
                           const isActive = location.pathname === l.href || location.pathname.startsWith(l.href);
+
                           return (
                             <Link
                               key={l.label}
@@ -662,6 +663,12 @@ const Navbar = () => {
           <ChevronRight size={20} className="rotate-180 group-hover:-translate-x-0.5 transition-transform" />
         </button>
       )}
+
+      {/* Download App Modal */}
+      <DownloadAppModal
+        isOpen={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+      />
     </>
   );
 };
