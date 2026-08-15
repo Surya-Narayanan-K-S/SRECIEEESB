@@ -85,21 +85,61 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => (
 );
 
 // Smart Domain & Platform Routing:
-// - Separate App Domain (e.g. app.*, m.*, mobile.*) or Native Capacitor APK -> Serves Mobile App directly
-// - Main Website Domain -> Serves Full Website
-// - Direct routes (/app, /web) are always accessible anywhere
+// 1. Student Portal Domain (e.g. portal.ieeesrec.org, student.*, members.*, id.*) OR VITE_APP_MODE="portal" -> Serves Student Portal directly at root /
+// 2. Mobile App Domain (e.g. app.ieeesrec.org, m.*, mobile.*, srec-app.*) OR VITE_APP_MODE="app" -> Serves Mobile App directly at root /
+// 3. Main Website Domain (e.g. ieeesrec.org, www.ieeesrec.org) -> Serves Full Website at root /
+// 4. Universal direct routes (/student-portal, /student-login, /app, /web) remain accessible everywhere
 const ResponsiveHome = () => {
   const isNativeApp = Capacitor.isNativePlatform();
   const hostname = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+  
+  // Environment variable flags
+  const appMode = (import.meta.env.VITE_APP_MODE || import.meta.env.MODE || "").toLowerCase();
+  const isStandalonePortalEnv =
+    appMode === "portal" ||
+    appMode === "student" ||
+    appMode === "student_portal" ||
+    import.meta.env.VITE_STANDALONE_PORTAL === "true";
+
+  const isStandaloneAppEnv =
+    appMode === "app" ||
+    appMode === "mobile" ||
+    import.meta.env.VITE_STANDALONE_APP === "true";
+
+  // Domain / Subdomain checks
+  const isPortalDomain =
+    isStandalonePortalEnv ||
+    hostname.startsWith("portal.") ||
+    hostname.startsWith("student.") ||
+    hostname.startsWith("students.") ||
+    hostname.startsWith("member.") ||
+    hostname.startsWith("members.") ||
+    hostname.startsWith("id.") ||
+    hostname.includes("student-portal") ||
+    hostname.includes("member-portal") ||
+    hostname.includes("ieee-portal");
+
   const isAppDomain =
+    isStandaloneAppEnv ||
+    isNativeApp ||
+    hostname.includes("srecieeestudent") ||
+    hostname.startsWith("srecieeestudent.") ||
     hostname.startsWith("app.") ||
     hostname.startsWith("m.") ||
     hostname.startsWith("mobile.") ||
-    hostname.includes("-app.") ||
-    hostname.includes("ieee-app");
+    hostname.includes("-app") ||
+    hostname.includes("app-") ||
+    hostname.includes("ieee-app") ||
+    hostname.includes("srec-app") ||
+    hostname.includes("student-app") ||
+    (hostname.includes("srecieee.org") && hostname.includes("student"));
 
-  if (isNativeApp || isAppDomain) {
+  if (isAppDomain) {
     return <MobileAppPage />;
+  }
+
+  if (isPortalDomain) {
+    return <StudentLoginPage />;
   }
 
   return <Index />;
