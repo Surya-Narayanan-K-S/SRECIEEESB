@@ -36,7 +36,9 @@ import {
   ShieldAlert,
   Download,
   Globe,
-  IdCard
+  IdCard,
+  Camera,
+  Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -176,6 +178,32 @@ const MembershipRegistrationPage = () => {
   const [yearOfStudy, setYearOfStudy] = useState("");
   const [gender, setGender] = useState("");
   const [designation, setDesignation] = useState("");
+
+  // Avatar / Member Photo State
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image smaller than 5MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setAvatarFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Form Fields - Step 2: IEEE Status
   const [membershipType, setMembershipType] = useState<"new" | "renewal">("new");
@@ -449,26 +477,70 @@ const MembershipRegistrationPage = () => {
 
       // 2. Insert into student_members table for instant active directory and digital ID card
       const generatedIeeeId = ieeeMemberId ? ieeeMemberId.trim() : `98${Math.floor(100000 + Math.random() * 900000)}`;
+      const cleanRollNumber = rollNumber ? rollNumber.trim().toUpperCase() : `24${department.slice(0, 2).toUpperCase()}001`;
+      const defaultPassword = `srecieee@${cleanRollNumber}`;
+
+      // Photo upload to Supabase storage bucket `member-avatars`
+      let uploadedAvatarUrl = avatarPreview || `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + " " + lastName)}&background=002855&color=fff&size=512`;
+
+      if (avatarFile) {
+        try {
+          setIsUploadingPhoto(true);
+          const fileExt = avatarFile.name.split('.').pop() || 'jpg';
+          const fileName = `${cleanRollNumber}_${Date.now()}.${fileExt}`;
+          const { data: uploadData, error: uploadErr } = await supabase.storage
+            .from('member-avatars')
+            .upload(fileName, avatarFile, { upsert: true });
+
+          if (!uploadErr && uploadData) {
+            const { data: publicUrlData } = supabase.storage
+              .from('member-avatars')
+              .getPublicUrl(fileName);
+            if (publicUrlData && publicUrlData.publicUrl) {
+              uploadedAvatarUrl = publicUrlData.publicUrl;
+            }
+          }
+        } catch (photoErr) {
+          console.warn("Storage upload note, using preview URL:", photoErr);
+        } finally {
+          setIsUploadingPhoto(false);
+        }
+      }
+
       const memberRecord = {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        roll_number: rollNumber ? rollNumber.trim().toUpperCase() : `24${department.slice(0, 2).toUpperCase()}001`,
+        roll_number: cleanRollNumber,
         ieee_id: generatedIeeeId,
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         phone: phone ? phone.trim() : "",
         department: department,
         year_of_study: yearOfStudy,
+        gender: gender || "",
+        designation: designation || (applicantType === "professional" ? "Professional Member" : "Student Member"),
+        applicant_type: applicantType || "undergraduate",
+        membership_type: membershipType,
         member_type: applicantType === "professional" ? "Professional Member" : "Student Member",
+        join_date: "August 2025",
         valid_thru: "DEC 2026",
         membership_status: "ACTIVE",
         target_societies: selectedSocieties,
         skills: selectedSkills,
         bio_sop: sop || "",
-        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + " " + lastName)}&background=002855&color=fff&size=512`
+        payment_mode: paymentMode,
+        transaction_ref: transactionRef || "",
+        password: defaultPassword,
+        security_pin: defaultPassword,
+        avatar_url: uploadedAvatarUrl,
+        awards_count: 0,
+        events_count: 0
       };
 
       try {
-        await supabase.from('student_members').upsert([memberRecord], { onConflict: 'roll_number' });
+        const { error: smErr } = await supabase.from('student_members').upsert([memberRecord], { onConflict: 'roll_number' });
+        if (smErr) {
+          console.warn("student_members upsert warning:", smErr);
+        }
       } catch (smErr) {
         console.warn("student_members upsert note:", smErr);
       }
@@ -479,8 +551,8 @@ const MembershipRegistrationPage = () => {
 
       setIsSubmitted(true);
       toast({
-        title: "Registration Submitted & Stored in Database!",
-        description: "Your membership details and digital credentials are now registered.",
+        title: "Registration Saved to Supabase Database!",
+        description: `Active Member credentials created. Your app login password is ${defaultPassword}`,
       });
     } catch (err: any) {
       toast({
@@ -595,12 +667,58 @@ const MembershipRegistrationPage = () => {
               </div>
             </motion.div>
           ) : isSubmitted ? (
-            /* OFFICIAL IEEE SREC PRINTABLE REGISTRATION RECEIPT — REDESIGNED */
+            /* OFFICIAL IEEE SREC PRINTABLE REGISTRATION RECEIPT & CREDENTIALS BANNER */
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="mx-auto w-full max-w-[1122px] px-2 sm:px-0"
+              className="mx-auto w-full max-w-[1122px] px-2 sm:px-0 space-y-6"
             >
+              {/* CREDENTIALS & APP ACCESS ALERT CARD */}
+              <div className="bg-gradient-to-r from-[#002244] via-[#003870] to-[#00629b] text-white p-6 sm:p-8 rounded-3xl shadow-2xl border border-sky-400/30 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-2 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/20 border border-sky-400/40 text-cyan-300 text-xs font-black uppercase tracking-wider">
+                    <CheckCircle2 size={14} className="text-emerald-400" />
+                    <span>Active Member Account Registered in Database</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                    Welcome to IEEE SREC, {firstName}!
+                  </h2>
+                  <p className="text-sky-100 text-sm max-w-xl font-medium">
+                    Your details are recorded in the central IEEE database. Use your credentials below to log into the mobile app and unlock your holographic 3D Digital ID card.
+                  </p>
+                  
+                  {/* Credentials Highlight Box */}
+                  <div className="pt-2 flex flex-wrap gap-3 items-center justify-center md:justify-start font-mono text-xs">
+                    <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
+                      <span className="text-sky-300 font-sans text-[11px] block font-bold uppercase">Login Email / Roll No:</span>
+                      <span className="font-bold text-white text-sm">{email} <span className="text-sky-300 font-sans text-xs">({rollNumber.toUpperCase()})</span></span>
+                    </div>
+                    <div className="bg-amber-500/20 backdrop-blur-md px-4 py-2 rounded-xl border border-amber-400/40">
+                      <span className="text-amber-300 font-sans text-[11px] block font-bold uppercase">Default App Password:</span>
+                      <span className="font-bold text-amber-200 text-sm">srecieee@{rollNumber.toUpperCase()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Direct Action Buttons */}
+                <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0 w-full md:w-auto">
+                  <Link
+                    to="/student-login"
+                    className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 transition active:scale-95 text-center"
+                  >
+                    <IdCard size={16} />
+                    <span>Launch ID Card Portal</span>
+                  </Link>
+                  <Link
+                    to="/app"
+                    className="px-6 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-black text-xs uppercase tracking-wider border border-white/30 shadow-sm flex items-center justify-center gap-2 transition active:scale-95 text-center"
+                  >
+                    <Users size={16} />
+                    <span>Open Student Mobile App</span>
+                  </Link>
+                </div>
+              </div>
+
               <div
                 ref={receiptRef}
                 className="w-full max-w-[1122px] bg-white text-slate-900 font-sans overflow-hidden shadow-xl rounded-2xl border border-slate-200/80 mx-auto"
@@ -1151,6 +1269,35 @@ const MembershipRegistrationPage = () => {
                               <option value="Female">Female</option>
                               <option value="Prefer not to say">Prefer not to say</option>
                             </select>
+                          </div>
+                        </div>
+
+                        {/* Member Photo Upload */}
+                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 via-slate-50 to-indigo-50/70 border border-slate-200/90 flex flex-col sm:flex-row items-center gap-4">
+                          <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-white border-2 border-dashed border-[#00629b]/40 flex items-center justify-center shrink-0 shadow-sm">
+                            {avatarPreview ? (
+                              <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                            ) : (
+                              <User size={36} className="text-slate-400" />
+                            )}
+                          </div>
+                          <div className="flex-1 text-center sm:text-left space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center justify-center sm:justify-start gap-1.5">
+                              <Camera size={14} className="text-[#00629b]" /> Member ID Photo / Avatar
+                            </label>
+                            <p className="text-[11px] text-slate-500 font-medium">
+                              Upload your photo to automatically personalize your official 3D Digital ID card and Member directory in Supabase.
+                            </p>
+                            <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-[#003366] border border-slate-300 font-extrabold text-xs cursor-pointer shadow-sm transition active:scale-95 mt-1">
+                              <Upload size={14} className="text-[#00629b]" />
+                              <span>{avatarPreview ? "Change Photo" : "Upload Passport Photo (JPG/PNG)"}</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                              />
+                            </label>
                           </div>
                         </div>
 

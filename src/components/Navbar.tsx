@@ -519,34 +519,6 @@ const Navbar = () => {
                   <ExternalLink size={16} className="text-slate-950" />
                 </motion.a>
 
-                {/* Dedicated SREC Mobile App Hub */}
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.32 }}
-                >
-                  <Link
-                    to="/app"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-cyan-600/90 via-blue-600/90 to-indigo-600/90 backdrop-blur-2xl border border-cyan-300/50 text-white font-bold active:scale-[0.98] transition-all shadow-[0_0_25px_rgba(0,210,255,0.3)]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-white/20 text-white shadow-sm">
-                        <Smartphone size={18} />
-                      </div>
-                      <div>
-                        <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
-                          Dedicated Mobile App
-                        </p>
-                        <p className="text-[9px] text-cyan-100 font-medium tracking-wide mt-1">
-                          Native app, Member table, 3D ID &amp; all pages
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} className="text-white" />
-                  </Link>
-                </motion.div>
-
                 {/* Student Member Login & Digital ID */}
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}

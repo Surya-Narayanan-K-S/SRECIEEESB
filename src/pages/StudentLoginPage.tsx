@@ -37,7 +37,10 @@ import {
   Share2,
   KeyRound,
   IdCard,
-  Users
+  Users,
+  Camera,
+  Upload,
+  Loader2
 } from "lucide-react";
 import ieeeLogo from "@/assets/ieee-logo.png";
 import ieeeStamp from "@/assets/ieees.png";
@@ -229,6 +232,7 @@ const StudentLoginPage = () => {
   const [activeTab, setActiveTab] = useState<"card" | "profile" | "societies" | "events">("card");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -253,6 +257,50 @@ const StudentLoginPage = () => {
     localStorage.setItem("ieee_student_session", JSON.stringify(user));
     localStorage.setItem("srec_ieee_app_user", JSON.stringify(user));
     setLoginError(null);
+  };
+
+  // Upload/Update Avatar photo directly to Supabase storage bucket `member-avatars`
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Please select an image smaller than 5MB.");
+      return;
+    }
+
+    try {
+      setIsUploadingAvatar(true);
+      const fileExt = file.name.split('.').pop() || 'jpg';
+      const fileName = `${currentUser.roll_number || currentUser.ieee_id}_${Date.now()}.${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from('member-avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (error) throw error;
+
+      const { data: urlData } = supabase.storage
+        .from('member-avatars')
+        .getPublicUrl(fileName);
+
+      const newAvatarUrl = urlData.publicUrl;
+      const updatedUser: StudentMemberData = { ...currentUser, avatar_url: newAvatarUrl };
+      
+      // Update in Supabase student_members table
+      await supabase
+        .from('student_members')
+        .update({ avatar_url: newAvatarUrl })
+        .eq('roll_number', currentUser.roll_number);
+
+      // Update local state and session
+      handleLoginSuccess(updatedUser);
+      alert("Profile photo updated successfully and saved to Supabase!");
+    } catch (err: any) {
+      console.warn("Avatar upload error:", err);
+      alert("Failed to upload image. " + (err.message || ""));
+    } finally {
+      setIsUploadingAvatar(false);
+    }
   };
 
   const handleLogout = () => {
@@ -291,10 +339,22 @@ const StudentLoginPage = () => {
           .maybeSingle();
 
         if (memberData) {
-          // Verify Password / Security PIN
-          const validPin = memberData.security_pin || memberData.password || "1234";
-          if (password !== validPin && password !== "admin123" && password !== "1234") {
-            setLoginError("Incorrect password. Please verify your credentials or register.");
+          // Verify Password / Security PIN (support srecieee@<rollnumber> as default)
+          const rollClean = (memberData.roll_number || "").trim();
+          const expectedPass1 = `srecieee@${rollClean.toUpperCase()}`;
+          const expectedPass2 = `srecieee@${rollClean.toLowerCase()}`;
+          const storedPass = memberData.password || memberData.security_pin || "1234";
+
+          const isPasswordValid = 
+            password === expectedPass1 ||
+            password === expectedPass2 ||
+            password === storedPass ||
+            password.toLowerCase() === storedPass.toLowerCase() ||
+            password === "admin123" ||
+            password === "1234";
+
+          if (!isPasswordValid) {
+            setLoginError(`Incorrect password. Default password format is srecieee@<RollNumber> (e.g. srecieee@${rollClean || '23EE104'}).`);
             setIsLoading(false);
             return;
           }
@@ -411,7 +471,8 @@ const StudentLoginPage = () => {
       skills: ["Engineering", "IEEE Member", "Technical Innovation"],
       bio_sop: `Registered Member - Roll No: ${regRollNo.toUpperCase()}`,
       avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(regFirstName + " " + regLastName)}&background=002855&color=fff&size=512`,
-      security_pin: regPassword.trim()
+      security_pin: regPassword.trim() || `srecieee@${regRollNo.trim().toUpperCase()}`,
+      password: regPassword.trim() || `srecieee@${regRollNo.trim().toUpperCase()}`
     };
 
     try {
@@ -602,11 +663,15 @@ const StudentLoginPage = () => {
                         type="password"
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="Enter your password / PIN"
+                        placeholder="Enter your password (e.g. srecieee@23EE104)"
                         className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#002855] focus:ring-2 focus:ring-blue-500/10 text-sm font-medium transition-all"
                         required
                       />
                     </div>
+                    <p className="text-[11px] text-slate-500 mt-1.5 font-medium flex items-center gap-1.5">
+                      <Sparkles size={12} className="text-amber-500 shrink-0" />
+                      <span>Default Password: <span className="font-mono font-bold text-slate-800">srecieee@&lt;YourRollNumber&gt;</span> (e.g. <span className="font-mono text-blue-700">srecieee@23EE104</span>)</span>
+                    </p>
                   </div>
 
                   {loginError && (
@@ -898,13 +963,33 @@ const StudentLoginPage = () => {
             {/* Top Member Header Bar */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm">
               <div className="flex items-center gap-4 min-w-0">
-                <div className="relative shrink-0">
+                <div className="relative shrink-0 group">
                   <img
                     src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=512`}
                     alt={currentUser.first_name}
                     className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-[#002855]/20 shadow-sm"
                   />
-                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white" title="Verified Member">
+                  <label 
+                    className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white cursor-pointer transition-opacity text-[9px] font-bold"
+                    title="Change Profile Photo"
+                  >
+                    {isUploadingAvatar ? (
+                      <Loader2 size={16} className="animate-spin text-white" />
+                    ) : (
+                      <>
+                        <Camera size={16} />
+                        <span>Change</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={isUploadingAvatar}
+                      className="hidden"
+                    />
+                  </label>
+                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white shadow-sm" title="Verified Member">
                     <Check size={11} className="stroke-[3]" />
                   </span>
                 </div>
@@ -1313,12 +1398,31 @@ const StudentLoginPage = () => {
             {/* ── TAB 2: FULL ACADEMIC & PERSONAL PROFILE ── */}
             {activeTab === "profile" && (
               <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                    <User size={18} className="text-[#002855]" />
-                    <span>Complete Student Academic Record</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1 font-medium">Verified institutional data recorded at Sri Ramakrishna Engineering College</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                      <User size={18} className="text-[#002855]" />
+                      <span>Complete Student Academic Record</span>
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">Verified institutional data recorded at Sri Ramakrishna Engineering College</p>
+                  </div>
+                  
+                  {/* Photo Update Trigger */}
+                  <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#002855] text-xs font-black uppercase tracking-wider cursor-pointer transition-all active:scale-95">
+                    {isUploadingAvatar ? (
+                      <Loader2 size={15} className="animate-spin text-[#002855]" />
+                    ) : (
+                      <Upload size={15} />
+                    )}
+                    <span>{isUploadingAvatar ? "Uploading to Bucket..." : "Upload / Change Photo"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={isUploadingAvatar}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

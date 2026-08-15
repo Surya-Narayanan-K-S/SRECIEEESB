@@ -791,9 +791,15 @@ export const MobileAppPage: React.FC = () => {
       avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(regForm.firstName + " " + regForm.lastName)}&background=002855&color=fff&size=512`
     };
 
+    const memberWithPass = {
+      ...newMemberRecord,
+      password: `srecieee@${regForm.rollNumber.trim().toUpperCase()}`,
+      security_pin: `srecieee@${regForm.rollNumber.trim().toUpperCase()}`
+    };
+
     // 1. Store to Supabase database
     try {
-      await supabase.from('student_members').upsert([newMemberRecord], { onConflict: 'roll_number' });
+      await supabase.from('student_members').upsert([memberWithPass], { onConflict: 'roll_number' });
       await supabase.from('applications').insert([{
         first_name: newMemberRecord.first_name,
         last_name: newMemberRecord.last_name,

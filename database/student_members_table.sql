@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS student_members (
     phone TEXT,
     department TEXT NOT NULL,
     year_of_study TEXT NOT NULL,
+    gender TEXT,
+    designation TEXT DEFAULT 'Student Member',
+    applicant_type TEXT DEFAULT 'undergraduate',
+    membership_type TEXT DEFAULT 'new',
     member_type TEXT NOT NULL DEFAULT 'Student Member',
     join_date TEXT DEFAULT 'August 2025',
     valid_thru TEXT DEFAULT 'DEC 2026',
@@ -22,15 +26,27 @@ CREATE TABLE IF NOT EXISTS student_members (
     target_societies TEXT[] NOT NULL DEFAULT '{"IEEE Student Branch SREC"}',
     skills TEXT[] NOT NULL DEFAULT '{}',
     bio_sop TEXT,
+    payment_mode TEXT DEFAULT 'upi',
+    transaction_ref TEXT,
     avatar_url TEXT,
     security_pin TEXT DEFAULT '1234',
-    password TEXT DEFAULT '1234'
+    password TEXT DEFAULT 'srecieee@1234',
+    awards_count INT DEFAULT 0,
+    events_count INT DEFAULT 0
 );
 
 -- Migration helpers if table already exists
-ALTER TABLE student_members ADD COLUMN IF NOT EXISTS password TEXT DEFAULT '1234';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS password TEXT DEFAULT 'srecieee@1234';
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS security_pin TEXT DEFAULT '1234';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS gender TEXT;
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS designation TEXT DEFAULT 'Student Member';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS applicant_type TEXT DEFAULT 'undergraduate';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS membership_type TEXT DEFAULT 'new';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS payment_mode TEXT DEFAULT 'upi';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS transaction_ref TEXT;
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS awards_count INT DEFAULT 0;
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS events_count INT DEFAULT 0;
 ALTER TABLE student_members ADD COLUMN IF NOT EXISTS target_societies TEXT[] DEFAULT '{"IEEE Student Branch SREC"}';
 
 -- 2. Create index for fast login lookup
