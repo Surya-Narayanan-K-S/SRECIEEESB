@@ -8,7 +8,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 import { Capacitor } from "@capacitor/core";
 import { AnimatePresence, motion } from "framer-motion";
-import InstallPrompt from "@/components/InstallPrompt";
 import Index from "./pages/Index";
 import AboutPage from "./pages/AboutPage";
 import SocietiesPage from "./pages/SocietiesPage";
@@ -85,25 +84,24 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => (
   </motion.div>
 );
 
-// Smart Responsive Home:
-// 1. When INSTALLED (Native Capacitor APK, Android/iOS Standalone PWA) -> Opens the dedicated Mobile App
-// 2. When in WEB BROWSER (Phone or PC Chrome/Safari/Edge) -> Opens the Full Website
+// Smart Domain & Platform Routing:
+// - Separate App Domain (e.g. app.*, m.*, mobile.*) or Native Capacitor APK -> Serves Mobile App directly
+// - Main Website Domain -> Serves Full Website
+// - Direct routes (/app, /web) are always accessible anywhere
 const ResponsiveHome = () => {
-  // Check if running as native mobile app (Capacitor Android/iOS)
   const isNativeApp = Capacitor.isNativePlatform();
+  const hostname = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+  const isAppDomain =
+    hostname.startsWith("app.") ||
+    hostname.startsWith("m.") ||
+    hostname.startsWith("mobile.") ||
+    hostname.includes("-app.") ||
+    hostname.includes("ieee-app");
 
-  // Check if running as installed standalone PWA on phone home screen
-  const isInstalledPWA =
-    typeof window !== "undefined" &&
-    (window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any)?.standalone === true ||
-      (typeof document !== "undefined" && document.referrer.includes("android-app://")));
-
-  if (isNativeApp || isInstalledPWA) {
+  if (isNativeApp || isAppDomain) {
     return <MobileAppPage />;
   }
 
-  // Regular Web Browser on phone or PC
   return <Index />;
 };
 
@@ -167,7 +165,6 @@ const App = () => {
         <Sonner />
         {!Capacitor.isNativePlatform() && <SpeedInsights />}
         {!Capacitor.isNativePlatform() && <Analytics />}
-        {!Capacitor.isNativePlatform() && <InstallPrompt />}
         <RouterComponent>
           <AnimatedRoutes />
         </RouterComponent>

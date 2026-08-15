@@ -23,8 +23,15 @@ CREATE TABLE IF NOT EXISTS student_members (
     skills TEXT[] NOT NULL DEFAULT '{}',
     bio_sop TEXT,
     avatar_url TEXT,
-    security_pin TEXT DEFAULT '1234'
+    security_pin TEXT DEFAULT '1234',
+    password TEXT DEFAULT '1234'
 );
+
+-- Migration helpers if table already exists
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS password TEXT DEFAULT '1234';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS security_pin TEXT DEFAULT '1234';
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE student_members ADD COLUMN IF NOT EXISTS target_societies TEXT[] DEFAULT '{"IEEE Student Branch SREC"}';
 
 -- 2. Create index for fast login lookup
 CREATE INDEX IF NOT EXISTS idx_student_members_ieee_id ON student_members (ieee_id);

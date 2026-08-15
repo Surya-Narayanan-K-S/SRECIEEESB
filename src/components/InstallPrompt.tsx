@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Download, X, Sparkles, Smartphone, Share, PlusSquare, CheckCircle2, ChevronUp } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Capacitor } from "@capacitor/core";
 import srecLogo from "@/assets/srec-logo.png";
@@ -17,8 +17,6 @@ interface BeforeInstallPromptEvent extends Event {
 export const InstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [installed, setInstalled] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
@@ -32,14 +30,10 @@ export const InstallPrompt = () => {
       return;
     }
 
-    // Detect iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
-    setIsIOS(isIosDevice);
-
     const isMobile = window.innerWidth < 768 || /android|iphone|ipad|ipod|mobile/.test(userAgent);
 
-    // Capture standard PWA install event and automatically trigger on user interaction
+    // Capture standard PWA install event and automatically prompt to add to app screen
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       const promptEvent = e as BeforeInstallPromptEvent;
@@ -48,8 +42,7 @@ export const InstallPrompt = () => {
       if (isMobile) {
         setIsVisible(true);
 
-        // Automatically prompt installation upon the very first user tap / gesture
-        const autoPromptHandler = async () => {
+        const autoTriggerAdd = async () => {
           try {
             await promptEvent.prompt();
             const { outcome } = await promptEvent.userChoice;
@@ -59,23 +52,29 @@ export const InstallPrompt = () => {
               setIsDismissed(true);
             }
           } catch (err) {
-            console.log("Auto install prompt note:", err);
+            console.log("Auto prompt note:", err);
           }
         };
 
-        // Attach one-time auto trigger on first screen tap
-        window.addEventListener("touchstart", autoPromptHandler, { once: true });
-        window.addEventListener("click", autoPromptHandler, { once: true });
+        // Try immediate trigger after short delay
+        setTimeout(() => {
+          autoTriggerAdd().catch(() => {});
+        }, 500);
+
+        // Also bind to first interaction
+        window.addEventListener("touchstart", autoTriggerAdd, { once: true, passive: true });
+        window.addEventListener("pointerdown", autoTriggerAdd, { once: true, passive: true });
+        window.addEventListener("click", autoTriggerAdd, { once: true });
       }
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    // If mobile, show prompt card
+    // If mobile, show prompt card immediately
     if (isMobile) {
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 1000);
+      }, 500);
       return () => {
         clearTimeout(timer);
         window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -87,9 +86,10 @@ export const InstallPrompt = () => {
     };
   }, []);
 
-  const [showInstructions, setShowInstructions] = useState(false);
+  const [isPrompting, setIsPrompting] = useState(false);
 
   const handleInstallClick = async () => {
+    // 1. If native beforeinstallprompt is ready, trigger Chrome's installation prompt
     if (deferredPrompt) {
       try {
         await deferredPrompt.prompt();
@@ -99,15 +99,41 @@ export const InstallPrompt = () => {
           setTimeout(() => {
             setIsVisible(false);
             setIsDismissed(true);
-          }, 2000);
+          }, 1500);
         }
       } catch (err) {
         console.error("Install prompt error", err);
       }
       setDeferredPrompt(null);
-    } else {
-      setShowInstructions(true);
+      return;
     }
+
+    // 2. If deferredPrompt was not yet captured, listen and prompt as soon as available
+    setIsPrompting(true);
+    const oneTimePrompt = async (e: Event) => {
+      e.preventDefault();
+      const promptEvent = e as BeforeInstallPromptEvent;
+      try {
+        await promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
+        if (outcome === "accepted") {
+          setInstalled(true);
+          setTimeout(() => {
+            setIsVisible(false);
+            setIsDismissed(true);
+          }, 1500);
+        }
+      } catch (err) {
+        console.log("Install prompt error", err);
+      }
+      window.removeEventListener("beforeinstallprompt", oneTimePrompt);
+      setIsPrompting(false);
+    };
+
+    window.addEventListener("beforeinstallprompt", oneTimePrompt, { once: true });
+    setTimeout(() => {
+      setIsPrompting(false);
+    }, 2000);
   };
 
   const handleDismiss = () => {
@@ -115,7 +141,7 @@ export const InstallPrompt = () => {
     setIsDismissed(true);
   };
 
-  // If dismissed, show a small floating pill on mobile so user can re-open install popup anytime
+  // If dismissed, show a small floating pill on mobile so user can install anytime
   if (isDismissed && !Capacitor.isNativePlatform()) {
     return (
       <motion.button
@@ -158,7 +184,7 @@ export const InstallPrompt = () => {
                   Install SREC IEEE App
                 </h4>
                 <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 font-extrabold text-[8px] border border-emerald-200">
-                  Chrome App
+                  Direct
                 </span>
               </div>
               <p className="text-[10px] text-slate-500 font-medium mt-0.5">
@@ -176,48 +202,6 @@ export const InstallPrompt = () => {
           </button>
         </div>
 
-        {/* Chrome Android & iOS Safari Instructions if toggled */}
-        {showInstructions && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="p-2.5 rounded-2xl bg-blue-50 border border-blue-200 text-[#002855] text-[11px] space-y-1.5"
-          >
-            {isIOS ? (
-              <>
-                <p className="font-extrabold flex items-center gap-1 text-[11px]">
-                  <Share size={12} /> To Install on iPhone:
-                </p>
-                <p className="text-[10px] leading-snug">
-                  1. Tap <strong>Share</strong> <Share size={10} className="inline mx-0.5" /> in Safari.<br />
-                  2. Tap <strong>Add to Home Screen</strong> <PlusSquare size={10} className="inline mx-0.5" />.<br />
-                  3. Tap <strong>Add</strong> at top-right.
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="font-extrabold flex items-center gap-1 text-[11px]">
-                  <Smartphone size={12} /> To Install in Chrome on Android:
-                </p>
-                <p className="text-[10px] leading-snug">
-                  1. Tap Chrome menu <strong>(⋮)</strong> at top-right.<br />
-                  2. Tap <strong>Install app</strong> (or <strong>Add to Home screen</strong>).<br />
-                  3. Tap <strong>Install</strong> to add directly to your app drawer!
-                </p>
-              </>
-            )}
-
-            <div className="pt-1">
-              <a
-                href="/app"
-                className="w-full py-1.5 rounded-xl bg-[#002855] text-white text-center block text-[10px] font-black uppercase tracking-wider shadow-sm hover:bg-[#001c3d] transition-colors"
-              >
-                Launch Mobile App Now →
-              </a>
-            </div>
-          </motion.div>
-        )}
-
         {/* Actions Row */}
         <div className="flex items-center gap-2 pt-0.5">
           <button
@@ -225,7 +209,7 @@ export const InstallPrompt = () => {
             className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#002855] to-[#00629B] hover:from-[#001c3d] hover:to-[#004780] text-white font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"
           >
             <Download size={13} />
-            <span>{installed ? "Installed!" : deferredPrompt ? "Install Chrome App" : "Install App"}</span>
+            <span>{installed ? "Installed!" : "Install App"}</span>
           </button>
 
           <button
@@ -241,4 +225,3 @@ export const InstallPrompt = () => {
 };
 
 export default InstallPrompt;
-

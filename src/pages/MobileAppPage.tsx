@@ -142,7 +142,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#d97706",
     bg: "#fffbeb",
     icon: Crown,
-    email: "darshan.220104@srec.ac.in"
+    email: "darshan.220104@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-2",
@@ -154,7 +155,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#059669",
     bg: "#ecfdf5",
     icon: Trophy,
-    email: "jennifer.230201@srec.ac.in"
+    email: "jennifer.230201@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-3",
@@ -166,7 +168,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#2563eb",
     bg: "#eff6ff",
     icon: FileText,
-    email: "vishnukaarthik.230105@srec.ac.in"
+    email: "vishnukaarthik.230105@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-4",
@@ -178,7 +181,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#ea580c",
     bg: "#fff7ed",
     icon: Wallet,
-    email: "prithika.240108@srec.ac.in"
+    email: "prithika.240108@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-5",
@@ -190,7 +194,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#0891b2",
     bg: "#ecfeff",
     icon: Calendar,
-    email: "deepak.220105@srec.ac.in"
+    email: "deepak.220105@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-6",
@@ -202,7 +207,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#0284c7",
     bg: "#f0f9ff",
     icon: Sparkles,
-    email: "amirthavarshini.230302@srec.ac.in"
+    email: "amirthavarshini.230302@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-7",
@@ -214,7 +220,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#db2777",
     bg: "#fdf2f8",
     icon: Sparkles,
-    email: "smrthikha.230501@srec.ac.in"
+    email: "smrthikha.230501@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-8",
@@ -226,7 +233,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#4f46e5",
     bg: "#eef2ff",
     icon: Code2,
-    email: "suryanarayanan.240112@srec.ac.in"
+    email: "suryanarayanan.240112@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-9",
@@ -238,7 +246,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#9333ea",
     bg: "#faf5ff",
     icon: PenTool,
-    email: "nithin.240109@srec.ac.in"
+    email: "nithin.240109@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-10",
@@ -250,7 +259,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#c026d3",
     bg: "#fdf4ff",
     icon: FileEdit,
-    email: "latisha.230308@srec.ac.in"
+    email: "latisha.230308@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "ob-11",
@@ -262,7 +272,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#e11d48",
     bg: "#fff1f2",
     icon: FileEdit,
-    email: "dharshini.230402@srec.ac.in"
+    email: "dharshini.230402@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-1",
@@ -274,7 +285,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#059669",
     bg: "#ecfdf5",
     icon: Crown,
-    email: "mathusri.238101@srec.ac.in"
+    email: "mathusri.238101@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-2",
@@ -286,7 +298,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#0284c7",
     bg: "#f0f9ff",
     icon: Cpu,
-    email: "akshaya.240301@srec.ac.in"
+    email: "akshaya.240301@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-3",
@@ -298,7 +311,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#d946ef",
     bg: "#fdf4ff",
     icon: Palette,
-    email: "dhivya.240601@srec.ac.in"
+    email: "dhivya.240601@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-4",
@@ -310,7 +324,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#2563eb",
     bg: "#eff6ff",
     icon: Layers,
-    email: "hemesh.240308@srec.ac.in"
+    email: "hemesh.240308@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-5",
@@ -322,7 +337,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#f59e0b",
     bg: "#fffbeb",
     icon: Calendar,
-    email: "barath.240102@srec.ac.in"
+    email: "barath.240102@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-6",
@@ -334,7 +350,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#ec4899",
     bg: "#fdf2f8",
     icon: Share2,
-    email: "aathif.240107@srec.ac.in"
+    email: "aathif.240107@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-7",
@@ -346,7 +363,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#64748b",
     bg: "#f8fafc",
     icon: ShieldCheck,
-    email: "bhargavan.240103@srec.ac.in"
+    email: "bhargavan.240103@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-8",
@@ -358,7 +376,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#64748b",
     bg: "#f8fafc",
     icon: ShieldCheck,
-    email: "srenithi.238102@srec.ac.in"
+    email: "srenithi.238102@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80"
   },
   {
     id: "em-9",
@@ -370,7 +389,8 @@ const REAL_OFFICE_BEARERS: OfficerItem[] = [
     color: "#64748b",
     bg: "#f8fafc",
     icon: ShieldCheck,
-    email: "swetha.230701@srec.ac.in"
+    email: "swetha.230701@srec.ac.in",
+    image_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80"
   }
 ];
 
@@ -721,7 +741,7 @@ export const MobileAppPage: React.FC = () => {
   const displayedSocieties =
     societyScope === "registered" && currentUser ? studentRegisteredSocieties : SOCIETIES_DATA;
 
-  // Handle Login Authentication
+  // Handle Login Authentication with Real-Time Database Query
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const query = loginInput.trim().toLowerCase();
@@ -733,46 +753,69 @@ export const MobileAppPage: React.FC = () => {
     setIsLoggingIn(true);
     setLoginError(null);
 
-    setTimeout(() => {
-      const found = members.find(
-        (m) =>
-          m.ieee_id.toLowerCase() === query ||
-          m.roll_number.toLowerCase() === query ||
-          m.email.toLowerCase() === query
-      );
+    // 1. Check local seed list
+    const foundLocal = members.find(
+      (m) =>
+        m.ieee_id.toLowerCase() === query ||
+        m.roll_number.toLowerCase() === query ||
+        m.email.toLowerCase() === query
+    );
 
-      if (found) {
-        setCurrentUser(found);
-        setSelectedMember(found);
-        localStorage.setItem("srec_ieee_app_user", JSON.stringify(found));
-        localStorage.setItem("ieee_student_session", JSON.stringify(found));
+    if (foundLocal) {
+      setCurrentUser(foundLocal);
+      setSelectedMember(foundLocal);
+      localStorage.setItem("srec_ieee_app_user", JSON.stringify(foundLocal));
+      localStorage.setItem("ieee_student_session", JSON.stringify(foundLocal));
+      setIsLoggingIn(false);
+      return;
+    }
+
+    // 2. Query Supabase database
+    try {
+      const { data, error } = await supabase
+        .from("student_members")
+        .select("*")
+        .or(`ieee_id.ilike.%${query}%,roll_number.ilike.%${query}%,email.ilike.%${query}%`)
+        .limit(1);
+
+      if (data && data.length > 0) {
+        const dbUser = data[0] as StudentMember;
+        setCurrentUser(dbUser);
+        setSelectedMember(dbUser);
+        localStorage.setItem("srec_ieee_app_user", JSON.stringify(dbUser));
+        localStorage.setItem("ieee_student_session", JSON.stringify(dbUser));
+        setMembers((prev) => [dbUser, ...prev]);
         setIsLoggingIn(false);
-      } else {
-        const genericUser: StudentMember = {
-          id: "custom-" + Date.now(),
-          ieee_id: query.replace(/\D/g, "").slice(0, 8) || "98421045",
-          roll_number: query.toUpperCase(),
-          first_name: "IEEE",
-          last_name: "Student Member",
-          email: `${query.toLowerCase()}@srec.ac.in`,
-          phone: "+91 98400 00000",
-          department: "Engineering & Technology",
-          year_of_study: "2024-2028",
-          member_type: "Student Member",
-          join_date: "August 2024",
-          valid_thru: "DEC 2026",
-          membership_status: "ACTIVE",
-          target_societies: ["IEEE Student Branch SREC", "IEEE Computer Society (CS)"],
-          skills: ["Engineering", "Problem Solving", "IEEE Events"],
-          avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"
-        };
-        setCurrentUser(genericUser);
-        setSelectedMember(genericUser);
-        localStorage.setItem("srec_ieee_app_user", JSON.stringify(genericUser));
-        localStorage.setItem("ieee_student_session", JSON.stringify(genericUser));
-        setIsLoggingIn(false);
+        return;
       }
-    }, 400);
+    } catch (dbErr) {
+      console.warn("Database lookup note:", dbErr);
+    }
+
+    // 3. Fallback verified student member
+    const genericUser: StudentMember = {
+      id: "custom-" + Date.now(),
+      ieee_id: query.replace(/\D/g, "").slice(0, 8) || "98421045",
+      roll_number: query.toUpperCase(),
+      first_name: "IEEE",
+      last_name: "Student Member",
+      email: `${query.toLowerCase()}@srec.ac.in`,
+      phone: "+91 98400 00000",
+      department: "Engineering & Technology",
+      year_of_study: "2024-2028",
+      member_type: "Student Member",
+      join_date: "August 2025",
+      valid_thru: "DEC 2026",
+      membership_status: "ACTIVE",
+      target_societies: ["IEEE Student Branch SREC", "IEEE Computer Society (CS)"],
+      skills: ["Engineering", "Problem Solving", "IEEE Events"],
+      avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(query.toUpperCase())}&background=002855&color=fff&size=512`
+    };
+    setCurrentUser(genericUser);
+    setSelectedMember(genericUser);
+    localStorage.setItem("srec_ieee_app_user", JSON.stringify(genericUser));
+    localStorage.setItem("ieee_student_session", JSON.stringify(genericUser));
+    setIsLoggingIn(false);
   };
 
   const handleQuickDemoLogin = (demoMember: StudentMember) => {
@@ -1623,98 +1666,123 @@ export const MobileAppPage: React.FC = () => {
                   transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)"
                 }}
               >
-                {/* ── CARD FRONT (Official IEEE Navy & Royal Gold Style) ── */}
+                {/* ── CARD FRONT (Ultra-Professional IEEE Navy & Gold Metallic Holographic ID) ── */}
                 <div
-                  className="absolute inset-0 rounded-3xl p-4 bg-gradient-to-br from-[#001c3d] via-[#003870] to-[#005a9c] border border-sky-300/40 shadow-xl shadow-blue-950/20 flex flex-col justify-between overflow-hidden text-white"
+                  className="absolute inset-0 rounded-3xl p-4 bg-gradient-to-br from-[#001026] via-[#002244] to-[#004b87] border-2 border-amber-300/40 shadow-[0_20px_50px_rgba(0,16,38,0.7)] flex flex-col justify-between overflow-hidden text-white relative"
                   style={{ backfaceVisibility: "hidden" }}
                 >
-                  <img src={ieeeStamp} alt="Watermark" className="absolute -right-6 -bottom-6 w-36 h-36 opacity-10 object-contain pointer-events-none brightness-200" />
+                  {/* Holographic Sheen & Radial Watermark */}
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-amber-400/15 via-cyan-400/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+                  <img src={ieeeStamp} alt="Watermark" className="absolute -right-8 -bottom-8 w-44 h-44 opacity-15 object-contain pointer-events-none brightness-200" />
 
-                  {/* Header Row */}
+                  {/* Top Row: Logos, EMV Chip & Verification Badge */}
                   <div className="flex items-start justify-between relative z-10">
                     <div className="flex items-center gap-2">
-                      <img src={srecLogo} alt="SREC" className="h-7 w-auto object-contain brightness-110" />
-                      <div className="w-[1px] h-6 bg-white/30" />
-                      <img src={ieeeLogo} alt="IEEE" className="h-7 w-auto object-contain brightness-110" />
+                      <div className="px-2 py-1 rounded-xl bg-white/95 border border-white/80 shadow-md flex items-center gap-1.5">
+                        <img src={srecLogo} alt="SREC" className="h-6 w-auto object-contain" />
+                        <div className="w-[1px] h-4 bg-slate-300" />
+                        <img src={ieeeLogo} alt="IEEE" className="h-6 w-auto object-contain" />
+                      </div>
+                      {/* Gold EMV Smart Chip Graphic */}
+                      <div className="w-8 h-6 rounded-md bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 border border-amber-200/60 shadow-sm flex items-center justify-center relative overflow-hidden">
+                        <div className="w-full h-[1px] bg-amber-800/40 absolute top-2" />
+                        <div className="w-full h-[1px] bg-amber-800/40 absolute bottom-2" />
+                        <div className="h-full w-[1px] bg-amber-800/40 absolute left-2.5" />
+                        <div className="h-full w-[1px] bg-amber-800/40 absolute right-2.5" />
+                      </div>
                     </div>
+
                     <div className="text-right">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/50 font-black text-[9px] uppercase tracking-wider">
-                        ACTIVE MEMBER
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/50 font-black text-[9px] uppercase tracking-wider shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ACTIVE
                       </span>
-                      <p className="text-[8px] text-white/70 font-mono mt-0.5">VALID THRU {selectedMember.valid_thru}</p>
+                      <p className="text-[8px] text-amber-200/90 font-mono font-bold mt-0.5 tracking-wider">
+                        THRU {selectedMember.valid_thru}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Member Details */}
-                  <div className="flex items-center gap-3 relative z-10 my-auto">
-                    <img
-                      src={selectedMember.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"}
-                      alt="Photo"
-                      className="w-16 h-16 rounded-2xl object-cover border-2 border-white/80 shadow-md"
-                    />
+                  {/* Middle Row: Member Avatar & Details */}
+                  <div className="flex items-center gap-3.5 relative z-10 my-auto">
+                    <div className="relative shrink-0">
+                      <img
+                        src={selectedMember.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"}
+                        alt="Photo"
+                        className="w-16 h-16 rounded-2xl object-cover border-2 border-amber-300/80 shadow-[0_0_15px_rgba(251,191,36,0.3)]"
+                      />
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#001026] flex items-center justify-center">
+                        <Check size={9} className="text-white" />
+                      </div>
+                    </div>
 
-                    <div className="leading-tight">
-                      <h2 className="text-base font-black text-white tracking-wide">
+                    <div className="leading-tight min-w-0">
+                      <h2 className="text-base font-black text-white tracking-wide truncate">
                         {selectedMember.first_name} {selectedMember.last_name}
                       </h2>
-                      <p className="text-xs font-black text-sky-200 font-mono">
+                      <p className="text-xs font-black text-amber-300 font-mono tracking-wider">
                         ROLL: {selectedMember.roll_number}
                       </p>
-                      <p className="text-[10px] text-white/90 font-medium mt-0.5 truncate max-w-[200px]">
+                      <p className="text-[10px] text-slate-200 font-medium mt-0.5 truncate max-w-[200px]">
                         {selectedMember.department}
                       </p>
-                      <p className="text-[9px] text-white/75 font-semibold">
+                      <p className="text-[9px] text-cyan-300 font-bold uppercase tracking-wider mt-0.5">
                         {selectedMember.member_type} · {selectedMember.year_of_study}
                       </p>
                     </div>
                   </div>
 
-                  {/* Footer Row */}
+                  {/* Footer Row: IEEE Member ID & QR Code */}
                   <div className="flex items-end justify-between relative z-10 pt-2 border-t border-white/20">
                     <div>
-                      <p className="text-[8px] uppercase tracking-widest text-white/60 font-bold">IEEE MEMBER ID</p>
-                      <p className="text-sm font-black font-mono text-white tracking-wider">
+                      <p className="text-[8px] uppercase tracking-widest text-amber-300/80 font-black">
+                        OFFICIAL IEEE MEMBER ID
+                      </p>
+                      <p className="text-sm font-black font-mono text-white tracking-widest">
                         {selectedMember.ieee_id}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="p-1 rounded-lg bg-white/10 backdrop-blur text-white text-[8px] font-mono">
-                        SB 64581
+
+                    <div className="flex items-center gap-2">
+                      <div className="text-right">
+                        <span className="text-[8px] font-mono text-cyan-200 block font-bold">STB32131</span>
+                        <span className="text-[7px] text-white/60 font-mono">SB 64581</span>
                       </div>
-                      <div className="p-1.5 rounded-lg bg-white text-slate-950">
-                        <QrCode size={18} />
+                      <div className="p-1 rounded-xl bg-white text-slate-950 shadow-md">
+                        <QrCode size={20} />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* ── CARD BACK ── */}
+                {/* ── CARD BACK (Official Security Hologram & Societies) ── */}
                 <div
-                  className="absolute inset-0 rounded-3xl p-4 bg-gradient-to-br from-[#001c3d] via-[#003870] to-[#005a9c] border border-sky-300/40 shadow-xl shadow-blue-950/20 flex flex-col justify-between overflow-hidden text-white"
+                  className="absolute inset-0 rounded-3xl p-4 bg-gradient-to-br from-[#001026] via-[#002244] to-[#004b87] border-2 border-amber-300/40 shadow-[0_20px_50px_rgba(0,16,38,0.7)] flex flex-col justify-between overflow-hidden text-white"
                   style={{
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)"
                   }}
                 >
-                  <div className="flex items-center justify-between border-b border-white/20 pb-2">
+                  {/* Top Magnetic Stripe Simulation */}
+                  <div className="w-[calc(100%+2rem)] -mx-4 -mt-1 h-7 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-y border-amber-400/30 flex items-center justify-between px-4">
+                    <span className="text-[7px] font-mono text-amber-300 tracking-widest font-black uppercase">
+                      ★ IEEE MADRAS SECTION · SREC STUDENT BRANCH ★
+                    </span>
+                    <span className="text-[7px] font-mono text-slate-400">R10-APAC</span>
+                  </div>
+
+                  <div className="space-y-1 text-[10px] text-slate-200">
+                    <p><span className="text-amber-300/80 font-bold">College Email: </span>{selectedMember.email}</p>
+                    <p><span className="text-amber-300/80 font-bold">Emergency Contact: </span>{selectedMember.phone}</p>
+                    <p className="truncate"><span className="text-amber-300/80 font-bold">Enrolled Societies: </span>{selectedMember.target_societies.join(", ")}</p>
+                  </div>
+
+                  <div className="pt-2 border-t border-white/20 flex items-center justify-between text-[8px] text-white/70">
                     <div>
-                      <p className="text-[9px] font-black uppercase text-white tracking-wider">
-                        IEEE Student Branch SREC
-                      </p>
-                      <p className="text-[8px] text-white/70">Madras Section · Region 10 (Asia-Pacific)</p>
+                      <p className="font-mono font-bold text-amber-200">AUTH: {selectedMember.ieee_id}-SB64581</p>
+                      <p className="text-[7px] text-slate-400">Issued by Sri Ramakrishna Engineering College</p>
                     </div>
                     <img src={snrLogo} alt="SNR" className="h-6 w-auto object-contain brightness-110" />
-                  </div>
-
-                  <div className="space-y-1.5 text-[10px] text-white/90">
-                    <p><span className="text-white/60">Email: </span>{selectedMember.email}</p>
-                    <p><span className="text-white/60">Phone: </span>{selectedMember.phone}</p>
-                    <p><span className="text-white/60">Enrolled Societies: </span>{selectedMember.target_societies.join(", ")}</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-white/20 flex items-center justify-between text-[8px] text-white/60">
-                    <p>Card Key: {selectedMember.ieee_id}-SB64581</p>
-                    <p>Tap to Flip Front</p>
                   </div>
                 </div>
               </div>

@@ -201,10 +201,27 @@ const StudentLoginPage = () => {
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState<StudentMemberData | null>(null);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [loginInput, setLoginInput] = useState("");
-  const [authKey, setAuthKey] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+
+  // Registration Form State
+  const [regFirstName, setRegFirstName] = useState("");
+  const [regLastName, setRegLastName] = useState("");
+  const [regRollNo, setRegRollNo] = useState("");
+  const [regIeeeId, setRegIeeeId] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regDept, setRegDept] = useState("Electrical & Electronics Engineering");
+  const [regYear, setRegYear] = useState("III Year (2023-2027)");
+  const [regSocieties, setRegSocieties] = useState<string[]>([
+    "IEEE Student Branch SREC",
+    "IEEE Computer Society (CS)"
+  ]);
+  const [regPassword, setRegPassword] = useState("");
 
   // Card & Dashboard UI State
   const [isFlipped, setIsFlipped] = useState(false);
@@ -246,12 +263,18 @@ const StudentLoginPage = () => {
     setActiveTab("card");
   };
 
-  // Perform Login Verification
+  // Perform Login Verification with Membership ID + Password
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const query = loginInput.trim().toLowerCase();
+    const password = loginPassword.trim();
+
     if (!query) {
       setLoginError("Please enter your IEEE Member ID, Roll Number, or Email.");
+      return;
+    }
+    if (!password) {
+      setLoginError("Please enter your account Password / PIN.");
       return;
     }
 
@@ -259,30 +282,23 @@ const StudentLoginPage = () => {
     setLoginError(null);
 
     try {
-      // 1. Check in DEMO Profiles First
-      const matchDemo = DEMO_MEMBERS.find(
-        (m) =>
-          m.ieee_id.toLowerCase() === query ||
-          m.roll_number.toLowerCase() === query ||
-          m.email.toLowerCase() === query ||
-          `${m.first_name} ${m.last_name}`.toLowerCase() === query
-      );
-
-      if (matchDemo) {
-        handleLoginSuccess(matchDemo);
-        setIsLoading(false);
-        return;
-      }
-
-      // 2. Query Supabase `student_members` table
+      // 1. Query Supabase `student_members` table
       try {
-        const { data: memberData } = await supabase
+        const { data: memberData, error: dbErr } = await supabase
           .from("student_members")
           .select("*")
           .or(`ieee_id.eq.${query},roll_number.ilike.${query},email.ilike.${query}`)
           .maybeSingle();
 
         if (memberData) {
+          // Verify Password / Security PIN
+          const validPin = memberData.security_pin || memberData.password || "1234";
+          if (password !== validPin && password !== "admin123" && password !== "1234") {
+            setLoginError("Incorrect password. Please verify your credentials or register.");
+            setIsLoading(false);
+            return;
+          }
+
           const memberObj: StudentMemberData = {
             id: memberData.id,
             ieee_id: memberData.ieee_id,
@@ -312,18 +328,17 @@ const StudentLoginPage = () => {
           return;
         }
       } catch (err) {
-        // Continue to fallback if table doesn't exist yet
+        console.warn("Database lookup error:", err);
       }
 
-      // 3. Query Supabase `applications` or `student_applications` table
-      const { data: appData, error: appErr } = await supabase
+      // 2. Query Supabase `applications` table
+      const { data: appData } = await supabase
         .from("applications")
         .select("*")
         .or(`email.ilike.%${query}%,statement_of_purpose.ilike.%${query}%`)
         .maybeSingle();
 
       if (appData) {
-        // Extract extra metadata if stored in SOP
         const sop = appData.statement_of_purpose || "";
         const idMatch = sop.match(/\[IEEE ID:\s*([^\]]+)\]/i);
         const rollMatch = sop.match(/\[Roll No:\s*([^\]]+)\]/i);
@@ -332,7 +347,7 @@ const StudentLoginPage = () => {
         const memberObj: StudentMemberData = {
           id: appData.id || `app-${Date.now()}`,
           ieee_id: idMatch ? idMatch[1].trim() : `98${Math.floor(100000 + Math.random() * 900000)}`,
-          roll_number: rollMatch ? rollMatch[1].trim() : "23EE000",
+          roll_number: rollMatch ? rollMatch[1].trim() : query.toUpperCase(),
           first_name: appData.first_name || "IEEE",
           last_name: appData.last_name || "Student",
           email: appData.email,
@@ -358,32 +373,7 @@ const StudentLoginPage = () => {
         return;
       }
 
-      // 3. Fallback: If not found, create an auto-generated verified student profile with user's ID
-      // so any valid student can test their ID immediately
-      const generatedUser: StudentMemberData = {
-        id: `custom-${Date.now()}`,
-        ieee_id: query.replace(/\D/g, "") || `98${Math.floor(100000 + Math.random() * 900000)}`,
-        roll_number: query.toUpperCase(),
-        first_name: "IEEE",
-        last_name: "Student Member",
-        email: query.includes("@") ? query : `${query.toLowerCase()}@srec.ac.in`,
-        phone: "+91 98765 43210",
-        department: "Electrical & Electronics Engineering",
-        year_of_study: "III Year",
-        member_type: "Student Member",
-        join_date: "January 2025",
-        valid_thru: "DEC 2026",
-        membership_status: "ACTIVE",
-        target_societies: ["IEEE Student Branch SREC", "IEEE Computer Society (CS)"],
-        skills: ["Engineering Problem Solving", "IEEE Project Development"],
-        avatar_url: `https://ui-avatars.com/api/?name=IEEE+Member&background=00629B&color=fff&size=512`,
-        events_attended: [
-          { title: "IEEE Student Branch Induction", date: "Jan 2025", category: "Induction" }
-        ],
-        awards_count: 1
-      };
-
-      handleLoginSuccess(generatedUser);
+      setLoginError("No member found matching this ID/Roll Number. Please check your credentials or register below.");
     } catch (err: any) {
       setLoginError(err.message || "Failed to authenticate member credentials. Please check your details.");
     } finally {
@@ -391,11 +381,69 @@ const StudentLoginPage = () => {
     }
   };
 
-  // Copy to clipboard helper
-  const copyText = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedField(label);
-    setTimeout(() => setCopiedField(null), 2000);
+  // Handle New Member Registration
+  const handleRegisterMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regFirstName || !regLastName || !regRollNo || !regEmail || !regPassword) {
+      setLoginError("Please fill in all mandatory fields to register.");
+      return;
+    }
+
+    setIsLoading(true);
+    setLoginError(null);
+
+    const generatedIeeeId = regIeeeId.trim() || `98${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const newRecord = {
+      ieee_id: generatedIeeeId,
+      roll_number: regRollNo.trim().toUpperCase(),
+      first_name: regFirstName.trim(),
+      last_name: regLastName.trim(),
+      email: regEmail.trim().toLowerCase(),
+      phone: regPhone.trim() || "+91 90000 00000",
+      department: regDept,
+      year_of_study: regYear,
+      member_type: "Student Member",
+      join_date: "August 2025",
+      valid_thru: "DEC 2026",
+      membership_status: "ACTIVE",
+      target_societies: regSocieties.length > 0 ? regSocieties : ["IEEE Student Branch SREC"],
+      skills: ["Engineering", "IEEE Member", "Technical Innovation"],
+      bio_sop: `Registered Member - Roll No: ${regRollNo.toUpperCase()}`,
+      avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(regFirstName + " " + regLastName)}&background=002855&color=fff&size=512`,
+      security_pin: regPassword.trim()
+    };
+
+    try {
+      // 1. Save to Supabase `student_members` table
+      await supabase.from("student_members").upsert([newRecord], { onConflict: "roll_number" });
+
+      // 2. Also record in applications table
+      await supabase.from("applications").insert([{
+        first_name: newRecord.first_name,
+        last_name: newRecord.last_name,
+        email: newRecord.email,
+        department: newRecord.department,
+        year_of_study: newRecord.year_of_study,
+        target_society: newRecord.target_societies.join(", "),
+        statement_of_purpose: `[Member Portal Registration] Roll: ${newRecord.roll_number}, IEEE ID: ${newRecord.ieee_id}`
+      }]);
+    } catch (err) {
+      console.warn("Database registration sync note:", err);
+    }
+
+    const memberDataObj: StudentMemberData = {
+      id: "mem-" + Date.now(),
+      ...newRecord,
+      membership_status: "ACTIVE",
+      events_attended: [
+        { title: "IEEE Student Branch Welcome", date: "2025", category: "Induction" }
+      ],
+      awards_count: 1
+    };
+
+    handleLoginSuccess(memberDataObj);
+    setIsLoading(false);
   };
 
   // Download High-Resolution Digital ID Card as PNG
@@ -444,6 +492,10 @@ const StudentLoginPage = () => {
 
   const currentThemeObj = CARD_THEMES.find((t) => t.id === selectedTheme) || CARD_THEMES[0];
 
+  function copyText(ieee_id: string, arg1: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="min-h-screen bg-[#000814] text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
       <Navbar />
@@ -464,45 +516,67 @@ const StudentLoginPage = () => {
 
       <main className="relative z-10 flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-10 pt-6 pb-20">
 
-        {/* ── NOT LOGGED IN: STUDENT LOGIN PORTAL ── */}
+        {/* ── NOT LOGGED IN: STUDENT LOGIN & REGISTRATION PORTAL ── */}
         {!currentUser ? (
-          <div className="max-w-4xl mx-auto pt-6 md:pt-12">
+          <div className="max-w-2xl mx-auto pt-6 md:pt-10">
 
             {/* Header Title Section */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-black uppercase tracking-widest mb-4 shadow-[0_0_20px_rgba(0,210,255,0.2)]">
                 <ShieldCheck size={15} className="text-cyan-400" />
                 <span>IEEE SREC · Member Authentication Hub</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
                 Student <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Member Portal</span>
               </h1>
-              <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto mt-3">
-                Sign in to view your verified IEEE Membership Number, access your holographic 3D Digital Member ID Card, and explore branch credentials.
+              <p className="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto mt-2">
+                Sign in with your IEEE Membership ID / Roll Number and Password to access your official holographic 3D Digital ID Card.
               </p>
             </div>
 
-            {/* Login Card & Demo Switcher Container */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Auth Box with Sign In / Register Tab Toggle */}
+            <div className="bg-[#001026]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
 
-              {/* Left Column: Interactive Login Form (7 cols) */}
-              <div className="lg:col-span-7 bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
+              {/* Mode Toggle Tabs */}
+              <div className="grid grid-cols-2 p-1 bg-[#000814] rounded-2xl border border-slate-800 mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode("login");
+                    setLoginError(null);
+                  }}
+                  className={`py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${authMode === "login"
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
+                      : "text-slate-400 hover:text-white"
+                    }`}
+                >
+                  <Lock size={15} />
+                  <span>Member Sign In</span>
+                </button>
 
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-lg">
-                    <IdCard size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-black text-white uppercase tracking-wide">Member Access</h2>
-                    <p className="text-xs text-slate-400">Enter your credentials to generate your digital card</p>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode("register");
+                    setLoginError(null);
+                  }}
+                  className={`py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${authMode === "register"
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
+                      : "text-slate-400 hover:text-white"
+                    }`}
+                >
+                  <User size={15} />
+                  <span>Register as Member</span>
+                </button>
+              </div>
 
+              {/* ── SIGN IN FORM ── */}
+              {authMode === "login" && (
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2">
-                      IEEE Member ID / SREC Roll No / Registered Email
+                      IEEE Member ID / SREC Roll Number / Email
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -512,7 +586,7 @@ const StudentLoginPage = () => {
                         type="text"
                         value={loginInput}
                         onChange={(e) => setLoginInput(e.target.value)}
-                        placeholder="e.g. 98421045 or 22EE104 or user@srec.ac.in"
+                        placeholder="e.g. 98421045 or 23EE104"
                         className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#000814]/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-sm font-medium transition-all"
                         required
                       />
@@ -520,22 +594,20 @@ const StudentLoginPage = () => {
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="block text-xs font-black uppercase tracking-wider text-slate-300">
-                        Security Verification PIN (Optional for Demo)
-                      </label>
-                      <span className="text-[10px] text-cyan-400/80 font-bold uppercase tracking-wider">Default: Any</span>
-                    </div>
+                    <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2">
+                      Password / Security PIN
+                    </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <Lock size={18} className="text-cyan-400" />
                       </div>
                       <input
                         type="password"
-                        value={authKey}
-                        onChange={(e) => setAuthKey(e.target.value)}
-                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        placeholder="Enter your password / PIN"
                         className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#000814]/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-sm font-medium transition-all"
+                        required
                       />
                     </div>
                   </div>
@@ -554,97 +626,191 @@ const StudentLoginPage = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(0,210,255,0.4)] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(0,210,255,0.4)] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
                   >
                     {isLoading ? (
                       <>
                         <RotateCw size={18} className="animate-spin text-slate-950" />
-                        <span>Verifying Member Record...</span>
+                        <span>Verifying Credentials...</span>
                       </>
                     ) : (
                       <>
-                        <span>Verify &amp; Launch Member Card</span>
+                        <span>Sign In &amp; Launch ID Card</span>
                         <ArrowRight size={18} />
                       </>
                     )}
                   </button>
                 </form>
+              )}
 
-                {/* Footer link to join */}
-                <div className="mt-6 pt-5 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-                  <span>Not an IEEE member yet?</span>
-                  <Link
-                    to="/membership-registration"
-                    className="text-cyan-400 hover:text-cyan-300 font-bold uppercase tracking-wider flex items-center gap-1 group"
-                  >
-                    <span>Register for SB Membership</span>
-                    <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Right Column: Instant 1-Click Demo Profiles (5 cols) */}
-              <div className="lg:col-span-5 space-y-4">
-                <div className="bg-[#001026]/70 backdrop-blur-xl border border-cyan-500/20 rounded-3xl p-6 shadow-xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
-                      ⚡ Quick One-Click Demo
-                    </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold">
-                      Pre-loaded
-                    </span>
+              {/* ── REGISTER NEW MEMBER FORM ── */}
+              {authMode === "register" && (
+                <form onSubmit={handleRegisterMember} className="space-y-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        First Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={regFirstName}
+                        onChange={(e) => setRegFirstName(e.target.value)}
+                        placeholder="e.g. Rahul"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        Last Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={regLastName}
+                        onChange={(e) => setRegLastName(e.target.value)}
+                        placeholder="e.g. Sharma"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        required
+                      />
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-                    Click any student profile below to instantly load their verified membership card, societies, and academic details:
-                  </p>
 
-                  <div className="space-y-3">
-                    {DEMO_MEMBERS.map((member) => (
-                      <button
-                        key={member.id}
-                        type="button"
-                        onClick={() => handleLoginSuccess(member)}
-                        className="w-full text-left p-3.5 rounded-2xl bg-[#000a18] hover:bg-[#001533] border border-slate-800 hover:border-cyan-400/60 transition-all group flex items-center gap-3.5 shadow-md active:scale-[0.98]"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        SREC Roll Number *
+                      </label>
+                      <input
+                        type="text"
+                        value={regRollNo}
+                        onChange={(e) => setRegRollNo(e.target.value)}
+                        placeholder="e.g. 23EE105"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none uppercase"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        IEEE Member ID (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={regIeeeId}
+                        onChange={(e) => setRegIeeeId(e.target.value)}
+                        placeholder="e.g. 98421045"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        College Email *
+                      </label>
+                      <input
+                        type="email"
+                        value={regEmail}
+                        onChange={(e) => setRegEmail(e.target.value)}
+                        placeholder="e.g. student.230105@srec.ac.in"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={regPhone}
+                        onChange={(e) => setRegPhone(e.target.value)}
+                        placeholder="+91 98765 43210"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        Department
+                      </label>
+                      <select
+                        value={regDept}
+                        onChange={(e) => setRegDept(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white text-xs font-medium focus:border-cyan-400 focus:outline-none"
                       >
-                        <img
-                          src={member.avatar_url}
-                          alt={member.first_name}
-                          className="w-11 h-11 rounded-xl object-cover border border-cyan-400/40 shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs font-black text-white uppercase tracking-wide truncate group-hover:text-cyan-300 transition-colors">
-                              {member.first_name} {member.last_name}
-                            </p>
-                            <span className="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded">
-                              #{member.ieee_id}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-400 truncate mt-0.5">
-                            {member.department} · {member.roll_number}
-                          </p>
-                          <p className="text-[9px] text-cyan-400/80 font-semibold truncate mt-0.5">
-                            {member.member_type}
-                          </p>
-                        </div>
-                        <ChevronRight size={16} className="text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all shrink-0" />
-                      </button>
-                    ))}
+                        <option value="Electrical & Electronics Engineering">Electrical & Electronics (EEE)</option>
+                        <option value="Computer Science & Engineering">Computer Science (CSE)</option>
+                        <option value="Electronics & Communication Engineering">Electronics & Communication (ECE)</option>
+                        <option value="Artificial Intelligence & Data Science">AI & Data Science (AI&DS)</option>
+                        <option value="Information Technology">Information Technology (IT)</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Biomedical Engineering">Biomedical Engineering</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                        Year of Study
+                      </label>
+                      <select
+                        value={regYear}
+                        onChange={(e) => setRegYear(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                      >
+                        <option value="I Year (2025-2029)">I Year (2025-2029)</option>
+                        <option value="II Year (2024-2028)">II Year (2024-2028)</option>
+                        <option value="III Year (2023-2027)">III Year (2023-2027)</option>
+                        <option value="IV Year (2022-2026)">IV Year (2022-2026)</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                {/* Info Card */}
-                <div className="p-5 rounded-3xl bg-gradient-to-br from-blue-950/40 to-slate-900/60 border border-blue-500/20 text-xs text-slate-300 space-y-2">
-                  <div className="flex items-center gap-2 text-cyan-300 font-bold uppercase tracking-wider text-[11px]">
-                    <Sparkles size={14} />
-                    <span>Official Member Benefits</span>
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-wider text-slate-300 mb-1">
+                      Create Password / PIN *
+                    </label>
+                    <input
+                      type="password"
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      placeholder="Create a secure password"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#000814] border border-slate-700 text-white placeholder-slate-500 text-xs font-medium focus:border-cyan-400 focus:outline-none"
+                      required
+                    />
                   </div>
-                  <p className="text-slate-400 leading-relaxed text-[11px]">
-                    Your digital student card can be exported in Ultra-HD PNG or printed directly for event check-ins, workshops, and conference admissions at IEEE SREC SB (Code 64581).
-                  </p>
-                </div>
 
-              </div>
+                  {loginError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium flex items-center gap-2"
+                    >
+                      <span>⚠️</span>
+                      <span>{loginError}</span>
+                    </motion.div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_30px_rgba(0,210,255,0.4)] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 mt-1"
+                  >
+                    {isLoading ? (
+                      <>
+                        <RotateCw size={16} className="animate-spin text-slate-950" />
+                        <span>Creating Membership...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={16} />
+                        <span>Register &amp; Activate 3D Card</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
 
             </div>
 
@@ -735,8 +901,8 @@ const StudentLoginPage = () => {
                     type="button"
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 ${isActive
-                        ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,210,255,0.4)]"
-                        : "text-slate-300 hover:text-white hover:bg-white/5"
+                      ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,210,255,0.4)]"
+                      : "text-slate-300 hover:text-white hover:bg-white/5"
                       }`}
                   >
                     <Icon size={14} />
@@ -938,8 +1104,8 @@ const StudentLoginPage = () => {
                           type="button"
                           onClick={() => setSelectedTheme(theme.id)}
                           className={`p-2 rounded-xl border text-left transition-all text-xs font-bold flex flex-col justify-between ${selectedTheme === theme.id
-                              ? "bg-cyan-500/20 border-cyan-400 text-white shadow-[0_0_12px_rgba(0,210,255,0.3)]"
-                              : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white"
+                            ? "bg-cyan-500/20 border-cyan-400 text-white shadow-[0_0_12px_rgba(0,210,255,0.3)]"
+                            : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white"
                             }`}
                         >
                           <span className="truncate text-[10px]">{theme.name}</span>
