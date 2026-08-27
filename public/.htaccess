@@ -7,13 +7,12 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Route all other URLs to index.html for client-side React routing
+  # Do NOT rewrite missing static asset extensions to index.html (prevents Uncaught SyntaxError: Unexpected token '<')
+  RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|ico|json|pdf|woff|woff2|ttf|eot|mp4|webm|map|webmanifest)$ [NC]
+
+  # Route all other URLs (SPA routes) to index.html for client-side React routing
   RewriteRule ^ index.html [L]
 </IfModule>
-
-# Handle 404s via React SPA
-ErrorDocument 404 /index.html
-ErrorDocument 403 /index.html
 
 # Prevent directory listing
 Options -Indexes

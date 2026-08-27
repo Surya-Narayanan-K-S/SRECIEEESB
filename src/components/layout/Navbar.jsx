@@ -158,7 +158,7 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation Links (Responsive Centered Glass Pills) */}
-            <nav className="flex items-center justify-center gap-1 2xl:gap-1.5 flex-nowrap mx-auto overflow-hidden">
+            <nav className="flex items-center justify-center gap-1 2xl:gap-1.5 flex-nowrap mx-auto overflow-visible relative z-50">
               {/* Always-visible Core Links */}
               {coreNavLinks.map((l) => {
                 const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
@@ -196,10 +196,11 @@ const Navbar = () => {
               })}
 
               {/* ── MORE DROPDOWN ── */}
-              <div className="relative shrink-0" ref={moreRef}>
+              <div className="relative shrink-0 z-[100]" ref={moreRef}>
                 <button
+                  type="button"
                   onClick={() => setMoreOpen((p) => !p)}
-                  className={`relative flex items-center gap-1 px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl ${
+                  className={`relative flex items-center gap-1 px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl cursor-pointer ${
                     isMoreActive || moreOpen
                       ? "text-cyan-200 bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border-cyan-400/60 shadow-[0_0_20px_rgba(0,210,255,0.35)] scale-[1.02]"
                       : "text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-white/20 shadow-xs"
@@ -219,7 +220,7 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 6, scale: 0.95 }}
                       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-80 max-h-[80vh] overflow-y-auto rounded-2xl z-50 bg-[#000814] border-2 border-cyan-500/30 shadow-[0_25px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(0,210,255,0.2)]"
+                      className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-80 max-h-[75vh] overflow-y-auto rounded-2xl z-[100] bg-[#000814]/98 backdrop-blur-2xl border-2 border-cyan-500/40 shadow-[0_25px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(0,210,255,0.25)]"
                     >
                       <div className="px-5 py-3.5 bg-[#001026] border-b border-white/10 flex items-center justify-between sticky top-0 z-10">
                         <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
