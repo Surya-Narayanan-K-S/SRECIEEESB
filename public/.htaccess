@@ -1,11 +1,19 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+
+  # Serve existing physical files and directories directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Route all other URLs to index.html for client-side React routing
+  RewriteRule ^ index.html [L]
 </IfModule>
 
-# Prevent directory browsing
+# Handle 404s via React SPA
+ErrorDocument 404 /index.html
+ErrorDocument 403 /index.html
+
+# Prevent directory listing
 Options -Indexes

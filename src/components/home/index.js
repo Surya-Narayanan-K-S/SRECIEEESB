@@ -1,0 +1,9 @@
+export { default as Hero } from "./Hero";
+export { default as Highlights } from "./Highlights";
+export { default as Impact } from "./Impact";
+export { default as Stats } from "./Stats";
+export { default as Benefits } from "./Benefits";
+export { default as UpcomingEvent } from "./UpcomingEvent";
+export { default as Testimonials } from "./Testimonials";
+export { default as TechStack } from "./TechStack";
+export { default as Newsletter } from "./Newsletter";

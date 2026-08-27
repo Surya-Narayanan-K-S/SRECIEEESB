@@ -1,15 +1,37 @@
-# ⚡ IEEE SREC Web Platform & Subdomain Ecosystem
+<div align="center">
 
-> Official web architecture and deployment documentation for the IEEE Student Branch at Sri Ramakrishna Engineering College (SREC), Coimbatore.
+# ⚡ IEEE SREC Web Platform & Ecosystem
+### The Official Web Architecture, Portal, and Subdomain Subsystems for IEEE Student Branch SREC (STB32131 / STB64071)
+
+[![CI Status](https://github.com/Surya-Narayanan-K-S/SRECIEEESB/actions/workflows/ci.yml/badge.svg)](https://github.com/Surya-Narayanan-K-S/SRECIEEESB/actions)
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![Vitest](https://img.shields.io/badge/Tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![License: All Rights Reserved](https://img.shields.io/badge/License-All_Rights_Reserved-red.svg)](LICENSE)
+
+[**Live Production Portal**](https://srecieee.org) • [**AECTSD Conference Portal**](https://aectsd2027.srecieee.org) • [**Documentation**](#-system-architecture) • [**Contributing**](CONTRIBUTING.md)
+
+</div>
 
 ---
 
-## 🧠 System Architecture Mind Map
+## 📖 Overview
+
+The **IEEE SREC Web Platform** is an enterprise Single Page Application (SPA) and content management ecosystem built for the **IEEE Student Branch at Sri Ramakrishna Engineering College (SREC), Coimbatore** (IEEE Madras Section, Region 10).
+
+The ecosystem powers the public student branch portal, 8 specialized technical society chapter micro-portals, real-time event reporting, leadership roster indexing, administrative content management, and dynamic PDF membership credential generation with live Forex currency conversions.
+
+---
+
+## 🧠 System Architecture
 
 ```mermaid
 mindmap
   root((IEEE SREC Web Ecosystem))
-    GoDaddy cPanel Server
+    GoDaddy Production Server
       Main Domain: srecieee.org
         Folder: /public_html/
         Build: srecieee-main-deploy.zip
@@ -18,38 +40,33 @@ mindmap
         Folder: /public_html/aectsd2027/
         Build: aectsd-subdomain-deploy.zip
         Routing: Apache .htaccess SPA Rewrite
-    GitHub Repositories
-      Repo 1: Main Site Portal
-        Local Directory: IEEESREC-main
-        Tech: React 18 + Vite 7 + Tailwind
-        CI/CD: .github/workflows/deploy.yml
-        Target: /public_html/
-      Repo 2: AECTSD 2027 Conference
-        Local Directory: aectsd-main
-        Tech: React 18 + Vite 8 + Tailwind
-        CI/CD: .github/workflows/deploy.yml
-        Target: /public_html/aectsd2027/
-    Backend & Services
+    GitHub CI/CD Pipelines
+      Continuous Integration: .github/workflows/ci.yml
+        Jobs: Lint, Vitest, Production Build
+      Automated Deployment: .github/workflows/deploy.yml
+        Target: GoDaddy cPanel via FTP
+    Backend & Cloud Services
       Database: Supabase PostgreSQL
-      Authentication: Supabase Auth
-      Storage: Supabase Storage & Assets
-      Analytics: Vercel Speed Insights & Analytics
+      Authentication: Supabase Auth & JWT
+      Storage: Supabase Storage Buckets
+      Analytics: Vercel Web Analytics & Speed Insights
 ```
 
 ---
 
-## 🗺️ Dual Repository & Host Mapping
+## 🗺️ Dual Repository & Host Pipeline
 
 ```mermaid
 graph TD
     subgraph GitHub ["GitHub Repositories (CI/CD)"]
-        R1["Repo 1: srecieeesb (IEEESREC-main)<br/>Main Website Portal"] -->|Push to main| W1[".github/workflows/deploy.yml"]
-        R2["Repo 2: ICAECTSD (aectsd-main)<br/>AECTSD 2027 Subdomain Portal"] -->|Push to main| W2[".github/workflows/deploy.yml"]
+        R1["Repo 1: srecieeesb (IEEESREC-main)<br/>Main Website Portal"] -->|Push to main| CI1[".github/workflows/ci.yml"]
+        CI1 -->|Automated Validation| CD1[".github/workflows/deploy.yml"]
+        R2["Repo 2: ICAECTSD (aectsd-main)<br/>AECTSD 2027 Subdomain Portal"] -->|Push to main| CD2[".github/workflows/deploy.yml"]
     end
 
     subgraph GoDaddy ["GoDaddy Web Hosting (cPanel)"]
-        W1 -->|FTP Deploy| Root["public_html/<br/>(srecieee.org)"]
-        W2 -->|FTP Deploy| SubFolder["public_html/aectsd2027/<br/>(aectsd2027.srecieee.org)"]
+        CD1 -->|FTP Secure Deploy| Root["public_html/<br/>(srecieee.org)"]
+        CD2 -->|FTP Secure Deploy| SubFolder["public_html/aectsd2027/<br/>(aectsd2027.srecieee.org)"]
     end
 
     subgraph Endpoints ["Live Public Websites"]
@@ -60,108 +77,144 @@ graph TD
 
 ---
 
-## 📊 Dual Repository Summary Matrix
+## ✨ Key Features & Capabilities
 
-| Feature / Detail | Repository 1: Main Website | Repository 2: Conference Subdomain |
-| :--- | :--- | :--- |
-| **Public URL** | [`https://srecieee.org`](https://srecieee.org) | [`https://aectsd2027.srecieee.org`](https://aectsd2027.srecieee.org) |
-| **Local Folder** | `IEEESREC-main` | `aectsd-main` |
-| **GoDaddy Folder** | `public_html/` | `public_html/aectsd2027/` |
-| **GitHub Action** | `.github/workflows/deploy.yml` | `.github/workflows/deploy.yml` |
-| **ZIP Package** | `srecieee-main-deploy.zip` | `aectsd-subdomain-deploy.zip` |
-| **Routing Setup** | `.htaccess` (SPA rewrite to `/index.html`) | `.htaccess` (SPA rewrite to `/index.html`) |
+- **🏛️ Dynamic Society Chapters**: Dedicated portals for Computer Society (CS), Power Electronics (PELS), Women in Engineering (WIE), Computational Intelligence (CIS), Communications (ComSoc), Medicine & Biology (EMBS), Instrumentation & Measurement (IMS), and SREC Branch Hub.
+- **💱 Live Forex Rate Engine**: Real-time USD to INR exchange rate integration using Fawaz Ahmed Currency API with automated 5-minute polling, dynamic INR calculations, and itemized receipt breakdowns.
+- **🪪 Identity Card & Certificate Engine**: Dynamic client-side and server-backed PDF rendering engine generating official IEEE credential cards with QR verification.
+- **🔒 Inspection & Security Guard**: Intelligent DevTools detection and asset cloaking preventing unauthorized source copying and asset extraction.
+- **🔐 Role-Based Administrative CMS**: Secure admin dashboard for managing event reports, executive committee rosters, gallery assets, and student directory records.
+- **📊 Real-time Supabase Database**: PostgreSQL schema with Row-Level Security (RLS) policies and asset buckets.
+- **📱 Hybrid Mobile Ready**: Integrated with **Capacitor 8** for Android APK compilation.
+- **⚡ Performance First**: Vite 7 bundle chunking, modern image compression, and sub-second page transitions.
 
 ---
 
-## 🌐 Main Website Page Index (`srecieee.org`)
+## 📂 Project Structure
 
-The main repository contains 24+ pages compiled into a Single Page Application (SPA):
-
-```mermaid
-graph LR
-    App["App Router (App.tsx)"] --> Core["Core Pages"]
-    App --> Societies["Society Chapters"]
-    App --> Admin["Admin CMS Portal"]
-
-    Core --> P1["/ (Home)"]
-    Core --> P2["/about (About)"]
-    Core --> P3["/activities (Events)"]
-    Core --> P4["/team (Office Bearers)"]
-    Core --> P5["/past-bearers (Past Bearers)"]
-    Core --> P6["/gallery (Gallery)"]
-    Core --> P7["/awards (Awards)"]
-    Core --> P8["/annual-plans (Plans)"]
-    Core --> P9["/funding (Funding)"]
-    Core --> P10["/join (Join Us)"]
-    Core --> P11["/contact (Contact Us)"]
-
-    Societies --> S0["/societies (Overview)"]
-    Societies --> S1["/societies/srec (IEEE SREC)"]
-    Societies --> S2["/societies/wie (WIE)"]
-    Societies --> S3["/societies/embs (EMBS)"]
-    Societies --> S4["/societies/cs (Computer Society)"]
-    Societies --> S5["/societies/comsoc (ComSoc)"]
-    Societies --> S6["/societies/pels (PELS)"]
-    Societies --> S7["/societies/im (IMS)"]
-    Societies --> S8["/societies/cis (CIS)"]
-
-    Admin --> A1["/admin-login (Login)"]
-    Admin --> A2["/admin/* (Dashboard & CMS)"]
+```text
+IEEESREC-main/
+├── .github/                      # CI/CD workflows and PR templates
+├── public/                       # Static public assets, icons, manifest
+├── resources/                    # Database migrations, archives, scripts
+│   ├── database/                 # SQL schemas and versioned migrations
+│   └── tests/                    # Test configuration files
+├── src/
+│   ├── assets/                   # Vector logos, society graphics, imagery
+│   ├── components/               # Modular UI component hierarchy
+│   │   ├── about/                # About, publications, research components
+│   │   ├── gallery/              # Lightbox gallery, counter, media viewer
+│   │   ├── home/                 # Hero, impact, highlights, testimonials
+│   │   ├── layout/               # Navbar, footer, navigation links
+│   │   ├── modals/               # Modals, chatbots, download prompts
+│   │   ├── security/             # DevTools inspection lock & asset cloaking
+│   │   ├── societies/            # Society roster cards & chapter components
+│   │   └── ui/                   # Radix atomic UI design system
+│   ├── hooks/                    # Custom React hooks (useCurrencyExchange, useContent)
+│   ├── lib/                      # Supabase client and utilities
+│   ├── pages/                    # 25+ Application route views
+│   │   ├── admin/                # Secure CMS & leadership admin dashboards
+│   │   ├── home/                 # Main landing experience
+│   │   ├── info/                 # About, team, awards, funding, contact
+│   │   ├── office-bearers/       # Branch and past leadership rosters
+│   │   ├── reports/              # Interactive event reports & media
+│   │   ├── societies/            # 8 society chapter individual pages
+│   │   └── student/              # Student portal, auth & registration
+│   ├── styles/                   # Global CSS & Tailwind design tokens
+│   ├── test/                     # Vitest unit and integration test suite
+│   ├── utils/                    # PDF generator, currency API, data helpers
+│   ├── App.jsx                   # Master routing & provider tree
+│   └── main.jsx                  # Application entry point
+├── eslint.config.js              # ESLint configuration
+├── jsconfig.json                 # Path aliases configuration
+├── tailwind.config.js            # Tailwind design system configuration
+├── vite.config.js                # Vite build and bundle configuration
+└── vitest.config.js              # Vitest test runner configuration
 ```
 
 ---
 
-## 🛠️ Local Development & Build Workflow
+## 🛠️ Local Development & Quickstart
 
-### Repository 1: Main Site (`IEEESREC-main`)
+### Prerequisites
+- Node.js v20.x or higher
+- npm v10.x or higher
+
+### 1. Clone & Install
 ```bash
-cd IEEESREC-main
+git clone https://github.com/Surya-Narayanan-K-S/SRECIEEESB.git
+cd SRECIEEESB
 npm install
-npm run dev     # Starts local server on http://localhost:5173
-npm run build   # Compiles production build into dist/
 ```
 
-### Repository 2: Subdomain Site (`aectsd-main`)
+### 2. Environment Configuration
+Create a `.env` file from `.env.example`:
 ```bash
-cd aectsd-main
-bun install     # or npm install
-bun dev         # Starts local server on http://localhost:5173
-bun run build   # Compiles production build into dist/
+cp .env.example .env
+```
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
 ```
 
 ---
 
-## ☁️ GoDaddy Deployment Instructions
+## 🧪 Testing & Verification
 
-### 📦 Option A: Quick Upload via cPanel File Manager
+```bash
+# Code Quality Check
+npm run lint
 
-1. **Main Site (`srecieee.org`)**:
-   - Build `IEEESREC-main` $\rightarrow$ Zip contents of `dist/` into `srecieee-main-deploy.zip`.
-   - Open cPanel File Manager $\rightarrow$ Navigate to `public_html/`.
-   - Upload `srecieee-main-deploy.zip` and click **Extract**.
+# Automated Linter Fixes
+npm run lint:fix
 
-2. **Subdomain Site (`aectsd2027.srecieee.org`)**:
-   - Create subdomain `aectsd2027` in GoDaddy cPanel pointing to `public_html/aectsd2027`.
-   - Build `aectsd-main` $\rightarrow$ Zip contents of `dist/` into `aectsd-subdomain-deploy.zip`.
-   - Open cPanel File Manager $\rightarrow$ Navigate to `public_html/aectsd2027/`.
-   - Upload `aectsd-subdomain-deploy.zip` and click **Extract**.
+# Run Vitest Suite
+npm run test
+
+# Production Build
+npm run build
+```
 
 ---
 
-### 🔄 Option B: Automated Push-to-Deploy via GitHub Actions
+## 🗄️ Database & Migrations
 
-Add the following **Secrets** in each GitHub repository (**Settings > Secrets and variables > Actions**):
+All PostgreSQL schemas and versioned SQL scripts reside in [`resources/database/`](resources/database/):
 
-* `FTP_SERVER`: GoDaddy FTP Server Host (e.g. `ftp.srecieee.org` or IP)
-* `FTP_USERNAME`: GoDaddy cPanel FTP Username
-* `FTP_PASSWORD`: GoDaddy cPanel FTP Password
-* `VITE_SUPABASE_URL`: Supabase Project URL
-* `VITE_SUPABASE_ANON_KEY`: Supabase Public Anon Key
+| Schema File | Purpose |
+| :--- | :--- |
+| `resources/database/schema.sql` | Core schema for branch database tables |
+| `resources/database/migrations/` | Versioned incremental database migrations |
+| `resources/database/societies_table.sql` | Chapter metadata and leadership tables |
+| `resources/database/create_event_reports_table.sql` | Event reports and media attachments |
+| `resources/database/membership_registration_schema.sql` | Student membership directory and cards |
 
-Once added, pushing any commit to `main` branch will automatically build and deploy the changes via FTP!
+---
+
+## 🚀 Deployment
+
+### Automated GitHub Actions Deploy
+
+1. Set the following repository secrets (**Settings > Secrets and variables > Actions**):
+   - `FTP_SERVER`
+   - `FTP_USERNAME`
+   - `FTP_PASSWORD`
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+
+2. Every commit pushed to the `main` branch will automatically run quality tests and deploy via FTP to GoDaddy cPanel.
 
 ---
 
 ## 📄 License & Copyright
 
-© IEEE Student Branch SREC (STB64071). All rights reserved.
+**All Rights Reserved.**
+
+This codebase and associated digital assets are confidential and proprietary intellectual property of **IEEE Student Branch SREC (STB32131 / STB64071)**. Unauthorized copying, cloning, modification, redistribution, or reverse engineering of this software or any portion thereof is strictly prohibited. See [`LICENSE`](LICENSE) for complete terms.
+
+© 2024–2026 **IEEE Student Branch SREC**. All rights reserved.

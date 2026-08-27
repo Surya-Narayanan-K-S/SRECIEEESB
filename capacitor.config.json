@@ -1,0 +1,6 @@
+{
+  "appId": "org.srecieee.app",
+  "appName": "IEEE SREC",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
