@@ -4,6 +4,7 @@ import ieeeLogo from "@/assets/ieees.png";
 
 // Authorized IEEE SREC Administrator Passwords for Developer Tools Inspection
 const AUTHORIZED_ADMIN_PASSWORDS = [
+  "One@Two@Three@Four@Five@Six@Seven@Eight@Nine@Ten",
   "ieeesrec2026",
   "srecieeeadmin",
   "STB64071",
