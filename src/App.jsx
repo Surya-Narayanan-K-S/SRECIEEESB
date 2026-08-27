@@ -57,10 +57,20 @@ const ScrollToTop = () => {
 const RouterComponent = Capacitor.isNativePlatform()
     ? HashRouter
     : (props) => (<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} {...props}/>);
-// Page Transition Wrapper — smooth fade+slide animation on every route change
-const PageTransition = ({ children }) => (<motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="relative z-10">
-    {children}
-  </motion.div>);
+// Page Transition & Fault Isolation Wrapper — guarantees EVERY page is protected by ErrorBoundary + Report Bug
+const PageTransition = ({ children }) => (
+  <ErrorBoundary>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className="relative z-10"
+    >
+      {children}
+    </motion.div>
+  </ErrorBoundary>
+);
 // Smart Domain & Platform Routing
 const ResponsiveHome = () => {
     const isNativeApp = Capacitor.isNativePlatform();
