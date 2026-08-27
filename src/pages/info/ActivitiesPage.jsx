@@ -10,6 +10,9 @@ const getValidImageUrl = (url) => {
     if (!url || !url.trim())
         return fallbackImage;
     const target = url.trim();
+    if (target.includes("salesforce.com") || target.includes("pardot.com")) {
+        return fallbackImage;
+    }
     if (target.includes("drive.google.com")) {
         const match = target.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match?.[1]) {
