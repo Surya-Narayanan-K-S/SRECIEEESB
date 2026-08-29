@@ -1,18 +1,9 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-
-  # Serve existing physical files and directories directly
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-
-  # Do NOT rewrite missing static asset extensions to index.html (prevents Uncaught SyntaxError: Unexpected token '<')
-  RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|svg|ico|json|pdf|woff|woff2|ttf|eot|mp4|webm|map|webmanifest)$ [NC]
-
-  # Route all other URLs (SPA routes) to index.html for client-side React routing
-  RewriteRule ^ index.html [L]
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
 </IfModule>
-
-# Prevent directory listing
-Options -Indexes
