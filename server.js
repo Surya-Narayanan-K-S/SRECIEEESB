@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DIST_DIR = path.join(__dirname, 'dist');
-const PORT = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=UTF-8',
@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      // SPA Fallback: serve index.html for all client-side routes (e.g. /activities, /admin)
+      // SPA Fallback: serve index.html for all client-side routes (e.g. /activities, /admin, /launch)
       filePath = path.join(DIST_DIR, 'index.html');
     }
     
@@ -57,6 +57,6 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`IEEE SREC Portal server running on port ${PORT}`);
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
