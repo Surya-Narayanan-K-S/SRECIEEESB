@@ -38,4 +38,5 @@ src/assets/gallery/ieee/Report/
 *.apk
 public/*.apk
 *.zip
-
+.vite/
+.vite
