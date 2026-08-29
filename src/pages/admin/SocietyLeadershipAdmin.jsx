@@ -319,9 +319,9 @@ export const SocietyLeadershipAdmin = () => {
             </p>
           </div>
 
-          <button type="button" onClick={fetchLeadership} className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold transition shadow-md">
+          <button type="button" onClick={fetchLeadership} className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold transition shadow-md cursor-pointer">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""}/>
-            <span>Refresh Roster</span>
+            <span>Refresh Leadership</span>
           </button>
         </div>
       </div>

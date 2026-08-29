@@ -1225,7 +1225,7 @@ const MembershipRegistrationPage = () => {
                           <h2 className="text-2xl md:text-3xl font-serif font-black text-slate-900">
                             Personal & Academic Credentials
                           </h2>
-                          <p className="text-slate-500 text-sm mt-1">Provide your verified SREC student information for official membership roster records.</p>
+                          <p className="text-slate-500 text-sm mt-1">Provide your verified SREC student information for official membership directory records.</p>
                         </div>
 
                         {/* Passport Photo Upload (MANDATORY *) */}
@@ -1259,7 +1259,7 @@ const MembershipRegistrationPage = () => {
                             {/* File Input Controls */}
                             <div className="flex-1 space-y-2 text-center sm:text-left">
                               <p className="text-xs text-slate-600 font-medium">
-                                Upload a clear passport size photo for your 3D Digital IEEE Member ID Card &amp; Official Roster.
+                                Upload a clear passport size photo for your 3D Digital IEEE Member ID Card &amp; Official Records.
                               </p>
                               <div className="flex items-center justify-center sm:justify-start gap-3">
                                 <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#003366] hover:bg-[#002244] text-white text-xs font-extrabold uppercase tracking-wider shadow-md transition active:scale-95">
@@ -1275,8 +1275,6 @@ const MembershipRegistrationPage = () => {
                             </div>
                           </div>
                         </div>
-
-                        {/* Staff ID / Roll Number & Official Email */}
                         <div className="grid sm:grid-cols-2 gap-6">
                           <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -1720,7 +1718,7 @@ const MembershipRegistrationPage = () => {
 
                   <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#00629b] block">Live Roster Calculator</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#00629b] block">Live Fee Calculator</span>
                       <h3 className="text-lg font-serif font-black text-slate-900">Summary Review</h3>
                     </div>
                     <Lock size={16} className="text-[#00629b]"/>

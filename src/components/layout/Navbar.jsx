@@ -28,7 +28,7 @@ const extendedNavLinks = [
 
 // Complete "More" dropdown links
 const moreLinks = [
-  { label: "Team", href: "/team", icon: Compass, desc: "Executive committee roster" },
+  { label: "Team", href: "/team", icon: Compass, desc: "Executive committee team" },
   { label: "Awards & Honors", href: "/awards", icon: Award, desc: "Accolades & recognitions" },
   { label: "Funding & Grants", href: "/funding", icon: DollarSign, desc: "Funding requests & grants" },
   { label: "Photo Gallery", href: "/gallery", icon: Image, desc: "Event memories & archives" },
@@ -42,7 +42,7 @@ const mobileGridLinks = [
     { label: "Home", href: "/", icon: Home, desc: "Main landing page" },
     { label: "About", href: "/about", icon: Info, desc: "Our history & vision" },
     { label: "Societies", href: "/societies", icon: Users, desc: "Technical chapters" },
-    { label: "Society Bearers", href: "/societies/office-bearers", icon: Crown, desc: "Chapter leadership roster" },
+    { label: "Society Bearers", href: "/societies/office-bearers", icon: Crown, desc: "Chapter leadership directory" },
     { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
     { label: "Gallery", href: "/gallery", icon: Image, desc: "Event photo archives" },
     { label: "Reports", href: "/reports", icon: FileText, desc: "Official Congress & event reports" },

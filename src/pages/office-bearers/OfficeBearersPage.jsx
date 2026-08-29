@@ -530,8 +530,9 @@ const OfficeBearersPage = () => {
     const [tab, setTab] = useState("all");
     const [section, setSection] = useState("bearers");
     useEffect(() => {
-        const load = async () => {
-            setLoading(true);
+        let isMounted = true;
+        const load = async (isBackground = false) => {
+            if (!isBackground) setLoading(true);
             try {
                 const [b1, e1, b2, e2] = await Promise.all([
                     supabase.from("srec_office_bearers").select("*"),
@@ -539,6 +540,7 @@ const OfficeBearersPage = () => {
                     supabase.from("new_office_bearers").select("*"),
                     supabase.from("new_executive_members").select("*"),
                 ]);
+                if (!isMounted) return;
                 const srecB = (b1.data && b1.data.length > 0) ? b1.data : (b2.data && b2.data.length > 0) ? b2.data : [];
                 const srecE = (e1.data && e1.data.length > 0) ? e1.data : (e2.data && e2.data.length > 0) ? e2.data : [];
                 if (srecB.length > 0)
@@ -548,10 +550,22 @@ const OfficeBearersPage = () => {
             }
             catch { /* silent */ }
             finally {
-                setLoading(false);
+                if (isMounted && !isBackground) {
+                    setLoading(false);
+                }
             }
         };
-        load();
+        load(false);
+
+        // Auto-refresh every 15 seconds in background
+        const intervalId = setInterval(() => {
+            load(true);
+        }, 15000);
+
+        return () => {
+            isMounted = false;
+            clearInterval(intervalId);
+        };
     }, []);
     const sortedBearers = useMemo(() => [...bearers].sort((a, b) => getMeta(a.role).priority - getMeta(b.role).priority), [bearers]);
     const displayExecs = useMemo(() => [...execs].sort((a, b) => getMeta(a.role).priority - getMeta(b.role).priority), [execs]);

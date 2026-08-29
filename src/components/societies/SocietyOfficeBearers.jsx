@@ -479,6 +479,12 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
     }, [key]);
     useEffect(() => {
         fetchLeadership();
+
+        // 15-second auto-refresh interval for live office bearer roster
+        const refreshInterval = setInterval(() => {
+            fetchLeadership();
+        }, 15000);
+
         // Supabase Realtime synchronization strictly for this society's dedicated tables
         const channel = supabase
             .channel(`society-leadership-${key}-${Date.now()}`)
@@ -501,6 +507,7 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
         }
         channel.subscribe();
         return () => {
+            clearInterval(refreshInterval);
             supabase.removeChannel(channel);
         };
     }, [fetchLeadership, key]);
@@ -597,12 +604,14 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
             </h4>
 
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              {person.department && (<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 font-bold text-xs border border-white/10">
-                  <GraduationCap size={13} className="text-slate-400"/>
+              {person.department && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 font-bold text-xs border border-white/10">
+                  <GraduationCap size={13} className="text-slate-400" />
                   <span>{person.department}</span>
-                </span>)}
+                </span>
+              )}
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold text-[11px] border border-cyan-400/30">
-                <Briefcase size={12}/>
+                <Briefcase size={12} />
                 <span>{person.academic_year || "Active 2024-2026"}</span>
               </span>
             </div>
@@ -611,21 +620,34 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
           {/* Card Footer Actions */}
           <div className="pt-3.5 border-t border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"/>
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Official Roster
+                Official Leadership
               </span>
             </div>
 
             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-              {person.linkedin_url ? (<a href={person.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0077b5] hover:bg-[#005885] text-white font-bold text-xs transition-all shadow-xs">
-                  <Linkedin size={13}/>
+              {person.linkedin_url ? (
+                <a
+                  href={person.linkedin_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0077b5] hover:bg-[#005885] text-white font-bold text-xs transition-all shadow-xs cursor-pointer"
+                >
+                  <Linkedin size={13} />
                   <span>LinkedIn</span>
-                  <ExternalLink size={11}/>
-                </a>) : (<button type="button" onClick={() => setSelectedPerson(person)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-cyan-600 text-white font-bold text-xs transition-all shadow-xs">
+                  <ExternalLink size={11} />
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setSelectedPerson(person)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-cyan-600 text-white font-bold text-xs transition-all shadow-xs cursor-pointer"
+                >
                   <span>Profile</span>
-                  <ExternalLink size={11}/>
-                </button>)}
+                  <ExternalLink size={11} />
+                </button>
+              )}
             </div>
           </div>
         </div>

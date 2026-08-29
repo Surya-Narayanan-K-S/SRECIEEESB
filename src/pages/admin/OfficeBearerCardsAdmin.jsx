@@ -669,7 +669,7 @@ export const OfficeBearerCardsAdmin = () => {
               <span>{syncingDatabase ? "Syncing..." : "⚡ Sync from student_members"}</span>
             </button>
 
-            <button type="button" onClick={exportToExcelCSV} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition flex items-center gap-2 cursor-pointer active:scale-95 border border-emerald-400/30" title="Download filtered roster as Excel CSV">
+            <button type="button" onClick={exportToExcelCSV} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 transition flex items-center gap-2 cursor-pointer active:scale-95 border border-emerald-400/30" title="Download filtered directory as Excel CSV">
               <FileSpreadsheet size={15}/>
               <span>Export Excel ({filteredOfficers.length})</span>
             </button>
@@ -709,7 +709,7 @@ export const OfficeBearerCardsAdmin = () => {
             <p className="text-[10px] uppercase font-black tracking-widest text-emerald-400">Verified IEEE IDs</p>
             <p className="text-3xl font-black text-emerald-400 mt-1 tracking-tight">{stats.withIeeeId}</p>
             <p className="text-[11px] text-emerald-300/80 font-bold mt-0.5">
-              {stats.matchedRoster} Auto-matched with Roster
+              {stats.matchedRoster} Auto-matched with Directory
             </p>
           </div>
           <div className="w-13 h-13 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
@@ -1002,7 +1002,7 @@ export const OfficeBearerCardsAdmin = () => {
                   <div className="flex items-center gap-1.5">
                     {officer.is_matched_roster && (<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[9.5px] font-black uppercase">
                         <UserCheck size={11}/>
-                        <span>Roster</span>
+                        <span>Verified</span>
                       </span>)}
 
                     {hasIeeeId ? (<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10.5px] font-black font-mono">
@@ -1229,7 +1229,7 @@ export const OfficeBearerCardsAdmin = () => {
             <div className="flex items-center gap-2.5 text-white">
               <Crown size={18} className="text-amber-400"/>
               <h4 className="font-extrabold text-sm sm:text-base">
-                Office Bearers &amp; Executives ID Credentials Roster
+                Office Bearers &amp; Executives ID Credentials Directory
               </h4>
             </div>
             <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-black uppercase">
@@ -1270,7 +1270,7 @@ export const OfficeBearerCardsAdmin = () => {
                             <div className="flex items-center gap-1.5">
                               <p className="font-bold text-white text-sm">{officer.name}</p>
                               {officer.is_matched_roster && (<span className="inline-flex items-center px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-bold" title="Matched with student_members table">
-                                  ✓ Roster
+                                  ✓ Verified Member
                                 </span>)}
                             </div>
                             <p className="text-[11px] text-slate-400 font-mono">

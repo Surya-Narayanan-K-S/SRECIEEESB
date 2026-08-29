@@ -1,10 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SocietyOfficeBearers, { getSocietyKey } from "@/components/societies/SocietyOfficeBearers";
-import { ArrowLeft, Crown, Users, Sparkles, ExternalLink, ChevronRight, Shield, Layers, Cpu, Zap, Radio, Activity, Gauge, Compass, Heart, } from "lucide-react";
+import { ArrowLeft, Crown, Users, Sparkles, ExternalLink, ChevronRight, ChevronLeft, Shield, Layers, Cpu, Zap, Radio, Activity, Gauge, Compass, Heart, RefreshCw, } from "lucide-react";
 import srecCampus from "@/assets/srec-campus.png";
 const SOCIETIES = [
     {
@@ -135,6 +135,101 @@ const SocietyOfficeBearersPage = () => {
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [activeKey]);
+    const scrollContainerRef = useRef(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartXRef = useRef(0);
+    const scrollStartLeftRef = useRef(0);
+    const hasDraggedRef = useRef(false);
+
+    const checkScrollability = useCallback(() => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        const { scrollLeft, scrollWidth, clientWidth } = el;
+        setCanScrollLeft(scrollLeft > 6);
+        setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 6);
+    }, []);
+
+    useEffect(() => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        checkScrollability();
+        el.addEventListener("scroll", checkScrollability, { passive: true });
+        window.addEventListener("resize", checkScrollability);
+
+        // Smooth horizontal mouse wheel scrolling translation for desktop mice
+        const handleWheel = (e) => {
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                e.preventDefault();
+                el.scrollBy({ left: e.deltaY * 1.25, behavior: "smooth" });
+            }
+        };
+        el.addEventListener("wheel", handleWheel, { passive: false });
+
+        return () => {
+            el.removeEventListener("scroll", checkScrollability);
+            window.removeEventListener("resize", checkScrollability);
+            el.removeEventListener("wheel", handleWheel);
+        };
+    }, [checkScrollability]);
+
+    // Auto-scroll active society button into view centered
+    useEffect(() => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        const activeBtn = el.querySelector(`[data-society-key="${activeKey}"]`);
+        if (activeBtn) {
+            const containerRect = el.getBoundingClientRect();
+            const btnRect = activeBtn.getBoundingClientRect();
+            const currentScroll = el.scrollLeft;
+            const targetScroll = currentScroll + (btnRect.left - containerRect.left) - (containerRect.width / 2) + (btnRect.width / 2);
+            el.scrollTo({ left: Math.max(0, targetScroll), behavior: "smooth" });
+        }
+    }, [activeKey]);
+
+    const handleScroll = (direction) => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        const scrollAmount = direction === "left" ? -300 : 300;
+        el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    };
+
+    const handleMouseDown = (e) => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        setIsDragging(true);
+        hasDraggedRef.current = false;
+        dragStartXRef.current = e.pageX - el.offsetLeft;
+        scrollStartLeftRef.current = el.scrollLeft;
+
+        const handleMouseMove = (moveEvent) => {
+            const x = moveEvent.pageX - el.offsetLeft;
+            const walk = x - dragStartXRef.current;
+            if (Math.abs(walk) > 4) {
+                hasDraggedRef.current = true;
+                el.scrollLeft = scrollStartLeftRef.current - walk;
+            }
+        };
+
+        const handleMouseUp = () => {
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+            setTimeout(() => {
+                setIsDragging(false);
+                hasDraggedRef.current = false;
+            }, 50);
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseup", handleMouseUp);
+    };
+
+    const handleButtonClick = (key) => {
+        if (hasDraggedRef.current) return;
+        handleSelectSociety(key);
+    };
+
     const CurrentIcon = currentSociety.icon;
     return (<div className="min-h-screen flex flex-col relative text-white overflow-x-hidden" style={{
             background: "linear-gradient(160deg, #03050c 0%, #070c1b 35%, #050814 65%, #02040a 100%)",
@@ -191,7 +286,7 @@ const SocietyOfficeBearersPage = () => {
                   </span>
                   <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[11px] font-semibold flex items-center gap-1.5">
                     <Shield size={12} className="text-emerald-400"/>
-                    <span>Verified 2026 Roster</span>
+                    <span>Verified 2026 Leadership</span>
                   </span>
                 </div>
 
@@ -237,30 +332,93 @@ const SocietyOfficeBearersPage = () => {
               <p className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                 <Users size={14} className="text-cyan-400"/> Select Technical Society / Affinity Group
               </p>
-              <span className="text-[11px] text-slate-500 font-bold">
-                {SOCIETIES.length} Chapters Available
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] text-slate-500 font-bold hidden sm:inline">
+                  {SOCIETIES.length} Chapters Available
+                </span>
+                {/* Desktop Scroll Controls */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleScroll("left")}
+                    disabled={!canScrollLeft}
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center border transition-all ${
+                      canScrollLeft
+                        ? "bg-white/10 hover:bg-cyan-500 hover:text-slate-950 border-white/20 text-white cursor-pointer active:scale-90 shadow-md"
+                        : "bg-white/[0.02] border-white/5 text-slate-600 cursor-not-allowed opacity-30"
+                    }`}
+                    title="Scroll Left (or use mouse wheel / drag)"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleScroll("right")}
+                    disabled={!canScrollRight}
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center border transition-all ${
+                      canScrollRight
+                        ? "bg-white/10 hover:bg-cyan-500 hover:text-slate-950 border-white/20 text-white cursor-pointer active:scale-90 shadow-md"
+                        : "bg-white/[0.02] border-white/5 text-slate-600 cursor-not-allowed opacity-30"
+                    }`}
+                    title="Scroll Right (or use mouse wheel / drag)"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto no-scrollbar py-2 px-1">
-              {SOCIETIES.map((soc) => {
-            const isSelected = soc.key === activeKey;
-            const Icon = soc.icon;
-            return (<button key={soc.key} type="button" onClick={() => handleSelectSociety(soc.key)} className={`flex-shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${isSelected
-                    ? "shadow-lg scale-102 ring-2"
-                    : "bg-white/[0.04] text-slate-300 border border-white/10 hover:bg-white/[0.08] hover:text-white"}`} style={{
-                    background: isSelected ? soc.color : undefined,
-                    color: isSelected ? "#000" : undefined,
-                    borderColor: isSelected ? soc.color : undefined,
-                    boxShadow: isSelected ? `0 8px 25px -4px ${soc.color}70` : undefined,
-                }}>
-                    <Icon size={14} className={isSelected ? "text-slate-950" : "text-slate-400"}/>
-                    <span>{soc.shortCode}</span>
-                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md ${isSelected ? "bg-black/20 text-black" : "bg-white/10 text-slate-400"}`}>
-                      {soc.name.split(" ")[0]}
-                    </span>
-                  </button>);
-        })}
+            {/* Scrollable Container with Gradient Edge Hints */}
+            <div className="relative group">
+              {/* Left edge shadow hint */}
+              <div className={`pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#03050c] to-transparent z-10 transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`} />
+
+              <div
+                ref={scrollContainerRef}
+                onMouseDown={handleMouseDown}
+                className="flex gap-2.5 overflow-x-auto py-2.5 px-1 select-none cursor-grab active:cursor-grabbing scroll-smooth"
+                style={{
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "rgba(56,189,248,0.3) rgba(255,255,255,0.03)",
+                }}
+              >
+                {SOCIETIES.map((soc) => {
+                  const isSelected = soc.key === activeKey;
+                  const Icon = soc.icon;
+                  return (
+                    <button
+                      key={soc.key}
+                      data-society-key={soc.key}
+                      type="button"
+                      onClick={() => handleButtonClick(soc.key)}
+                      className={`flex-shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                        isSelected
+                          ? "shadow-xl scale-102 ring-2"
+                          : "bg-white/[0.04] text-slate-300 border border-white/10 hover:bg-white/[0.08] hover:text-white"
+                      }`}
+                      style={{
+                        background: isSelected ? soc.color : undefined,
+                        color: isSelected ? "#000" : undefined,
+                        borderColor: isSelected ? soc.color : undefined,
+                        boxShadow: isSelected ? `0 8px 25px -4px ${soc.color}70` : undefined,
+                      }}
+                    >
+                      <Icon size={14} className={isSelected ? "text-slate-950" : "text-slate-400"} />
+                      <span>{soc.shortCode}</span>
+                      <span
+                        className={`text-[9px] font-black px-1.5 py-0.5 rounded-md ${
+                          isSelected ? "bg-black/20 text-black" : "bg-white/10 text-slate-400"
+                        }`}
+                      >
+                        {soc.name.split(" ")[0]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Right edge shadow hint */}
+              <div className={`pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#03050c] to-transparent z-10 transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`} />
             </div>
           </div>
 

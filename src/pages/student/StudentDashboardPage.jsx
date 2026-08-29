@@ -963,12 +963,12 @@ const StudentDashboardPage = () => {
             </div>
           </div>
 
-          {/* ── BENTO ROW 4.5: OFFICIAL MEMBERSHIP & CREDENTIALS ROSTER TABLE ── */}
+          {/* ── BENTO ROW 4.5: OFFICIAL MEMBERSHIP & CREDENTIALS DIRECTORY TABLE ── */}
           <div className="p-6 rounded-[28px] bg-white border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
                 <FileText size={16} className="text-[#002855]" />
-                <span>Official Membership Roster Table</span>
+                <span>Official Membership Directory Table</span>
               </h4>
               <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                 Verified Record
