@@ -1894,10 +1894,10 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              <&rbrace;div&gt;
-              )&rbrace;
+            </div>
+          )}
 
-              {activeTab === "activities" && (<div className="space-y-8">
+        {activeTab === "activities" && (<div className="space-y-8">
                 <form onSubmit={submitActivity} className="rounded-xl bg-white p-6 md:p-8 shadow-sm border border-slate-200">
                   <h3 className="mb-6 text-2xl font-bold text-[#0b3b8f]">
                     {editingActivityId ? "Edit Activity" : "Add New Activity"}
