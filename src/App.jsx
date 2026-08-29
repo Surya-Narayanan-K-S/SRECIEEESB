@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, HashRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/feedback/sonner";
@@ -9,6 +9,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { Capacitor } from "@capacitor/core";
 import { AnimatePresence, motion } from "framer-motion";
 import srecCampus from "@/assets/srec-campus.png";
+import { supabase } from "@/lib/supabase";
+import { LaunchPage } from "./pages/launch/LaunchPage";
 import { HomePage } from "./pages/home";
 import { MobileAppPage } from "./pages/mobile";
 import { NotFound } from "./pages/not-found";
@@ -75,6 +77,33 @@ const PageTransition = ({ children }) => (
 const ResponsiveHome = () => {
     const isNativeApp = Capacitor.isNativePlatform();
     const hostname = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+
+    // Check Launch Mode status
+    const [isLaunchMode, setIsLaunchMode] = useState(() => {
+      return typeof window !== "undefined" && localStorage.getItem("ieee_launch_mode_active") === "true";
+    });
+
+    useEffect(() => {
+      const checkLaunchMode = async () => {
+        try {
+          const { data } = await supabase
+            .from("page_content")
+            .select("content_text")
+            .eq("page_key", "launch_config")
+            .eq("content_key", "launch_active")
+            .maybeSingle();
+          if (data) {
+            const active = data.content_text === "true";
+            setIsLaunchMode(active);
+            localStorage.setItem("ieee_launch_mode_active", active ? "true" : "false");
+          }
+        } catch {
+          // Ignore
+        }
+      };
+      checkLaunchMode();
+    }, []);
+
     // Environment variable flags
     const appMode = (import.meta.env.VITE_APP_MODE || import.meta.env.MODE || "").toLowerCase();
     const isStandalonePortalEnv = appMode === "portal" ||
@@ -110,6 +139,11 @@ const ResponsiveHome = () => {
         hostname.includes("srec-app") ||
         hostname.includes("student-app") ||
         (hostname.includes("srecieee.org") && hostname.includes("student"));
+
+    if (isLaunchMode && !isPortalDomain && !isAppDomain) {
+        return <LaunchPage />;
+    }
+
     if (isAppDomain) {
         return <MobileAppPage />;
     }
@@ -127,6 +161,8 @@ const AnimatedRoutes = () => {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><ResponsiveHome /></PageTransition>}/>
+          <Route path="/launch" element={<PageTransition><LaunchPage /></PageTransition>}/>
+          <Route path="/inauguration" element={<PageTransition><LaunchPage /></PageTransition>}/>
           <Route path="/web" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/desktop" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>}/>

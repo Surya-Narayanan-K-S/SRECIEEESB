@@ -5,8 +5,9 @@ import OfficeBearers from "@/components/societies/OfficeBearers";
 import SocietyLeadershipAdmin from "./SocietyLeadershipAdmin";
 import OfficeBearerCardsAdmin from "./OfficeBearerCardsAdmin";
 import EventReportsAdmin from "./EventReportsAdmin";
+import LaunchControlRoom from "@/components/admin/LaunchControlRoom";
 import { getPrimaryMemberCardPdfUrl, uploadMemberCardPdf } from "@/utils/cardPdfHelper";
-import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database } from "lucide-react";
+import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv } from "lucide-react";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1247,6 +1248,7 @@ const AdminDashboard = () => {
   }, [activities, activitySearch]);
   const tabs = [
     { id: "overview", label: "Overview", icon: <LayoutDashboard size={18} /> },
+    { id: "launch_control", label: "Launch Mode & Remote", icon: <Rocket size={18} /> },
     { id: "activities", label: "Activities", icon: <Activity size={18} /> },
     { id: "office", label: "Main SB Bearers", icon: <Briefcase size={18} /> },
     { id: "society_leaders", label: "Society Leaders", icon: <Crown size={18} /> },
@@ -1328,6 +1330,25 @@ const AdminDashboard = () => {
                   <LayoutDashboard size={16} />
                   <span>Dashboard</span>
                 </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveTab("launch_control");
+                  setIsDrawerOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "launch_control"
+                  ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black shadow-md border border-cyan-400"
+                  : "bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 border border-cyan-500/30"
+                  }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Rocket size={16} className={activeTab === "launch_control" ? "text-slate-950" : "text-cyan-400 animate-pulse"} />
+                  <span>Launch Mode &amp; Remote</span>
+                </div>
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-cyan-400 text-slate-950 uppercase">
+                  Remote
+                </span>
               </button>
             </div>
 
@@ -1461,15 +1482,27 @@ const AdminDashboard = () => {
       <div className="flex-1 px-4 py-6 space-y-7">
         {/* Group 1: MENU */}
         <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">MENU</p>
-          <div className="space-y-1">
+          <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">MISSION CONTROL</p>
+          <div className="space-y-1.5">
             <button onClick={() => setActiveTab("overview")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "overview"
               ? "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white font-extrabold shadow-md shadow-cyan-500/20 border border-cyan-400/30"
               : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"}`}>
               <div className="flex items-center gap-2.5">
                 <LayoutDashboard size={18} />
-                <span>Dashboard</span>
+                <span>Dashboard Overview</span>
               </div>
+            </button>
+
+            <button onClick={() => setActiveTab("launch_control")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "launch_control"
+              ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black shadow-lg shadow-cyan-500/30 border border-cyan-400"
+              : "bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 hover:text-white border border-cyan-500/30"}`}>
+              <div className="flex items-center gap-2.5">
+                <Rocket size={18} className={activeTab === "launch_control" ? "text-slate-950" : "text-cyan-400 animate-pulse"} />
+                <span>Launch Mode &amp; Remote</span>
+              </div>
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${activeTab === "launch_control" ? "bg-slate-950 text-cyan-300" : "bg-cyan-400 text-slate-950 animate-pulse"}`}>
+                Live
+              </span>
             </button>
           </div>
         </div>
@@ -1596,7 +1629,16 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4">
+          {/* Quick Launch Mode Link */}
+          <button
+            onClick={() => setActiveTab("launch_control")}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm shadow-cyan-500/10"
+          >
+            <Rocket size={13} className="text-cyan-400 animate-pulse" />
+            <span>Launch Remote</span>
+          </button>
+
           {/* Live Indicator */}
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -1670,6 +1712,45 @@ const AdminDashboard = () => {
         <main className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1600px] w-full mx-auto pb-20">
           {activeTab === "overview" && (
             <div className="space-y-6">
+              {/* Quick Launch Ceremony Banner */}
+              <div className="rounded-3xl border border-cyan-500/30 bg-gradient-to-r from-[#0c1c33] via-[#091526] to-[#070e1a] p-6 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-[2px] shadow-lg shadow-cyan-500/20 shrink-0">
+                    <div className="w-full h-full bg-[#071326] rounded-[14px] flex items-center justify-center">
+                      <Rocket size={24} className="text-cyan-400 animate-pulse" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-white flex items-center gap-2">
+                      <span>Grand Launch Ceremony &amp; Stage Remote</span>
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 uppercase">
+                        Auditorium Ready
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Broadcast synchronized countdowns, control the background video, and fire the official website launch remote.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <button
+                    onClick={() => setActiveTab("launch_control")}
+                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Radio size={14} /> Open Remote Controller
+                  </button>
+                  <a
+                    href="/launch"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                  >
+                    <Tv size={14} className="text-cyan-400" /> Stage View
+                  </a>
+                </div>
+              </div>
+
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {/* Card 1: Activities */}
                 <div className="rounded-2xl border border-slate-700/70 bg-gradient-to-br from-[#111f35] to-[#0c1728] p-5 shadow-xl hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col justify-between h-36 group">
@@ -1959,6 +2040,8 @@ const AdminDashboard = () => {
                   </div>)}
                 </div>
               </div>)}
+
+              {activeTab === "launch_control" && (<LaunchControlRoom />)}
 
               {activeTab === "event_reports" && (<EventReportsAdmin />)}
 
