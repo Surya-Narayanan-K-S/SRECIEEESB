@@ -53,61 +53,178 @@ const OfficeBearers = () => {
         department: "",
         academic_year: "2026-2027",
         year: "2026",
-        group_name: "cs",
+        group_name: "srec",
         image_url: "",
         email: "",
         phone: "",
         website: "",
         linkedin_url: "",
+        _sourceTable: "office_bearers",
     });
+
+    const safeFetch = async (table) => {
+        try {
+            const { data, error } = await supabase
+                .from(table)
+                .select("*")
+                .order("year", { ascending: false })
+                .order("id", { ascending: true });
+            if (error || !data) return [];
+            return data;
+        } catch {
+            return [];
+        }
+    };
+
     const fetchBearers = async () => {
         try {
-            const { data: srecData } = await supabase
-                .from("srec_office_bearers")
-                .select("*")
-                .order("year", { ascending: false })
-                .order("id", { ascending: true });
-            if (srecData && srecData.length > 0) {
-                setBearers(srecData);
-                return;
-            }
+            const [
+                mainRows,
+                srecRows,
+                newRows,
+                csRows,
+                cisRows,
+                comsocRows,
+                embsRows,
+                imRows,
+                imsRows,
+                pelsRows,
+                wieRows,
+                casRows,
+                cassRows
+            ] = await Promise.all([
+                safeFetch("office_bearers"),
+                safeFetch("srec_office_bearers"),
+                safeFetch("new_office_bearers"),
+                safeFetch("cs_office_bearers"),
+                safeFetch("cis_office_bearers"),
+                safeFetch("comsoc_office_bearers"),
+                safeFetch("embs_office_bearers"),
+                safeFetch("im_office_bearers"),
+                safeFetch("ims_office_bearers"),
+                safeFetch("pels_office_bearers"),
+                safeFetch("wie_office_bearers"),
+                safeFetch("cas_office_bearers"),
+                safeFetch("cass_office_bearers"),
+            ]);
+
+            const allBearers = [];
+            const seen = new Set();
+
+            const addRows = (rows, defaultGroup, sourceTable) => {
+                rows.forEach((r) => {
+                    const group = (r.group_name || defaultGroup || "srec").toLowerCase();
+                    const key = `${r.name?.toLowerCase().trim()}_${r.role?.toLowerCase().trim()}_${r.year}_${group}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        allBearers.push({
+                            ...r,
+                            group_name: r.group_name || defaultGroup,
+                            _sourceTable: sourceTable,
+                        });
+                    }
+                });
+            };
+
+            // Add chapter specific tables first if populated
+            addRows(srecRows, "srec", "srec_office_bearers");
+            addRows(newRows, "srec", "new_office_bearers");
+            addRows(csRows, "cs", "cs_office_bearers");
+            addRows(cisRows, "cis", "cis_office_bearers");
+            addRows(comsocRows, "comsoc", "comsoc_office_bearers");
+            addRows(embsRows, "embs", "embs_office_bearers");
+            addRows(imRows.length > 0 ? imRows : imsRows, "im", imRows.length > 0 ? "im_office_bearers" : "ims_office_bearers");
+            addRows(pelsRows, "pels", "pels_office_bearers");
+            addRows(wieRows, "wie", "wie_office_bearers");
+            addRows(casRows.length > 0 ? casRows : cassRows, "cas", casRows.length > 0 ? "cas_office_bearers" : "cass_office_bearers");
+
+            // Add main office_bearers table (which contains all records)
+            addRows(mainRows, "srec", "office_bearers");
+
+            setBearers(allBearers);
+        } catch (err) {
+            console.error("Error fetching bearers:", err);
         }
-        catch { /* fallback */ }
-        const { data } = await supabase
-            .from("new_office_bearers")
-            .select("*")
-            .order("year", { ascending: false })
-            .order("id", { ascending: true });
-        setBearers(data || []);
     };
+
     const fetchExecutives = async () => {
         try {
-            const { data: srecData } = await supabase
-                .from("srec_executive_members")
-                .select("*")
-                .order("year", { ascending: false })
-                .order("id", { ascending: true });
-            if (srecData && srecData.length > 0) {
-                setExecutives(srecData);
-                return;
-            }
+            const [
+                mainRows,
+                srecRows,
+                newRows,
+                csRows,
+                cisRows,
+                comsocRows,
+                embsRows,
+                imRows,
+                imsRows,
+                pelsRows,
+                wieRows,
+                casRows,
+                cassRows
+            ] = await Promise.all([
+                safeFetch("executive_members"),
+                safeFetch("srec_executive_members"),
+                safeFetch("new_executive_members"),
+                safeFetch("cs_executive_members"),
+                safeFetch("cis_executive_members"),
+                safeFetch("comsoc_executive_members"),
+                safeFetch("embs_executive_members"),
+                safeFetch("im_executive_members"),
+                safeFetch("ims_executive_members"),
+                safeFetch("pels_executive_members"),
+                safeFetch("wie_executive_members"),
+                safeFetch("cas_executive_members"),
+                safeFetch("cass_executive_members"),
+            ]);
+
+            const allExecs = [];
+            const seen = new Set();
+
+            const addRows = (rows, defaultGroup, sourceTable) => {
+                rows.forEach((r) => {
+                    const group = (r.group_name || defaultGroup || "srec").toLowerCase();
+                    const key = `${r.name?.toLowerCase().trim()}_${r.role?.toLowerCase().trim()}_${r.year}_${group}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        allExecs.push({
+                            ...r,
+                            group_name: r.group_name || defaultGroup,
+                            _sourceTable: sourceTable,
+                        });
+                    }
+                });
+            };
+
+            addRows(srecRows, "srec", "srec_executive_members");
+            addRows(newRows, "srec", "new_executive_members");
+            addRows(csRows, "cs", "cs_executive_members");
+            addRows(cisRows, "cis", "cis_executive_members");
+            addRows(comsocRows, "comsoc", "comsoc_executive_members");
+            addRows(embsRows, "embs", "embs_executive_members");
+            addRows(imRows.length > 0 ? imRows : imsRows, "im", imRows.length > 0 ? "im_executive_members" : "ims_executive_members");
+            addRows(pelsRows, "pels", "pels_executive_members");
+            addRows(wieRows, "wie", "wie_executive_members");
+            addRows(casRows.length > 0 ? casRows : cassRows, "cas", casRows.length > 0 ? "cas_executive_members" : "cass_executive_members");
+            addRows(mainRows, "srec", "executive_members");
+
+            setExecutives(allExecs);
+        } catch (err) {
+            console.error("Error fetching executives:", err);
         }
-        catch { /* fallback */ }
-        const { data } = await supabase
-            .from("new_executive_members")
-            .select("*")
-            .order("year", { ascending: false })
-            .order("id", { ascending: true });
-        setExecutives(data || []);
     };
+
     const loadData = useCallback(async () => {
         setLoading(true);
         await Promise.all([fetchBearers(), fetchExecutives()]);
         setLoading(false);
     }, []);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
+
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
         if (!file)
@@ -151,6 +268,7 @@ const OfficeBearers = () => {
             setUploading(false);
         }
     };
+
     const resetForm = () => {
         setForm({
             id: null,
@@ -159,62 +277,72 @@ const OfficeBearers = () => {
             department: "",
             academic_year: "2026-2027",
             year: "2026",
-            group_name: "cs",
+            group_name: "srec",
             image_url: "",
             email: "",
             phone: "",
             website: "",
             linkedin_url: "",
+            _sourceTable: "office_bearers",
         });
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const table = activeSubTab === "bearers" ? "new_office_bearers" : "new_executive_members";
+        const defaultTable = activeSubTab === "bearers" ? "office_bearers" : "executive_members";
+        const targetTable = form._sourceTable || defaultTable;
         const payload = {
-            name: form.name,
-            role: form.role,
-            department: form.department || null,
-            academic_year: form.academic_year || null,
+            name: form.name.trim(),
+            role: form.role.trim(),
+            department: form.department?.trim() || null,
+            academic_year: form.academic_year?.trim() || null,
             year: Number(form.year),
-            group_name: form.group_name || "cs",
-            image_url: form.image_url || null,
-            email: form.email || null,
-            phone: form.phone || null,
-            website: form.website || null,
-            linkedin_url: form.linkedin_url || null,
+            group_name: form.group_name || "srec",
+            image_url: form.image_url?.trim() || null,
+            email: form.email?.trim() || null,
+            phone: form.phone?.trim() || null,
+            website: form.website?.trim() || null,
+            linkedin_url: form.linkedin_url?.trim() || null,
         };
+
         try {
             const curPayload = { ...payload };
             let res = form.id
-                ? await supabase.from(table).update(curPayload).eq("id", form.id)
-                : await supabase.from(table).insert([curPayload]);
+                ? await supabase.from(targetTable).update(curPayload).eq("id", form.id)
+                : await supabase.from(targetTable).insert([curPayload]);
+
             // Auto-fix missing column schema cache errors
             if (res.error && res.error.message?.includes("column of")) {
                 const colMatch = res.error.message.match(/Could not find the '([^']+)' column/);
                 if (colMatch && colMatch[1]) {
                     delete curPayload[colMatch[1]];
                     res = form.id
-                        ? await supabase.from(table).update(curPayload).eq("id", form.id)
-                        : await supabase.from(table).insert([curPayload]);
+                        ? await supabase.from(targetTable).update(curPayload).eq("id", form.id)
+                        : await supabase.from(targetTable).insert([curPayload]);
                 }
             }
-            // Secondary fallback to legacy tables
+
+            // Fallback to legacy/alt tables if table doesn't exist
             if (res.error && (res.error.message?.includes("does not exist") || res.error.message?.includes("schema cache"))) {
-                const fallbackTable = activeSubTab === "bearers" ? "office_bearers" : "executive_members";
+                const altTable = activeSubTab === "bearers" ? "new_office_bearers" : "new_executive_members";
                 res = form.id
-                    ? await supabase.from(fallbackTable).update(curPayload).eq("id", form.id)
-                    : await supabase.from(fallbackTable).insert([curPayload]);
+                    ? await supabase.from(altTable).update(curPayload).eq("id", form.id)
+                    : await supabase.from(altTable).insert([curPayload]);
             }
+
             if (res.error)
                 throw res.error;
+
             resetForm();
             await loadData();
+            alert("Record saved successfully!");
         }
         catch (err) {
             const msg = err instanceof Error ? err.message : "Error saving record";
             alert("Error saving record: " + msg);
         }
     };
+
     const handleEdit = (p) => {
         setForm({
             id: p.id,
@@ -222,24 +350,39 @@ const OfficeBearers = () => {
             role: p.role || "",
             department: p.department || "",
             academic_year: p.academic_year || "2026-2027",
-            year: String(p.year),
-            group_name: p.group_name || "cs",
+            year: String(p.year || "2026"),
+            group_name: p.group_name || "srec",
             image_url: p.image_url || p.photo || p.photo_url || "",
             email: p.email || "",
             phone: p.phone || "",
             website: p.website || "",
             linkedin_url: p.linkedin_url || "",
+            _sourceTable: p._sourceTable || (activeSubTab === "bearers" ? "office_bearers" : "executive_members"),
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
-    const handleDelete = async (id) => {
-        if (!confirm("Are you sure you want to delete this record?"))
+
+    const handleDelete = async (row) => {
+        const id = typeof row === "object" ? row.id : row;
+        const name = typeof row === "object" ? row.name : "this record";
+        const targetTable = (typeof row === "object" && row._sourceTable)
+            ? row._sourceTable
+            : (activeSubTab === "bearers" ? "office_bearers" : "executive_members");
+
+        if (!confirm(`Are you sure you want to delete ${name}?`))
             return;
-        const table = activeSubTab === "bearers" ? "new_office_bearers" : "new_executive_members";
+
         try {
-            const { error } = await supabase.from(table).delete().eq("id", id);
-            if (error)
-                throw error;
+            let { error } = await supabase.from(targetTable).delete().eq("id", id);
+            if (error) {
+                // Try fallback tables
+                await supabase.from("office_bearers").delete().eq("id", id);
+                await supabase.from("new_office_bearers").delete().eq("id", id);
+                await supabase.from("srec_office_bearers").delete().eq("id", id);
+                await supabase.from("executive_members").delete().eq("id", id);
+                await supabase.from("new_executive_members").delete().eq("id", id);
+                await supabase.from("srec_executive_members").delete().eq("id", id);
+            }
             await loadData();
         }
         catch (err) {
@@ -247,20 +390,48 @@ const OfficeBearers = () => {
             alert("Error deleting record: " + msg);
         }
     };
+
     const rolesList = activeSubTab === "bearers" ? BEARER_ROLES : EXECUTIVE_ROLES;
     const isPredefined = rolesList.includes(form.role);
     const selectValue = form.role === "" ? "" : (isPredefined ? form.role : "Custom");
     const rawRows = activeSubTab === "bearers" ? bearers : executives;
+
     const isMatchSociety = (memberGroup, filter) => {
         if (!filter || filter === "all")
             return true;
         const g = (memberGroup || "srec").toLowerCase().trim();
         const f = filter.toLowerCase().trim();
+
         if (f === "srec") {
             return g === "srec" || g === "ieee sb" || g === "sb" || g === "srec sb" || g.includes("student branch") || !memberGroup;
         }
-        return g === f;
+        if (f === "cs") {
+            return g === "cs" || g.includes("computer");
+        }
+        if (f === "cis") {
+            return g === "cis" || g.includes("computational");
+        }
+        if (f === "comsoc") {
+            return g === "comsoc" || g.includes("communication");
+        }
+        if (f === "embs") {
+            return g === "embs" || g.includes("medicine") || g.includes("biology");
+        }
+        if (f === "im" || f === "ims") {
+            return g === "im" || g === "ims" || g.includes("instrumentation") || g.includes("measurement");
+        }
+        if (f === "pels") {
+            return g === "pels" || g.includes("power electronics");
+        }
+        if (f === "wie") {
+            return g === "wie" || g.includes("women in engineering");
+        }
+        if (f === "cas" || f === "cass") {
+            return g === "cas" || g === "cass" || g.includes("circuits");
+        }
+        return g === f || g.includes(f) || f.includes(g);
     };
+
     // Filter rows based on selected society filter
     const currentRows = rawRows.filter((r) => isMatchSociety(r.group_name, selectedSocietyFilter));
     return (<div className="space-y-8 font-sans">
@@ -407,6 +578,7 @@ const OfficeBearers = () => {
               <option value="embs">EMBS</option>
               <option value="im">Instrumentation & Measurement (IMS)</option>
               <option value="pels">Power Electronics (PELS)</option>
+              <option value="cas">Circuits &amp; Systems (CAS)</option>
               <option value="wie">Women in Engineering (WIE)</option>
               <option value="srec">IEEE SREC Student Branch</option>
             </select>
@@ -455,7 +627,7 @@ const OfficeBearers = () => {
                         <button type="button" onClick={() => handleEdit(row)} className="p-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg transition-colors" title="Edit Member">
                           <Edit2 size={16}/>
                         </button>
-                        <button type="button" onClick={() => handleDelete(row.id)} className="p-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg transition-colors" title="Delete Member">
+                        <button type="button" onClick={() => handleDelete(row)} className="p-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg transition-colors" title="Delete Member">
                           <Trash2 size={16}/>
                         </button>
                       </div>

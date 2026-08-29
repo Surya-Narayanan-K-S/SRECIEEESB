@@ -541,7 +541,7 @@ const AdminDashboard = () => {
     setAwards(data || []);
   };
   const fetchAdmins = async () => {
-    const { data } = await supabase.from("admins").select("id, username, created_at").order("id", { ascending: true });
+    const { data } = await supabase.from("admins").select("*").order("id", { ascending: true });
     setAdminsList(data || []);
   };
   useEffect(() => {
@@ -1665,32 +1665,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* MOBILE QUICK SCROLL PILLS STRIP */}
-      <div className="lg:hidden bg-[#070e17]/95 border-b border-slate-800/80 px-2 py-2 sticky top-[57px] z-35 backdrop-blur-lg">
-        <nav className="flex overflow-x-auto gap-2 py-1 px-1 no-scrollbar select-none scroll-smooth">
-          {tabs.map((tab) => {
-            const isCurrent = activeTab === tab.id;
-            return (
-              <button
-                type="button"
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isCurrent
-                  ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-slate-950 shadow-md font-extrabold scale-102"
-                  : "bg-white/[0.04] text-slate-300 border border-white/10 hover:bg-white/[0.08]"
-                  }`}
-              >
-                <span className={isCurrent ? "text-slate-950" : "text-cyan-400"}>{tab.icon}</span>
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
       {/* MAIN PANEL */}
       <div className="flex-1 w-full min-w-0 flex flex-col relative">
         <main className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1600px] w-full mx-auto pb-20">
@@ -2249,32 +2223,32 @@ const AdminDashboard = () => {
 
               {activeTab === "cms_landing" && (<div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">Landing Page CMS</h2>
-                  <p className="text-sm text-slate-500 mt-1">Edit the main hero header and subdescription on the homepage.</p>
+                  <h2 className="text-2xl font-black text-white">Landing Page CMS</h2>
+                  <p className="text-sm text-slate-400 mt-1">Edit the main hero header and subdescription on the homepage.</p>
                 </div>
                 <LandingCMSForm pageContents={pageContents} onSave={upsertContent} />
               </div>)}
 
               {activeTab === "cms_about" && (<div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">About Page CMS</h2>
-                  <p className="text-sm text-slate-500 mt-1">Edit the SREC intro description, Principal message and Counselor message quotes.</p>
+                  <h2 className="text-2xl font-black text-white">About Page CMS</h2>
+                  <p className="text-sm text-slate-400 mt-1">Edit the SREC intro description, Principal message and Counselor message quotes.</p>
                 </div>
                 <AboutCMSForm pageContents={pageContents} onSave={upsertContent} />
               </div>)}
 
               {activeTab === "cms_contact" && (<div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">Contact Page CMS</h2>
-                  <p className="text-sm text-slate-500 mt-1">Edit the contact page address, email, phone and subtitle info.</p>
+                  <h2 className="text-2xl font-black text-white">Contact Page CMS</h2>
+                  <p className="text-sm text-slate-400 mt-1">Edit the contact page address, email, phone and subtitle info.</p>
                 </div>
                 <ContactCMSForm pageContents={pageContents} onSave={upsertContent} />
               </div>)}
 
               {activeTab === "cms_advanced" && (<div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">Advanced CMS (Raw Keys)</h2>
-                  <p className="text-sm text-slate-500 mt-1">Manage and edit raw page keys and content keys in the database.</p>
+                  <h2 className="text-2xl font-black text-white">Advanced CMS (Raw Keys)</h2>
+                  <p className="text-sm text-slate-400 mt-1">Manage and edit raw page keys and content keys in the database.</p>
                 </div>
 
                 <form onSubmit={submitContent} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -2351,8 +2325,8 @@ const AdminDashboard = () => {
 
               {activeTab === "societies" && (<div className="space-y-12">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">Societies Management</h2>
-                  <p className="text-sm text-slate-500 mt-1">Manage IEEE Technical Societies, edit chapter descriptions, and update Office Bearers & Executive Members.</p>
+                  <h2 className="text-2xl font-black text-white">Societies Management</h2>
+                  <p className="text-sm text-slate-400 mt-1">Manage IEEE Technical Societies, edit chapter descriptions, and update Office Bearers & Executive Members.</p>
                 </div>
 
                 {/* Section 1: Society Info Editor */}
@@ -2467,8 +2441,8 @@ const AdminDashboard = () => {
               {activeTab === "applications" && (<div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-black text-slate-800">Student Join Submissions</h2>
-                    <p className="text-sm text-slate-500 mt-1">Review student applications submitted from the /join portal.</p>
+                    <h2 className="text-2xl font-black text-white">Student Join Submissions</h2>
+                    <p className="text-sm text-slate-400 mt-1">Review student applications submitted from the /join portal.</p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                     <input type="text" placeholder="Filter by name, email, society..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full sm:w-72 rounded-xl border border-slate-300 px-4 py-2.5 text-xs bg-white text-slate-900 font-bold focus:outline-none focus:border-blue-600 shadow-sm" />
@@ -3428,8 +3402,8 @@ const AdminDashboard = () => {
 
               {activeTab === "awards" && (<div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">Awards & Recognitions</h2>
-                  <p className="text-sm text-slate-500 mt-1">Manage accolades, grants, and honors received by SREC Student Branch.</p>
+                  <h2 className="text-2xl font-black text-white">Awards & Recognitions</h2>
+                  <p className="text-sm text-slate-400 mt-1">Manage accolades, grants, and honors received by SREC Student Branch.</p>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-3">
@@ -3538,58 +3512,63 @@ const AdminDashboard = () => {
 
               {activeTab === "admin_users" && (<div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800">Admin Accounts</h2>
-                  <p className="text-sm text-slate-500 mt-1">Add, review, or revoke login credentials for the admin portal.</p>
+                  <h2 className="text-2xl font-black text-white">Admin Accounts</h2>
+                  <p className="text-sm text-slate-400 mt-1">Add, review, or revoke login credentials for the admin portal.</p>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-3">
                   {/* Form Card */}
                   <form onSubmit={addAdminUser} className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col gap-4 self-start">
-                    <h3 className="text-lg font-bold text-slate-800">Create Admin Account</h3>
+                    <h3 className="text-lg font-bold text-slate-900">Create Admin Account</h3>
 
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Username</label>
-                      <input type="text" placeholder="Enter username" value={adminForm.username} onChange={(e) => setAdminForm({ ...adminForm, username: e.target.value })} className="rounded-lg border px-4 py-2.5 text-sm bg-white" required />
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Username</label>
+                      <input type="text" placeholder="Enter username" value={adminForm.username} onChange={(e) => setAdminForm({ ...adminForm, username: e.target.value })} className="rounded-lg border-2 border-slate-200 px-4 py-2.5 text-sm bg-white text-slate-900 font-bold focus:border-blue-600 outline-none" required />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Password</label>
-                      <input type="password" placeholder="Enter password" value={adminForm.password} onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })} className="rounded-lg border px-4 py-2.5 text-sm bg-white" required />
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+                      <input type="password" placeholder="Enter password" value={adminForm.password} onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })} className="rounded-lg border-2 border-slate-200 px-4 py-2.5 text-sm bg-white text-slate-900 font-bold focus:border-blue-600 outline-none" required />
                     </div>
 
-                    <button className="mt-2 rounded-lg bg-[#0b3b8f] py-2.5 font-semibold text-white text-sm hover:bg-[#002a52] transition">
+                    <button className="mt-2 rounded-lg bg-blue-600 py-2.5 font-bold text-white text-sm hover:bg-blue-700 transition cursor-pointer shadow-sm">
                       Create Account
                     </button>
                   </form>
 
                   {/* List Card */}
                   <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
-                    <div className="px-6 py-4 border-b border-slate-200">
-                      <h3 className="text-lg font-bold text-slate-800">Existing Admins</h3>
+                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                      <h3 className="text-lg font-bold text-slate-900">Existing Admins ({adminsList.length})</h3>
                     </div>
                     <div className="overflow-x-auto flex-1">
                       <table className="w-full border-collapse">
-                        <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-slate-200">
+                        <thead className="bg-slate-900 text-white text-xs uppercase tracking-wider font-black border-b border-slate-800">
                           <tr>
-                            <th className="px-6 py-3 text-left">Username</th>
-                            <th className="px-6 py-3 text-left">Created At</th>
-                            <th className="px-6 py-3 text-right">Actions</th>
+                            <th className="px-6 py-3.5 text-left">Username</th>
+                            <th className="px-6 py-3.5 text-left">Created At</th>
+                            <th className="px-6 py-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {adminsList.map((admin) => (<tr key={admin.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-6 py-4 text-sm font-semibold text-slate-800">{admin.username}</td>
-                            <td className="px-6 py-4 text-sm text-slate-500">
-                              {admin.created_at ? new Date(admin.created_at).toLocaleDateString() : "N/A"}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right">
-                              <button type="button" onClick={() => deleteAdminUser(admin.id)} className="text-red-600 hover:text-red-800 font-semibold transition">
-                                Delete
-                              </button>
-                            </td>
-                          </tr>))}
+                        <tbody className="divide-y divide-slate-100 bg-white">
+                          {adminsList.map((admin) => {
+                            const displayName = admin.username || admin.name || admin.email || admin.user_name || "admin";
+                            return (
+                              <tr key={admin.id} className="hover:bg-slate-50 transition-colors">
+                                <td className="px-6 py-4 text-sm font-bold text-slate-900">{displayName}</td>
+                                <td className="px-6 py-4 text-sm font-semibold text-slate-600">
+                                  {admin.created_at ? new Date(admin.created_at).toLocaleDateString() : "Active"}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-right">
+                                  <button type="button" onClick={() => deleteAdminUser(admin.id)} className="text-red-600 hover:text-red-800 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                                    Delete
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
                           {adminsList.length === 0 && (<tr>
-                            <td colSpan={3} className="px-6 py-8 text-center text-sm text-slate-400 font-medium">
+                            <td colSpan={3} className="px-6 py-8 text-center text-sm text-slate-500 font-bold">
                               No admin accounts found in the database.
                             </td>
                           </tr>)}
