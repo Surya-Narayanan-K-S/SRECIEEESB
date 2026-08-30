@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import srecCampus from "@/assets/srec-campus.png";
 import { supabase } from "@/lib/supabase";
 import { LaunchPage } from "./pages/launch/LaunchPage";
+import { LaunchRemote } from "./pages/launch/LaunchRemote";
 import { HomePage } from "./pages/home";
 import { MobileAppPage } from "./pages/mobile";
 import { NotFound } from "./pages/not-found";
@@ -163,6 +164,12 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<PageTransition><ResponsiveHome /></PageTransition>}/>
           <Route path="/launch" element={<PageTransition><LaunchPage /></PageTransition>}/>
           <Route path="/inauguration" element={<PageTransition><LaunchPage /></PageTransition>}/>
+          <Route path="/stage" element={<PageTransition><LaunchPage forceMode="stage" /></PageTransition>}/>
+          <Route path="/launch-stage" element={<PageTransition><LaunchPage forceMode="stage" /></PageTransition>}/>
+          <Route path="/remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
+          <Route path="/launch-remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
+          <Route path="/mobile-remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
+          <Route path="/launch/remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
           <Route path="/web" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/desktop" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>}/>
