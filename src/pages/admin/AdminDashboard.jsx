@@ -3664,6 +3664,38 @@ const AdminDashboard = () => {
 
 
             </main>
+
+            {/* MOBILE BOTTOM NAVIGATION DOCK (Native App Feel on Smartphones) */}
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c1626]/95 border-t border-slate-800 backdrop-blur-xl px-2 py-2 flex items-center justify-around shadow-2xl">
+              {[
+                { id: "overview", label: "Overview", icon: <LayoutDashboard size={18} /> },
+                { id: "launch_control", label: "Remote", icon: <Rocket size={18} className="text-cyan-400" /> },
+                { id: "activities", label: "Events", icon: <Activity size={18} /> },
+                { id: "student_roster", label: "Members", icon: <Users size={18} /> },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition active:scale-95 ${
+                    activeTab === tab.id
+                      ? "text-cyan-300 font-extrabold bg-cyan-500/15 border border-cyan-500/30"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {tab.icon}
+                  <span className="text-[10px] mt-0.5 font-bold">{tab.label}</span>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setIsDrawerOpen(true)}
+                className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-400 hover:text-white transition active:scale-95"
+              >
+                <Menu size={18} />
+                <span className="text-[10px] mt-0.5 font-bold">More</span>
+              </button>
+            </nav>
       </div>
     </div>
   </div>

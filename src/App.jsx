@@ -222,8 +222,12 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            {!Capacitor.isNativePlatform() && <SpeedInsights />}
-            {!Capacitor.isNativePlatform() && <Analytics />}
+            {typeof window !== "undefined" && window.location.hostname.includes("vercel.app") && (
+              <>
+                <SpeedInsights />
+                <Analytics />
+              </>
+            )}
             <InspectionSecurityGuard>
               <RouterComponent>
                 <AnimatedRoutes />
