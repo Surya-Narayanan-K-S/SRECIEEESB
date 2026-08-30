@@ -305,8 +305,8 @@ const INITIAL_STUDENT_REVIEWS = [
 
 ];
 
-// Fixed review IDs that are pinned at the beginning of the carousel
-export const FIXED_REVIEW_IDS = ["rev-25", "rev-26", "rev-1", "rev-2", "rev-6", "rev-22"];
+// Fixed review IDs that are pinned at the beginning of the carousel (Constant Slides)
+export const FIXED_REVIEW_IDS = ["rev-25", "rev-26", "rev-15", "rev-17", "rev-10", "rev-22"];
 
 /**
  * Pins fixed reviews upfront in order, randomly shuffles all other remaining reviews,
