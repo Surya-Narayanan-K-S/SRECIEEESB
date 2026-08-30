@@ -1,4 +1,4 @@
-const CACHE_NAME = "srec-ieee-cache-v7";
+const CACHE_NAME = "srec-ieee-cache-v8";
 const urlsToCache = [
   "/manifest.json",
   "/ieee.png",
@@ -39,6 +39,11 @@ self.addEventListener("fetch", event => {
   }
   const url = new URL(request.url);
 
+  // Bypass cross-origin requests (e.g. Supabase, Google Analytics, external APIs)
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   // Use Network-First for main page and HTML requests to avoid caching outdated hashed assets
   if (request.mode === "navigate" || url.pathname === "/" || url.pathname.endsWith(".html")) {
     event.respondWith(
@@ -55,7 +60,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Use Stale-While-Revalidate for other assets
+  // Use Stale-While-Revalidate for same-origin static assets
   event.respondWith(
     caches.match(request).then(cachedResponse => {
       if (cachedResponse) {
@@ -75,8 +80,6 @@ self.addEventListener("fetch", event => {
           caches.open(CACHE_NAME).then(cache => cache.put(request, copy).catch(() => {}));
         }
         return networkResponse;
-      }).catch(() => {
-        return new Response("Network error", { status: 408 });
       });
     })
   );
