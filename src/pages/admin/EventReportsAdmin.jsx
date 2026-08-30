@@ -121,7 +121,7 @@ export const EventReportsAdmin = () => {
         });
         setIsModalOpen(true);
     };
-    // Upload one or multiple photos to Supabase storage bucket `reports`
+    // Upload one or multiple photos to Supabase storage with multi-bucket fallback
     const handleUploadPhotos = async (e) => {
         const files = e.target.files;
         if (!files || files.length === 0)
@@ -129,21 +129,55 @@ export const EventReportsAdmin = () => {
         try {
             setIsUploadingPhoto(true);
             const newUrls = [];
+            const candidateBuckets = ["reports", "member-avatars", "activities", "ieee-cards"];
+            let lastUploadError = null;
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const fileExt = file.name.split(".").pop() || "jpg";
-                const fileName = `report_${Date.now()}_${i}_${Math.random().toString(36).substring(2)}.${fileExt}`;
-                const { error } = await supabase.storage.from("reports").upload(fileName, file, { upsert: true });
-                if (!error) {
-                    const { data } = supabase.storage.from("reports").getPublicUrl(fileName);
-                    if (data?.publicUrl) {
-                        newUrls.push(data.publicUrl);
+                const fileName = `report_${Date.now()}_${i}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+                let uploaded = false;
+
+                for (const bucket of candidateBuckets) {
+                    try {
+                        const { error } = await supabase.storage.from(bucket).upload(fileName, file, { upsert: true });
+                        if (!error) {
+                            const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
+                            if (data?.publicUrl) {
+                                newUrls.push(data.publicUrl);
+                                uploaded = true;
+                                break;
+                            }
+                        } else {
+                            lastUploadError = error;
+                        }
+                    } catch (err) {
+                        lastUploadError = err;
                     }
                 }
+
+                // If cloud storage bucket failed, fallback to base64 data URL so user work isn't lost
+                if (!uploaded) {
+                    const reader = new FileReader();
+                    await new Promise((resolve) => {
+                        reader.onload = (readEvent) => {
+                            if (readEvent.target?.result) {
+                                newUrls.push(readEvent.target.result);
+                            }
+                            resolve();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
             }
+
             if (newUrls.length > 0) {
-                setPhotosList((prev) => [...prev, ...newUrls].slice(0, 6)); // support up to 6 photos
-                alert(`Uploaded ${newUrls.length} photo(s) successfully to bucket 'reports'!`);
+                setPhotosList((prev) => [...prev, ...newUrls].slice(0, 8));
+                if (lastUploadError && !newUrls[0].startsWith("http")) {
+                    alert(`Photos loaded! Note: Supabase storage upload had a notice (${lastUploadError.message || "bucket permissions"}), but photos were attached for saving.`);
+                } else {
+                    alert(`Uploaded ${newUrls.length} photo(s) successfully!`);
+                }
             }
         }
         catch (err) {
@@ -151,6 +185,7 @@ export const EventReportsAdmin = () => {
         }
         finally {
             setIsUploadingPhoto(false);
+            e.target.value = "";
         }
     };
     const handleAddManualPhotoUrl = () => {

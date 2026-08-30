@@ -1,4 +1,4 @@
-const CACHE_NAME = "srec-ieee-cache-v8";
+const CACHE_NAME = "srec-ieee-cache-v9";
 const urlsToCache = [
   "/manifest.json",
   "/ieee.png",
@@ -49,12 +49,18 @@ self.addEventListener("fetch", event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => {});
+          }
           return response;
         })
-        .catch(() => {
-          return caches.match(request);
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          const indexCached = await caches.match("/index.html");
+          if (indexCached) return indexCached;
+          return new Response("Network offline", { status: 503, headers: { "Content-Type": "text/plain" } });
         })
     );
     return;
@@ -66,21 +72,25 @@ self.addEventListener("fetch", event => {
       if (cachedResponse) {
         fetch(request)
           .then(networkResponse => {
-            if (networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then(cache => cache.put(request, networkResponse));
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(CACHE_NAME).then(cache => cache.put(request, networkResponse)).catch(() => {});
             }
           })
           .catch(() => {});
         return cachedResponse;
       }
 
-      return fetch(request).then(networkResponse => {
-        if (networkResponse.status === 200) {
-          const copy = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy).catch(() => {}));
-        }
-        return networkResponse;
-      });
+      return fetch(request)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => {});
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return new Response("", { status: 404, statusText: "Resource not available" });
+        });
     })
   );
 });
