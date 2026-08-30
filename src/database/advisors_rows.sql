@@ -1,0 +1,1 @@
+INSERT INTO "public"."advisors" ("id", "name", "role", "created_at", "year", "image_url") VALUES (1, 'Dr.K.Balamurugan', 'IEEE SB Counselor', '2026-04-06 13:15:51.306785+00', 2025, null), (2, 'Dr.P.Perumal', 'Dean-SAC', '2026-04-06 13:15:51.306785+00', 2025, null), (3, 'Dr.A.Soundarrajan', 'Principal', '2026-04-06 13:15:51.306785+00', 2025, null);

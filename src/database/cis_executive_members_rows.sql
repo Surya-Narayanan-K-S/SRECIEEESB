@@ -1,0 +1,1 @@
+INSERT INTO "public"."cis_executive_members" ("id", "name", "role", "department", "academic_year", "year", "image_url", "linkedin_url", "created_at") VALUES (1, 'Seralathan C A', 'Executive Member', 'BE. CSE', '2026-2027', 2026, null, null, '2026-08-29 16:17:29.043254+00');

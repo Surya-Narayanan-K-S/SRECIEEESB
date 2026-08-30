@@ -1,0 +1,1 @@
+INSERT INTO "public"."im_executive_members" ("id", "name", "role", "department", "academic_year", "year", "image_url", "linkedin_url", "created_at") VALUES (1, 'SHIRISHKRISHNA S', 'Executive Member', null, '2026-2027', 2026, null, null, '2026-08-29 16:04:50.382079+00'), (2, 'RITHIKA S', 'Executive Member', null, '2026-2027', 2026, null, null, '2026-08-29 16:06:15.022345+00');

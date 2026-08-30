@@ -1,0 +1,1 @@
+INSERT INTO "public"."admins" ("id", "email", "username", "admin_secret_key_used", "role", "created_at") VALUES ('584ea4c5-c478-40dd-bbfe-848b346512bb', 'balamurugan@ieeesrec.org', null, 'MRBB', 'admin', '2026-08-17 08:23:07.591552+00'), ('8e8a45d3-cce5-4667-945c-0c98347162da', 'surya_max@ieeesrec.org', null, 'MRBB', 'admin', '2026-08-11 09:45:41.626074+00');
