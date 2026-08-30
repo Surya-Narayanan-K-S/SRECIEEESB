@@ -135,15 +135,15 @@ const DesktopCarousel = ({ members, onSelect, }) => {
     const total = members.length;
     const prev = useCallback(() => setActive((i) => (i - 1 + total) % total), [total]);
     const next = useCallback(() => setActive((i) => (i + 1) % total), [total]);
-    // Auto-advance every 10 seconds
+    // Auto-advance every 5 seconds
     useEffect(() => {
         if (total <= 1)
             return;
         const timer = setInterval(() => {
             next();
-        }, 10000);
+        }, 5000);
         return () => clearInterval(timer);
-    }, [next, total]);
+    }, [next, total, active]);
     // keyboard
     useEffect(() => {
         const h = (e) => {
