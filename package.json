@@ -39,7 +39,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "deploy": "git add . && git commit -m \"Auto-deploy update to GoDaddy\" && git push origin main"
+    "deploy": "git add -A && git diff-index --quiet HEAD -- || git commit -m \"Auto-deploy update to GoDaddy\" && git push origin main"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
