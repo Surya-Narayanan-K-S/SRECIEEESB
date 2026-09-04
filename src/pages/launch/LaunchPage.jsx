@@ -13,6 +13,26 @@ import ieeeSrecLogo from "@/assets/ieees.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 import inaugurationPoster from "@/assets/inauguration-2026.jpg";
 import launchVideo from "@/assets/launch-video.mp4";
+import csLogo from "@/assets/societies/CS.png";
+import cisLogo from "@/assets/societies/CIS.webp";
+import comsocLogo from "@/assets/societies/ComSoc.jpg";
+import embsLogo from "@/assets/societies/EMBS.jpg";
+import pelsLogo from "@/assets/societies/pels.png";
+import casLogo from "@/assets/societies/css.svg";
+import imLogo from "@/assets/societies/IM.jpg";
+import wieLogo from "@/assets/societies/WIE.jpg";
+
+// All Technical Chapters & Affinity Groups of IEEE SREC SB
+const SOCIETY_CHAPTERS = [
+  { name: "Computer Society", shortName: "CS", logo: csLogo },
+  { name: "Computational Intelligence Society", shortName: "CIS", logo: cisLogo },
+  { name: "Communications Society", shortName: "ComSoc", logo: comsocLogo },
+  { name: "Engineering in Medicine & Biology Society", shortName: "EMBS", logo: embsLogo },
+  { name: "Power Electronics Society", shortName: "PELS", logo: pelsLogo },
+  { name: "Circuits & Systems Society", shortName: "CAS", logo: casLogo },
+  { name: "Instrumentation & Measurement Society", shortName: "IMS", logo: imLogo },
+  { name: "Women in Engineering Affinity Group", shortName: "WIE", logo: wieLogo },
+];
 
 // Audio Synthesizer using Web Audio API (Zero external assets needed, 100% reliable)
 class SoundFX {
@@ -491,16 +511,42 @@ export const LaunchPage = () => {
                 </div>
 
                 {/* Chief Guest Spotlight Presentation */}
-                <div className="px-6 sm:px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-blue-500/15 to-cyan-500/10 border border-cyan-400/40 backdrop-blur-md shadow-lg flex flex-col items-center text-center">
-                  <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400 mb-1">
+                <div className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-blue-500/15 to-cyan-500/10 border border-cyan-400/40 backdrop-blur-md shadow-lg flex flex-col items-center text-center">
+                  <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400 mb-0.5">
                     CHIEF GUEST
                   </span>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white font-serif tracking-wide drop-shadow">
+                  <h3 className="text-lg sm:text-2xl md:text-3xl font-black text-white font-serif tracking-wide drop-shadow">
                     {config.chiefGuest || "Dr. M. Venkateshkumar"}
                   </h3>
-                  <p className="text-xs sm:text-sm font-bold text-amber-300 tracking-wider uppercase mt-1">
+                  <p className="text-xs sm:text-sm font-bold text-amber-300 tracking-wider uppercase mt-0.5">
                     {config.chiefGuestTitle || "Chairman, IEEE Power & Energy Society"}
                   </p>
+                </div>
+
+                {/* ── ALL TECHNICAL CHAPTERS & AFFINITY GROUPS LOGOS (CENTERED) ── */}
+                <div className="mt-5 sm:mt-7 pt-4 sm:pt-5 border-t border-white/15 w-full flex flex-col items-center">
+                  <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] text-cyan-300 mb-3 flex items-center justify-center gap-2.5">
+                    <span className="w-6 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-cyan-400" />
+                    <span>TECHNICAL CHAPTERS &amp; AFFINITY GROUPS</span>
+                    <span className="w-6 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-cyan-400" />
+                  </div>
+
+                  {/* Centered Luxury Logo Row */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-4xl px-2">
+                    {SOCIETY_CHAPTERS.map((soc) => (
+                      <div
+                        key={soc.shortName}
+                        className="group relative flex items-center justify-center bg-white/[0.95] hover:bg-white rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.5)] border border-white/80 transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgba(0,210,255,0.7)] cursor-default"
+                        title={`${soc.name} (${soc.shortName})`}
+                      >
+                        <img
+                          src={soc.logo}
+                          alt={soc.name}
+                          className="h-7 sm:h-9 md:h-10 w-auto max-w-[65px] sm:max-w-[80px] md:max-w-[90px] object-contain transition-transform group-hover:scale-105"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </motion.div>
