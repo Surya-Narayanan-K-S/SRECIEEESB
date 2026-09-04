@@ -262,14 +262,27 @@ export const LaunchPage = () => {
     sfx.playLaunch();
     setLaunchState("launched");
     fireConfetti();
+
+    // Deactivate launch mode in Supabase & localStorage so the entire website unlocks for everyone
+    try {
+      supabase.from("page_content").upsert([
+        { page_key: "launch_config", content_key: "launch_active", content_text: "false" },
+        { page_key: "launch_config", content_key: "launch_state", content_text: "launched" }
+      ], { onConflict: "page_key,content_key" }).then(() => {});
+      localStorage.setItem("ieee_launch_mode_active", "false");
+    } catch {
+      // Ignore
+    }
   }, [fireConfetti]);
 
   // Start countdown sequence
   const startCountdown = useCallback((startSec = 5) => {
+    // If already launched, ignore countdown commands from remote
+    if (launchState === "launched") return;
     sfx.init();
     setCountdown(startSec);
     setLaunchState("countdown");
-  }, []);
+  }, [launchState]);
 
   // Reset launch state
   const resetLaunch = useCallback(() => {
@@ -288,7 +301,7 @@ export const LaunchPage = () => {
         if (action === "countdown") {
           startCountdown(cd || 5);
         } else if (action === "instant_launch") {
-          triggerLaunch();
+          if (launchState !== "launched") triggerLaunch();
         } else if (action === "reset") {
           resetLaunch();
         }
@@ -304,7 +317,7 @@ export const LaunchPage = () => {
         if (action === "countdown") {
           startCountdown(cd || 5);
         } else if (action === "instant_launch") {
-          triggerLaunch();
+          if (launchState !== "launched") triggerLaunch();
         } else if (action === "reset") {
           resetLaunch();
         }

@@ -234,6 +234,11 @@ export const LaunchRemote = () => {
   };
 
   const handleLaunchClick = (e) => {
+    // If already launched, ignore clicks
+    if (launchState === "launched") {
+      return;
+    }
+
     triggerHaptic([120, 50, 120]);
 
     const newRipple = {
@@ -259,6 +264,16 @@ export const LaunchRemote = () => {
       return () => clearTimeout(timer);
     } else if (countdown === 0) {
       setLaunchState("launched");
+      // Deactivate launch mode in Supabase & localStorage
+      try {
+        supabase.from("page_content").upsert([
+          { page_key: "launch_config", content_key: "launch_active", content_text: "false" },
+          { page_key: "launch_config", content_key: "launch_state", content_text: "launched" }
+        ], { onConflict: "page_key,content_key" }).then(() => {});
+        localStorage.setItem("ieee_launch_mode_active", "false");
+      } catch {
+        // Ignore
+      }
     }
   }, [launchState, countdown]);
 
