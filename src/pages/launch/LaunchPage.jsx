@@ -13,6 +13,7 @@ import ieeeSrecLogo from "@/assets/ieees.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 import inaugurationPoster from "@/assets/inauguration-2026.jpg";
 import launchVideo from "@/assets/launch-video.mp4";
+import srecCampus from "@/assets/srec-campus.png";
 import csLogo from "@/assets/societies/CS.png";
 import cisLogo from "@/assets/societies/CIS.webp";
 import comsocLogo from "@/assets/societies/ComSoc.jpg";
@@ -457,96 +458,169 @@ export const LaunchPage = () => {
       {/* CANVAS FX (Stars & Confetti) */}
       <canvas ref={canvasRef} className="fixed inset-0 w-screen h-screen z-10 pointer-events-none" />
 
-      {/* TOP PRESENTATION BAR (CENTERED 3 INSTITUTIONAL LOGOS) */}
-      <header className="relative z-20 w-full px-4 sm:px-8 pt-4 pb-2 flex items-center justify-center bg-transparent">
-        {/* Three Institutional Logos in Frosted Glass Badge */}
-        <div className="flex items-center justify-center gap-4 sm:gap-8 bg-white/[0.96] backdrop-blur-md px-6 sm:px-10 py-2 sm:py-2.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.6)] border-2 border-white/90">
-          <img src={srecLogo} alt="SREC Logo" className="h-7 sm:h-12 md:h-14 w-auto object-contain transition-transform" title="Sri Ramakrishna Engineering College" />
-          <div className="w-[1.5px] h-6 sm:h-10 bg-slate-300" />
-          <img src={ieeeSrecLogo} alt="IEEE SREC Logo" className="h-7 sm:h-12 md:h-14 w-auto object-contain transition-transform" title="IEEE Student Branch SREC" />
-          <div className="w-[1.5px] h-6 sm:h-10 bg-slate-300" />
-          <img src={snrLogo} alt="SNR Trust Logo" className="h-7 sm:h-12 md:h-14 w-auto object-contain transition-transform" title="SNR Sons Charitable Trust" />
-        </div>
-      </header>
+      {/* TOP PRESENTATION BAR (Only on Countdown/Launched or Fallback) */}
+      {launchState !== "standby" && (
+        <header className="relative z-20 w-full px-4 sm:px-8 pt-4 pb-2 flex items-center justify-center bg-transparent">
+          <div className="flex items-center justify-center gap-4 sm:gap-8 bg-white/[0.96] backdrop-blur-md px-6 sm:px-10 py-2 sm:py-2.5 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.6)] border-2 border-white/90">
+            <img src={srecLogo} alt="SREC Logo" className="h-7 sm:h-12 md:h-14 w-auto object-contain transition-transform" title="Sri Ramakrishna Engineering College" />
+            <div className="w-[1.5px] h-6 sm:h-10 bg-slate-300" />
+            <img src={ieeeSrecLogo} alt="IEEE SREC Logo" className="h-7 sm:h-12 md:h-14 w-auto object-contain transition-transform" title="IEEE Student Branch SREC" />
+            <div className="w-[1.5px] h-6 sm:h-10 bg-slate-300" />
+            <img src={snrLogo} alt="SNR Trust Logo" className="h-7 sm:h-12 md:h-14 w-auto object-contain transition-transform" title="SNR Sons Charitable Trust" />
+          </div>
+        </header>
+      )}
 
       {/* CENTER STAGE CONTENT */}
-      <main className="relative z-20 flex-1 flex flex-col items-center justify-between text-center px-4 sm:px-8 w-full max-w-[1400px] mx-auto py-3">
+      <main className="relative z-20 flex-1 flex flex-col items-center justify-center text-center px-3 sm:px-6 lg:px-8 w-full max-w-[1400px] mx-auto py-3">
         <AnimatePresence mode="wait">
           {/* ========================================================================= */}
-          {/* STAGE 1: STANDBY / CEREMONY SENTENCES IN EXPANSIVE GLASS CARD */}
+          {/* STAGE 1: STANDBY / SPLIT-HERO LUXURY CONFERENCE CARD (MATCHING REFERENCE) */}
           {/* ========================================================================= */}
           {launchState === "standby" && (
             <motion.div
               key="standby"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
+              exit={{ opacity: 0, scale: 1.04 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center flex-1 w-full my-auto"
+              className="flex flex-col items-center justify-center w-full max-w-6xl my-auto"
             >
-              {/* Floating Glassmorphism Center Card with Ceremony Sentences */}
-              <div className="relative group w-full max-w-5xl rounded-3xl bg-[#030914]/80 backdrop-blur-3xl border-2 border-white/20 p-8 sm:p-14 shadow-[0_30px_100px_rgba(0,0,0,0.9),0_0_80px_rgba(0,210,255,0.25)] ring-1 ring-white/20 overflow-hidden flex flex-col items-center text-center">
-                {/* Glass Glow Highlights */}
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
-                <div className="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-600/25 rounded-full blur-3xl pointer-events-none" />
+              {/* Grand Split Presentation Card */}
+              <div className="relative group w-full rounded-[2.5rem] bg-white text-slate-900 shadow-[0_30px_90px_rgba(0,0,0,0.7),0_0_60px_rgba(0,102,204,0.2)] border-2 border-white overflow-hidden flex flex-col lg:flex-row items-stretch text-left">
+                
+                {/* ── LEFT COLUMN: AERIAL CAMPUS PHOTO WITH ORGANIC S-CURVE WAVE ── */}
+                <div className="relative w-full lg:w-[46%] min-h-[260px] sm:min-h-[320px] lg:min-h-[620px] flex items-stretch overflow-hidden bg-slate-900">
+                  <img
+                    src={srecCampus}
+                    alt="Sri Ramakrishna Engineering College Campus Aerial"
+                    className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-1000"
+                  />
+                  {/* Soft architectural vignette overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />
 
-                {/* Glowing IEEE Crest / Sparkles */}
-                <div className="inline-flex items-center gap-2.5 px-6 py-2 rounded-full bg-cyan-500/15 border border-cyan-400/50 text-cyan-300 text-sm font-black uppercase tracking-[0.2em] mb-6 backdrop-blur-md shadow-inner">
-                  <Sparkles size={18} className="text-cyan-400 animate-pulse" />
-                  <span>GRAND INAUGURATION CEREMONY</span>
+                  {/* Desktop S-Curve Organic Wave Cutout */}
+                  <div className="hidden lg:block absolute -top-1 -bottom-1 -right-[1px] w-24 xl:w-32 z-10 pointer-events-none">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full text-white fill-current">
+                      <path d="M100 0 C65 20, 20 28, 42 50 C65 72, 10 82, 100 100 Z" />
+                    </svg>
+                  </div>
+
+                  {/* Mobile Bottom Wave Cutout */}
+                  <div className="lg:hidden absolute -left-1 -right-1 -bottom-[1px] h-10 z-10 pointer-events-none">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full text-white fill-current">
+                      <path d="M0 100 C30 30, 70 30, 100 100 Z" />
+                    </svg>
+                  </div>
                 </div>
 
-                {/* Main Title Sentences */}
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-cyan-200 mb-4 font-serif drop-shadow-lg leading-tight">
-                  {config.title}
-                </h1>
+                {/* ── RIGHT COLUMN: PRESENTATION CONTENT & LOGOS ── */}
+                <div className="relative flex-1 p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-between items-center text-center bg-white z-10">
+                  {/* 1. Top Three Institutional Logos */}
+                  <div className="flex items-center justify-center gap-4 sm:gap-7 md:gap-9 mb-3">
+                    <img src={srecLogo} alt="SREC Emblem" className="h-10 sm:h-14 md:h-16 w-auto object-contain" title="Sri Ramakrishna Engineering College" />
+                    <img src={ieeeSrecLogo} alt="IEEE SB SREC Logo" className="h-12 sm:h-16 md:h-18 w-auto object-contain drop-shadow-xs" title="IEEE Student Branch SREC" />
+                    <img src={snrLogo} alt="SNR Sons Trust" className="h-10 sm:h-14 md:h-16 w-auto object-contain" title="SNR Sons Charitable Trust" />
+                  </div>
 
-                <p className="text-lg sm:text-2xl md:text-3xl text-slate-200 max-w-3xl font-medium leading-relaxed mb-6 drop-shadow">
-                  {config.subtitle}
-                </p>
+                  {/* 2. Badge */}
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-200/90 text-amber-800 text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] mb-2.5 shadow-2xs">
+                    <Sparkles size={14} className="text-amber-500 animate-pulse" />
+                    <span>GRAND INAUGURATION CEREMONY</span>
+                  </div>
 
-                <div className="text-xs sm:text-base font-bold text-slate-300 tracking-widest uppercase mb-4 pb-3 border-b border-white/15 w-full max-w-xl">
-                  {config.eventNote}
-                </div>
+                  {/* 3. Main Title */}
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.08] mb-1 font-serif">
+                    <span className="text-[#0f2b48]">IEEE SB </span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066cc] via-[#0284c7] to-[#f59e0b]">SREC</span>
+                  </h1>
 
-                {/* Chief Guest Spotlight Presentation */}
-                <div className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-blue-500/15 to-cyan-500/10 border border-cyan-400/40 backdrop-blur-md shadow-lg flex flex-col items-center text-center">
-                  <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400 mb-0.5">
-                    CHIEF GUEST
-                  </span>
-                  <h3 className="text-lg sm:text-2xl md:text-3xl font-black text-white font-serif tracking-wide drop-shadow">
-                    {config.chiefGuest || "Dr. M. Venkateshkumar"}
-                  </h3>
-                  <p className="text-xs sm:text-sm font-bold text-amber-300 tracking-wider uppercase mt-0.5">
-                    {config.chiefGuestTitle || "Chairman, IEEE Power & Energy Society"}
+                  {/* 4. Subtitle & Institution */}
+                  <p className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider max-w-lg mb-1 leading-snug">
+                    {config.subtitle || "Official Digital Platform & Innovation Ecosystem Inauguration"}
                   </p>
-                </div>
+                  <p className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3.5">
+                    {config.eventNote || "Sri Ramakrishna Engineering College (Autonomous)"}
+                  </p>
 
-                {/* ── ALL TECHNICAL CHAPTERS & AFFINITY GROUPS LOGOS (CENTERED) ── */}
-                <div className="mt-5 sm:mt-7 pt-4 sm:pt-5 border-t border-white/15 w-full flex flex-col items-center">
-                  <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] text-cyan-300 mb-3 flex items-center justify-center gap-2.5">
-                    <span className="w-6 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-cyan-400" />
-                    <span>TECHNICAL CHAPTERS &amp; AFFINITY GROUPS</span>
-                    <span className="w-6 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-cyan-400" />
+                  {/* 5. Date & Venue Golden Capsule */}
+                  <div className="w-full max-w-lg bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-white font-bold text-xs sm:text-sm px-4 sm:px-6 py-2.5 rounded-2xl shadow-md flex items-center justify-center gap-3 sm:gap-5 mb-3.5">
+                    <div className="flex items-center gap-1.5">
+                      <span>📅</span>
+                      <span>Academic Year 2026–2027</span>
+                    </div>
+                    <span className="opacity-60">|</span>
+                    <div className="flex items-center gap-1.5">
+                      <span>🏛️</span>
+                      <span>Sri Ramakrishna Eng. College</span>
+                    </div>
                   </div>
 
-                  {/* Centered Luxury Logo Row */}
-                  <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 max-w-4xl px-2">
-                    {SOCIETY_CHAPTERS.map((soc) => (
-                      <div
-                        key={soc.shortName}
-                        className="group relative flex items-center justify-center bg-white/[0.95] hover:bg-white rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.5)] border border-white/80 transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgba(0,210,255,0.7)] cursor-default"
-                        title={`${soc.name} (${soc.shortName})`}
-                      >
-                        <img
-                          src={soc.logo}
-                          alt={soc.name}
-                          className="h-7 sm:h-9 md:h-10 w-auto max-w-[65px] sm:max-w-[80px] md:max-w-[90px] object-contain transition-transform group-hover:scale-105"
-                        />
+                  {/* 6. Chief Guest Presentation */}
+                  <div className="w-full max-w-lg px-4 py-2 sm:py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 shadow-2xs flex flex-col items-center mb-3.5">
+                    <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#0066cc] mb-0.5">
+                      CHIEF GUEST
+                    </span>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 font-serif">
+                      {config.chiefGuest || "Dr. M. Venkateshkumar"}
+                    </h3>
+                    <p className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
+                      {config.chiefGuestTitle || "Chairman, IEEE Power & Energy Society"}
+                    </p>
+                  </div>
+
+                  {/* 7. All Technical Chapters & Affinity Groups Logos (Centered) */}
+                  <div className="w-full flex flex-col items-center mb-4">
+                    <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 flex items-center justify-center gap-2">
+                      <span className="w-5 sm:w-8 h-[1px] bg-slate-200" />
+                      <span>TECHNICAL CHAPTERS &amp; AFFINITY GROUPS</span>
+                      <span className="w-5 sm:w-8 h-[1px] bg-slate-200" />
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 max-w-lg px-1">
+                      {SOCIETY_CHAPTERS.map((soc) => (
+                        <div
+                          key={soc.shortName}
+                          className="flex items-center justify-center bg-slate-50 hover:bg-white rounded-xl p-1.5 sm:p-2 border border-slate-200/90 shadow-2xs transition-all duration-300 hover:scale-110 hover:shadow-md cursor-default"
+                          title={`${soc.name} (${soc.shortName})`}
+                        >
+                          <img
+                            src={soc.logo}
+                            alt={soc.name}
+                            className="h-6 sm:h-7 md:h-8 w-auto max-w-[50px] sm:max-w-[65px] object-contain"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 8. Dark Countdown Stage HUD Box */}
+                  <div className="w-full max-w-lg bg-[#0a1628] text-white rounded-2xl p-3 sm:p-3.5 shadow-xl border border-slate-800 flex flex-col items-center">
+                    <div className="text-[10px] sm:text-[11px] font-black text-amber-400 uppercase tracking-widest flex items-center justify-center gap-1.5 mb-2">
+                      <span>⏱️</span>
+                      <span>COUNTDOWN TO INAUGURATION LAUNCH</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2 w-full max-w-xs text-center">
+                      <div className="bg-[#12233b] rounded-xl py-1 px-2 border border-slate-700/60">
+                        <div className="text-base sm:text-lg font-black text-white font-mono">00</div>
+                        <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider">DAYS</div>
                       </div>
-                    ))}
+                      <div className="bg-[#12233b] rounded-xl py-1 px-2 border border-slate-700/60">
+                        <div className="text-base sm:text-lg font-black text-white font-mono">00</div>
+                        <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider">HOURS</div>
+                      </div>
+                      <div className="bg-[#12233b] rounded-xl py-1 px-2 border border-slate-700/60">
+                        <div className="text-base sm:text-lg font-black text-white font-mono">00</div>
+                        <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider">MINS</div>
+                      </div>
+                      <div className="bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400 text-slate-950 rounded-xl py-1 px-2 font-black shadow-md border border-white/50">
+                        <div className="text-base sm:text-lg font-black font-mono">
+                          {countdown < 10 ? `0${countdown}` : countdown}
+                        </div>
+                        <div className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider">SECS</div>
+                      </div>
+                    </div>
                   </div>
+
                 </div>
               </div>
             </motion.div>
