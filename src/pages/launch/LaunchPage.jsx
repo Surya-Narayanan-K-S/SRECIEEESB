@@ -1,99 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import {
   Rocket,
   Sparkles,
-  Volume2,
-  VolumeX,
-  Play,
-  RotateCcw,
-  Shield,
-  Zap,
-  Radio,
-  ExternalLink,
-  ChevronRight,
-  Fingerprint,
-  Globe,
-  Award,
-  Flame,
-  CheckCircle2,
-  Maximize2,
-  QrCode,
-  Share2,
-  Smartphone,
-  Tv,
-  Users
+  CheckCircle2
 } from "lucide-react";
-import { LaunchRemote } from "./LaunchRemote";
+import { LAUNCH_BG_PRESETS, LAUNCH_VIDEO_PRESETS } from "./launchPresets";
 import srecLogo from "@/assets/srec-logo.png";
 import ieeeSrecLogo from "@/assets/ieees.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 import inaugurationPoster from "@/assets/inauguration-2026.jpg";
 import launchVideo from "@/assets/launch-video.mp4";
-
-// Curated High-Resolution Background Images for Standby
-export const LAUNCH_BG_PRESETS = [
-  {
-    id: "cyber_nebula",
-    name: "Cyber Innovation Nebula",
-    url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2000&q=85",
-    description: "Deep cosmic blue starlight with quantum nebula"
-  },
-  {
-    id: "tech_datacenter",
-    name: "Digital Quantum Grid",
-    url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=2000&q=85",
-    description: "Futuristic glowing matrix architecture"
-  },
-  {
-    id: "campus_aerial",
-    name: "SREC Campus & Tech Aurora",
-    url: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2000&q=85",
-    description: "Modern technological institution night lights"
-  },
-  {
-    id: "ieee_cyan_glow",
-    name: "IEEE Cybernetic Horizon",
-    url: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=2000&q=85",
-    description: "Vibrant sapphire blue & cyan digital energy grid"
-  }
-];
-
-// Curated High-Definition Ambient Tech Video Loops for Countdown
-export const LAUNCH_VIDEO_PRESETS = [
-  {
-    id: "ieee_sb_logo_reveal",
-    name: "IEEE SB Logo Reveal (Official Ceremony)",
-    url: "/launch-video.mp4",
-    poster: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80"
-  },
-  {
-    id: "tech_particles",
-    name: "Cyber Holographic Particles",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-connection-dots-loop-41584-large.mp4",
-    poster: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80"
-  },
-  {
-    id: "deep_space",
-    name: "Cosmic Nebula & Starlight",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-flying-through-a-star-field-in-outer-space-41539-large.mp4",
-    poster: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80"
-  },
-  {
-    id: "circuit_grid",
-    name: "Digital Circuit Stream",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-31913-large.mp4",
-    poster: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=80"
-  },
-  {
-    id: "cyber_network",
-    name: "Global Tech Grid",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-futuristic-technology-digital-grid-loop-41587-large.mp4",
-    poster: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80"
-  }
-];
 
 // Audio Synthesizer using Web Audio API (Zero external assets needed, 100% reliable)
 class SoundFX {
@@ -103,7 +22,7 @@ class SoundFX {
   }
 
   init() {
-    if (!this.ctx) {
+    if (!this.ctx && typeof window !== "undefined") {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (AudioContext) {
         this.ctx = new AudioContext();
@@ -195,13 +114,8 @@ class SoundFX {
 
 const sfx = new SoundFX();
 
-export const LaunchPage = ({ forceMode }) => {
+export const LaunchPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  // View Mode: Only show remote if explicitly requested via forceMode="remote" or ?mode=remote
-  const isExplicitRemote = forceMode === "remote" || searchParams.get("mode") === "remote" || searchParams.get("view") === "remote";
-  const isMobileMode = isExplicitRemote;
 
   // Launch Page Configuration
   const [config, setConfig] = useState({
@@ -221,10 +135,6 @@ export const LaunchPage = ({ forceMode }) => {
   // State: "standby" | "countdown" | "launched"
   const [launchState, setLaunchState] = useState("standby");
   const [countdown, setCountdown] = useState(5);
-  const [redirectCountdown, setRedirectCountdown] = useState(4);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [showRemoteQrModal, setShowRemoteQrModal] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
 
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
@@ -260,121 +170,6 @@ export const LaunchPage = ({ forceMode }) => {
       // Use defaults
     }
   }, []);
-
-  useEffect(() => {
-    loadConfig();
-
-    // Listen for realtime broadcast / channel events from Mobile Remote or Admin
-    const channel = supabase
-      .channel("launch_control_room")
-      .on("broadcast", { event: "launch_event" }, payload => {
-        const { action, countdown: cd } = payload.payload || {};
-        if (action === "countdown") {
-          startCountdown(cd || 5);
-        } else if (action === "instant_launch") {
-          triggerLaunch();
-        } else if (action === "reset") {
-          resetLaunch();
-        }
-      })
-      .subscribe();
-
-    // BroadcastChannel for instant same-browser multi-window / tab sync
-    let bc = null;
-    if (typeof BroadcastChannel !== "undefined") {
-      bc = new BroadcastChannel("ieee_launch_channel");
-      bc.onmessage = (e) => {
-        const { action, countdown: cd } = e.data || {};
-        if (action === "countdown") {
-          startCountdown(cd || 5);
-        } else if (action === "instant_launch") {
-          triggerLaunch();
-        } else if (action === "reset") {
-          resetLaunch();
-        }
-      };
-    }
-
-    // Polling fallback every 2.5 seconds
-    const interval = setInterval(loadConfig, 2500);
-
-    return () => {
-      supabase.removeChannel(channel);
-      if (bc) bc.close();
-      clearInterval(interval);
-    };
-  }, [loadConfig]);
-
-  // Manage video playback based on launchState (Standby -> Image, Countdown -> Video plays!)
-  useEffect(() => {
-    if (videoRef.current) {
-      if (launchState === "countdown") {
-        videoRef.current.currentTime = 0;
-        const playPromise = videoRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Auto-play was prevented
-          });
-        }
-      } else if (launchState === "standby") {
-        videoRef.current.pause();
-      }
-    }
-  }, [launchState]);
-
-  // Audio mute toggle
-  const toggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    sfx.enabled = next;
-    if (next) sfx.init();
-  };
-
-  // Start countdown sequence
-  const startCountdown = (startSec = 5) => {
-    sfx.init();
-    setCountdown(startSec);
-    setLaunchState("countdown");
-  };
-
-  // Trigger grand launch
-  const triggerLaunch = () => {
-    sfx.playLaunch();
-    setLaunchState("launched");
-    fireConfetti();
-  };
-
-  // Reset launch state
-  const resetLaunch = () => {
-    setLaunchState("standby");
-    setCountdown(config.countdownSeconds || 5);
-  };
-
-  // Countdown timer effect
-  useEffect(() => {
-    if (launchState !== "countdown") return;
-
-    if (countdown > 0) {
-      sfx.playCountdown(countdown);
-      const timer = setTimeout(() => {
-        setCountdown(prev => prev - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (countdown === 0) {
-      triggerLaunch();
-    }
-  }, [launchState, countdown]);
-
-  // Auto redirect to Home page after launch celebration
-  useEffect(() => {
-    if (launchState !== "launched") return;
-
-    const timer = setTimeout(() => {
-      navigate("/web?inaugurated=true");
-    }, 2600);
-
-    return () => clearTimeout(timer);
-  }, [launchState, navigate]);
 
   // Canvas particle / fireworks effects
   const fireConfetti = useCallback(() => {
@@ -441,6 +236,113 @@ export const LaunchPage = ({ forceMode }) => {
     return () => cancelAnimationFrame(animId);
   }, []);
 
+  // Trigger grand launch
+  const triggerLaunch = useCallback(() => {
+    sfx.playLaunch();
+    setLaunchState("launched");
+    fireConfetti();
+  }, [fireConfetti]);
+
+  // Start countdown sequence
+  const startCountdown = useCallback((startSec = 5) => {
+    sfx.init();
+    setCountdown(startSec);
+    setLaunchState("countdown");
+  }, []);
+
+  // Reset launch state
+  const resetLaunch = useCallback(() => {
+    setLaunchState("standby");
+    setCountdown(config.countdownSeconds || 5);
+  }, [config.countdownSeconds]);
+
+  useEffect(() => {
+    loadConfig();
+
+    // Listen for realtime broadcast / channel events from Mobile Remote or Admin
+    const channel = supabase
+      .channel("launch_control_room")
+      .on("broadcast", { event: "launch_event" }, payload => {
+        const { action, countdown: cd } = payload.payload || {};
+        if (action === "countdown") {
+          startCountdown(cd || 5);
+        } else if (action === "instant_launch") {
+          triggerLaunch();
+        } else if (action === "reset") {
+          resetLaunch();
+        }
+      })
+      .subscribe();
+
+    // BroadcastChannel for instant same-browser multi-window / tab sync
+    let bc = null;
+    if (typeof BroadcastChannel !== "undefined") {
+      bc = new BroadcastChannel("ieee_launch_channel");
+      bc.onmessage = (e) => {
+        const { action, countdown: cd } = e.data || {};
+        if (action === "countdown") {
+          startCountdown(cd || 5);
+        } else if (action === "instant_launch") {
+          triggerLaunch();
+        } else if (action === "reset") {
+          resetLaunch();
+        }
+      };
+    }
+
+    // Polling fallback every 2.5 seconds
+    const interval = setInterval(loadConfig, 2500);
+
+    return () => {
+      supabase.removeChannel(channel);
+      if (bc) bc.close();
+      clearInterval(interval);
+    };
+  }, [loadConfig, startCountdown, triggerLaunch, resetLaunch]);
+
+  // Manage video playback based on launchState (Standby -> Image, Countdown -> Video plays!)
+  useEffect(() => {
+    if (videoRef.current) {
+      if (launchState === "countdown") {
+        videoRef.current.currentTime = 0;
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Auto-play was prevented
+          });
+        }
+      } else if (launchState === "standby") {
+        videoRef.current.pause();
+      }
+    }
+  }, [launchState]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (launchState !== "countdown") return;
+
+    if (countdown > 0) {
+      sfx.playCountdown(countdown);
+      const timer = setTimeout(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      triggerLaunch();
+    }
+  }, [launchState, countdown, triggerLaunch]);
+
+  // Auto redirect to Home page after launch celebration
+  useEffect(() => {
+    if (launchState !== "launched") return;
+
+    const timer = setTimeout(() => {
+      navigate("/web?inaugurated=true");
+    }, 2600);
+
+    return () => clearTimeout(timer);
+  }, [launchState, navigate]);
+
   // Ambient Starfield Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -489,59 +391,6 @@ export const LaunchPage = ({ forceMode }) => {
     };
   }, [launchState]);
 
-  // Handle Dignitary Touch / Hold Launch
-  const startHold = () => {
-    sfx.init();
-    setGuestHolding(true);
-    setHoldProgress(0);
-    const step = 4;
-    holdIntervalRef.current = setInterval(() => {
-      setHoldProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(holdIntervalRef.current);
-          startCountdown(config.countdownSeconds || 5);
-          return 100;
-        }
-        return prev + step;
-      });
-    }, 40);
-  };
-
-  const endHold = () => {
-    setGuestHolding(false);
-    if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
-    if (holdProgress < 100) {
-      setHoldProgress(0);
-    }
-  };
-
-  // Fullscreen toggle for auditorium projector
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
-  };
-
-  const copyRemoteUrl = () => {
-    const url = window.location.origin + "/remote";
-    navigator.clipboard.writeText(url).then(() => {
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
-    });
-  };
-
-  // =========================================================================
-  // IF MOBILE: RENDER ONLY THE MOBILE REMOTE CONTROL!
-  // =========================================================================
-  if (isMobileMode) {
-    return <LaunchRemote onSwitchToStage={() => setForcedView("stage")} />;
-  }
-
-  // =========================================================================
-  // IF DESKTOP: RENDER THE GRAND STAGE LAUNCH PAGE!
-  // =========================================================================
   return (
     <div className="fixed inset-0 min-h-screen w-screen bg-[#050b14] text-white overflow-hidden flex flex-col items-center justify-between select-none font-sans z-50">
       {/* ========================================================================= */}

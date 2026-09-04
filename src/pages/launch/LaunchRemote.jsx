@@ -5,14 +5,10 @@ import {
   RotateCcw,
   Fingerprint,
   Sparkles,
-  Zap,
   Radio,
   ShieldCheck,
   CheckCircle2,
-  Tv,
-  Award,
-  Flame,
-  Globe
+  Award
 } from "lucide-react";
 
 import srecLogo from "@/assets/srec-logo.png";

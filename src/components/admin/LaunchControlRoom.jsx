@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { LAUNCH_BG_PRESETS, LAUNCH_VIDEO_PRESETS } from "@/pages/launch/LaunchPage";
+import { LAUNCH_BG_PRESETS, LAUNCH_VIDEO_PRESETS } from "@/pages/launch/launchPresets";
 import {
   Rocket,
   Radio,
