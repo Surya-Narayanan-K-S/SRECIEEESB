@@ -18,8 +18,10 @@ import {
   Users,
   ShieldCheck,
   Zap,
-  Activity
+  Activity,
+  QrCode
 } from "lucide-react";
+import { PageQrModal } from "@/components/ui/PageQrModal";
 import { LAUNCH_BG_PRESETS, LAUNCH_VIDEO_PRESETS } from "./launchPresets";
 import srecLogo from "@/assets/srec-logo.png";
 import ieeeSrecLogo from "@/assets/ieees.png";
