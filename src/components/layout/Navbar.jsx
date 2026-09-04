@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown, Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Crown, FileText } from "lucide-react";
+import { X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown, Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Crown, FileText, BookOpen } from "lucide-react";
 import ieeeStamp from "@/assets/ieees.png";
 import srecLogo from "@/assets/srec-logo.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
@@ -7,51 +7,51 @@ import ieeeCustomCardLogo from "@/assets/ieee-custom-card-logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DownloadAppModal from "@/components/modals/DownloadAppModal";
-// Core desktop navigation links (Always visible on standard desktop & zoomed viewports)
+import { usePageVisibility } from "@/hooks/usePageVisibility";
+
+// Primary Desktop Navigation Links (Always visible in top capsule)
 const coreNavLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Societies", href: "/societies" },
   { label: "Activities", href: "/activities" },
   { label: "Office Bearers", href: "/office-bearers" },
-  { label: "Reports", href: "/reports", icon: FileText, desc: "Congress & Activity documentation" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Reports", href: "/reports", icon: FileText },
+  { label: "Handbook", href: "/document", icon: BookOpen, desc: "Official Branch PDF" },
   { label: "Register", href: "/membership-registration", icon: UserPlus, desc: "Become a member today" },
 ];
 
-// Extended links (Shown on ultra-wide / unzoomed displays, gracefully collapsed into 'More' on zoom)
-const extendedNavLinks = [
-  { label: "Team", href: "/team" },
-  { label: "Awards", href: "/awards" },
-  { label: "Funding", href: "/funding" },
-  { label: "Gallery", href: "/gallery", icon: Image, desc: "Photos & event memories" },
-];
-
-// Complete "More" dropdown links
+// Clean "More" Dropdown Links (NO DUPLICATIONS with top bar)
 const moreLinks = [
-  { label: "Team", href: "/team", icon: Compass, desc: "Executive committee team" },
+  { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Activity roadmap & schedules" },
   { label: "Awards & Honors", href: "/awards", icon: Award, desc: "Accolades & recognitions" },
   { label: "Funding & Grants", href: "/funding", icon: DollarSign, desc: "Funding requests & grants" },
-  { label: "Photo Gallery", href: "/gallery", icon: Image, desc: "Event memories & archives" },
-  { label: "Society Bearers", href: "/societies/office-bearers", icon: Crown, desc: "CS, WIE, PELS & chapter leadership" },
+  { label: "Society Leaders", href: "/societies/office-bearers", icon: Crown, desc: "CS, WIE, PELS & chapter leadership" },
+  { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leadership records" },
+  { label: "Executive Team", href: "/team", icon: Compass, desc: "Full executive committee roster" },
+  { label: "Official SB PDF", href: "/document", icon: FileText, desc: "View Handbook inside website" },
   { label: "Student Portal", href: "/student-login", icon: IdCard, desc: "Member login & digital ID card" },
-  { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Activity roadmap & schedules" },
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with branch" },
 ];
-// Grid links for futuristic mobile overlay menu
+
+// Grid links for mobile overlay menu
 const mobileGridLinks = [
-    { label: "Home", href: "/", icon: Home, desc: "Main landing page" },
-    { label: "About", href: "/about", icon: Info, desc: "Our history & vision" },
-    { label: "Societies", href: "/societies", icon: Users, desc: "Technical chapters" },
-    { label: "Society Bearers", href: "/societies/office-bearers", icon: Crown, desc: "Chapter leadership directory" },
-    { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
-    { label: "Gallery", href: "/gallery", icon: Image, desc: "Event photo archives" },
-    { label: "Reports", href: "/reports", icon: FileText, desc: "Official Congress & event reports" },
-    { label: "Team", href: "/team", icon: Compass, desc: "Executive committee" },
-    { label: "Office Bearers", href: "/office-bearers", icon: Shield, desc: "Branch leadership" },
-    { label: "Awards", href: "/awards", icon: Award, desc: "Accolades & honors" },
-    { label: "Funding", href: "/funding", icon: DollarSign, desc: "Grants & support" },
-    { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Roadmap & schedule" },
-    { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with us" },
+  { label: "Home", href: "/", icon: Home, desc: "Main landing page" },
+  { label: "About", href: "/about", icon: Info, desc: "Our history & vision" },
+  { label: "Societies", href: "/societies", icon: Users, desc: "Technical chapters" },
+  { label: "Society Leaders", href: "/societies/office-bearers", icon: Crown, desc: "Chapter leadership directory" },
+  { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
+  { label: "Gallery", href: "/gallery", icon: Image, desc: "Event photo archives" },
+  { label: "Reports", href: "/reports", icon: FileText, desc: "Official Congress & event reports" },
+  { label: "Handbook (PDF)", href: "/document", icon: BookOpen, desc: "In-app SB Guidebook" },
+  { label: "Office Bearers", href: "/office-bearers", icon: Shield, desc: "Branch leadership" },
+  { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leaders" },
+  { label: "Executive Team", href: "/team", icon: Compass, desc: "Executive committee" },
+  { label: "Awards", href: "/awards", icon: Award, desc: "Accolades & honors" },
+  { label: "Funding", href: "/funding", icon: DollarSign, desc: "Grants & support" },
+  { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Roadmap & schedule" },
+  { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with us" },
 ];
 // Quick actions for bottom navigation dock
 const bottomDockItems = [
@@ -143,7 +143,12 @@ const Navbar = () => {
             window.removeEventListener("touchend", handleTouchEnd);
         };
     }, [open, isHomePage, navigate]);
-    const isMoreActive = moreLinks.some((l) => location.pathname === l.href || location.pathname.startsWith(l.href));
+    const { isPageHidden } = usePageVisibility();
+    const visibleCoreLinks = coreNavLinks.filter((l) => !isPageHidden(l.href));
+    const visibleMoreLinks = moreLinks.filter((l) => !isPageHidden(l.href));
+    const visibleMobileLinks = mobileGridLinks.filter((l) => !isPageHidden(l.href));
+
+    const isMoreActive = visibleMoreLinks.some((l) => location.pathname === l.href || location.pathname.startsWith(l.href));
     return (<>
       {/* Universal Sticky Header Stack */}
       <header className="fixed top-0 left-0 w-full z-50 flex flex-col items-center pointer-events-none">
@@ -159,8 +164,8 @@ const Navbar = () => {
 
             {/* Desktop Navigation Links (Responsive Centered Glass Pills) */}
             <nav className="flex items-center justify-center gap-1 2xl:gap-1.5 flex-nowrap mx-auto overflow-visible relative z-50">
-              {/* Always-visible Core Links */}
-              {coreNavLinks.map((l) => {
+              {/* Visible Core Links */}
+              {visibleCoreLinks.map((l) => {
                 const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
                 return (
                   <Link
@@ -177,92 +182,76 @@ const Navbar = () => {
                 );
               })}
 
-              {/* Extended Links (Visible on standard/unzoomed screens, auto-tucked on zoom) */}
-              {extendedNavLinks.map((l) => {
-                const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
-                return (
-                  <Link
-                    key={l.label}
-                    to={l.href}
-                    className={`hidden 2xl:inline-flex relative px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl shrink-0 ${
-                      isActive
+              {/* ── MORE DROPDOWN (Zero Duplications) ── */}
+              {visibleMoreLinks.length > 0 && (
+                <div className="relative shrink-0 z-[100]" ref={moreRef}>
+                  <button
+                    type="button"
+                    onClick={() => setMoreOpen((p) => !p)}
+                    className={`relative flex items-center gap-1 px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl cursor-pointer ${
+                      isMoreActive || moreOpen
                         ? "text-cyan-200 bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border-cyan-400/60 shadow-[0_0_20px_rgba(0,210,255,0.35)] scale-[1.02]"
                         : "text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-white/20 shadow-xs"
                     }`}
                   >
-                    <span className="relative z-10">{l.label}</span>
-                  </Link>
-                );
-              })}
+                    <span>More</span>
+                    <motion.span animate={{ rotate: moreOpen ? 180 : 0 }} transition={{ duration: 0.25 }}>
+                      <ChevronDown size={12} />
+                    </motion.span>
+                  </button>
 
-              {/* ── MORE DROPDOWN ── */}
-              <div className="relative shrink-0 z-[100]" ref={moreRef}>
-                <button
-                  type="button"
-                  onClick={() => setMoreOpen((p) => !p)}
-                  className={`relative flex items-center gap-1 px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl cursor-pointer ${
-                    isMoreActive || moreOpen
-                      ? "text-cyan-200 bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border-cyan-400/60 shadow-[0_0_20px_rgba(0,210,255,0.35)] scale-[1.02]"
-                      : "text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-white/20 shadow-xs"
-                  }`}
-                >
-                  <span>More</span>
-                  <motion.span animate={{ rotate: moreOpen ? 180 : 0 }} transition={{ duration: 0.25 }}>
-                    <ChevronDown size={12} />
-                  </motion.span>
-                </button>
-
-                {/* Dropdown panel */}
-                <AnimatePresence>
-                  {moreOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-80 max-h-[75vh] overflow-y-auto rounded-2xl z-[100] bg-[#000814]/98 backdrop-blur-2xl border-2 border-cyan-500/40 shadow-[0_25px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(0,210,255,0.25)]"
-                    >
-                      <div className="px-5 py-3.5 bg-[#001026] border-b border-white/10 flex items-center justify-between sticky top-0 z-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-                          More Navigation
-                        </p>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">IEEE SREC</span>
-                      </div>
-                      <div className="p-2.5 space-y-1.5 bg-[#000814]">
-                        {moreLinks.map((l) => {
-                          const ItemIcon = l.icon;
-                          const isActive = location.pathname === l.href || location.pathname.startsWith(l.href);
-                          return (
-                            <Link
-                              key={l.label}
-                              to={l.href}
-                              onClick={() => setMoreOpen(false)}
-                              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all group ${
-                                isActive
-                                  ? "bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border border-cyan-400/50 text-cyan-200 shadow-md"
-                                  : "bg-[#001026] hover:bg-[#001838] border border-white/10 hover:border-cyan-400/40 text-white"
-                              }`}
-                            >
-                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${isActive ? "bg-cyan-500/30 text-cyan-300 border border-cyan-400/40" : "bg-white/10 text-cyan-400 group-hover:bg-cyan-500/20 group-hover:text-cyan-300"}`}>
-                                <ItemIcon size={15} />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs font-black uppercase tracking-wider text-white group-hover:text-cyan-200 transition-colors leading-none mb-1">
-                                  {l.label}
-                                </p>
-                                <p className="text-[10px] text-slate-300 font-medium leading-none truncate group-hover:text-slate-200">
-                                  {l.desc}
-                                </p>
-                              </div>
-                              <ChevronRight size={13} className={`flex-shrink-0 transition-transform text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 ${isActive ? "text-cyan-400" : ""}`} />
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                  {/* Dropdown panel */}
+                  <AnimatePresence>
+                    {moreOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-80 max-h-[75vh] overflow-y-auto rounded-2xl z-[100] bg-[#000814]/98 backdrop-blur-2xl border-2 border-cyan-500/40 shadow-[0_25px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(0,210,255,0.25)]"
+                      >
+                        <div className="px-5 py-3.5 bg-[#001026] border-b border-white/10 flex items-center justify-between sticky top-0 z-10">
+                          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
+                            More Navigation
+                          </p>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">IEEE SREC</span>
+                        </div>
+                        <div className="p-2.5 space-y-1.5 bg-[#000814]">
+                          {visibleMoreLinks.map((l) => {
+                            const ItemIcon = l.icon;
+                            const isActive = location.pathname === l.href || location.pathname.startsWith(l.href);
+                            return (
+                              <Link
+                                key={l.label}
+                                to={l.href}
+                                onClick={() => setMoreOpen(false)}
+                                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all group ${
+                                  isActive
+                                    ? "bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border border-cyan-400/50 text-cyan-200 shadow-md"
+                                    : "bg-[#001026] hover:bg-[#001838] border border-white/10 hover:border-cyan-400/40 text-white"
+                                }`}
+                              >
+                                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${isActive ? "bg-cyan-500/30 text-cyan-300 border border-cyan-400/40" : "bg-white/10 text-cyan-400 group-hover:bg-cyan-500/20 group-hover:text-cyan-300"}`}>
+                                  <ItemIcon size={15} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-black uppercase tracking-wider text-white group-hover:text-cyan-200 transition-colors leading-none mb-1">
+                                    {l.label}
+                                  </p>
+                                  <p className="text-[10px] text-slate-300 font-medium leading-none truncate group-hover:text-slate-200">
+                                    {l.desc}
+                                  </p>
+                                </div>
+                                <ChevronRight size={13} className={`flex-shrink-0 transition-transform text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 ${isActive ? "text-cyan-400" : ""}`} />
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
 
               {/* Subtle Elegant Separator */}
               <div className="w-[1px] h-4 bg-white/20 mx-1 shrink-0" />
@@ -350,23 +339,29 @@ const Navbar = () => {
 
       {/* ── DARK GLASSMOBILE CYBER DRAWER OVERLAY ── */}
       <AnimatePresence>
-        {open && (<motion.div initial={{ opacity: 0, y: "100%" }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: "100%" }} transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }} className="fixed inset-0 z-[100] w-full h-screen overflow-y-auto bg-[#000814] flex flex-col xl:hidden">
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[100] w-full h-screen overflow-y-auto bg-[#000814] flex flex-col xl:hidden"
+          >
             {/* Ambient Background Glow Orbs */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-cyan-500/10 blur-[120px]"/>
-              <div className="absolute top-1/2 -right-24 w-80 h-80 rounded-full bg-blue-600/15 blur-[120px]"/>
-              <div className="absolute bottom-20 left-10 w-72 h-72 rounded-full bg-indigo-600/10 blur-[100px]"/>
+              <div className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-cyan-500/10 blur-[120px]" />
+              <div className="absolute top-1/2 -right-24 w-80 h-80 rounded-full bg-blue-600/15 blur-[120px]" />
+              <div className="absolute bottom-20 left-10 w-72 h-72 rounded-full bg-indigo-600/10 blur-[100px]" />
             </div>
 
             <div className="relative z-10 flex flex-col min-h-full px-4 sm:px-6 pt-5 pb-12 sm:pb-16">
-
               {/* Drawer Top Header Capsule */}
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-cyan-500/20 shrink-0">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="px-2.5 py-1.5 rounded-2xl bg-white backdrop-blur border border-slate-200 shadow-md flex items-center gap-2 shrink-0">
-                    <img src={srecLogo} alt="SREC" className="h-6 sm:h-7 w-auto object-contain"/>
-                    <div className="w-px h-4 bg-slate-300"/>
-                    <img src={ieeeStamp} alt="IEEE" className="h-5 sm:h-6 w-auto object-contain"/>
+                    <img src={srecLogo} alt="SREC" className="h-6 sm:h-7 w-auto object-contain" />
+                    <div className="w-px h-4 bg-slate-300" />
+                    <img src={ieeeStamp} alt="IEEE" className="h-5 sm:h-6 w-auto object-contain" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
@@ -383,8 +378,12 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                <button onClick={() => setOpen(false)} className="p-2.5 rounded-full bg-[#001026] hover:bg-[#001838] border border-cyan-500/30 text-cyan-300 transition-all active:scale-90 shadow-lg shrink-0 ml-2" aria-label="Close drawer">
-                  <X size={20}/>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="p-2.5 rounded-full bg-[#001026] hover:bg-[#001838] border border-cyan-500/30 text-cyan-300 transition-all active:scale-90 shadow-lg shrink-0 ml-2"
+                  aria-label="Close drawer"
+                >
+                  <X size={20} />
                 </button>
               </div>
 
@@ -395,25 +394,40 @@ const Navbar = () => {
                     Main Navigation
                   </span>
                   <span className="text-[10px] text-slate-400 font-bold">
-                    11 Pages
+                    {visibleMobileLinks.length} Pages
                   </span>
                 </div>
-
                 <div className="grid grid-cols-2 gap-2.5">
-                  {mobileGridLinks.map((l, i) => {
-                const ItemIcon = l.icon;
-                const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
-                return (<motion.div key={l.label} initial={{ opacity: 0, scale: 0.9, y: 15 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ delay: i * 0.025, duration: 0.25 }}>
-                        <Link to={l.href} onClick={() => setOpen(false)} className={`flex flex-col justify-between p-3.5 rounded-2xl border transition-all duration-300 h-full backdrop-blur-xl ${isActive
-                        ? "bg-gradient-to-br from-cyan-500/30 to-blue-600/35 border-cyan-400/70 shadow-[0_0_25px_rgba(0,210,255,0.3)] text-white"
-                        : "bg-[#000e24]/90 hover:bg-[#001536]/90 border-cyan-500/20 hover:border-cyan-400/50 text-slate-200 shadow-md"}`}>
+                  {visibleMobileLinks.map((l, i) => {
+                    const ItemIcon = l.icon;
+                    const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
+                    return (
+                      <motion.div
+                        key={l.label}
+                        initial={{ opacity: 0, scale: 0.9, y: 15 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: i * 0.025, duration: 0.25 }}
+                      >
+                        <Link
+                          to={l.href}
+                          onClick={() => setOpen(false)}
+                          className={`flex flex-col justify-between p-3.5 rounded-2xl border transition-all duration-300 h-full backdrop-blur-xl ${
+                            isActive
+                              ? "bg-gradient-to-br from-cyan-500/30 to-blue-600/35 border-cyan-400/70 shadow-[0_0_25px_rgba(0,210,255,0.3)] text-white"
+                              : "bg-[#000e24]/90 hover:bg-[#001536]/90 border-cyan-500/20 hover:border-cyan-400/50 text-slate-200 shadow-md"
+                          }`}
+                        >
                           <div className="flex items-center justify-between mb-2">
-                            <div className={`p-2 rounded-xl flex items-center justify-center ${isActive
-                        ? "bg-cyan-400 text-slate-950 shadow-[0_0_12px_rgba(0,210,255,0.6)]"
-                        : "bg-cyan-500/15 border border-cyan-500/30 text-cyan-300"}`}>
-                              <ItemIcon size={16}/>
+                            <div
+                              className={`p-2 rounded-xl flex items-center justify-center ${
+                                isActive
+                                  ? "bg-cyan-400 text-slate-950 shadow-[0_0_12px_rgba(0,210,255,0.6)]"
+                                  : "bg-cyan-500/15 border border-cyan-500/30 text-cyan-300"
+                              }`}
+                            >
+                              <ItemIcon size={16} />
                             </div>
-                            <ChevronRight size={14} className={isActive ? "text-cyan-300" : "text-slate-500"}/>
+                            <ChevronRight size={14} className={isActive ? "text-cyan-300" : "text-slate-500"} />
                           </div>
                           <div>
                             <p className="text-xs font-black uppercase tracking-wider leading-tight">
@@ -424,22 +438,32 @@ const Navbar = () => {
                             </p>
                           </div>
                         </Link>
-                      </motion.div>);
-            })}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Category 2: High Impact Banners */}
               <div className="space-y-2.5 mt-2">
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400/90 px-1 block mb-1">
-                  Portals & Resources
+                  Portals &amp; Resources
                 </span>
 
                 {/* AECTSD 2027 Conference */}
-                <motion.a initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-amber-500/95 via-orange-500/95 to-amber-600/95 text-slate-950 font-black border border-amber-300/50 shadow-[0_0_30px_rgba(251,146,60,0.35)] active:scale-[0.98] transition-all">
+                <motion.a
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  href="http://aectsd2027.srecieee.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-amber-500/95 via-orange-500/95 to-amber-600/95 text-slate-950 font-black border border-amber-300/50 shadow-[0_0_30px_rgba(251,146,60,0.35)] active:scale-[0.98] transition-all"
+                >
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-xl bg-slate-950/20 backdrop-blur text-amber-950">
-                      <Sparkles size={18} className="animate-pulse text-slate-950"/>
+                      <Sparkles size={18} className="animate-pulse text-slate-950" />
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wider font-extrabold leading-none">
@@ -450,15 +474,19 @@ const Navbar = () => {
                       </p>
                     </div>
                   </div>
-                  <ExternalLink size={16} className="text-slate-950"/>
+                  <ExternalLink size={16} className="text-slate-950" />
                 </motion.a>
 
                 {/* Student Member Login & Digital ID */}
                 <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                  <Link to="/student-login" onClick={() => setOpen(false)} className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#001c3d]/90 to-[#002b5c]/90 backdrop-blur-2xl border border-cyan-400/40 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-300 shadow-md">
+                  <Link
+                    to="/student-login"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#001c3d]/90 to-[#002b5c]/90 backdrop-blur-2xl border border-cyan-400/40 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-300 shadow-md"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
-                        <IdCard size={18}/>
+                        <IdCard size={18} />
                       </div>
                       <div>
                         <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
@@ -469,42 +497,50 @@ const Navbar = () => {
                         </p>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-cyan-400"/>
+                    <ChevronRight size={16} className="text-cyan-400" />
                   </Link>
                 </motion.div>
 
                 {/* Membership Registration */}
                 <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
-                  <Link to="/membership-registration" onClick={() => setOpen(false)} className="flex items-center justify-between p-4 rounded-2xl bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/35 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-400 shadow-md">
+                  <Link
+                    to="/membership-registration"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/35 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-400 shadow-md"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
-                        <UserPlus size={18}/>
+                        <UserPlus size={18} />
                       </div>
                       <div>
                         <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
                           Join IEEE SB Membership
                         </p>
                         <p className="text-[9px] text-cyan-300/80 font-medium tracking-wide mt-1">
-                          Unlock global opportunities & events
+                          Unlock global opportunities &amp; events
                         </p>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-cyan-400"/>
+                    <ChevronRight size={16} className="text-cyan-400" />
                   </Link>
                 </motion.div>
 
                 {/* Admin Login */}
                 <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                  <Link to="/admin-login" onClick={() => setOpen(false)} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#000d20]/90 backdrop-blur-2xl border border-white/15 text-white active:scale-[0.98] transition-all hover:border-white/30">
+                  <Link
+                    to="/admin-login"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-[#000d20]/90 backdrop-blur-2xl border border-white/15 text-white active:scale-[0.98] transition-all hover:border-white/30"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-xl bg-white/10 text-cyan-400">
-                        <Shield size={16}/>
+                        <Shield size={16} />
                       </div>
                       <span className="text-xs uppercase tracking-wider font-bold">
                         Admin Portal Login
                       </span>
                     </div>
-                    <ChevronRight size={14} className="text-slate-400"/>
+                    <ChevronRight size={14} className="text-slate-400" />
                   </Link>
                 </motion.div>
               </div>

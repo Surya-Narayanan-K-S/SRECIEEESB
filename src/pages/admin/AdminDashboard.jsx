@@ -6,6 +6,7 @@ import SocietyLeadershipAdmin from "./SocietyLeadershipAdmin";
 import OfficeBearerCardsAdmin from "./OfficeBearerCardsAdmin";
 import EventReportsAdmin from "./EventReportsAdmin";
 import LaunchControlRoom from "@/components/admin/LaunchControlRoom";
+import PageVisibilityAdmin from "@/components/admin/PageVisibilityAdmin";
 import { getPrimaryMemberCardPdfUrl, uploadMemberCardPdf } from "@/utils/cardPdfHelper";
 import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv } from "lucide-react";
 const AdminDashboard = () => {
@@ -1248,6 +1249,7 @@ const AdminDashboard = () => {
   }, [activities, activitySearch]);
   const tabs = [
     { id: "overview", label: "Overview", icon: <LayoutDashboard size={18} /> },
+    { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={18} /> },
     { id: "launch_control", label: "Launch Mode & Remote", icon: <Rocket size={18} /> },
     { id: "activities", label: "Activities", icon: <Activity size={18} /> },
     { id: "office", label: "Main SB Bearers", icon: <Briefcase size={18} /> },
@@ -1398,9 +1400,10 @@ const AdminDashboard = () => {
 
             {/* CMS */}
             <div className="space-y-1.5">
-              <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">CMS PAGES</p>
+              <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">PAGE VISIBILITY &amp; CMS</p>
               <div className="space-y-1">
                 {[
+                  { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={16} /> },
                   { id: "cms_landing", label: "Landing CMS", icon: <FileText size={16} /> },
                   { id: "cms_about", label: "About CMS", icon: <FileText size={16} /> },
                   { id: "cms_contact", label: "Contact CMS", icon: <FileText size={16} /> },
@@ -1544,9 +1547,10 @@ const AdminDashboard = () => {
 
         {/* Group 3: CMS CHANNELS */}
         <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">CMS PAGES</p>
+          <p className="px-3 text-[10px] font-black text-cyan-400/80 uppercase tracking-widest">PAGE VISIBILITY &amp; CMS</p>
           <div className="space-y-1">
             {[
+              { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={18} /> },
               { id: "cms_landing", label: "Landing CMS", icon: <FileText size={18} /> },
               { id: "cms_about", label: "About CMS", icon: <FileText size={18} /> },
               { id: "cms_contact", label: "Contact CMS", icon: <FileText size={18} /> },
@@ -2040,6 +2044,8 @@ const AdminDashboard = () => {
                   </div>)}
                 </div>
               </div>)}
+
+              {activeTab === "page_visibility" && (<PageVisibilityAdmin />)}
 
               {activeTab === "launch_control" && (<LaunchControlRoom />)}
 

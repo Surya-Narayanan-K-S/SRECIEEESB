@@ -11,9 +11,9 @@ export const PdfViewerPage = () => {
   const navigate = useNavigate();
 
   // Extract params or use defaults
-  const fileUrl = searchParams.get("file") || searchParams.get("url") || "/sample.pdf";
-  const title = searchParams.get("title") || "Official IEEE SREC Document";
-  const subtitle = searchParams.get("subtitle") || "IEEE Student Branch · Sri Ramakrishna Engineering College";
+  const fileUrl = searchParams.get("file") || searchParams.get("url") || "/ieee-srec-sb.pdf";
+  const title = searchParams.get("title") || "IEEE SREC Student Branch Handbook & Overview";
+  const subtitle = searchParams.get("subtitle") || "IEEE Student Branch STB32131 · Sri Ramakrishna Engineering College";
 
   const handleShare = () => {
     if (navigator.share) {
