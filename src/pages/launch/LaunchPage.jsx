@@ -149,6 +149,7 @@ export const LaunchPage = () => {
   const [countdown, setCountdown] = useState(5);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSoundMuted, setIsSoundMuted] = useState(false);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
@@ -792,6 +793,17 @@ export const LaunchPage = () => {
 
         {/* Stage Utilities */}
         <div className="flex items-center gap-2">
+          {/* Quick Open Website QR Code */}
+          <button
+            type="button"
+            onClick={() => setIsQrModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 hover:text-white transition-all border border-cyan-400/40 cursor-pointer flex items-center gap-1.5 font-bold text-xs shadow-[0_0_15px_rgba(0,210,255,0.25)]"
+            title="Scan QR to open website"
+          >
+            <QrCode size={15} className="text-cyan-400" />
+            <span className="hidden sm:inline">Scan QR</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setIsSoundMuted(!isSoundMuted)}
@@ -811,6 +823,15 @@ export const LaunchPage = () => {
           </button>
         </div>
       </footer>
+
+      {/* High-Resolution Interactive Page QR Modal */}
+      <PageQrModal
+        isOpen={isQrModalOpen}
+        onClose={() => setIsQrModalOpen(false)}
+        url={typeof window !== "undefined" ? window.location.href : "https://srecieee.org"}
+        title="IEEE SREC Digital Platform"
+        subtitle="Point your phone camera to open and view the website live on your device"
+      />
     </div>
   );
 };
