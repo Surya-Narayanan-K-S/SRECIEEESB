@@ -332,7 +332,7 @@ export const LaunchPage = () => {
       if (bc) bc.close();
       clearInterval(interval);
     };
-  }, [loadConfig, startCountdown, triggerLaunch, resetLaunch]);
+  }, [loadConfig, startCountdown, triggerLaunch, resetLaunch, launchState]);
 
   // Manage video playback based on launchState (Standby -> Image, Countdown -> Video plays!)
   useEffect(() => {

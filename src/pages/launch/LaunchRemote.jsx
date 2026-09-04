@@ -578,14 +578,31 @@ export const LaunchRemote = () => {
             </div>
           )}
 
-          {/* Operational Guidance */}
-          <p className="text-xs text-slate-400 text-center max-w-xs mt-3 leading-relaxed">
-            {launchState === "countdown"
-              ? "Synchronized video & countdown active on auditorium stage."
-              : launchState === "launched"
-              ? "Platform successfully inaugurated! Audience redirected to web portal."
-              : "Chief Guest touch activator — Tap to ignite the inauguration."}
-          </p>
+          {/* Operational Guidance & Post-Launch Action */}
+          {launchState === "launched" ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 flex flex-col items-center gap-2.5"
+            >
+              <a
+                href="/web"
+                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-xl flex items-center gap-2 hover:scale-105 transition-transform"
+              >
+                <ExternalLink size={15} />
+                <span>Visit Live Web Portal</span>
+              </a>
+              <p className="text-[11px] text-emerald-300 font-bold uppercase tracking-wider text-center">
+                ✓ Public Website Unlocked &amp; Accessible to All
+              </p>
+            </motion.div>
+          ) : (
+            <p className="text-xs text-slate-400 text-center max-w-xs mt-3 leading-relaxed">
+              {launchState === "countdown"
+                ? "Synchronized video & countdown active on auditorium stage."
+                : "Chief Guest touch activator — Tap to ignite the inauguration."}
+            </p>
+          )}
         </div>
       </main>
 
