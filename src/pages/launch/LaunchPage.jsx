@@ -570,13 +570,13 @@ export const LaunchPage = () => {
                   </div>
 
                   {/* 7. All Technical Chapters & Affinity Groups Logos (Centered) */}
-                  <div className="w-full flex flex-col items-center mb-4">
+                  <div className="w-full flex flex-col items-center mt-1">
                     <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 flex items-center justify-center gap-2">
                       <span className="w-5 sm:w-8 h-[1px] bg-slate-200" />
                       <span>TECHNICAL CHAPTERS &amp; AFFINITY GROUPS</span>
                       <span className="w-5 sm:w-8 h-[1px] bg-slate-200" />
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 max-w-lg px-1">
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 max-w-lg px-1">
                       {SOCIETY_CHAPTERS.map((soc) => (
                         <div
                           key={soc.shortName}
@@ -590,34 +590,6 @@ export const LaunchPage = () => {
                           />
                         </div>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* 8. Dark Countdown Stage HUD Box */}
-                  <div className="w-full max-w-lg bg-[#0a1628] text-white rounded-2xl p-3 sm:p-3.5 shadow-xl border border-slate-800 flex flex-col items-center">
-                    <div className="text-[10px] sm:text-[11px] font-black text-amber-400 uppercase tracking-widest flex items-center justify-center gap-1.5 mb-2">
-                      <span>⏱️</span>
-                      <span>COUNTDOWN TO INAUGURATION LAUNCH</span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-2 w-full max-w-xs text-center">
-                      <div className="bg-[#12233b] rounded-xl py-1 px-2 border border-slate-700/60">
-                        <div className="text-base sm:text-lg font-black text-white font-mono">00</div>
-                        <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider">DAYS</div>
-                      </div>
-                      <div className="bg-[#12233b] rounded-xl py-1 px-2 border border-slate-700/60">
-                        <div className="text-base sm:text-lg font-black text-white font-mono">00</div>
-                        <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider">HOURS</div>
-                      </div>
-                      <div className="bg-[#12233b] rounded-xl py-1 px-2 border border-slate-700/60">
-                        <div className="text-base sm:text-lg font-black text-white font-mono">00</div>
-                        <div className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-wider">MINS</div>
-                      </div>
-                      <div className="bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400 text-slate-950 rounded-xl py-1 px-2 font-black shadow-md border border-white/50">
-                        <div className="text-base sm:text-lg font-black font-mono">
-                          {countdown < 10 ? `0${countdown}` : countdown}
-                        </div>
-                        <div className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider">SECS</div>
-                      </div>
                     </div>
                   </div>
 
