@@ -74,36 +74,61 @@ const PageTransition = ({ children }) => (
     </motion.div>
   </ErrorBoundary>
 );
+// Global Launch Mode Guard — intercepts ALL public routes (e.g. /about, /societies, /gallery, etc.)
+// when Launch Mode is enabled in Supabase, preventing any bypass and displaying LaunchPage
+// while keeping /remote, /admin, and post-inauguration (?inaugurated=true) routes functional.
+const GlobalLaunchModeGuard = ({ children }) => {
+  const location = useLocation();
+  const pathname = location.pathname.toLowerCase();
+  const searchParams = new URLSearchParams(location.search);
+  const isInaugurated = searchParams.get("inaugurated") === "true";
+
+  // Check if current route is an administrative, remote control, or bypass route
+  const isExcludedRoute =
+    pathname.startsWith("/launch") ||
+    pathname.startsWith("/remote") ||
+    pathname.startsWith("/mobile-remote") ||
+    pathname.startsWith("/stage") ||
+    pathname.startsWith("/inauguration") ||
+    pathname.startsWith("/admin");
+
+  const [isLaunchMode, setIsLaunchMode] = useState(() => {
+    return typeof window !== "undefined" && localStorage.getItem("ieee_launch_mode_active") === "true";
+  });
+
+  useEffect(() => {
+    const checkLaunchMode = async () => {
+      try {
+        const { data } = await supabase
+          .from("page_content")
+          .select("content_text")
+          .eq("page_key", "launch_config")
+          .eq("content_key", "launch_active")
+          .maybeSingle();
+        if (data) {
+          const active = data.content_text === "true";
+          setIsLaunchMode(active);
+          localStorage.setItem("ieee_launch_mode_active", active ? "true" : "false");
+        }
+      } catch {
+        // Ignore
+      }
+    };
+    checkLaunchMode();
+  }, [location.pathname]);
+
+  // If Launch Mode is active and current route is not an excluded route or post-inauguration bypass
+  if (isLaunchMode && !isExcludedRoute && !isInaugurated) {
+    return <LaunchPage />;
+  }
+
+  return children;
+};
+
 // Smart Domain & Platform Routing
 const ResponsiveHome = () => {
     const isNativeApp = Capacitor.isNativePlatform();
     const hostname = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
-
-    // Check Launch Mode status
-    const [isLaunchMode, setIsLaunchMode] = useState(() => {
-      return typeof window !== "undefined" && localStorage.getItem("ieee_launch_mode_active") === "true";
-    });
-
-    useEffect(() => {
-      const checkLaunchMode = async () => {
-        try {
-          const { data } = await supabase
-            .from("page_content")
-            .select("content_text")
-            .eq("page_key", "launch_config")
-            .eq("content_key", "launch_active")
-            .maybeSingle();
-          if (data) {
-            const active = data.content_text === "true";
-            setIsLaunchMode(active);
-            localStorage.setItem("ieee_launch_mode_active", active ? "true" : "false");
-          }
-        } catch {
-          // Ignore
-        }
-      };
-      checkLaunchMode();
-    }, []);
 
     // Environment variable flags
     const appMode = (import.meta.env.VITE_APP_MODE || import.meta.env.MODE || "").toLowerCase();
@@ -141,10 +166,6 @@ const ResponsiveHome = () => {
         hostname.includes("student-app") ||
         (hostname.includes("srecieee.org") && hostname.includes("student"));
 
-    if (isLaunchMode && !isPortalDomain && !isAppDomain) {
-        return <LaunchPage />;
-    }
-
     if (isAppDomain) {
         return <MobileAppPage />;
     }
@@ -156,11 +177,12 @@ const ResponsiveHome = () => {
 const AnimatedRoutes = () => {
     useVisitorTracker();
     const location = useLocation();
-    return (<>
-      <ScrollToTop />
-      <GlobalCollegeBackground />
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
+    return (
+      <GlobalLaunchModeGuard>
+        <ScrollToTop />
+        <GlobalCollegeBackground />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><ResponsiveHome /></PageTransition>}/>
           <Route path="/launch" element={<PageTransition><LaunchPage /></PageTransition>}/>
           <Route path="/inauguration" element={<PageTransition><LaunchPage /></PageTransition>}/>
@@ -226,7 +248,7 @@ const AnimatedRoutes = () => {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>}/>
         </Routes>
       </AnimatePresence>
-    </>);
+    </GlobalLaunchModeGuard>);
 };
 const App = () => {
     return (
