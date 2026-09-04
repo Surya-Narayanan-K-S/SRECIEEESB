@@ -15,7 +15,7 @@ import { LaunchRemote } from "./pages/launch/LaunchRemote";
 import { HomePage } from "./pages/home";
 import { MobileAppPage } from "./pages/mobile";
 import { NotFound } from "./pages/not-found";
-import { AboutPage, ActivitiesPage, AnnualPlansPage, AwardsPage, ContactPage, FundingsPlanPage, GalleryPage, TeamPage, } from "./pages/info";
+import { AboutPage, ActivitiesPage, AnnualPlansPage, AwardsPage, ContactPage, FundingsPlanPage, GalleryPage, TeamPage, PdfViewerPage } from "./pages/info";
 import { SocietiesPage, SocietyDetailPage, SocietyOfficeBearersPage, SrecBranchPage, WiePage, EmbsPage, CsPage, ComsocPage, PelsPage, ImPage, CisPage, CasPage, } from "./pages/societies";
 import { StudentLoginPage, StudentDashboardPage, MembershipRegistrationPage, JoinPage, } from "./pages/student";
 import { OfficeBearersPage, PastOfficeBearersPage } from "./pages/office-bearers";
@@ -211,6 +211,10 @@ const AnimatedRoutes = () => {
           <Route path="/member-dashboard" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
           <Route path="/dashboard" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
           <Route path="/member-card" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
+          <Route path="/pdf-viewer" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
+          <Route path="/view-pdf" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
+          <Route path="/document" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
+          <Route path="/document-viewer" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
           <Route path="/app" element={<PageTransition><MobileAppPage /></PageTransition>}/>
           <Route path="/mobile" element={<PageTransition><MobileAppPage /></PageTransition>}/>
           <Route path="/m" element={<PageTransition><MobileAppPage /></PageTransition>}/>

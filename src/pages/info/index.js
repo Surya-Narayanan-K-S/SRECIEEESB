@@ -6,3 +6,5 @@ export { default as ContactPage } from "./ContactPage";
 export { default as FundingsPlanPage } from "./FundingsPlanPage";
 export { default as GalleryPage } from "./GalleryPage";
 export { default as TeamPage } from "./TeamPage";
+export { default as PdfViewerPage } from "./PdfViewerPage";
+
