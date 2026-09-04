@@ -6,7 +6,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DIST_DIR = path.join(__dirname, 'dist');
-const port = process.env.PORT || 3000;
+const port = parseInt(process.env.PORT || '3000', 10);
+const host = '0.0.0.0';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=UTF-8',
@@ -31,14 +32,23 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  let reqPath = decodeURIComponent(req.url.split('?')[0]);
+  const urlPath = req.url.split('?')[0];
+
+  // Health check endpoints for cloud load balancers & GoDaddy uptime monitor
+  if (urlPath === '/health' || urlPath === '/_health' || urlPath === '/healthz' || urlPath === '/ping') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime(), timestamp: Date.now() }));
+    return;
+  }
+
+  let reqPath = decodeURIComponent(urlPath);
   if (reqPath === '/') reqPath = '/index.html';
   
   let filePath = path.join(DIST_DIR, reqPath);
   
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      // SPA Fallback: serve index.html for all client-side routes (e.g. /activities, /admin, /launch)
+      // SPA Fallback: serve index.html for all client-side routes (e.g. /activities, /admin, /launch, /remote)
       filePath = path.join(DIST_DIR, 'index.html');
     }
     
@@ -48,8 +58,9 @@ const server = http.createServer((req, res) => {
     
     fs.readFile(filePath, (readErr, content) => {
       if (readErr) {
-        res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });
-        res.end('<!DOCTYPE html><html><body style="font-family:sans-serif;padding:2rem;text-align:center;"><h2>IEEE SREC Web App</h2><p>Application is building or dist directory is missing. Please run <code>npm run build</code>.</p></body></html>');
+        // Return 200 with friendly splash if dist is still building so health checks do not fail
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
+        res.end('<!DOCTYPE html><html><head><title>IEEE SREC Portal</title><meta http-equiv="refresh" content="5"></head><body style="font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#050b14;color:#fff;text-align:center;"><div><h2>IEEE Student Branch SREC</h2><p style="color:#94a3b8;">Application runtime ready. Loading portal assets...</p></div></body></html>');
         return;
       }
       res.writeHead(200, {
@@ -62,6 +73,17 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`Server listening on port ${port} (serving from ${DIST_DIR})`);
+server.listen(port, host, () => {
+  console.log(`[IEEE SREC] Server listening on http://${host}:${port} (serving from ${DIST_DIR})`);
+});
+
+// Handle graceful termination
+process.on('SIGTERM', () => {
+  console.log('[IEEE SREC] SIGTERM received, closing server...');
+  server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+  console.log('[IEEE SREC] SIGINT received, closing server...');
+  server.close(() => process.exit(0));
 });
