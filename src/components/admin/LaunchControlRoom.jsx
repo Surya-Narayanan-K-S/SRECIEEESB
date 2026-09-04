@@ -44,6 +44,8 @@ export const LaunchControlRoom = () => {
     title: "IEEE STUDENT BRANCH SREC",
     subtitle: "Official Digital Platform & Innovation Ecosystem Inauguration",
     eventNote: "STB32131 / STB64071 • Sri Ramakrishna Engineering College",
+    chiefGuest: "Dr. M. Venkateshkumar",
+    chiefGuestTitle: "Chairman, IEEE Power & Energy Society",
     bgImageUrl: LAUNCH_BG_PRESETS[0].url,
     videoUrl: LAUNCH_VIDEO_PRESETS[0].url,
     redirectUrl: "/web",
@@ -72,6 +74,8 @@ export const LaunchControlRoom = () => {
           title: confMap.launch_title || prev.title,
           subtitle: confMap.launch_subtitle || prev.subtitle,
           eventNote: confMap.launch_note || prev.eventNote,
+          chiefGuest: confMap.launch_chief_guest || prev.chiefGuest,
+          chiefGuestTitle: confMap.launch_chief_guest_title || prev.chiefGuestTitle,
           bgImageUrl: confMap.launch_bg_image_url || prev.bgImageUrl,
           videoUrl: confMap.launch_video_url || prev.videoUrl,
           redirectUrl: confMap.launch_redirect_url || prev.redirectUrl,
@@ -179,6 +183,8 @@ export const LaunchControlRoom = () => {
         saveKey("launch_title", settings.title),
         saveKey("launch_subtitle", settings.subtitle),
         saveKey("launch_note", settings.eventNote),
+        saveKey("launch_chief_guest", settings.chiefGuest),
+        saveKey("launch_chief_guest_title", settings.chiefGuestTitle),
         saveKey("launch_bg_image_url", settings.bgImageUrl),
         saveKey("launch_video_url", settings.videoUrl),
         saveKey("launch_redirect_url", settings.redirectUrl),
@@ -665,6 +671,32 @@ export const LaunchControlRoom = () => {
                 onChange={(e) => setSettings({ ...settings, subtitle: e.target.value })}
                 className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white font-medium focus:border-cyan-400 focus:outline-none"
                 required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                Chief Guest Name
+              </label>
+              <input
+                type="text"
+                value={settings.chiefGuest}
+                onChange={(e) => setSettings({ ...settings, chiefGuest: e.target.value })}
+                className="rounded-xl border border-amber-500/40 bg-slate-900 px-4 py-3 text-sm text-white font-bold focus:border-amber-400 focus:outline-none"
+                placeholder="Dr. M. Venkateshkumar"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                Chief Guest Designation
+              </label>
+              <input
+                type="text"
+                value={settings.chiefGuestTitle}
+                onChange={(e) => setSettings({ ...settings, chiefGuestTitle: e.target.value })}
+                className="rounded-xl border border-amber-500/40 bg-slate-900 px-4 py-3 text-sm text-white font-medium focus:border-amber-400 focus:outline-none"
+                placeholder="Chairman, IEEE Power & Energy Society"
               />
             </div>
 

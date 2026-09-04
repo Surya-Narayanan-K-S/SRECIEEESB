@@ -170,6 +170,8 @@ const AnimatedRoutes = () => {
           <Route path="/launch-remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
           <Route path="/mobile-remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
           <Route path="/launch/remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
+          <Route path="/remote-control" element={<PageTransition><LaunchRemote /></PageTransition>}/>
+          <Route path="/remote-mode" element={<PageTransition><LaunchRemote /></PageTransition>}/>
           <Route path="/web" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/desktop" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>}/>

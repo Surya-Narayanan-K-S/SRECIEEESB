@@ -619,6 +619,16 @@
   .animate-soft-glow {
     animation: softGlow 3s ease-in-out infinite;
   }
+
+  @keyframes spinReverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  .animate-spin-reverse {
+    animation: spinReverse 22s linear infinite;
+    will-change: transform;
+  }
 }
 
 /* ==========================================================================
