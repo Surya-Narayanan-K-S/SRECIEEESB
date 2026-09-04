@@ -22,6 +22,7 @@ import {
   QrCode
 } from "lucide-react";
 import { PageQrModal } from "@/components/ui/PageQrModal";
+import { QRCodeSVG } from "qrcode.react";
 import { LAUNCH_BG_PRESETS, LAUNCH_VIDEO_PRESETS } from "./launchPresets";
 import srecLogo from "@/assets/srec-logo.png";
 import ieeeSrecLogo from "@/assets/ieees.png";
@@ -627,40 +628,54 @@ export const LaunchPage = () => {
                 <div className="md:col-span-4 rounded-3xl bg-slate-950/60 backdrop-blur-2xl border border-white/15 p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(0,102,204,0.15)] flex flex-col justify-between relative overflow-hidden group hover:border-cyan-400/40 transition-all">
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
                   
-                  <div>
-                    <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest mb-3">
+                  <div className="flex flex-col h-full justify-between">
+                    <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest mb-2">
                       <span className="flex items-center gap-1.5 text-cyan-400">
-                        <Radio size={16} className="animate-pulse" />
-                        Live Stage Signal
+                        <QrCode size={16} className="animate-pulse" />
+                        Scan to Open Website
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px]">
-                        CONNECTED
+                        LIVE QR
                       </span>
                     </div>
 
-                    <p className="text-sm font-bold text-slate-200 mt-2 leading-relaxed">
-                      Awaiting remote launch trigger from VIP podium...
-                    </p>
-
-                    {/* Animated sound wave bars */}
-                    <div className="flex items-center gap-1.5 my-3 h-8 px-3 rounded-xl bg-white/5 border border-white/10">
-                      {[40, 75, 100, 60, 85, 45, 90, 70, 95, 50, 80, 65, 90, 40].map((h, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 bg-gradient-to-t from-cyan-500 to-sky-300 rounded-full animate-pulse"
-                          style={{
-                            height: `${h}%`,
-                            animationDelay: `${i * 0.1}s`,
-                            animationDuration: "1.2s"
-                          }}
+                    {/* Integrated On-Screen QR & Signal Row */}
+                    <div className="flex items-center gap-3 my-2 bg-white/5 p-2.5 rounded-2xl border border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => setIsQrModalOpen(true)}
+                        className="bg-white p-2 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.4)] border border-slate-200 shrink-0 hover:scale-105 transition-transform cursor-pointer"
+                        title="Click to expand QR Code"
+                      >
+                        <QRCodeSVG
+                          value={typeof window !== "undefined" ? window.location.href : "https://srecieee.org"}
+                          size={70}
+                          level="M"
                         />
-                      ))}
-                    </div>
-                  </div>
+                      </button>
 
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-300 font-semibold">
-                    <span className="text-slate-400">Auditorium Main Feed</span>
-                    <span className="font-mono text-cyan-300">srecieee.org</span>
+                      <div className="flex-1 flex flex-col justify-between">
+                        <p className="text-[11px] font-bold text-slate-200 leading-snug">
+                          Point your mobile camera to open &amp; view this live page.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setIsQrModalOpen(true)}
+                          className="mt-1 text-[10px] font-black text-cyan-300 hover:text-cyan-200 uppercase tracking-wider flex items-center gap-1 text-left cursor-pointer"
+                        >
+                          <span>Expand Fullscreen QR</span>
+                          <span>→</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-slate-300 font-semibold">
+                      <span className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                        <Radio size={12} className="text-emerald-400 animate-pulse" />
+                        Auditorium Feed
+                      </span>
+                      <span className="font-mono text-cyan-300 text-[11px]">srecieee.org</span>
+                    </div>
                   </div>
                 </div>
               </div>
