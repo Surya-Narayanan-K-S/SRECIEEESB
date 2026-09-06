@@ -64,6 +64,26 @@ const getOfficerImg = (p) => {
   return data?.publicUrl || raw;
 };
 
+const getSupabaseImgUrl = (p) => {
+  if (!p) return "";
+  const raw = typeof p === "string" ? p.trim() : (p.image_url || p.photo || p.photo_url || p.avatar_url || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("data:") || raw.startsWith("blob:") || raw.startsWith("/")) {
+    return raw;
+  }
+  const safePath = raw.startsWith("/") ? raw.slice(1) : raw;
+  const knownBuckets = ["activities", "reports", "office_bearers", "society_members", "member-avatars", "avatars", "photos", "societies"];
+  for (const bucket of knownBuckets) {
+    if (safePath.startsWith(`${bucket}/`)) {
+      const subPath = safePath.slice(bucket.length + 1);
+      const { data } = supabase.storage.from(bucket).getPublicUrl(subPath);
+      if (data?.publicUrl) return data.publicUrl;
+    }
+  }
+  const { data } = supabase.storage.from("activities").getPublicUrl(safePath);
+  return data?.publicUrl || raw;
+};
+
 // ── Complete 2026-2027 Office Bearers & Executive Team Baseline Dataset ───
 const REAL_OFFICE_BEARERS = [
   {
@@ -342,10 +362,189 @@ const REAL_OFFICE_BEARERS = [
 ];
 // Verified Student Members (loaded dynamically from database)
 const SEED_MEMBERS = [];
+
+// Complete 2026-2027 Office Bearers & Executive Datasets for all 9 Chapters (Exact Real DB Rows)
+const REAL_SOCIETY_DATASETS = {
+  embs: {
+    bearers: [
+      { id: 1, name: "Dr. Deepa B. Prabhu", role: "IEEE EMBS Coordinator", department: "Faculty / BME" },
+      { id: 2, name: "Anjanalakshmi S Prabhu", role: "Chairperson", department: "BME" },
+      { id: 3, name: "M Iniya Dharshana", role: "Vice-Chairperson", department: "BME" },
+      { id: 4, name: "V MadhuShree", role: "Treasurer", department: "BME" },
+      { id: 5, name: "U Maimathi", role: "Joint-Treasurer", department: "BME" },
+    ],
+    execs: [
+      { id: 1, name: "N Nisha", role: "Executive Member", department: "BME" },
+      { id: 2, name: "V Smrithika", role: "Executive Member", department: "BME" },
+      { id: 3, name: "P Susmitha", role: "Executive Member", department: "BME" },
+      { id: 4, name: "R Tejashri", role: "Executive Member", department: "BME" },
+      { id: 5, name: "S Tejasvi", role: "Executive Member", department: "BME" },
+      { id: 6, name: "J Balamurali", role: "Executive Member", department: "BME" },
+      { id: 7, name: "Iniya Vivekanandhan", role: "Executive Member", department: "BME" },
+      { id: 8, name: "V Jazlin Angela", role: "Executive Member", department: "BME" },
+      { id: 9, name: "S Lokha Varshini", role: "Executive Member", department: "BME" },
+      { id: 10, name: "P Poojitha", role: "Executive Member", department: "BME" },
+      { id: 11, name: "S Preethiv", role: "Executive Member", department: "BME" },
+      { id: 12, name: "K Yuvarani", role: "Executive Member", department: "BME" },
+    ]
+  },
+  cs: {
+    bearers: [
+      { id: 1, name: "Dr. J. Selvakumar", role: "Faculty Advisor", department: "HoD / CSE" },
+      { id: 2, name: "Mohan Krishna G R", role: "Chairperson", department: "IV CSE" },
+      { id: 3, name: "Arjun S", role: "Vice Chairperson", department: "III CSE" },
+      { id: 4, name: "K S Surya Narayanan", role: "Secretary", department: "II EEE" },
+      { id: 5, name: "Amirthavarshini S", role: "Treasurer", department: "III CSE" },
+      { id: 6, name: "Rohit S K", role: "Activity Coordinator", department: "III CSE" },
+    ],
+    execs: [
+      { id: 1, name: "Seralathan C A", role: "Executive Member", department: "II CSE" },
+      { id: 2, name: "Dhakshitha S", role: "Executive Member", department: "II CSE" },
+      { id: 3, name: "Sania N", role: "Executive Member", department: "II CSE" },
+    ]
+  },
+  cis: {
+    bearers: [
+      { id: 1, name: "Dr. R. Kingsy Grace", role: "Faculty Advisor", department: "Professor / CSE" },
+      { id: 2, name: "Ashwanth Senthil Kumar", role: "Chairperson", department: "BE. CSE" },
+      { id: 3, name: "Latisha S", role: "Vice Chair Person", department: "BE. CSE" },
+      { id: 4, name: "Arjun Krishna R", role: "Secretary", department: "BE. CSE" },
+      { id: 5, name: "Madhushri Venkitasamy", role: "Treasurer", department: "BE. CSE" },
+      { id: 6, name: "Amirthavarshini S", role: "Web Master", department: "BE. CSE" },
+      { id: 7, name: "ROHIT S K", role: "Activity Coordinator", department: "BE. CSE" },
+      { id: 8, name: "SANIA N", role: "Activity Coordinator", department: "BE. CSE" },
+      { id: 9, name: "DHAKSHITHA S", role: "Designer", department: "BE. CSE" },
+    ],
+    execs: [
+      { id: 1, name: "Seralathan C A", role: "Executive Member", department: "BE. CSE" },
+    ]
+  },
+  comsoc: {
+    bearers: [
+      { id: 1, name: "Dr. M. Kathirvelu", role: "Faculty Advisor", department: "HoD / ECE" },
+      { id: 2, name: "Vijayaragavan K", role: "Chairperson", department: "IV ECE" },
+      { id: 3, name: "Shri Nithin S B", role: "Vice Chairperson", department: "IV ECE" },
+      { id: 4, name: "JAYASHREE VS", role: "Secretary", department: "III ECE" },
+      { id: 5, name: "Arulgnani PR", role: "Joint Secretary", department: "III ECE" },
+      { id: 6, name: "Dhivya G", role: "Treasurer", department: "III ECE" },
+      { id: 7, name: "Madhushree K", role: "Joint Treasurer", department: "II ECE" },
+      { id: 8, name: "Evan Mitchell P", role: "Activity Coordinator", department: "III ECE" },
+      { id: 9, name: "Kiran Malini V", role: "Activity Coordinator", department: "III ECE" },
+      { id: 10, name: "Varsha Nachiyar N", role: "Social Media Lead", department: "II ECE" },
+      { id: 11, name: "Porkko N", role: "Social Media", department: "II ECE" },
+      { id: 12, name: "Guganeshan P", role: "Webmaster", department: "III ECE" },
+      { id: 13, name: "Balasubramanian S", role: "Webmaster", department: "III ECE" },
+    ],
+    execs: [
+      { id: 1, name: "Yonica M", role: "Executive Member", department: "II ECE" },
+      { id: 2, name: "Hariprasath Ponnusamy", role: "Executive Member", department: "BE. ECE" },
+      { id: 3, name: "Indradharshini U", role: "Executive Member", department: "BE. ECE" },
+      { id: 4, name: "Evangeline Stella", role: "Executive Member", department: "BE. ECE" },
+      { id: 5, name: "Vaishnavi S", role: "Executive Member", department: "BE. ECE" },
+    ]
+  },
+  pels: {
+    bearers: [
+      { id: 1, name: "Dr. C. Praveenkumar", role: "Faculty Advisor", department: "AP (Sr.G)/EEE" },
+      { id: 2, name: "Pabitra Santra", role: "Chairperson", department: "III EEE" },
+      { id: 3, name: "Jeevith Pranav P", role: "Vice-Chairperson", department: "IV EEE" },
+      { id: 4, name: "Akshreeya T", role: "Secretary", department: "IV EEE" },
+      { id: 5, name: "Swathi P", role: "Editor", department: "II EEE" },
+      { id: 6, name: "Nikhil Balaji R", role: "Joint Activity Coordinator", department: "II EEE" },
+      { id: 7, name: "Sabarinath V S B", role: "Editor", department: "II EEE" },
+      { id: 8, name: "Alexander Samuel R", role: "Activity Coordinator", department: "II EEE" },
+      { id: 9, name: "Ranjith Kumar R", role: "Joint Activity Coordinator", department: "II EEE" },
+    ],
+    execs: [
+      { id: 1, name: "Hari saran M", role: "Executive Member", department: "II EEE" },
+      { id: 2, name: "Ishani S", role: "Executive Member", department: "II EEE" },
+      { id: 3, name: "Arya M S", role: "Executive Member", department: "II EEE" },
+      { id: 4, name: "Kavipriya K", role: "Executive Member", department: "II EEE" },
+      { id: 5, name: "Vishweshwaran G", role: "Executive Member", department: "II EEE" },
+      { id: 6, name: "Janani A P", role: "Executive Member", department: "II EEE" },
+    ]
+  },
+  im: {
+    bearers: [
+      { id: 1, name: "Dr. Y. Dharsan", role: "Faculty Advisor", department: "AP / EIE" },
+      { id: 2, name: "ELAKKIYA R", role: "Chairperson", department: "EIE" },
+      { id: 3, name: "HARIHARASUDHAN D", role: "Vice-Chairperson", department: "EIE" },
+      { id: 4, name: "SRIDARSHAN A", role: "Secretary", department: "EIE" },
+      { id: 5, name: "MOULEESH M", role: "Treasurer", department: "EIE" },
+      { id: 6, name: "SIVAPIRIYANARUNACHALAMRAJKUMAR", role: "Event coordinator", department: "EIE" },
+      { id: 7, name: "PRAVIN A", role: "Event coordinator", department: "EIE" },
+    ],
+    execs: [
+      { id: 1, name: "SHIRISHKRISHNA S", role: "Executive Member", department: "EIE" },
+      { id: 2, name: "RITHIKA S", role: "Executive Member", department: "EIE" },
+    ]
+  },
+  cas: {
+    bearers: [
+      { id: 1, name: "Dr. K. Balamurugan", role: "Faculty Advisor", department: "AsP/EEE" },
+      { id: 2, name: "Darshan S", role: "Chairperson", department: "IV EEE" },
+      { id: 3, name: "D Jennifer Shobha", role: "Vice Chairperson", department: "III Civil" },
+      { id: 4, name: "Nithin Annamalai R", role: "Secretary", department: "II EEE" },
+      { id: 5, name: "D R Prithika", role: "Treasurer", department: "II EEE" },
+    ],
+    execs: [
+      { id: 1, name: "Bhargavan Balaji", role: "Executive Member", department: "II EEE" },
+      { id: 2, name: "M Barath", role: "Executive Member", department: "II EEE" },
+      { id: 3, name: "F Mohammed Aathif", role: "Executive Member", department: "II EEE" },
+    ]
+  },
+  wie: {
+    bearers: [
+      { id: 1, name: "Mrs. S. Jansi Rani", role: "IEEE WIE Coordinator", department: "AP (Sr.G)/IT" },
+      { id: 2, name: "G J Lithigaa", role: "Chairperson", department: "III IT A" },
+      { id: 3, name: "S Dhakshitha", role: "Secretary", department: "III CSE A" },
+      { id: 4, name: "S Karishma", role: "Joint Secretary", department: "IV EEE" },
+      { id: 5, name: "S Tejasvi", role: "Joint Activity Coordinator", department: "III BME" },
+      { id: 6, name: "S I Aravindh", role: "Joint Activity Coordinator", department: "II EEE A" },
+      { id: 7, name: "R Tejashri", role: "Treasurer", department: "III BME" },
+      { id: 8, name: "J Sindhu", role: "Social Media", department: "III M.Tech CSE" },
+      { id: 9, name: "P S Allan", role: "Social Media", department: "III Civil" },
+    ],
+    execs: [
+      { id: 1, name: "K Lahitha", role: "Executive Member", department: "III M.Tech CSE" },
+      { id: 2, name: "S Lavanya", role: "Executive Member", department: "III EIE" },
+      { id: 3, name: "K Muthtamil", role: "Executive Member", department: "II EEE A" },
+      { id: 4, name: "P Mahalakshmi", role: "Executive Member", department: "II AI & DS" },
+      { id: 5, name: "V Mahalakshmi", role: "Executive Member", department: "II AI & DS" },
+      { id: 6, name: "D Eklesia Blessie", role: "Executive Member", department: "II IT A" },
+      { id: 7, name: "S Kaniska Sri", role: "Executive Member", department: "II EEE A" },
+    ]
+  },
+  srec: {
+    bearers: [
+      { id: 1, name: "Dr. K. Balamurugan", role: "Student Branch Counsellor", department: "AsP/EEE" },
+      { id: 2, name: "Darshan S", role: "Chairperson", department: "IV EEE" },
+      { id: 3, name: "D Jennifer Shobha", role: "Vice Chairperson", department: "III Civil" },
+      { id: 4, name: "D R Prithika", role: "Treasurer", department: "II EEE B" },
+      { id: 5, name: "S Deepak", role: "Activities Coordinator", department: "IV EEE" },
+      { id: 6, name: "S Amirtha Varshini", role: "Joint Activity Coordinator", department: "III CSE A" },
+      { id: 7, name: "V Smrthikha", role: "Joint Activity Coordinator", department: "III BME" },
+      { id: 8, name: "K S Surya Narayanan", role: "Webmaster", department: "II EEE B" },
+      { id: 9, name: "Nithin Annamalai R", role: "Editor", department: "II EEE B" },
+      { id: 10, name: "S Latisha", role: "Editor", department: "III CSE B" },
+      { id: 11, name: "Dharshini", role: "Editor", department: "III IT A" },
+    ],
+    execs: [
+      { id: 1, name: "S Mathusri", role: "Executive Member", department: "III M.Tech CSE" },
+      { id: 2, name: "A Dhivya Tharsana", role: "Creative Executive", department: "II AI & DS" },
+      { id: 3, name: "M Barath", role: "Events Executive", department: "II EEE A" },
+      { id: 4, name: "F Mohammed Aathif", role: "Executive Member", department: "II EEE A" },
+      { id: 5, name: "Bhargavan Balaji", role: "Executive Member", department: "II EEE A" },
+      { id: 6, name: "R Srenithi", role: "Executive Member", department: "III M.Tech CSE" },
+      { id: 7, name: "V Swetha", role: "Executive Member", department: "III EIE" },
+    ]
+  }
+};
+
 // Societies Data with Exact Real IEEE Student Membership Pricing (+ 18% GST Tax) & Real Table Chairs
 const SOCIETIES_DATA = [
   { id: "srec", code: "IEEE SB SREC", name: "IEEE Student Branch SREC", logo: ieeeStamp, category: "Parent Branch", advisor: "Dr. K. Balamurugan", chair: "Darshan S", members: "180+", feeUSD: "$7.00 USD + 18% GST (≈ ₹684 total)", badge: "Core Chapter", href: "/societies/srec", description: "Primary membership giving full access to all SB flagship events, workshops, and IEEE global portal." },
-  { id: "cs", code: "CS", name: "IEEE Computer Society", logo: csLogo, category: "Computing & Software", advisor: "Dr. J. Selvakumar", chair: "R Vishnu Kaarthik", members: "95+", feeUSD: "$8.00 USD + 18% GST (≈ ₹784 total)", badge: "Most Popular", href: "/societies/cs", description: "Premier technical community for computing, software systems, algorithms, cybersecurity, and AI." },
+  { id: "cs", code: "CS", name: "IEEE Computer Society", logo: csLogo, category: "Computing & Software", advisor: "Dr. J. Selvakumar", chair: "Mohan Krishna G R", members: "95+", feeUSD: "$8.00 USD + 18% GST (≈ ₹784 total)", badge: "Most Popular", href: "/societies/cs", description: "Premier technical community for computing, software systems, algorithms, cybersecurity, and AI." },
   { id: "cis", code: "CIS", name: "Computational Intelligence Society", logo: cisLogo, category: "AI & Deep Learning", advisor: "Dr. R. Kingsy Grace", chair: "Ashwanth Senthil Kumar", members: "60+", feeUSD: "$4.00 USD + 18% GST (≈ ₹392 total)", badge: "AI Frontier", href: "/societies/cis", description: "Focusing on neural networks, evolutionary computing, fuzzy logic, deep learning, and intelligent agents." },
   { id: "comsoc", code: "ComSoc", name: "Communication Society", logo: comsocLogo, category: "5G & Telecommunications", advisor: "Dr. M. Kathirvelu", chair: "Vijayaragavan K", members: "50+", feeUSD: "$1.00 USD + 18% GST (≈ ₹98 total)", badge: "Next-Gen Comms", href: "/societies/comsoc", description: "Connecting engineers in telecommunications, optical networking, 5G/6G, and RF wireless protocols." },
   { id: "embs", code: "EMBS", name: "Engineering in Medicine & Biology", logo: embsLogo, category: "Biotech & Healthcare", advisor: "Dr. Deepa B. Prabhu", chair: "Anjanalakshmi S Prabhu", members: "45+", feeUSD: "$1.00 USD + 18% GST (≈ ₹98 total)", badge: "HealthTech", href: "/societies/embs", description: "Bridging engineering with medical sciences, healthcare instrumentation, bioinformatics, and biosensors." },
@@ -576,6 +775,8 @@ export const MobileAppPage = ({
   const [officerCategory, setOfficerCategory] = useState("all");
   const [dbOfficers, setDbOfficers] = useState(REAL_OFFICE_BEARERS);
   const [dynamicSocietyLeaders, setDynamicSocietyLeaders] = useState({});
+  const [dynamicSocietyOfficers, setDynamicSocietyOfficers] = useState({});
+  const [dynamicSocietyExecutives, setDynamicSocietyExecutives] = useState({});
 
   // Synchronize tab and category when navigation or parameters change
   useEffect(() => {
@@ -591,6 +792,16 @@ export const MobileAppPage = ({
   }, [searchParams, defaultTab, defaultCategory, focusSociety, forceLogin]);
   // Events Category Filter: all | Upcoming | Symposium | Hackathon | Workshop | Celebration | Outreach
   const [eventCategoryFilter, setEventCategoryFilter] = useState("All");
+  const [dbEvents, setDbEvents] = useState(EVENTS_DATA);
+  const [eventSearchQuery, setEventSearchQuery] = useState("");
+  const [selectedEventModal, setSelectedEventModal] = useState(null);
+  // Live Database Datasets for All Mobile Pages
+  const [dbPastBearers, setDbPastBearers] = useState(PAST_BEARERS_DATA);
+  const [dbAwards, setDbAwards] = useState(AWARDS_DATA);
+  const [dbAnnualPlans, setDbAnnualPlans] = useState(ANNUAL_PLANS_DATA);
+  const [dbFunding, setDbFunding] = useState(FUNDING_DATA);
+  const [dbSeniorMembers, setDbSeniorMembers] = useState([]);
+  const [dbMemberCounts, setDbMemberCounts] = useState([]);
   // View Mode toggle: "table" vs "cards"
   const [viewMode, setViewMode] = useState("cards");
   // Members list & Selected member (no demo default)
@@ -648,17 +859,91 @@ export const MobileAppPage = ({
         localStorage.removeItem("srec_ieee_app_user");
       }
     }
-    // Fetch live member directory and office bearers from Supabase tables
+    // Fetch live member directory, office bearers, and all table datasets from Supabase
     const fetchDbData = async () => {
       try {
-        const [membersRes, b1, e1] = await Promise.all([
+        const [
+          membersRes,
+          b1,
+          e1,
+          pastBRes,
+          awardsRes,
+          plansRes,
+          fundingRes,
+          seniorRes,
+          memberCountsRes
+        ] = await Promise.all([
           supabase.from("student_members").select("*").order("created_at", { ascending: false }),
           supabase.from("srec_office_bearers").select("*"),
           supabase.from("srec_executive_members").select("*"),
+          supabase.from("office_bearers").select("*").order("year", { ascending: false }),
+          supabase.from("awards").select("*").order("year", { ascending: false }),
+          supabase.from("annual_plan").select("*").order("s_no", { ascending: true }),
+          supabase.from("funding_submissions").select("*").order("id", { ascending: false }),
+          supabase.from("senior_members").select("*").order("s_no", { ascending: true }),
+          supabase.from("member_counts").select("*").order("year", { ascending: false }),
         ]);
 
         if (membersRes.data && membersRes.data.length > 0) {
           setMembers(membersRes.data);
+        }
+
+        // Process live past office bearers table
+        if (pastBRes.data && pastBRes.data.length > 0) {
+          const formattedPast = pastBRes.data.map((r) => ({
+            year: r.academic_year || (r.year ? `${r.year}-${Number(r.year) + 1}` : "2024-2025"),
+            role: r.role || "Executive Member",
+            name: r.name || "Officer",
+            dept: r.department || "Engineering",
+            achievement: r.group_name || r.society_code || "IEEE Student Branch Service"
+          }));
+          setDbPastBearers(formattedPast);
+        }
+
+        // Process live awards table
+        if (awardsRes.data && awardsRes.data.length > 0) {
+          const formattedAwards = awardsRes.data.map((r) => ({
+            id: r.id,
+            title: r.title || "IEEE Accolade",
+            year: r.year ? String(r.year) : "2024",
+            body: r.body || r.category || "IEEE Madras Section",
+            prize: r.prize || r.description || "Citation Plaque"
+          }));
+          setDbAwards(formattedAwards);
+        }
+
+        // Process live annual plans table
+        if (plansRes.data && plansRes.data.length > 0) {
+          const formattedPlans = plansRes.data.map((r) => ({
+            id: r.id,
+            month: r.month || "Academic Year",
+            event: r.event || "IEEE Technical Initiative",
+            society: r.society || "IEEE SB",
+            budget: r.budget || "Sanctioned",
+            status: r.status || "Completed"
+          }));
+          setDbAnnualPlans(formattedPlans);
+        }
+
+        // Process live funding table
+        if (fundingRes.data && fundingRes.data.length > 0) {
+          const formattedFunding = fundingRes.data.map((r) => ({
+            id: r.id,
+            grant: r.title || "Activity Support Grant",
+            amount: r.budget_amount ? (String(r.budget_amount).startsWith("$") || String(r.budget_amount).startsWith("₹") ? r.budget_amount : `₹${r.budget_amount}`) : "₹25,000",
+            year: r.description && r.description.includes("Year:") ? r.description.replace("Year:", "").trim() : (r.created_at ? new Date(r.created_at).getFullYear().toString() : "2024"),
+            agency: r.submission_type || "IEEE Madras Section",
+            purpose: r.description || "Technical Conclaves & Student Chapters"
+          }));
+          setDbFunding(formattedFunding);
+        }
+
+        if (seniorRes.data && seniorRes.data.length > 0) {
+          setDbSeniorMembers(seniorRes.data);
+        }
+
+        if (memberCountsRes.data && memberCountsRes.data.length > 0) {
+          setDbMemberCounts(memberCountsRes.data);
         }
 
         // Process live office bearers from tables
@@ -689,23 +974,54 @@ export const MobileAppPage = ({
           setDbOfficers(formattedOfficers);
         }
 
-        // Fetch dedicated tables for each society to retrieve exact live chairs and advisors
+        // Fetch dedicated tables for each society to retrieve exact live chairs, advisors, office bearers, and executive members
         const socTables = {
-          srec: ["srec_office_bearers"],
-          cs: ["cs_office_bearers"],
-          cis: ["cis_office_bearers"],
-          comsoc: ["comsoc_office_bearers"],
-          embs: ["embs_office_bearers"],
-          pels: ["pels_office_bearers"],
-          im: ["im_office_bearers", "ims_office_bearers"],
-          cas: ["cas_office_bearers", "cass_office_bearers"],
-          wie: ["wie_office_bearers"],
+          srec: {
+            bearers: ["srec_office_bearers"],
+            execs: ["srec_executive_members"],
+          },
+          cs: {
+            bearers: ["cs_office_bearers"],
+            execs: ["cs_executive_members"],
+          },
+          cis: {
+            bearers: ["cis_office_bearers"],
+            execs: ["cis_executive_members"],
+          },
+          comsoc: {
+            bearers: ["comsoc_office_bearers"],
+            execs: ["comsoc_executive_members"],
+          },
+          embs: {
+            bearers: ["embs_office_bearers"],
+            execs: ["embs_executive_members"],
+          },
+          pels: {
+            bearers: ["pels_office_bearers"],
+            execs: ["pels_executive_members"],
+          },
+          im: {
+            bearers: ["im_office_bearers", "ims_office_bearers"],
+            execs: ["im_executive_members", "ims_executive_members"],
+          },
+          cas: {
+            bearers: ["cas_office_bearers", "cass_office_bearers"],
+            execs: ["cas_executive_members", "cass_executive_members"],
+          },
+          wie: {
+            bearers: ["wie_office_bearers"],
+            execs: ["wie_executive_members"],
+          },
         };
 
         const liveLeaders = {};
+        const liveOfficers = {};
+        const liveExecutives = {};
+
         await Promise.all(
-          Object.entries(socTables).map(async ([socKey, tblList]) => {
-            for (const tbl of tblList) {
+          Object.entries(socTables).map(async ([socKey, cfg]) => {
+            // 1. Fetch Chapter Office Bearers
+            for (const tbl of cfg.bearers) {
               try {
                 const { data } = await supabase.from(tbl).select("*").order("id", { ascending: true });
                 if (data && data.length > 0) {
@@ -725,9 +1041,39 @@ export const MobileAppPage = ({
                   if (chairPerson || advisor) {
                     liveLeaders[socKey] = {
                       chair: chairPerson?.name || undefined,
+                      chairImg: chairPerson ? getSupabaseImgUrl(chairPerson) : undefined,
                       advisor: advisor?.name || undefined,
+                      advisorImg: advisor ? getSupabaseImgUrl(advisor) : undefined,
                     };
                   }
+                  liveOfficers[socKey] = data.map((r) => ({
+                    id: r.id,
+                    name: r.name,
+                    role: r.role,
+                    department: r.department || "",
+                    academic_year: r.academic_year || "",
+                    image_url: getSupabaseImgUrl(r),
+                    linkedin_url: r.linkedin_url || ""
+                  }));
+                  break;
+                }
+              } catch {}
+            }
+
+            // 2. Fetch Chapter Executive Members
+            for (const tbl of cfg.execs) {
+              try {
+                const { data } = await supabase.from(tbl).select("*").order("id", { ascending: true });
+                if (data && data.length > 0) {
+                  liveExecutives[socKey] = data.map((r) => ({
+                    id: r.id,
+                    name: r.name,
+                    role: r.role || "Executive Member",
+                    department: r.department || "",
+                    academic_year: r.academic_year || "",
+                    image_url: getSupabaseImgUrl(r),
+                    linkedin_url: r.linkedin_url || ""
+                  }));
                   break;
                 }
               } catch {}
@@ -736,6 +1082,134 @@ export const MobileAppPage = ({
         );
         if (Object.keys(liveLeaders).length > 0) {
           setDynamicSocietyLeaders(liveLeaders);
+        }
+        if (Object.keys(liveOfficers).length > 0) {
+          setDynamicSocietyOfficers(liveOfficers);
+        }
+        if (Object.keys(liveExecutives).length > 0) {
+          setDynamicSocietyExecutives(liveExecutives);
+        }
+
+        // 3. Fetch Live Events & Activities from Supabase tables (activities, annual_plan, event_reports)
+        try {
+          const [actRes, planRes, repRes] = await Promise.all([
+            supabase.from("activities").select("*").order("s_no", { ascending: false }),
+            supabase.from("annual_plan").select("*").order("s_no", { ascending: true }),
+            supabase.from("event_reports").select("*").order("id", { ascending: false }),
+          ]);
+
+          const loadedEvents = [];
+
+          // Process activities table rows
+          if (actRes.data && actRes.data.length > 0) {
+            actRes.data.forEach((a) => {
+              const nameLower = (a.event || "").toLowerCase();
+              let category = "Workshop";
+              if (nameLower.includes("conference") || nameLower.includes("aectsd")) category = "Conference";
+              else if (nameLower.includes("symposium") || nameLower.includes("visionx")) category = "Symposium";
+              else if (nameLower.includes("hackathon") || nameLower.includes("xtreme") || nameLower.includes("code") || nameLower.includes("coding")) category = "Hackathon";
+              else if (nameLower.includes("celebration") || nameLower.includes("inaugur") || nameLower.includes("day")) category = "Celebration";
+              else if (nameLower.includes("outreach") || nameLower.includes("school") || nameLower.includes("stem")) category = "Outreach";
+              else if (nameLower.includes("webinar") || nameLower.includes("talk") || nameLower.includes("seminar")) category = "Webinar";
+
+              const isUpcoming = (a.date || "").includes("2026") || (a.date || "").includes("2027") || nameLower.includes("upcoming");
+
+              loadedEvents.push({
+                id: `act-${a.id || a.s_no}`,
+                title: a.event || "IEEE SB Activity",
+                subtitle: a.chief_guest ? `Chief Guest: ${a.chief_guest}` : "Technical SB Activity",
+                category,
+                date: a.date || "Academic Session",
+                time: "09:30 AM - 04:30 PM",
+                venue: "SREC Campus, Coimbatore",
+                society: "IEEE SREC SB",
+                badge: a.s_no ? `Activity #${a.s_no}` : category,
+                status: isUpcoming ? "Upcoming" : "Completed",
+                chief_guest: a.chief_guest || "",
+                participants: a.participants || "",
+                description: a.chief_guest ? `Conducted with distinguished guest ${a.chief_guest}. Total participants: ${a.participants || "Open to all"}.` : `Official IEEE Student Branch technical activity at Sri Ramakrishna Engineering College.`,
+                image: a.image_url ? getSupabaseImgUrl(a.image_url) : "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80",
+                link: "/activities",
+              });
+            });
+          }
+
+          // Process annual_plan table rows
+          if (planRes.data && planRes.data.length > 0) {
+            planRes.data.forEach((p) => {
+              const nameLower = (p.event || "").toLowerCase();
+              let category = "Workshop";
+              if (nameLower.includes("conference") || nameLower.includes("aectsd")) category = "Conference";
+              else if (nameLower.includes("symposium") || nameLower.includes("visionx")) category = "Symposium";
+              else if (nameLower.includes("hackathon")) category = "Hackathon";
+              else if (nameLower.includes("celebration") || nameLower.includes("day") || nameLower.includes("transition")) category = "Celebration";
+              else if (nameLower.includes("outreach") || nameLower.includes("stem")) category = "Outreach";
+
+              const isUpcoming = (p.status || "").toLowerCase() === "upcoming" || (p.month || "").includes("2026") || (p.month || "").includes("2027");
+
+              if (!loadedEvents.some(e => e.title.toLowerCase().trim() === (p.event || "").toLowerCase().trim())) {
+                loadedEvents.push({
+                  id: `plan-${p.id || p.s_no}`,
+                  title: p.event || "Annual Plan Initiative",
+                  subtitle: `Organized by ${p.society || "IEEE SB"} · Budget ${p.budget || "Sanctioned"}`,
+                  category,
+                  date: p.month || "Academic Year",
+                  time: "Scheduled Session",
+                  venue: "SREC Campus Auditorium & Labs",
+                  society: p.society || "IEEE SREC",
+                  badge: p.status === "Upcoming" ? "Upcoming Plan" : "Annual Plan",
+                  status: isUpcoming ? "Upcoming" : "Completed",
+                  description: `Annual activity initiative planned by ${p.society || "IEEE Student Branch"}. Allocated budget: ${p.budget || "Standard"}.`,
+                  image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80",
+                  link: "/activities",
+                });
+              }
+            });
+          }
+
+          // Process event_reports table rows
+          if (repRes.data && repRes.data.length > 0) {
+            repRes.data.forEach((r) => {
+              const nameLower = (r.title || r.event_name || "").toLowerCase();
+              let category = r.category || "Workshop";
+              if (nameLower.includes("conference")) category = "Conference";
+              else if (nameLower.includes("symposium")) category = "Symposium";
+              else if (nameLower.includes("hackathon")) category = "Hackathon";
+              else if (nameLower.includes("celebration") || nameLower.includes("day")) category = "Celebration";
+
+              if (!loadedEvents.some(e => e.title.toLowerCase().trim() === (r.title || r.event_name || "").toLowerCase().trim())) {
+                loadedEvents.push({
+                  id: `rep-${r.id}`,
+                  title: r.title || r.event_name || "Event Report",
+                  subtitle: r.description ? r.description.slice(0, 80) + "..." : "Documented Activity Report",
+                  category,
+                  date: r.date || "Academic Session",
+                  time: "Full Session",
+                  venue: r.venue || "SREC Campus",
+                  society: r.department || "IEEE Student Branch",
+                  badge: "Report Archive",
+                  status: "Completed",
+                  chief_guest: r.chief_guest || "",
+                  participants: r.participants_count ? `${r.participants_count} Attendees` : "",
+                  description: r.description || `Official documentation report for ${r.title || r.event_name}.`,
+                  image: r.photo_url ? getSupabaseImgUrl(r.photo_url) : "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80",
+                  link: "/reports",
+                });
+              }
+            });
+          }
+
+          if (loadedEvents.length > 0) {
+            // Sort to ensure Upcoming events appear on top, followed by latest activities
+            loadedEvents.sort((a, b) => {
+              if (a.status === "Upcoming" && b.status !== "Upcoming") return -1;
+              if (b.status === "Upcoming" && a.status !== "Upcoming") return 1;
+              return 0;
+            });
+            setDbEvents(loadedEvents);
+          }
+        } catch (evtErr) {
+          console.warn("Live events database fetch note:", evtErr);
         }
       }
       catch (err) {
@@ -871,10 +1345,14 @@ export const MobileAppPage = ({
     const baseList = societyScope === "registered" && currentUser ? studentRegisteredSocieties : SOCIETIES_DATA;
     return baseList.map((soc) => {
       const dyn = dynamicSocietyLeaders[soc.id];
+      const chairName = dyn?.chair || soc.chair;
+      const advisorName = dyn?.advisor || soc.advisor;
       return {
         ...soc,
-        chair: dyn?.chair || soc.chair,
-        advisor: dyn?.advisor || soc.advisor,
+        chair: chairName,
+        chairImg: dyn?.chairImg || soc.chairImg || (chairName ? `https://ui-avatars.com/api/?name=${encodeURIComponent(chairName)}&background=002855&color=fff&size=128` : ""),
+        advisor: advisorName,
+        advisorImg: dyn?.advisorImg || soc.advisorImg || (advisorName ? `https://ui-avatars.com/api/?name=${encodeURIComponent(advisorName)}&background=002855&color=fff&size=128` : ""),
       };
     });
   }, [societyScope, currentUser, studentRegisteredSocieties, dynamicSocietyLeaders]);
@@ -1584,104 +2062,231 @@ export const MobileAppPage = ({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════
-            TAB 2: EVENTS & ACTIVITIES (WHITE THEME)
+            TAB 2: EVENTS & ACTIVITIES (DYNAMIC DATABASE DRIVEN)
         ════════════════════════════════════════════════════════════════════ */}
-      {activeTab === "events" && (<div className="space-y-3">
-        {/* Header & Filter Controls */}
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                <Calendar size={16} className="text-[#002855]" />
-                Events &amp; Activities Hub
-              </h2>
-              <p className="text-[10px] text-slate-500">
-                Flagship conferences, symposiums, hackathons &amp; workshops
-              </p>
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
-              {EVENTS_DATA.length} Events
-            </span>
-          </div>
+      {activeTab === "events" && (() => {
+        const eventsList = dbEvents && dbEvents.length > 0 ? dbEvents : EVENTS_DATA;
+        const displayedEvents = eventsList.filter((e) => {
+          const matchesCat = eventCategoryFilter === "All"
+            ? true
+            : (eventCategoryFilter === "Upcoming"
+                ? e.status === "Upcoming"
+                : ((e.category || "").toLowerCase().includes(eventCategoryFilter.toLowerCase()) || (e.title || "").toLowerCase().includes(eventCategoryFilter.toLowerCase())));
+          const q = eventSearchQuery.toLowerCase().trim();
+          const matchesSearch = !q || (
+            (e.title || "").toLowerCase().includes(q) ||
+            (e.category || "").toLowerCase().includes(q) ||
+            (e.society || "").toLowerCase().includes(q) ||
+            (e.chief_guest || "").toLowerCase().includes(q) ||
+            (e.venue || "").toLowerCase().includes(q) ||
+            (e.date || "").toLowerCase().includes(q) ||
+            (e.description || "").toLowerCase().includes(q)
+          );
+          return matchesCat && matchesSearch;
+        });
 
-          {/* Category Pills Filter */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-            {["All", "Conference", "Symposium", "Hackathon", "Workshop", "Celebration", "Outreach"].map((cat) => (<button key={cat} onClick={() => setEventCategoryFilter(cat)} className={`px-3 py-1 rounded-full text-[9px] font-black uppercase whitespace-nowrap transition-all ${eventCategoryFilter === cat
-              ? "bg-[#002855] text-white shadow-sm"
-              : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900"}`}>
-              {cat === "All" ? "All Events" : cat}
-            </button>))}
-          </div>
-        </div>
-
-        {/* Events Card Grid */}
-        <div className="space-y-3">
-          {EVENTS_DATA.filter((e) => eventCategoryFilter === "All" ? true : e.category === eventCategoryFilter).map((event) => (<div key={event.id} className="rounded-3xl bg-white border border-slate-200/90 shadow-sm overflow-hidden flex flex-col hover:border-[#002855]/40 transition-all group">
-            {/* Event Banner Image with Badges */}
-            <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-slate-900">
-              <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30" />
-
-              {/* Top Badges */}
-              <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-slate-900 text-[9px] font-black uppercase tracking-wider shadow-sm">
-                  {event.badge}
-                </span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md ${event.status === "Upcoming"
-                  ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
-                  : "bg-emerald-500/90 text-white"}`}>
-                  {event.status}
-                </span>
-              </div>
-
-              {/* Bottom Title on Image */}
-              <div className="absolute bottom-2.5 left-3 right-3">
-                <span className="text-[9px] font-bold text-sky-200 uppercase tracking-widest block">
-                  {event.society}
-                </span>
-                <h3 className="text-sm sm:text-base font-black text-white leading-tight drop-shadow truncate">
-                  {event.title}
-                </h3>
-              </div>
-            </div>
-
-            {/* Event Details Content */}
-            <div className="p-3.5 space-y-2.5">
-              <p className="text-xs text-slate-600 leading-relaxed">
-                {event.description}
-              </p>
-
-              {/* Schedule & Venue Meta */}
-              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-[10px]">
+        return (
+          <div className="space-y-3">
+            {/* Header & Filter Controls */}
+            <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
+              <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-slate-400 font-bold uppercase block text-[8.5px]">Date &amp; Time</span>
-                  <span className="font-bold text-slate-900 leading-tight block">{event.date}</span>
-                  <span className="text-slate-500 text-[9px]">{event.time}</span>
+                  <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <Calendar size={16} className="text-[#002855]" />
+                    Events &amp; Activities Hub
+                  </h2>
+                  <p className="text-[10px] text-slate-500">
+                    Live database records of conferences, symposiums, hackathons &amp; workshops
+                  </p>
                 </div>
-                <div>
-                  <span className="text-slate-400 font-bold uppercase block text-[8.5px]">Location</span>
-                  <span className="font-semibold text-slate-800 leading-tight line-clamp-2">{event.venue}</span>
-                </div>
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
+                  {displayedEvents.length} Events
+                </span>
               </div>
 
-              {/* Action Bar */}
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-[10px] font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                  {event.category}
-                </span>
+              {/* Search Bar for Events */}
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 text-slate-400" size={13} />
+                <input
+                  type="text"
+                  placeholder="Search events by title, guest, society, or date..."
+                  value={eventSearchQuery}
+                  onChange={(e) => setEventSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-8 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs placeholder-slate-400 focus:outline-none focus:border-[#002855] transition-all"
+                />
+                {eventSearchQuery && (
+                  <button
+                    onClick={() => setEventSearchQuery("")}
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
 
-                {event.link.startsWith("http") ? (<a href={event.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase shadow-sm active:scale-95 transition-all">
-                  <span>Conference Portal</span>
-                  <ExternalLink size={12} />
-                </a>) : (<button onClick={() => navigate(event.link)} className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase shadow-sm active:scale-95 transition-all">
-                  <span>Explore Details</span>
-                  <ArrowRight size={12} />
-                </button>)}
+              {/* Category Pills Filter */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                {["All", "Upcoming", "Conference", "Symposium", "Hackathon", "Workshop", "Celebration", "Outreach", "Webinar"].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setEventCategoryFilter(cat)}
+                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase whitespace-nowrap transition-all ${
+                      eventCategoryFilter === cat
+                        ? "bg-[#002855] text-white shadow-sm"
+                        : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {cat === "All" ? "All Events" : cat}
+                  </button>
+                ))}
               </div>
             </div>
-          </div>))}
-        </div>
-      </div>)}
+
+            {/* Events Card Grid */}
+            <div className="space-y-3">
+              {displayedEvents.length > 0 ? (
+                displayedEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="rounded-3xl bg-white border border-slate-200/90 shadow-sm overflow-hidden flex flex-col hover:border-[#002855]/40 transition-all group"
+                  >
+                    {/* Event Banner Image with Badges */}
+                    <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30" />
+
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                        <span className="px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-slate-900 text-[9px] font-black uppercase tracking-wider shadow-sm">
+                          {event.badge || event.category}
+                        </span>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md ${
+                            event.status === "Upcoming"
+                              ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
+                              : "bg-emerald-500/90 text-white"
+                          }`}
+                        >
+                          {event.status}
+                        </span>
+                      </div>
+
+                      {/* Bottom Title on Image */}
+                      <div className="absolute bottom-2.5 left-3 right-3">
+                        <span className="text-[9px] font-bold text-sky-200 uppercase tracking-widest block">
+                          {event.society || "IEEE Student Branch"}
+                        </span>
+                        <h3 className="text-sm sm:text-base font-black text-white leading-tight drop-shadow line-clamp-1">
+                          {event.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Event Details Content */}
+                    <div className="p-3.5 space-y-2.5">
+                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                        {event.description}
+                      </p>
+
+                      {/* Schedule & Venue Meta */}
+                      <div className="grid grid-cols-2 gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-[10px]">
+                        <div>
+                          <span className="text-slate-400 font-bold uppercase block text-[8.5px]">Date &amp; Time</span>
+                          <span className="font-bold text-slate-900 leading-tight block truncate">{event.date}</span>
+                          <span className="text-slate-500 text-[9px] truncate block">{event.time || "Scheduled Event"}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 font-bold uppercase block text-[8.5px]">Location</span>
+                          <span className="font-semibold text-slate-800 leading-tight line-clamp-2">{event.venue || "SREC Campus"}</span>
+                        </div>
+                      </div>
+
+                      {/* Chief Guest / Speaker details if present in database */}
+                      {(event.chief_guest || event.participants) && (
+                        <div className="flex items-center justify-between p-2 rounded-xl bg-blue-50/60 border border-blue-100 text-[10px]">
+                          {event.chief_guest ? (
+                            <span className="text-slate-700 font-semibold truncate">
+                              Guest: <strong className="text-slate-900">{event.chief_guest}</strong>
+                            </span>
+                          ) : <span />}
+                          {event.participants && (
+                            <span className="text-blue-800 font-bold bg-white px-2 py-0.5 rounded-md border border-blue-200 shrink-0">
+                              {event.participants}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Action Bar */}
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                          {event.category}
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelectedEventModal(event)}
+                            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-[10px] uppercase transition-all"
+                          >
+                            Details
+                          </button>
+                          {event.link && event.link.startsWith("http") ? (
+                            <a
+                              href={event.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase shadow-sm active:scale-95 transition-all"
+                            >
+                              <span>Portal</span>
+                              <ExternalLink size={11} />
+                            </a>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                if (event.link) navigate(event.link);
+                                else setSelectedEventModal(event);
+                              }}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase shadow-sm active:scale-95 transition-all"
+                            >
+                              <span>View</span>
+                              <ArrowRight size={11} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 rounded-2xl bg-white border border-slate-200 text-center space-y-2">
+                  <Calendar size={32} className="mx-auto text-slate-400" />
+                  <h4 className="text-sm font-black text-slate-800">No Events Found</h4>
+                  <p className="text-xs text-slate-500">
+                    No matching activities in the database for &quot;{eventSearchQuery || eventCategoryFilter}&quot;.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setEventSearchQuery("");
+                      setEventCategoryFilter("All");
+                    }}
+                    className="mt-2 px-3 py-1.5 rounded-xl bg-[#002855] text-white text-xs font-bold"
+                  >
+                    Reset Filter
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ═══════════════════════════════════════════════════════════════════
             TAB 3: COMPLETE MOBILE STUDENT DASHBOARD & DIGITAL SMART ID VAULT
@@ -2457,12 +3062,8 @@ export const MobileAppPage = ({
   activeTab === "societies" && (<div className="space-y-3">
     {selectedSocietyId ? (() => {
       const rawSoc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
-      const dyn = dynamicSocietyLeaders[rawSoc.id];
-      const soc = {
-        ...rawSoc,
-        chair: dyn?.chair || rawSoc.chair,
-        advisor: dyn?.advisor || rawSoc.advisor,
-      };
+      const soc = { ...rawSoc };
+      
       const userSocList = Array.isArray(currentUser?.target_societies)
         ? currentUser.target_societies
         : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
@@ -2483,17 +3084,17 @@ export const MobileAppPage = ({
           (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
         );
       });
-      const socOfficers = REAL_OFFICE_BEARERS.filter(ob => {
-        const r = (ob.role || "").toLowerCase();
-        const d = (ob.department || "").toLowerCase();
-        if (soc.id === "cs") return r.includes("cs") || d.includes("cse") || r.includes("computer");
-        if (soc.id === "cis") return r.includes("cis") || d.includes("ai") || r.includes("computational");
-        if (soc.id === "wie") return r.includes("wie") || r.includes("women");
-        if (soc.id === "pels") return r.includes("pels") || d.includes("eee");
-        if (soc.id === "embs") return r.includes("embs") || d.includes("bme");
-        if (soc.id === "comsoc") return r.includes("comsoc") || d.includes("ece");
-        return true;
-      });
+      
+      const baseDataset = REAL_SOCIETY_DATASETS[soc.id] || { bearers: [], execs: [] };
+      const dbOfficersList = dynamicSocietyOfficers[soc.id];
+      const dbExecutivesList = dynamicSocietyExecutives[soc.id];
+
+      const socOfficers = (dbOfficersList && dbOfficersList.length > 0)
+        ? dbOfficersList
+        : baseDataset.bearers;
+      const socExecutives = (dbExecutivesList && dbExecutivesList.length > 0)
+        ? dbExecutivesList
+        : baseDataset.execs;
 
       return (
         <div className="space-y-3">
@@ -2530,15 +3131,15 @@ export const MobileAppPage = ({
               {soc.description}
             </p>
 
-            {/* Advisor & Chair */}
+            {/* Advisor & Chair (Text only, no pic) */}
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[9px] text-slate-400 font-bold uppercase block">Faculty Advisor</span>
-                <p className="font-extrabold text-slate-900 text-xs mt-0.5">{soc.advisor}</p>
+                <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Faculty Advisor</span>
+                <p className="font-extrabold text-slate-900 text-xs mt-0.5 leading-tight truncate">{soc.advisor}</p>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[9px] text-slate-400 font-bold uppercase block">Student Chair</span>
-                <p className="font-extrabold text-slate-900 text-xs mt-0.5">{soc.chair}</p>
+                <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Student Chair</span>
+                <p className="font-extrabold text-slate-900 text-xs mt-0.5 leading-tight truncate">{soc.chair}</p>
               </div>
             </div>
 
@@ -2557,27 +3158,64 @@ export const MobileAppPage = ({
             </div>
           </div>
 
-          {/* Chapter Officers List */}
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-              <Users size={14} className="text-[#002855]" /> Chapter Leadership Roster
-            </h4>
+          {/* 1. SEPARATE SECTION: CHAPTER OFFICE BEARERS (REAL DATA, NO PIC) */}
+          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                <Crown size={14} className="text-amber-600" /> Chapter Office Bearers
+              </h4>
+              <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold">
+                {socOfficers.length} Officers
+              </span>
+            </div>
             <div className="space-y-1.5">
-              {socOfficers.slice(0, 4).map((ob, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#002855] text-white font-black text-[10px] flex items-center justify-center shrink-0">
-                      {ob.name[0]}
-                    </div>
-                    <div>
-                      <p className="font-extrabold text-slate-900 text-xs leading-tight">{ob.name}</p>
-                      <p className="text-[9px] text-slate-500">{ob.role}</p>
-                    </div>
+              {socOfficers.map((ob, idx) => (
+                <div key={ob.id || idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:bg-slate-100/70 transition-colors">
+                  <div>
+                    <p className="font-extrabold text-slate-900 text-xs leading-tight">{ob.name}</p>
+                    <p className="text-[9.5px] text-[#002855] font-bold mt-0.5">{ob.role}</p>
                   </div>
-                  <span className="text-[9px] font-mono text-[#002855] font-bold">{ob.department}</span>
+                  {ob.department && (
+                    <span className="text-[9.5px] font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                      {ob.department}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* 2. SEPARATE SECTION: CHAPTER EXECUTIVE MEMBERS (REAL DATA, SEPARATE BELOW, NO PIC) */}
+          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                <Users size={14} className="text-[#002855]" /> Executive Committee Members
+              </h4>
+              <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
+                {socExecutives.length} Executives
+              </span>
+            </div>
+            {socExecutives.length > 0 ? (
+              <div className="space-y-1.5">
+                {socExecutives.map((ex, idx) => (
+                  <div key={ex.id || idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:bg-slate-100/70 transition-colors">
+                    <div>
+                      <p className="font-extrabold text-slate-900 text-xs leading-tight">{ex.name}</p>
+                      <p className="text-[9.5px] text-sky-700 font-bold mt-0.5">{ex.role || "Executive Member"}</p>
+                    </div>
+                    {ex.department && (
+                      <span className="text-[9.5px] font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                        {ex.department}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-500 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-center">
+                Executive committee roster active. New appointments update during chapter recruitment.
+              </p>
+            )}
           </div>
         </div>
       );
@@ -2615,73 +3253,112 @@ export const MobileAppPage = ({
             <button onClick={() => setSocietyScope("all")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "all"
               ? "bg-[#002855] text-white shadow-sm"
               : "text-slate-600 hover:text-slate-900"}`}>
+              <Globe size={12} className={societyScope === "all" ? "text-cyan-300" : "text-slate-400"} />
               <span>All 8 Chapters</span>
             </button>
           </div>)}
+
+          {/* Search bar for Societies */}
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 text-slate-400" size={13} />
+            <input
+              type="text"
+              placeholder="Search chapters by name, code, or advisor..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs placeholder-slate-400 focus:outline-none focus:border-[#002855] transition-all"
+            />
+          </div>
+
+          {/* View Mode Switcher */}
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[10px] text-slate-500 font-bold uppercase">Display Format</span>
+            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-[10px]">
+              <button
+                onClick={() => setViewMode("cards")}
+                className={`px-2.5 py-1 rounded-lg font-black uppercase transition-all flex items-center gap-1 ${viewMode === "cards" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500"}`}
+              >
+                <LayoutGrid size={11} /> Cards
+              </button>
+              <button
+                onClick={() => setViewMode("table")}
+                className={`px-2.5 py-1 rounded-lg font-black uppercase transition-all flex items-center gap-1 ${viewMode === "table" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500"}`}
+              >
+                <TableIcon size={11} /> Table
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* TABULAR SOCIETIES VIEW */}
-        {viewMode === "table" ? (<div className="rounded-2xl border border-slate-200/90 overflow-hidden bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[500px]">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
-                  <th className="py-2.5 px-3">Society Chapter</th>
-                  <th className="py-2.5 px-3">Faculty Advisor</th>
-                  <th className="py-2.5 px-3">Student Chair</th>
-                  <th className="py-2.5 px-3 text-center">Status</th>
-                  <th className="py-2.5 px-3 text-right">Fee (USD)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
-                {displayedSocieties.map((soc) => {
-                  const userSocList = Array.isArray(currentUser?.target_societies)
-                    ? currentUser.target_societies
-                    : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
-                  const isEnrolled = userSocList.some((ts) => {
-                    const t = String(ts || "").toLowerCase();
-                    const code = (soc.code || "").toLowerCase();
-                    const name = (soc.name || "").toLowerCase();
+        {/* SOCIETIES LISTING: TABLE VIEW vs CARDS VIEW (NO PICS) */}
+        {viewMode === "table" ? (
+          <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
+                    <th className="py-2.5 px-3">Society Chapter</th>
+                    <th className="py-2.5 px-3">Faculty Advisor</th>
+                    <th className="py-2.5 px-3">Student Chair</th>
+                    <th className="py-2.5 px-3 text-center">Status</th>
+                    <th className="py-2.5 px-3 text-right">Fee (USD)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs">
+                  {displayedSocieties.map((soc) => {
+                    const userSocList = Array.isArray(currentUser?.target_societies)
+                      ? currentUser.target_societies
+                      : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+                    const isEnrolled = userSocList.some((ts) => {
+                      const t = String(ts || "").toLowerCase();
+                      const code = (soc.code || "").toLowerCase();
+                      const name = (soc.name || "").toLowerCase();
+                      return (
+                        t.includes(code) ||
+                        t.includes(name) ||
+                        (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
+                        (soc.id === "cs" && t.includes("computer")) ||
+                        (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
+                        (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
+                        (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
+                        (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
+                        (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
+                        (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+                      );
+                    });
                     return (
-                      t.includes(code) ||
-                      t.includes(name) ||
-                      (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
-                      (soc.id === "cs" && t.includes("computer")) ||
-                      (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
-                      (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
-                      (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
-                      (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
-                      (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
-                      (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+                      <tr key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="hover:bg-blue-50/50 transition-colors cursor-pointer">
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center gap-2">
+                            <img src={soc.logo} alt={soc.code} className="w-7 h-7 rounded-lg object-contain bg-slate-100 p-0.5 border border-slate-200 shrink-0" />
+                            <div>
+                              <p className="font-extrabold text-slate-900 leading-tight">{soc.name}</p>
+                              <p className="text-[9px] text-[#002855] font-bold">{soc.badge}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-2.5 px-3 text-[11px] text-slate-700 font-medium">{soc.advisor}</td>
+                        <td className="py-2.5 px-3 text-[11px] text-slate-900 font-bold">{soc.chair}</td>
+                        <td className="py-2.5 px-3 text-center">
+                          {isEnrolled ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              ENROLLED
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-slate-400 font-medium">Available</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono font-bold text-amber-800 text-[11px]">{soc.feeUSD.split("+")[0]}</td>
+                      </tr>
                     );
-                  });
-                  return (<tr key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="hover:bg-blue-50/50 transition-colors cursor-pointer">
-                    <td className="py-2.5 px-3">
-                      <div className="flex items-center gap-2">
-                        <img src={soc.logo} alt={soc.code} className="w-7 h-7 rounded-lg object-contain bg-slate-100 p-0.5 border border-slate-200" />
-                        <div>
-                          <p className="font-extrabold text-slate-900 leading-tight">{soc.name}</p>
-                          <p className="text-[9px] text-[#002855] font-bold">{soc.badge}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-2.5 px-3 text-[11px] text-slate-700">{soc.advisor}</td>
-                    <td className="py-2.5 px-3 text-[11px] text-slate-900 font-bold">{soc.chair}</td>
-                    <td className="py-2.5 px-3 text-center">
-                      {isEnrolled ? (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        ENROLLED
-                      </span>) : (<span className="text-[9px] text-slate-400 font-medium">Available</span>)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-black text-amber-700">{soc.feeUSD}</td>
-                  </tr>);
-                })}
-              </tbody>
-            </table>
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>) : (
-          /* CARD VIEW */
-          <div className="space-y-2.5">
+        ) : (
+          <div className="grid grid-cols-1 gap-2.5">
             {displayedSocieties.map((soc) => {
               const userSocList = Array.isArray(currentUser?.target_societies)
                 ? currentUser.target_societies
@@ -2703,34 +3380,63 @@ export const MobileAppPage = ({
                   (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
                 );
               });
-              return (<div key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-[#002855]/50 shadow-sm cursor-pointer active:scale-[0.99] transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src={soc.logo} alt={soc.code} className="w-10 h-10 rounded-xl object-contain bg-slate-50 p-1 border border-slate-200" />
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="font-extrabold text-slate-900 text-sm">{soc.name}</h3>
-                        {isEnrolled && (<span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black">
-                          ENROLLED
-                        </span>)}
+
+              return (
+                <div
+                  key={soc.id}
+                  onClick={() => setSelectedSocietyId(soc.id)}
+                  className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md cursor-pointer transition-all space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <img src={soc.logo} alt={soc.code} className="w-11 h-11 rounded-xl object-contain bg-slate-50 p-1 border border-slate-200 shrink-0" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-extrabold text-[9px] uppercase tracking-wider">
+                            {soc.badge}
+                          </span>
+                          {isEnrolled && (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px] flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> ENROLLED
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-sm font-black text-slate-900 mt-1 leading-tight">{soc.name}</h3>
+                        <p className="text-[10px] text-[#002855] font-bold">{soc.code} · {soc.category}</p>
                       </div>
-                      <p className="text-[10px] text-[#002855] font-bold">{soc.badge} · Advisor: {soc.advisor}</p>
+                    </div>
+                    <ChevronRight size={16} className="text-slate-400 shrink-0" />
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 leading-relaxed">{soc.description}</p>
+
+                  {/* Advisor & Chair Text Badges (No Pics) */}
+                  <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Advisor</span>
+                      <p className="font-extrabold text-slate-900 text-[11px] truncate mt-0.5">{soc.advisor}</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Chair</span>
+                      <p className="font-extrabold text-slate-900 text-[11px] truncate mt-0.5">{soc.chair}</p>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-slate-400" />
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[10px]">
+                    <span className="font-bold text-amber-800 font-mono text-[11px]">{soc.feeUSD}</span>
+                    <span className="font-bold text-[#002855] flex items-center gap-0.5">
+                      View Roster <ChevronRight size={12} />
+                    </span>
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-600 mt-2">{soc.description}</p>
-                <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 text-[10px]">
-                  <span className="text-slate-500">Chair: <strong className="text-slate-900">{soc.chair}</strong></span>
-                  <span className="font-bold text-amber-700 font-mono">Fee: {soc.feeUSD}</span>
-                </div>
-              </div>);
+              );
             })}
-          </div>)}
+          </div>
+        )}
       </>
     )}
-  </div>)
-}
+  </div>
+)}
 
 {/* ═══════════════════════════════════════════════════════════════════
             TAB 5: ALL PAGES DIRECTORY (WHITE THEME & REVAMPED OFFICE BEARERS)
@@ -2777,49 +3483,51 @@ export const MobileAppPage = ({
           </div>
         </div>
 
-        {/* DUAL VIEW: CARDS vs TABLE */}
+        {/* DUAL VIEW: CARDS vs TABLE (TEXT & BADGES ONLY, NO PICS) */}
         {viewMode === "cards" ? (
           /* ── REVAMPED EXECUTIVE CARDS VIEW ── */
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {filteredOfficers.map((officer) => {
-              const Icon = officer.icon;
-              return (<motion.div key={officer.id} whileHover={{ y: -2 }} className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-[#002855]/30 transition-all flex flex-col justify-between">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    {officer.image_url ? (
-                      <img src={officer.image_url} alt={officer.name} className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-md border border-slate-200" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    ) : null}
-                    {!officer.image_url && (
-                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md" style={{ backgroundColor: officer.color }}>
+              const Icon = officer.icon || ShieldCheck;
+              return (
+                <motion.div
+                  key={officer.id}
+                  whileHover={{ y: -2 }}
+                  className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-[#002855]/30 transition-all flex flex-col justify-between"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs" style={{ backgroundColor: officer.bg || "#f0f9ff", color: officer.color || "#002855" }}>
                         <Icon size={20} />
                       </div>
-                    )}
-                    <div className="leading-tight">
-                      <h4 className="font-extrabold text-slate-900 text-sm">
-                        {officer.name}
-                      </h4>
-                      <p className="text-xs font-black mt-0.5" style={{ color: officer.color }}>
-                        {officer.role}
-                      </p>
-                      <p className="text-[10px] text-slate-500 mt-0.5">
-                        {officer.department}
-                      </p>
+                      <div className="leading-tight">
+                        <h4 className="font-extrabold text-slate-900 text-sm">
+                          {officer.name}
+                        </h4>
+                        <p className="text-xs font-black mt-0.5" style={{ color: officer.color || "#002855" }}>
+                          {officer.role}
+                        </p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">
+                          {officer.department}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider" style={{ color: officer.color, backgroundColor: officer.bg }}>
-                    {officer.tagline}
-                  </span>
-                  <button onClick={() => setDetailModalMember(officer)} className="text-[10px] text-[#002855] font-extrabold hover:underline flex items-center gap-0.5">
-                    <span>Dossier</span>
-                    <ArrowRight size={10} />
-                  </button>
-                </div>
-              </motion.div>);
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider" style={{ color: officer.color || "#002855", backgroundColor: officer.bg || "#f0f9ff" }}>
+                      {officer.tagline}
+                    </span>
+                    <button onClick={() => setDetailModalMember(officer)} className="text-[10px] text-[#002855] font-extrabold hover:underline flex items-center gap-0.5">
+                      <span>Dossier</span>
+                      <ArrowRight size={10} />
+                    </button>
+                  </div>
+                </motion.div>
+              );
             })}
-          </div>) : (
+          </div>
+        ) : (
           /* ── TABLE VIEW FOR OFFICE BEARERS ── */
           <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
             <div className="overflow-x-auto">
@@ -2833,25 +3541,25 @@ export const MobileAppPage = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredOfficers.map((ob) => (<tr key={ob.id} className="hover:bg-blue-50/50">
-                    <td className="py-2.5 px-3">
-                      <div className="flex items-center gap-2">
-                        <img src={getOfficerImg(ob)} alt={ob.name} className="w-7 h-7 rounded-xl object-cover border border-slate-200 shrink-0" onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ob.name)}&background=002855&color=fff`; }} />
+                  {filteredOfficers.map((ob) => (
+                    <tr key={ob.id} className="hover:bg-blue-50/50">
+                      <td className="py-2.5 px-3">
                         <span className="font-extrabold text-slate-900 text-xs">{ob.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-2.5 px-3 text-xs font-bold" style={{ color: ob.color }}>{ob.role}</td>
-                    <td className="py-2.5 px-3 text-[11px] text-slate-600">{ob.department}</td>
-                    <td className="py-2.5 px-3 text-right">
-                      <button onClick={() => setDetailModalMember(ob)} className="px-2 py-1 rounded-lg bg-blue-50 text-[#002855] text-[10px] font-black hover:bg-blue-100">
-                        View
-                      </button>
-                    </td>
-                  </tr>))}
+                      </td>
+                      <td className="py-2.5 px-3 text-xs font-bold" style={{ color: ob.color || "#002855" }}>{ob.role}</td>
+                      <td className="py-2.5 px-3 text-[11px] text-slate-600">{ob.department}</td>
+                      <td className="py-2.5 px-3 text-right">
+                        <button onClick={() => setDetailModalMember(ob)} className="px-2 py-1 rounded-lg bg-blue-50 text-[#002855] text-[10px] font-black hover:bg-blue-100">
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
-          </div>)}
+          </div>
+        )}
 
       </div>)}
 
@@ -2877,13 +3585,15 @@ export const MobileAppPage = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {PAST_BEARERS_DATA.map((pb, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
-                <td className="py-2 px-3 font-mono font-bold text-[#002855]">{pb.year}</td>
-                <td className="py-2 px-3 font-extrabold text-slate-900">{pb.name}</td>
-                <td className="py-2 px-3 text-slate-700 font-semibold">{pb.role}</td>
-                <td className="py-2 px-3 text-slate-500 text-[11px]">{pb.dept}</td>
-                <td className="py-2 px-3 text-amber-700 text-[10px] font-semibold">{pb.achievement}</td>
-              </tr>))}
+              {(dbPastBearers && dbPastBearers.length > 0 ? dbPastBearers : PAST_BEARERS_DATA).map((pb, idx) => (
+                <tr key={idx} className="hover:bg-blue-50/50">
+                  <td className="py-2 px-3 font-mono font-bold text-[#002855]">{pb.year}</td>
+                  <td className="py-2 px-3 font-extrabold text-slate-900">{pb.name}</td>
+                  <td className="py-2 px-3 text-slate-700 font-semibold">{pb.role}</td>
+                  <td className="py-2 px-3 text-slate-500 text-[11px]">{pb.dept}</td>
+                  <td className="py-2 px-3 text-amber-700 text-[10px] font-semibold">{pb.achievement}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -3032,32 +3742,32 @@ export const MobileAppPage = ({
                   (off.department || "").toLowerCase().includes(q)
                 );
               })
-              .map((officer) => (
-                <div
-                  key={officer.id}
-                  onClick={() => setDetailModalMember(officer)}
-                  className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
-                >
-                  <img
-                    src={getOfficerImg(officer)}
-                    alt={officer.name}
-                    className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-sm border border-slate-200"
-                    onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(officer.name)}&background=002855&color=fff`; }}
-                  />
-                  <div className="leading-tight flex-1 min-w-0">
-                    <h4 className="font-extrabold text-slate-900 text-xs truncate">
-                      {officer.name}
-                    </h4>
-                    <p className="text-[10px] font-black mt-0.5 truncate" style={{ color: officer.color || "#002855" }}>
-                      {officer.role}
-                    </p>
-                    <p className="text-[9px] text-slate-500 truncate mt-0.5">
-                      {officer.department}
-                    </p>
+              .map((officer) => {
+                const Icon = officer.icon || ShieldCheck;
+                return (
+                  <div
+                    key={officer.id}
+                    onClick={() => setDetailModalMember(officer)}
+                    className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
+                  >
+                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: officer.bg || "#f0f9ff", color: officer.color || "#002855" }}>
+                      <Icon size={18} />
+                    </div>
+                    <div className="leading-tight flex-1 min-w-0">
+                      <h4 className="font-extrabold text-slate-900 text-xs truncate">
+                        {officer.name}
+                      </h4>
+                      <p className="text-[10px] font-black mt-0.5 truncate" style={{ color: officer.color || "#002855" }}>
+                        {officer.role}
+                      </p>
+                      <p className="text-[9px] text-slate-500 truncate mt-0.5">
+                        {officer.department}
+                      </p>
+                    </div>
+                    <ChevronRight size={14} className="text-slate-400 shrink-0" />
                   </div>
-                  <ChevronRight size={14} className="text-slate-400 shrink-0" />
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       )}
@@ -3078,7 +3788,7 @@ export const MobileAppPage = ({
           </div>
 
           <div className="p-3 space-y-2.5">
-            {EVENTS_DATA.map((evt, idx) => (
+            {(dbEvents && dbEvents.length > 0 ? dbEvents : EVENTS_DATA).map((evt, idx) => (
               <div key={idx} className="p-3 rounded-2xl border border-slate-200 bg-white hover:border-[#002855]/40 transition-all space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 text-[8px] font-black uppercase">
@@ -3094,16 +3804,12 @@ export const MobileAppPage = ({
                   <span className="text-slate-600 font-medium flex items-center gap-1">
                     <Building2 size={11} className="text-slate-400" /> {evt.venue || "SREC Campus"}
                   </span>
-                  <a
-                    href="#report-pdf"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      alert(`Official Event Report for "${evt.title}" is archived in IEEE SB Database.`);
-                    }}
+                  <button
+                    onClick={() => setSelectedEventModal(evt)}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 text-[#002855] font-black text-[9px] hover:bg-slate-200 transition-all"
                   >
-                    <Download size={10} /> Report PDF
-                  </a>
+                    <Eye size={10} /> View Details
+                  </button>
                 </div>
               </div>
             ))}
@@ -3156,9 +3862,9 @@ export const MobileAppPage = ({
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
             <Award size={14} className="text-[#002855]" /> Awards &amp; Honors Table
           </h3>
-          <Link to="/awards" className="text-[10px] text-[#002855] font-bold hover:underline">
-            Full Page →
-          </Link>
+          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
+            {(dbAwards && dbAwards.length > 0 ? dbAwards : AWARDS_DATA).length} Accolades
+          </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse min-w-[450px]">
@@ -3171,7 +3877,7 @@ export const MobileAppPage = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {AWARDS_DATA.map((aw, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+              {(dbAwards && dbAwards.length > 0 ? dbAwards : AWARDS_DATA).map((aw, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
                 <td className="py-2 px-3 font-extrabold text-slate-900">{aw.title}</td>
                 <td className="py-2 px-3 font-mono text-[#002855] font-bold">{aw.year}</td>
                 <td className="py-2 px-3 text-slate-600">{aw.body}</td>
@@ -3188,9 +3894,9 @@ export const MobileAppPage = ({
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
             <Calendar size={14} className="text-[#002855]" /> Annual Plans &amp; Roadmap
           </h3>
-          <Link to="/annual-plans" className="text-[10px] text-[#002855] font-bold hover:underline">
-            Full Page →
-          </Link>
+          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
+            {(dbAnnualPlans && dbAnnualPlans.length > 0 ? dbAnnualPlans : ANNUAL_PLANS_DATA).length} Initiatives
+          </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse min-w-[450px]">
@@ -3204,7 +3910,7 @@ export const MobileAppPage = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {ANNUAL_PLANS_DATA.map((pl, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+              {(dbAnnualPlans && dbAnnualPlans.length > 0 ? dbAnnualPlans : ANNUAL_PLANS_DATA).map((pl, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
                 <td className="py-2 px-3 font-bold text-[#002855]">{pl.month}</td>
                 <td className="py-2 px-3 font-semibold text-slate-900">{pl.event}</td>
                 <td className="py-2 px-3 text-slate-600">{pl.society}</td>
@@ -3226,9 +3932,9 @@ export const MobileAppPage = ({
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
             <DollarSign size={14} className="text-[#002855]" /> Funding &amp; Grants Report
           </h3>
-          <Link to="/funding" className="text-[10px] text-[#002855] font-bold hover:underline">
-            Full Page →
-          </Link>
+          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
+            {(dbFunding && dbFunding.length > 0 ? dbFunding : FUNDING_DATA).length} Grants
+          </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left border-collapse min-w-[450px]">
@@ -3241,7 +3947,7 @@ export const MobileAppPage = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {FUNDING_DATA.map((fn, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+              {(dbFunding && dbFunding.length > 0 ? dbFunding : FUNDING_DATA).map((fn, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
                 <td className="py-2 px-3 font-bold text-slate-900">{fn.grant}</td>
                 <td className="py-2 px-3 font-mono font-black text-emerald-700">{fn.amount}</td>
                 <td className="py-2 px-3 font-mono text-[#002855]">{fn.year}</td>
@@ -3497,7 +4203,7 @@ export const MobileAppPage = ({
             <span className="text-[9px] text-slate-400 font-bold uppercase">Member</span>
           </div>))}
 
-        {SOCIETIES_DATA.filter((s) => `${s.name} ${s.code} ${s.advisor} ${s.category}`
+        {displayedSocieties.filter((s) => `${s.name} ${s.code} ${s.advisor} ${s.chair} ${s.category}`
           .toLowerCase()
           .includes(globalSearchTerm.toLowerCase())).map((s) => (<div key={s.id} onClick={() => {
             setIsSearchOpen(false);
@@ -3785,12 +4491,13 @@ export const MobileAppPage = ({
         </div>
       </form>
     </motion.div>
-  </div>)}
-      </AnimatePresence >
+  </div>
+)}
+</AnimatePresence>
 
-  {/* ── OFFICIAL IEEE PDF MEMBERSHIP CARD VIEWER MODAL (RESPONSIVE MOBILE) ── */ }
-  < AnimatePresence >
-  { isPdfModalOpen && (
+{/* ── OFFICIAL IEEE PDF MEMBERSHIP CARD VIEWER MODAL (RESPONSIVE MOBILE) ── */}
+<AnimatePresence>
+  {isPdfModalOpen && (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
@@ -3861,11 +4568,161 @@ export const MobileAppPage = ({
       </motion.div>
     </div>
   )}
-      </AnimatePresence >
+  </AnimatePresence>
 
-  {/* ── STICKY BOTTOM NAVIGATION DOCK (WHITE THEME) ─────────────────── */ }
-  < MobileBottomNav activeTab = { activeTab } onChangeTab = { handleTabChange } />
+  {/* ── INTERACTIVE EVENT DATABASE DETAIL MODAL ────────────────── */}
+  <AnimatePresence>
+    {selectedEventModal && (
+      <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] text-slate-900"
+        >
+          {/* Modal Header */}
+          <div className="bg-gradient-to-r from-[#001838] via-[#002855] to-[#004899] text-white px-4 py-3.5 flex items-center justify-between gap-2 shrink-0 shadow-md">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/20 shrink-0">
+                <Calendar className="text-cyan-300" size={18} />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">
+                  {selectedEventModal.badge || "Database Activity"}
+                </h3>
+                <p className="text-[10px] text-sky-200 truncate">
+                  {selectedEventModal.society || "IEEE SB SREC"} · {selectedEventModal.category}
+                </p>
+              </div>
+            </div>
 
-    </div >);
+            <button
+              type="button"
+              onClick={() => setSelectedEventModal(null)}
+              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shrink-0"
+            >
+              <X size={15} />
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div className="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
+            {selectedEventModal.image && (
+              <div className="relative h-44 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200">
+                <img
+                  src={selectedEventModal.image}
+                  alt={selectedEventModal.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80";
+                  }}
+                />
+                <div className="absolute top-2.5 left-2.5">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                    selectedEventModal.status === "Upcoming"
+                      ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
+                      : "bg-emerald-500 text-white"
+                  }`}>
+                    {selectedEventModal.status}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <h3 className="text-base font-black text-slate-900 leading-tight">
+                {selectedEventModal.title}
+              </h3>
+              {selectedEventModal.subtitle && (
+                <p className="text-xs text-slate-500 mt-1 font-medium">
+                  {selectedEventModal.subtitle}
+                </p>
+              )}
+            </div>
+
+            {/* Event Schedule Meta Grid */}
+            <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+              <div>
+                <span className="text-[9px] text-slate-400 font-bold uppercase block">Date &amp; Time</span>
+                <p className="font-extrabold text-slate-900 mt-0.5">{selectedEventModal.date}</p>
+                <p className="text-[10px] text-slate-500">{selectedEventModal.time || "Full Day"}</p>
+              </div>
+              <div>
+                <span className="text-[9px] text-slate-400 font-bold uppercase block">Venue / Location</span>
+                <p className="font-extrabold text-slate-900 mt-0.5">{selectedEventModal.venue || "SREC Campus"}</p>
+              </div>
+            </div>
+
+            {/* Chief Guest & Participants (if present) */}
+            {(selectedEventModal.chief_guest || selectedEventModal.participants) && (
+              <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-1">
+                {selectedEventModal.chief_guest && (
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500 font-bold uppercase text-[9px]">Chief Guest / Speaker</span>
+                    <strong className="text-slate-900">{selectedEventModal.chief_guest}</strong>
+                  </div>
+                )}
+                {selectedEventModal.participants && (
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-blue-100">
+                    <span className="text-slate-500 font-bold uppercase text-[9px]">Participants Logged</span>
+                    <strong className="text-blue-900">{selectedEventModal.participants}</strong>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Description */}
+            <div className="space-y-1">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">About this Activity</span>
+              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                {selectedEventModal.description || "Official IEEE Student Branch event proceedings logged in repository database."}
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex items-center gap-2">
+              <button
+                onClick={() => setSelectedEventModal(null)}
+                className="flex-1 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase tracking-wider transition-all"
+              >
+                Close
+              </button>
+              {selectedEventModal.link && selectedEventModal.link.startsWith("http") ? (
+                <a
+                  href={selectedEventModal.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2.5 rounded-2xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-900/20"
+                >
+                  <span>Portal</span>
+                  <ExternalLink size={12} />
+                </a>
+              ) : (
+                <button
+                  onClick={() => {
+                    const l = selectedEventModal.link || "/activities";
+                    setSelectedEventModal(null);
+                    navigate(l);
+                  }}
+                  className="flex-1 py-2.5 rounded-2xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-900/20"
+                >
+                  <span>Open Details</span>
+                  <ArrowRight size={12} />
+                </button>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+
+  {/* ── STICKY BOTTOM NAVIGATION DOCK (WHITE THEME) ─────────────────── */}
+  <MobileBottomNav activeTab={activeTab} onChangeTab={handleTabChange} />
+
+</div>
+  );
 };
 export default MobileAppPage;
