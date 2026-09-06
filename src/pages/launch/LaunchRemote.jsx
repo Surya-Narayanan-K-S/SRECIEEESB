@@ -149,6 +149,8 @@ export const LaunchRemote = () => {
 
   const handleLaunchClick = (e) => {
     if (launchState === "launched") {
+      // Tap when launched resets to standby for another run
+      broadcastCommand("reset");
       return;
     }
 
@@ -227,7 +229,11 @@ export const LaunchRemote = () => {
       // Offline fallback
     }
 
+    // Auto-sync polling every 2 seconds on refresh & active session
+    const interval = setInterval(loadState, 2000);
+
     return () => {
+      clearInterval(interval);
       if (broadcastChannelRef.current) {
         broadcastChannelRef.current.close();
       }
@@ -417,29 +423,6 @@ export const LaunchRemote = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Reset Button */}
-        <button
-          onClick={() => broadcastCommand("reset")}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all active:scale-98 shadow-sm"
-        >
-          <RotateCcw size={14} className="text-slate-300" />
-          <span>Reset Stage to Standby</span>
-        </button>
-
-        {/* Open Stage Preview Link */}
-        <div className="text-center pt-0.5">
-          <a
-            href="/stage"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[11px] text-cyan-400 hover:text-cyan-300 font-bold uppercase tracking-wider transition-colors"
-          >
-            <Tv size={12} />
-            <span>Open Auditorium Projector Display</span>
-            <ExternalLink size={10} />
-          </a>
         </div>
       </footer>
     </div>

@@ -512,116 +512,114 @@ export const LaunchPage = () => {
           )}
 
           {/* ========================================================================= */}
-          {/* STAGE 2: CEREMONY COUNTDOWN (ULTRA-SLEEK BROADCAST HUD) */}
+          {/* STAGE 2: CEREMONY COUNTDOWN (BOTTOM-RIGHT BROADCAST HUD) */}
           {/* ========================================================================= */}
           {launchState === "countdown" && (
             <motion.div
               key="countdown"
-              initial={{ opacity: 0, y: 30, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.8, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.8, x: 20 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="relative flex flex-col items-center justify-end flex-1 w-full pb-6 mx-auto mt-auto max-w-xl sm:max-w-2xl px-4 z-30"
+              className="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 z-30 select-none flex flex-col items-center text-center"
             >
-              {/* Sleek Floating Glass Capsule */}
-              <div className="w-full bg-slate-950/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(0,102,204,0.2)] flex flex-col items-center text-center relative overflow-hidden">
-                {/* Subtle top ambient sheen */}
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+              {/* Floating Frosted Glass Capsule */}
+              <div className="bg-slate-950/80 backdrop-blur-2xl border border-white/20 rounded-3xl p-3.5 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_35px_rgba(0,102,204,0.3)] flex flex-col items-center text-center">
+                {/* Radial Glowing Tech Ring & Number */}
+                <div className="relative flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 mb-2.5">
+                  {/* Ambient Glow */}
+                  <div className="absolute inset-0 rounded-full bg-cyan-500/20 blur-xl animate-pulse pointer-events-none" />
 
-                {/* Top Row: Ceremony Badge + Sleek Glowing Counter */}
-                <div className="flex items-center justify-between w-full mb-3 px-1">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold uppercase tracking-wider shadow-inner">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                    <span>INAUGURATION COUNTDOWN</span>
-                  </div>
-
-                  {/* High-Tech Glowing Numeric Badge */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">T-MINUS</span>
-                    <div className="min-w-[42px] h-[42px] sm:min-w-[48px] sm:h-[48px] px-2.5 rounded-2xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-500 text-white font-black text-xl sm:text-2xl flex items-center justify-center font-mono shadow-[0_0_25px_rgba(0,163,255,0.7)] border border-cyan-300/40">
-                      <AnimatePresence mode="popLayout">
-                        <motion.span
-                          key={countdown}
-                          initial={{ scale: 1.5, opacity: 0, y: -5 }}
-                          animate={{ scale: 1, opacity: 1, y: 0 }}
-                          exit={{ scale: 0.6, opacity: 0, y: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          {countdown > 0 ? countdown : "0"}
-                        </motion.span>
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Laser Progress Bar */}
-                <div className="w-full my-1.5">
-                  <div className="h-2 w-full rounded-full bg-slate-900/90 border border-white/10 overflow-hidden shadow-inner p-[1px]">
-                    <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 shadow-[0_0_12px_#38bdf8]"
-                      initial={{ width: "0%" }}
-                      animate={{ width: `${Math.max(8, 100 - (countdown / (config.countdownSeconds || 5)) * 100)}%` }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
+                  {/* SVG Circular Precision Laser Track */}
+                  <svg className="w-full h-full -rotate-90 transform drop-shadow-[0_0_20px_rgba(0,102,204,0.7)]" viewBox="0 0 120 120">
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      strokeWidth="6"
+                      fill="rgba(5, 10, 20, 0.85)"
                     />
+                    <motion.circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      stroke="url(#countdownLaserGrad)"
+                      strokeWidth="6"
+                      fill="transparent"
+                      strokeDasharray={314.16}
+                      strokeDashoffset={314.16 * (1 - (countdown / (config.countdownSeconds || 5)))}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-linear"
+                    />
+                    <defs>
+                      <linearGradient id="countdownLaserGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#38bdf8" />
+                        <stop offset="50%" stopColor="#0066cc" />
+                        <stop offset="100%" stopColor="#f59e0b" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+
+                  {/* Center Countdown Number */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                    <AnimatePresence mode="popLayout">
+                      <motion.span
+                        key={countdown}
+                        initial={{ scale: 1.6, opacity: 0, filter: "blur(6px)" }}
+                        animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                        exit={{ scale: 0.5, opacity: 0, filter: "blur(4px)" }}
+                        transition={{ duration: 0.25 }}
+                        className="text-4xl sm:text-5xl md:text-6xl font-black font-mono tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-400 drop-shadow-[0_0_25px_rgba(56,189,248,0.9)]"
+                      >
+                        {countdown > 0 ? countdown : "🚀"}
+                      </motion.span>
+                    </AnimatePresence>
                   </div>
                 </div>
 
-                {/* Bottom Row: Typography */}
-                <div className="flex flex-col items-center text-center w-full pt-2.5 border-t border-white/10">
-                  <h2 className="text-sm sm:text-base font-extrabold text-white uppercase tracking-wider">
-                    IEEE STUDENT BRANCH SREC
-                  </h2>
-                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mt-0.5">
-                    Induction of Office Bearers (2026–2027) &amp; Digital Platform Launch
-                  </p>
+                {/* Text Below Timer */}
+                <div className="flex flex-col items-center text-center space-y-0.5">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 text-[10px] font-black uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                    <span>INAUGURATION</span>
+                  </div>
+                  <span className="text-[11px] font-extrabold text-white uppercase tracking-wider pt-0.5">
+                    IEEE SB SREC
+                  </span>
                 </div>
               </div>
             </motion.div>
           )}
 
           {/* ========================================================================= */}
-          {/* STAGE 3: LAUNCHED & DEDICATED (ULTRA-SLEEK BROADCAST HUD) */}
+          {/* STAGE 3: LAUNCHED & DEDICATED (BOTTOM-RIGHT CELEBRATION HUD) */}
           {/* ========================================================================= */}
           {launchState === "launched" && (
             <motion.div
               key="launched"
-              initial={{ opacity: 0, y: 30, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="relative flex flex-col items-center justify-end flex-1 w-full pb-6 mx-auto mt-auto max-w-xl sm:max-w-2xl px-4 z-30"
+              className="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 z-30 select-none flex flex-col items-center text-center max-w-xs"
             >
-              <div className="w-full bg-slate-950/85 backdrop-blur-2xl border border-emerald-400/50 rounded-3xl p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(16,185,129,0.3)] flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
-
-                <div className="flex items-center gap-3 mb-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.8)] border border-white/80">
-                    <CheckCircle2 size={20} className="text-slate-950 animate-bounce" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
-                      OFFICIALLY INAUGURATED
-                    </div>
-                    <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider">
-                      WELCOME TO IEEE SREC 2026–2027
-                    </h1>
-                  </div>
+              <div className="bg-slate-950/85 backdrop-blur-2xl border-2 border-emerald-400/60 rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_40px_rgba(16,185,129,0.4)] flex flex-col items-center text-center w-full">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 font-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.9)] border-2 border-white mb-2">
+                  <CheckCircle2 size={22} className="text-slate-950 animate-bounce" />
                 </div>
-
-                {/* Progress bar loading redirect */}
-                <div className="w-full my-1.5">
-                  <div className="h-2 w-full rounded-full bg-slate-900 border border-emerald-500/30 overflow-hidden shadow-inner p-[1px]">
-                    <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 shadow-[0_0_12px_#10b981]"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 2.5, ease: "easeInOut" }}
-                    />
-                  </div>
-                </div>
-
-                <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-emerald-950/60 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold shadow-lg mt-1">
-                  <Rocket size={13} className="animate-pulse text-emerald-400" />
-                  <span>Entering Official IEEE SREC Platform...</span>
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-0.5">
+                  OFFICIALLY INAUGURATED
+                </span>
+                <h1 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-serif mb-2">
+                  WELCOME TO IEEE SREC
+                </h1>
+                <div className="w-full h-1.5 rounded-full bg-slate-900 border border-emerald-500/30 overflow-hidden shadow-inner p-[1px]">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 shadow-[0_0_10px_#10b981]"
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2.5, ease: "easeInOut" }}
+                  />
                 </div>
               </div>
             </motion.div>

@@ -40,9 +40,6 @@ describe("LaunchRemote Component", () => {
 
     // Verify central Touch to Inaugurate button
     expect(screen.getByText(/TOUCH TO/i)).toBeDefined();
-
-    // Verify Reset button
-    expect(screen.getByText(/Reset Stage to Standby/i)).toBeDefined();
     expect(container.innerHTML.length).toBeGreaterThan(500);
   });
 
