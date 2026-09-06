@@ -1219,37 +1219,37 @@ export const MobileAppPage = ({
   // ════════════════════════════════════════════════════════════════════════
   const activeMember = currentUser || selectedMember || null;
 
-  return (<div className="min-h-screen bg-slate-50 text-slate-900 pb-24 font-sans selection:bg-[#002855] selection:text-white">
+  return (<div className="min-h-screen bg-slate-50 text-slate-900 pb-20 font-sans selection:bg-[#002855] selection:text-white">
 
-    {/* ── TOP GLASSMORPHIC APP BAR (CLEAN & NON-SQUISHED) ──────────────── */}
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-2xl border-b border-slate-200/80 shadow-[0_2px_15px_rgba(0,40,85,0.04)] px-2.5 sm:px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] transition-all">
-      <div className="w-full max-w-2xl mx-auto flex items-center justify-between gap-1.5 px-3.5 sm:px-6">
+    {/* ── TOP GLASSMORPHIC APP BAR (CLEAN & PROPORTIONAL) ──────────────── */}
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-2xl border-b border-slate-200/80 shadow-[0_2px_12px_rgba(0,40,85,0.03)] px-2.5 py-1.5 pt-[max(0.4rem,env(safe-area-inset-top))] transition-all">
+      <div className="w-full max-w-md mx-auto flex items-center justify-between gap-1 px-1">
 
-        {/* Brand & Logos (Clean, proportional, non-squished) */}
+        {/* Brand & Logos (Clean, proportional) */}
         <button onClick={() => handleTabChange("home")} className="flex items-center gap-1.5 shrink-0 hover:opacity-90 transition-opacity text-left min-w-0">
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white border border-slate-200 shadow-xs">
-            <img src={srecLogo} alt="SREC" className="h-5 sm:h-6 w-auto object-contain shrink-0" />
-            <div className="w-[1px] h-3.5 bg-slate-300 shrink-0" />
-            <img src={ieeeLogo} alt="IEEE" className="h-4.5 sm:h-5 w-auto object-contain shrink-0" />
-            <div className="w-[1px] h-3.5 bg-slate-300 shrink-0" />
-            <img src={snrLogo} alt="SNR" className="h-4.5 sm:h-5 w-auto object-contain shrink-0" />
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-white border border-slate-200 shadow-xs">
+            <img src={srecLogo} alt="SREC" className="h-4.5 sm:h-5 w-auto object-contain shrink-0" />
+            <div className="w-[1px] h-3 bg-slate-300 shrink-0" />
+            <img src={ieeeLogo} alt="IEEE" className="h-4 sm:h-4.5 w-auto object-contain shrink-0" />
+            <div className="w-[1px] h-3 bg-slate-300 shrink-0" />
+            <img src={snrLogo} alt="SNR" className="h-4 sm:h-4.5 w-auto object-contain shrink-0" />
           </div>
-          <span className="px-1.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-black uppercase tracking-wider hidden xs:inline shrink-0">
+          <span className="px-1.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[8.5px] font-black uppercase tracking-wider hidden xs:inline shrink-0">
             SB 64581
           </span>
         </button>
 
         {/* Action Bar (Web, Search, Avatar / Login / Logout) */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {/* View Complete Website Button */}
-          <Link to="/web" className="h-7.5 sm:h-8 px-2 sm:px-2.5 rounded-xl bg-blue-50/90 hover:bg-blue-100 border border-blue-200 text-[#002855] active:scale-95 transition-all flex items-center gap-1 text-[10px] font-black uppercase tracking-wider shadow-xs shrink-0" title="Open Complete Website">
-            <Globe size={12} className="text-[#002855]" />
+          <Link to="/web" className="h-7 px-2 rounded-lg bg-blue-50/90 hover:bg-blue-100 border border-blue-200 text-[#002855] active:scale-95 transition-all flex items-center gap-1 text-[9.5px] font-black uppercase tracking-wider shadow-xs shrink-0" title="Open Complete Website">
+            <Globe size={11} className="text-[#002855]" />
             <span>Web</span>
           </Link>
 
           {/* Quick Search Button */}
-          <button onClick={() => setIsSearchOpen(true)} className="w-7.5 h-7.5 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center active:scale-95 transition-all shadow-xs shrink-0" aria-label="Search App" title="Search">
-            <Search size={13} />
+          <button onClick={() => setIsSearchOpen(true)} className="w-7 h-7 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center active:scale-95 transition-all shadow-xs shrink-0" aria-label="Search App" title="Search">
+            <Search size={12} />
           </button>
 
           {/* User Profile / Logout Button */}
@@ -1257,15 +1257,15 @@ export const MobileAppPage = ({
             <button onClick={() => {
               setSelectedMember(currentUser);
               handleTabChange("id");
-            }} className="relative p-0.5 rounded-xl border border-slate-200 bg-white hover:border-[#002855] transition-all shadow-xs shrink-0" title={`${currentUser.first_name} ${currentUser.last_name} (${currentUser.roll_number})`}>
-              <img src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=80`} alt={currentUser.first_name} className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-lg object-cover" />
-              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-white" />
+            }} className="relative p-0.5 rounded-lg border border-slate-200 bg-white hover:border-[#002855] transition-all shadow-xs shrink-0" title={`${currentUser.first_name} ${currentUser.last_name} (${currentUser.roll_number})`}>
+              <img src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=80`} alt={currentUser.first_name} className="w-6 h-6 rounded-md object-cover" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 border border-white" />
             </button>
-            <button onClick={handleLogout} className="w-7.5 h-7.5 sm:w-8 sm:h-8 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 flex items-center justify-center active:scale-95 transition-all shrink-0" title="Sign Out">
-              <LogOut size={12} />
+            <button onClick={handleLogout} className="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 flex items-center justify-center active:scale-95 transition-all shrink-0" title="Sign Out">
+              <LogOut size={11} />
             </button>
-          </div>) : (<button onClick={() => setIsGuestMode(false)} className="h-7.5 sm:h-8 px-2.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase tracking-wider shadow-xs flex items-center gap-1 active:scale-95 transition-all shrink-0">
-            <User size={12} />
+          </div>) : (<button onClick={() => setIsGuestMode(false)} className="h-7 px-2.5 rounded-lg bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[9.5px] uppercase tracking-wider shadow-xs flex items-center gap-1 active:scale-95 transition-all shrink-0">
+            <User size={11} />
             <span>Login</span>
           </button>)}
         </div>
@@ -1275,26 +1275,26 @@ export const MobileAppPage = ({
 
     {/* ── RENEWAL SUCCESS TOAST NOTIFICATION ─────────────────────────── */}
     <AnimatePresence>
-      {renewalSuccessToast && (<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="fixed top-14 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm p-3 rounded-2xl bg-emerald-600 text-white shadow-xl flex items-center gap-2.5">
-        <CheckCircle2 size={18} className="shrink-0 text-emerald-200" />
-        <div className="text-xs">
+      {renewalSuccessToast && (<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-xs p-2.5 rounded-xl bg-emerald-600 text-white shadow-xl flex items-center gap-2">
+        <CheckCircle2 size={16} className="shrink-0 text-emerald-200" />
+        <div className="text-[11px]">
           <p className="font-extrabold">Membership Renewed Successfully!</p>
-          <p className="text-[10px] text-emerald-100">Valid through {activeMember?.valid_thru || "DEC 31, 2026"}</p>
+          <p className="text-[9.5px] text-emerald-100">Valid through {activeMember?.valid_thru || "DEC 31, 2026"}</p>
         </div>
       </motion.div>)}
     </AnimatePresence>
 
     {/* ── MAIN CONTENT ACCORDING TO ACTIVE TAB ───────────────────────── */}
-    <main className="w-full max-w-2xl mx-auto px-3.5 sm:px-6 pt-3 space-y-4">
+    <main className="w-full max-w-md mx-auto px-2.5 sm:px-3 pt-2 space-y-2.5">
 
       {/* ═══════════════════════════════════════════════════════════════════
-            TAB 1: HOME DASHBOARD (WHITE THEME - DEFAULT & SAFE FALLBACK)
+            TAB 1: HOME DASHBOARD (WHITE THEME - COMPACT & PROPORTIONAL)
         ════════════════════════════════════════════════════════════════════ */}
       {(activeTab === "home" || !["events", "id", "societies", "menu"].includes(activeTab)) && (
-        <div className="space-y-4">
+        <div className="space-y-2.5">
 
           {/* 1. TOP SLEEK PILL NAVIGATION (NO CHUNKY CIRCULAR BOXES) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
             {[
               { label: "Overview", tab: "home" },
               { label: "Office Bearers", tab: "menu", cat: "office-bearers" },
@@ -1312,7 +1312,7 @@ export const MobileAppPage = ({
                   else if (item.cat) { handleTabChange("menu"); setAllPagesCategory(item.cat); }
                   else if (item.tab) { handleTabChange(item.tab); }
                 }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold whitespace-nowrap transition-all shadow-xs cursor-pointer active:scale-95 ${
+                className={`px-2.5 py-1 rounded-full text-[10.5px] font-extrabold whitespace-nowrap transition-all shadow-xs cursor-pointer active:scale-95 ${
                   idx === 0
                     ? "bg-[#002855] text-white"
                     : "bg-white text-slate-700 hover:bg-[#002855] hover:text-white"
@@ -1323,71 +1323,71 @@ export const MobileAppPage = ({
             ))}
           </div>
 
-          {/* 2. HERO BANNER (CLEAN, FLUID, NO RECTANGULAR BOXES INSIDE) */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002855] via-[#003875] to-[#001c3d] text-white p-5 sm:p-6 shadow-md shadow-blue-950/10 space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/15 text-cyan-200 text-[9px] font-black uppercase tracking-wider backdrop-blur-md">
-                  <ShieldCheck size={10} />
+          {/* 2. HERO BANNER (CLEAN, FLUID, COMPACT PROPORTIONS) */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#002855] via-[#003875] to-[#001c3d] text-white p-3.5 sm:p-4 shadow-md shadow-blue-950/10 space-y-2">
+            <div className="flex items-start justify-between gap-2.5">
+              <div className="space-y-0.5">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 text-cyan-200 text-[8.5px] font-black uppercase tracking-wider backdrop-blur-md">
+                  <ShieldCheck size={9} />
                   {currentUser ? `Active Member · #${currentUser.ieee_id || "VERIFIED"}` : "STB Code 64581 · Madras Section"}
                 </span>
-                <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                <h1 className="text-base sm:text-lg font-black text-white leading-tight">
                   {currentUser ? `Welcome, ${currentUser.first_name}` : "IEEE Student Branch SREC"}
                 </h1>
-                <p className="text-xs text-blue-100 font-medium leading-snug">
+                <p className="text-[11px] text-blue-100 font-medium leading-tight">
                   {currentUser ? `${currentUser.department} · ${currentUser.roll_number}` : "Advancing Technology for Humanity · Region 10 APAC"}
                 </p>
               </div>
-              <img src={ieeeStamp} alt="Seal" className="h-11 w-11 object-contain opacity-90 brightness-200 shrink-0" />
+              <img src={ieeeStamp} alt="Seal" className="h-8 w-8 object-contain opacity-90 brightness-200 shrink-0" />
             </div>
 
             {/* Seamless Inline Stats Row (NO BOXES) */}
-            <div className="flex items-center justify-between py-2.5 border-t border-white/15 text-xs text-blue-100 font-medium">
-              <span><strong className="text-white font-black text-sm">180+</strong> Members</span>
+            <div className="flex items-center justify-between py-1.5 border-t border-white/15 text-[10.5px] text-blue-100 font-medium">
+              <span><strong className="text-white font-black text-xs">180+</strong> Members</span>
               <span className="text-white/30">·</span>
-              <span><strong className="text-white font-black text-sm">8</strong> Societies</span>
+              <span><strong className="text-white font-black text-xs">8</strong> Societies</span>
               <span className="text-white/30">·</span>
-              <span><strong className="text-white font-black text-sm">21</strong> Officers</span>
+              <span><strong className="text-white font-black text-xs">21</strong> Officers</span>
               <span className="text-white/30">·</span>
-              <span><strong className="text-white font-black text-sm">12+</strong> Awards</span>
+              <span><strong className="text-white font-black text-xs">12+</strong> Awards</span>
             </div>
 
             {/* Quick Action Navigation Pills (NO CHUNKY BOXES) */}
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-1.5 pt-0.5">
               <button
                 onClick={() => {
                   handleTabChange("menu");
                   setAllPagesCategory("office-bearers");
                 }}
-                className="flex-1 py-2 px-3 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+                className="flex-1 py-1.5 px-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-[10.5px] font-black uppercase tracking-wider flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
-                <Crown size={14} />
+                <Crown size={12} />
                 <span>Office Bearers</span>
               </button>
 
               <button
                 onClick={() => handleTabChange("id")}
-                className="flex-1 py-2 px-3 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 backdrop-blur-md active:scale-95 transition-all cursor-pointer"
+                className="flex-1 py-1.5 px-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[10.5px] font-black uppercase tracking-wider flex items-center justify-center gap-1 backdrop-blur-md active:scale-95 transition-all cursor-pointer"
               >
-                <IdCard size={14} />
+                <IdCard size={12} />
                 <span>{currentUser ? "My Digital ID" : "Digital ID Portal"}</span>
               </button>
             </div>
           </div>
 
-          {/* 3. EXPLORE PAGES & MODULES (CLEAN BORDERLESS LIST — NO CHUNKY BOXES!) */}
-          <div className="rounded-3xl bg-white shadow-xs overflow-hidden divide-y divide-slate-100">
-            <div className="p-4 flex items-center justify-between">
+          {/* 3. EXPLORE PAGES & MODULES (CLEAN BORDERLESS COMPACT LIST) */}
+          <div className="rounded-2xl bg-white shadow-xs overflow-hidden divide-y divide-slate-100 border border-slate-200/80">
+            <div className="px-3 py-2 flex items-center justify-between">
               <div>
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                  <LayoutGrid size={15} className="text-[#002855]" />
+                <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-900 flex items-center gap-1">
+                  <LayoutGrid size={13} className="text-[#002855]" />
                   <span>All Pages &amp; Modules</span>
                 </h2>
-                <p className="text-[10px] text-slate-500">1-tap instant navigation to all branch portals</p>
+                <p className="text-[9.5px] text-slate-500">1-tap instant navigation to all branch portals</p>
               </div>
-              <button onClick={() => handleTabChange("menu")} className="text-[10px] text-[#002855] font-black uppercase tracking-wider hover:underline flex items-center gap-0.5">
+              <button onClick={() => handleTabChange("menu")} className="text-[9.5px] text-[#002855] font-black uppercase tracking-wider hover:underline flex items-center gap-0.5">
                 <span>Directory</span>
-                <ChevronRight size={12} />
+                <ChevronRight size={11} />
               </button>
             </div>
 
@@ -1415,47 +1415,47 @@ export const MobileAppPage = ({
                       else if (item.tabKey) { handleTabChange("menu"); setAllPagesCategory(item.tabKey); }
                       else if (item.route) navigate(item.route);
                     }}
-                    className="flex items-center justify-between p-3 sm:p-3.5 hover:bg-slate-50/80 cursor-pointer active:bg-slate-100 transition-colors"
+                    className="flex items-center justify-between px-3 py-1.5 hover:bg-slate-50/80 cursor-pointer active:bg-slate-100 transition-colors"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-9 h-9 rounded-2xl ${item.iconBg} flex items-center justify-center shrink-0 shadow-xs`}>
-                        <Icon size={18} />
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7.5 h-7.5 rounded-lg ${item.iconBg} flex items-center justify-center shrink-0 shadow-xs`}>
+                        <Icon size={14} />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-extrabold text-slate-900 text-xs truncate leading-tight">
+                        <p className="font-extrabold text-slate-900 text-[11px] truncate leading-tight">
                           {item.label}
                         </p>
-                        <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                        <p className="text-[9.5px] text-slate-500 truncate mt-0.5">
                           {item.desc}
                         </p>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-slate-400 shrink-0 ml-2" />
+                    <ChevronRight size={13} className="text-slate-400 shrink-0 ml-2" />
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* 4. UPCOMING FLAGSHIP CONCLAVE CARD (NO CHUNKY BOXES) */}
-          <div className="p-4 rounded-3xl bg-white shadow-xs space-y-2">
+          {/* 4. UPCOMING FLAGSHIP CONCLAVE CARD (COMPACT) */}
+          <div className="p-3 rounded-2xl bg-white shadow-xs space-y-1.5 border border-slate-200/80">
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 font-extrabold text-[9px] uppercase tracking-wider flex items-center gap-1">
-                <Sparkles size={10} className="text-amber-600" /> Flagship 2027
+              <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 font-extrabold text-[8px] uppercase tracking-wider flex items-center gap-1">
+                <Sparkles size={9} className="text-amber-600" /> Flagship 2027
               </span>
-              <span className="text-[10px] font-bold text-slate-500">Feb 18-20, 2027</span>
+              <span className="text-[9px] font-bold text-slate-500">Feb 18-20, 2027</span>
             </div>
-            <h3 className="text-sm font-black text-slate-900">
+            <h3 className="text-xs font-black text-slate-900">
               AECTSD 2027: International Conference
             </h3>
-            <p className="text-[11px] text-slate-600 leading-snug">
+            <p className="text-[10px] text-slate-600 leading-snug">
               Advances in Electrical, Communication &amp; Thermal Systems for Sustainable Development.
             </p>
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-              <span className="text-[10px] text-slate-500 font-medium">Venue: SREC Auditorium</span>
-              <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#002855] text-white font-bold text-[10px] uppercase shadow-sm active:scale-95 transition-all">
+            <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 text-xs">
+              <span className="text-[9px] text-slate-500 font-medium">Venue: SREC Auditorium</span>
+              <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#002855] text-white font-bold text-[9px] uppercase shadow-sm active:scale-95 transition-all">
                 <span>Portal</span>
-                <ExternalLink size={10} />
+                <ExternalLink size={9} />
               </a>
             </div>
           </div>
