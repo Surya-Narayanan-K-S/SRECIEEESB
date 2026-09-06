@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import html2canvas from "html2canvas";
 import { getPrimaryMemberCardPdfUrl } from "@/utils/cardPdfHelper";
-import { Users, IdCard, Cpu, LayoutGrid, Search, Sparkles, ShieldCheck, Award, Calendar, DollarSign, Image as ImageIcon, Phone, UserPlus, ArrowRight, ExternalLink, ChevronRight, Share2, Copy, Check, RotateCw, QrCode, SlidersHorizontal, Table as TableIcon, CheckCircle2, Mail, Info, Layers, ArrowLeft, X, Globe, GraduationCap, LogOut, Lock, User, Crown, Trophy, Code2, Wallet, PenTool, Palette, FileText, FileEdit, Download, Camera, Loader2, Eye, ShieldAlert, Building2, BookOpen, KeyRound } from "lucide-react";
+import { Users, IdCard, Cpu, LayoutGrid, Search, Sparkles, ShieldCheck, Award, Calendar, DollarSign, Image as ImageIcon, Phone, UserPlus, ArrowRight, ExternalLink, ChevronRight, Share2, Copy, Check, RotateCw, QrCode, SlidersHorizontal, Table as TableIcon, CheckCircle2, Mail, Info, Layers, ArrowLeft, X, Globe, GraduationCap, LogOut, Lock, User, Crown, Trophy, Code2, Wallet, PenTool, Palette, FileText, FileEdit, Download, Camera, Loader2, Eye, ShieldAlert, Building2, BookOpen, KeyRound, Laptop, Zap } from "lucide-react";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import ieeeLogo from "@/assets/ieee-logo.png";
 import ieeeStamp from "@/assets/ieees.png";
@@ -342,17 +342,17 @@ const REAL_OFFICE_BEARERS = [
 ];
 // Verified Student Members (loaded dynamically from database)
 const SEED_MEMBERS = [];
-// Societies Data with Exact Real IEEE Student Membership Pricing (+ 18% GST Tax)
+// Societies Data with Exact Real IEEE Student Membership Pricing (+ 18% GST Tax) & Real Table Chairs
 const SOCIETIES_DATA = [
-  { id: "srec", code: "IEEE SB SREC", name: "IEEE Student Branch SREC", logo: ieeeStamp, category: "Parent Branch", advisor: "Dr. K. Balamurugan", chair: "S Darshan", members: "180+", feeUSD: "$7.00 USD + 18% GST (≈ ₹684 total)", badge: "Core Chapter", href: "/societies/srec", description: "Primary membership giving full access to all SB flagship events, workshops, and IEEE global portal." },
-  { id: "cs", code: "CS", name: "IEEE Computer Society", logo: csLogo, category: "Computing & Software", advisor: "Dr. S. Hariharan", chair: "R Vishnu Kaarthik", members: "95+", feeUSD: "$8.00 USD + 18% GST (≈ ₹784 total)", badge: "Most Popular", href: "/societies/cs", description: "Premier technical community for computing, software systems, algorithms, cybersecurity, and AI." },
-  { id: "cis", code: "CIS", name: "Computational Intelligence Society", logo: cisLogo, category: "AI & Deep Learning", advisor: "Dr. R. Kingsy Grace", chair: "D Akshaya Dharun", members: "60+", feeUSD: "$4.00 USD + 18% GST (≈ ₹392 total)", badge: "AI Frontier", href: "/societies/cis", description: "Focusing on neural networks, evolutionary computing, fuzzy logic, deep learning, and intelligent agents." },
-  { id: "comsoc", code: "ComSoc", name: "Communication Society", logo: comsocLogo, category: "5G & Telecommunications", advisor: "Dr. M. Kathirvelu", chair: "S Deepak", members: "50+", feeUSD: "$1.00 USD + 18% GST (≈ ₹98 total)", badge: "Next-Gen Comms", href: "/societies/comsoc", description: "Connecting engineers in telecommunications, optical networking, 5G/6G, and RF wireless protocols." },
-  { id: "embs", code: "EMBS", name: "Engineering in Medicine & Biology", logo: embsLogo, category: "Biotech & Healthcare", advisor: "Dr. J. S. Prasath", chair: "V Smrthikha", members: "45+", feeUSD: "$1.00 USD + 18% GST (≈ ₹98 total)", badge: "HealthTech", href: "/societies/embs", description: "Bridging engineering with medical sciences, healthcare instrumentation, bioinformatics, and biosensors." },
-  { id: "pels", code: "PELS", name: "Power Electronics Society", logo: pelsLogo, category: "EV & Green Energy", advisor: "Dr. C. Kathirvel", chair: "S Darshan", members: "55+", feeUSD: "$10.00 USD + 18% GST (≈ ₹980 total)", badge: "Clean Tech", href: "/societies/pels", description: "Dedicated to power conversion, renewable energy grids, motor drives, EV systems, and power chips." },
-  { id: "im", code: "IM", name: "Instrumentation & Measurement", logo: imLogo, category: "Sensors & Precision", advisor: "Dr. S. Mythili", chair: "Nithin Annamalai R", members: "40+", feeUSD: "$5.00 USD + 18% GST (≈ ₹490 total)", badge: "Smart Sensors", href: "/societies/im", description: "Advancing precision sensors, automated testing, smart instrumentation, calibration, and metrology." },
-  { id: "cas", code: "CAS", name: "Circuits and Systems Society", logo: casLogo, category: "VLSI & Chip Design", advisor: "Dr. K. Balamurugan", chair: "S Darshan", members: "80+", feeUSD: "$6.00 USD + 18% GST (≈ ₹588 total)", badge: "VLSI & ICs", href: "/societies/cas", description: "Advancing theory, design, and practical implementation of circuits, VLSI systems, microchips, and signal processing." },
-  { id: "wie", code: "WIE", name: "Women in Engineering Affinity Group", logo: wieLogo, category: "Diversity & STEM", advisor: "Dr. N. Saranya", chair: "D Jennifer Shobha", members: "110+", feeUSD: "$0.00 (FREE for Students)", badge: "Empowerment", href: "/societies/wie", description: "Global network inspiring, encouraging, and empowering women scientists and engineers in STEM." }
+  { id: "srec", code: "IEEE SB SREC", name: "IEEE Student Branch SREC", logo: ieeeStamp, category: "Parent Branch", advisor: "Dr. K. Balamurugan", chair: "Darshan S", members: "180+", feeUSD: "$7.00 USD + 18% GST (≈ ₹684 total)", badge: "Core Chapter", href: "/societies/srec", description: "Primary membership giving full access to all SB flagship events, workshops, and IEEE global portal." },
+  { id: "cs", code: "CS", name: "IEEE Computer Society", logo: csLogo, category: "Computing & Software", advisor: "Dr. J. Selvakumar", chair: "R Vishnu Kaarthik", members: "95+", feeUSD: "$8.00 USD + 18% GST (≈ ₹784 total)", badge: "Most Popular", href: "/societies/cs", description: "Premier technical community for computing, software systems, algorithms, cybersecurity, and AI." },
+  { id: "cis", code: "CIS", name: "Computational Intelligence Society", logo: cisLogo, category: "AI & Deep Learning", advisor: "Dr. R. Kingsy Grace", chair: "Ashwanth Senthil Kumar", members: "60+", feeUSD: "$4.00 USD + 18% GST (≈ ₹392 total)", badge: "AI Frontier", href: "/societies/cis", description: "Focusing on neural networks, evolutionary computing, fuzzy logic, deep learning, and intelligent agents." },
+  { id: "comsoc", code: "ComSoc", name: "Communication Society", logo: comsocLogo, category: "5G & Telecommunications", advisor: "Dr. M. Kathirvelu", chair: "Vijayaragavan K", members: "50+", feeUSD: "$1.00 USD + 18% GST (≈ ₹98 total)", badge: "Next-Gen Comms", href: "/societies/comsoc", description: "Connecting engineers in telecommunications, optical networking, 5G/6G, and RF wireless protocols." },
+  { id: "embs", code: "EMBS", name: "Engineering in Medicine & Biology", logo: embsLogo, category: "Biotech & Healthcare", advisor: "Dr. Deepa B. Prabhu", chair: "Anjanalakshmi S Prabhu", members: "45+", feeUSD: "$1.00 USD + 18% GST (≈ ₹98 total)", badge: "HealthTech", href: "/societies/embs", description: "Bridging engineering with medical sciences, healthcare instrumentation, bioinformatics, and biosensors." },
+  { id: "pels", code: "PELS", name: "Power Electronics Society", logo: pelsLogo, category: "EV & Green Energy", advisor: "Dr. C. Praveenkumar", chair: "Pabitra Santra", members: "55+", feeUSD: "$10.00 USD + 18% GST (≈ ₹980 total)", badge: "Clean Tech", href: "/societies/pels", description: "Dedicated to power conversion, renewable energy grids, motor drives, EV systems, and power chips." },
+  { id: "im", code: "IM", name: "Instrumentation & Measurement", logo: imLogo, category: "Sensors & Precision", advisor: "Dr. Y. Dharsan", chair: "ELAKKIYA R", members: "40+", feeUSD: "$5.00 USD + 18% GST (≈ ₹490 total)", badge: "Smart Sensors", href: "/societies/im", description: "Advancing precision sensors, automated testing, smart instrumentation, calibration, and metrology." },
+  { id: "cas", code: "CAS", name: "Circuits and Systems Society", logo: casLogo, category: "VLSI & Chip Design", advisor: "Dr. K. Balamurugan", chair: "Darshan S", members: "80+", feeUSD: "$6.00 USD + 18% GST (≈ ₹588 total)", badge: "VLSI & ICs", href: "/societies/cas", description: "Advancing theory, design, and practical implementation of circuits, VLSI systems, microchips, and signal processing." },
+  { id: "wie", code: "WIE", name: "Women in Engineering Affinity Group", logo: wieLogo, category: "Diversity & STEM", advisor: "Mrs. S. Jansi Rani", chair: "G J Lithigaa", members: "110+", feeUSD: "$0.00 (FREE for Students)", badge: "Empowerment", href: "/societies/wie", description: "Global network inspiring, encouraging, and empowering women scientists and engineers in STEM." }
 ];
 // Past Bearers Data
 const PAST_BEARERS_DATA = [
@@ -575,6 +575,7 @@ export const MobileAppPage = ({
   // Office Bearers Category Filter: all | leadership | core | tech_design | exec
   const [officerCategory, setOfficerCategory] = useState("all");
   const [dbOfficers, setDbOfficers] = useState(REAL_OFFICE_BEARERS);
+  const [dynamicSocietyLeaders, setDynamicSocietyLeaders] = useState({});
 
   // Synchronize tab and category when navigation or parameters change
   useEffect(() => {
@@ -686,6 +687,55 @@ export const MobileAppPage = ({
           }).sort((a, b) => a.priority - b.priority);
 
           setDbOfficers(formattedOfficers);
+        }
+
+        // Fetch dedicated tables for each society to retrieve exact live chairs and advisors
+        const socTables = {
+          srec: ["srec_office_bearers"],
+          cs: ["cs_office_bearers"],
+          cis: ["cis_office_bearers"],
+          comsoc: ["comsoc_office_bearers"],
+          embs: ["embs_office_bearers"],
+          pels: ["pels_office_bearers"],
+          im: ["im_office_bearers", "ims_office_bearers"],
+          cas: ["cas_office_bearers", "cass_office_bearers"],
+          wie: ["wie_office_bearers"],
+        };
+
+        const liveLeaders = {};
+        await Promise.all(
+          Object.entries(socTables).map(async ([socKey, tblList]) => {
+            for (const tbl of tblList) {
+              try {
+                const { data } = await supabase.from(tbl).select("*").order("id", { ascending: true });
+                if (data && data.length > 0) {
+                  const chairPerson = data.find((r) => {
+                    const role = (r.role || "").toLowerCase();
+                    return (role.includes("chair") || role.includes("president")) && !role.includes("vice") && !role.includes("co-chair");
+                  });
+                  const advisor = data.find((r) => {
+                    const role = (r.role || "").toLowerCase();
+                    return (
+                      role.includes("counselor") ||
+                      role.includes("counsellor") ||
+                      role.includes("advisor") ||
+                      (role.includes("coordinator") && !role.includes("activity") && !role.includes("event") && !role.includes("joint"))
+                    );
+                  });
+                  if (chairPerson || advisor) {
+                    liveLeaders[socKey] = {
+                      chair: chairPerson?.name || undefined,
+                      advisor: advisor?.name || undefined,
+                    };
+                  }
+                  break;
+                }
+              } catch {}
+            }
+          })
+        );
+        if (Object.keys(liveLeaders).length > 0) {
+          setDynamicSocietyLeaders(liveLeaders);
         }
       }
       catch (err) {
@@ -801,7 +851,8 @@ export const MobileAppPage = ({
       const t = String(ts || "").toLowerCase();
       const code = (soc.code || "").toLowerCase();
       const name = (soc.name || "").toLowerCase();
-      return (t.includes(code) ||
+      return (
+        t.includes(code) ||
         t.includes(name) ||
         (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
         (soc.id === "cs" && t.includes("computer")) ||
@@ -810,11 +861,23 @@ export const MobileAppPage = ({
         (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
         (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
         (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
-        (soc.id === "wie" && (t.includes("women") || t.includes("wie"))));
+        (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+      );
     }));
     return enrolled.length > 0 ? enrolled : SOCIETIES_DATA;
   }, [currentUser]);
-  const displayedSocieties = societyScope === "registered" && currentUser ? studentRegisteredSocieties : SOCIETIES_DATA;
+
+  const displayedSocieties = useMemo(() => {
+    const baseList = societyScope === "registered" && currentUser ? studentRegisteredSocieties : SOCIETIES_DATA;
+    return baseList.map((soc) => {
+      const dyn = dynamicSocietyLeaders[soc.id];
+      return {
+        ...soc,
+        chair: dyn?.chair || soc.chair,
+        advisor: dyn?.advisor || soc.advisor,
+      };
+    });
+  }, [societyScope, currentUser, studentRegisteredSocieties, dynamicSocietyLeaders]);
   // Handle Login Authentication with Real-Time Database Query
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -1221,53 +1284,77 @@ export const MobileAppPage = ({
 
   return (<div className="min-h-screen bg-slate-50 text-slate-900 pb-20 font-sans selection:bg-[#002855] selection:text-white">
 
-    {/* ── TOP GLASSMORPHIC APP BAR (CLEAN & PROPORTIONAL) ──────────────── */}
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-2xl border-b border-slate-200/80 shadow-[0_2px_12px_rgba(0,40,85,0.03)] px-2.5 py-1.5 pt-[max(0.4rem,env(safe-area-inset-top))] transition-all">
-      <div className="w-full max-w-md mx-auto flex items-center justify-between gap-1 px-1">
+    {/* ── TOP GLASSMORPHIC APP BAR (STATE-OF-THE-ART) ──────────────── */}
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-2xl border-b border-slate-200/80 shadow-[0_2px_16px_rgba(0,40,85,0.04)] px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] transition-all">
+      <div className="w-full max-w-md mx-auto flex items-center justify-between gap-2">
 
-        {/* Brand & Logos (Clean, proportional) */}
-        <button onClick={() => handleTabChange("home")} className="flex items-center gap-1.5 shrink-0 hover:opacity-90 transition-opacity text-left min-w-0">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-white border border-slate-200 shadow-xs">
-            <img src={srecLogo} alt="SREC" className="h-4.5 sm:h-5 w-auto object-contain shrink-0" />
-            <div className="w-[1px] h-3 bg-slate-300 shrink-0" />
-            <img src={ieeeLogo} alt="IEEE" className="h-4 sm:h-4.5 w-auto object-contain shrink-0" />
-            <div className="w-[1px] h-3 bg-slate-300 shrink-0" />
-            <img src={snrLogo} alt="SNR" className="h-4 sm:h-4.5 w-auto object-contain shrink-0" />
+        {/* Brand & Crest */}
+        <button onClick={() => handleTabChange("home")} className="flex items-center gap-2 shrink-0 hover:opacity-95 transition-opacity text-left min-w-0">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs h-8 overflow-hidden">
+            <img src={srecLogo} alt="SREC" className="h-5 w-auto max-h-5 object-contain shrink-0" />
+            <div className="w-[1px] h-3.5 bg-slate-300 shrink-0" />
+            <img src={ieeeLogo} alt="IEEE" className="h-4 w-auto max-h-4 object-contain shrink-0" />
+            <div className="w-[1px] h-3.5 bg-slate-300 shrink-0" />
+            <img src={snrLogo} alt="SNR" className="h-4 w-auto max-h-4 object-contain shrink-0" />
           </div>
-          <span className="px-1.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[8.5px] font-black uppercase tracking-wider hidden xs:inline shrink-0">
-            SB 64581
-          </span>
+          <div className="hidden xs:flex flex-col">
+            <span className="text-[10px] font-black text-[#002855] tracking-tight uppercase leading-none">
+              IEEE SB SREC
+            </span>
+            <span className="inline-flex items-center gap-1 text-[7.5px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              SB 64581
+            </span>
+          </div>
         </button>
 
-        {/* Action Bar (Web, Search, Avatar / Login / Logout) */}
-        <div className="flex items-center gap-1 shrink-0">
-          {/* View Complete Website Button */}
-          <Link to="/web" className="h-7 px-2 rounded-lg bg-blue-50/90 hover:bg-blue-100 border border-blue-200 text-[#002855] active:scale-95 transition-all flex items-center gap-1 text-[9.5px] font-black uppercase tracking-wider shadow-xs shrink-0" title="Open Complete Website">
-            <Globe size={11} className="text-[#002855]" />
-            <span>Web</span>
-          </Link>
-
+        {/* Action Bar (Search & Login/Profile) */}
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* Quick Search Button */}
-          <button onClick={() => setIsSearchOpen(true)} className="w-7 h-7 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center active:scale-95 transition-all shadow-xs shrink-0" aria-label="Search App" title="Search">
-            <Search size={12} />
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="w-8 h-8 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200/80 text-slate-700 flex items-center justify-center active:scale-95 transition-all shadow-2xs shrink-0 cursor-pointer"
+            aria-label="Search App"
+            title="Search"
+          >
+            <Search size={14} className="text-[#002855]" />
           </button>
 
           {/* User Profile / Logout Button */}
-          {currentUser ? (<div className="flex items-center gap-1 pl-0.5 shrink-0">
-            <button onClick={() => {
-              setSelectedMember(currentUser);
-              handleTabChange("id");
-            }} className="relative p-0.5 rounded-lg border border-slate-200 bg-white hover:border-[#002855] transition-all shadow-xs shrink-0" title={`${currentUser.first_name} ${currentUser.last_name} (${currentUser.roll_number})`}>
-              <img src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=80`} alt={currentUser.first_name} className="w-6 h-6 rounded-md object-cover" />
-              <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 border border-white" />
+          {currentUser ? (
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => {
+                  setSelectedMember(currentUser);
+                  handleTabChange("id");
+                }}
+                className="relative p-0.5 rounded-xl border border-slate-200 bg-white hover:border-[#002855] transition-all shadow-xs shrink-0"
+                title={`${currentUser.first_name} ${currentUser.last_name} (${currentUser.roll_number})`}
+              >
+                <img
+                  src={currentUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.first_name + " " + currentUser.last_name)}&background=002855&color=fff&size=80`}
+                  alt={currentUser.first_name}
+                  className="w-7 h-7 rounded-lg object-cover"
+                />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border-2 border-white" />
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-600 flex items-center justify-center active:scale-95 transition-all shrink-0 cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut size={12} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsGuestMode(false)}
+              className="h-8 px-3 rounded-xl bg-gradient-to-r from-[#002855] to-[#004b99] hover:from-[#001c3d] hover:to-[#003875] text-white font-black text-[10px] uppercase tracking-wider shadow-xs flex items-center gap-1.5 active:scale-95 transition-all shrink-0 cursor-pointer"
+            >
+              <User size={12} />
+              <span>Login</span>
             </button>
-            <button onClick={handleLogout} className="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 flex items-center justify-center active:scale-95 transition-all shrink-0" title="Sign Out">
-              <LogOut size={11} />
-            </button>
-          </div>) : (<button onClick={() => setIsGuestMode(false)} className="h-7 px-2.5 rounded-lg bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[9.5px] uppercase tracking-wider shadow-xs flex items-center gap-1 active:scale-95 transition-all shrink-0">
-            <User size={11} />
-            <span>Login</span>
-          </button>)}
+          )}
         </div>
 
       </div>
@@ -1275,189 +1362,222 @@ export const MobileAppPage = ({
 
     {/* ── RENEWAL SUCCESS TOAST NOTIFICATION ─────────────────────────── */}
     <AnimatePresence>
-      {renewalSuccessToast && (<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-xs p-2.5 rounded-xl bg-emerald-600 text-white shadow-xl flex items-center gap-2">
-        <CheckCircle2 size={16} className="shrink-0 text-emerald-200" />
-        <div className="text-[11px]">
-          <p className="font-extrabold">Membership Renewed Successfully!</p>
-          <p className="text-[9.5px] text-emerald-100">Valid through {activeMember?.valid_thru || "DEC 31, 2026"}</p>
-        </div>
-      </motion.div>)}
+      {renewalSuccessToast && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-14 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-xs p-3 rounded-2xl bg-emerald-600 text-white shadow-xl flex items-center gap-2.5"
+        >
+          <CheckCircle2 size={18} className="shrink-0 text-emerald-200" />
+          <div className="text-[11px]">
+            <p className="font-extrabold">Membership Renewed Successfully!</p>
+            <p className="text-[9.5px] text-emerald-100">Valid through {activeMember?.valid_thru || "DEC 31, 2026"}</p>
+          </div>
+        </motion.div>
+      )}
     </AnimatePresence>
 
     {/* ── MAIN CONTENT ACCORDING TO ACTIVE TAB ───────────────────────── */}
-    <main className="w-full max-w-md mx-auto px-2.5 sm:px-3 pt-2 space-y-2.5">
+    <main className="w-full max-w-md mx-auto px-3 pt-2.5 space-y-3.5">
 
       {/* ═══════════════════════════════════════════════════════════════════
-            TAB 1: HOME DASHBOARD (WHITE THEME - COMPACT & PROPORTIONAL)
+            TAB 1: HOME DASHBOARD (COMPLETELY REVAMPED MODERN EXPERIENCE)
         ════════════════════════════════════════════════════════════════════ */}
       {(activeTab === "home" || !["events", "id", "societies", "menu"].includes(activeTab)) && (
-        <div className="space-y-2.5">
+        <div className="space-y-3.5">
 
-          {/* 1. TOP SLEEK PILL NAVIGATION (NO CHUNKY CIRCULAR BOXES) */}
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+          {/* 1. INTERACTIVE STORY RADAR / CHAPTER CHANNELS */}
+          <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-1 -mx-3 px-3">
             {[
-              { label: "Overview", tab: "home" },
-              { label: "Office Bearers", tab: "menu", cat: "office-bearers" },
-              { label: "Societies (8)", tab: "societies" },
-              { label: "Digital ID", tab: "id" },
-              { label: "Activities & Events", tab: "events" },
-              { label: "Event Reports", tab: "menu", cat: "reports" },
-              { label: "Photo Gallery", tab: "menu", cat: "gallery" },
-              { label: "Full Web", external: "/web" },
-            ].map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  if (item.external) navigate(item.external);
-                  else if (item.cat) { handleTabChange("menu"); setAllPagesCategory(item.cat); }
-                  else if (item.tab) { handleTabChange(item.tab); }
-                }}
-                className={`px-2.5 py-1 rounded-full text-[10.5px] font-extrabold whitespace-nowrap transition-all shadow-xs cursor-pointer active:scale-95 ${
-                  idx === 0
-                    ? "bg-[#002855] text-white"
-                    : "bg-white text-slate-700 hover:bg-[#002855] hover:text-white"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+              { label: "Overview", icon: Sparkles, gradient: "from-amber-400 via-orange-500 to-yellow-400", action: () => handleTabChange("home") },
+              { label: "Societies", icon: Cpu, count: "8", gradient: "from-cyan-400 via-blue-500 to-indigo-500", action: () => handleTabChange("societies") },
+              { label: "Digital ID", icon: IdCard, badge: "PASS", gradient: "from-emerald-400 via-teal-500 to-cyan-500", action: () => handleTabChange("id") },
+              { label: "Events", icon: Calendar, gradient: "from-purple-400 via-pink-500 to-rose-500", action: () => handleTabChange("events") },
+              { label: "Leadership", icon: Crown, gradient: "from-amber-500 via-yellow-500 to-amber-600", action: () => { handleTabChange("menu"); setAllPagesCategory("office-bearers"); } },
+              { label: "Gallery", icon: ImageIcon, gradient: "from-pink-400 via-rose-500 to-fuchsia-500", action: () => { handleTabChange("menu"); setAllPagesCategory("gallery"); } },
+              { label: "Directory", icon: LayoutGrid, gradient: "from-slate-600 via-slate-700 to-slate-800", action: () => handleTabChange("menu") },
+            ].map((story, idx) => {
+              const Icon = story.icon;
+              return (
+                <button
+                  key={idx}
+                  onClick={story.action}
+                  className="flex flex-col items-center gap-1 shrink-0 group cursor-pointer active:scale-95 transition-transform"
+                >
+                  <div className={`p-[2px] rounded-full bg-gradient-to-tr ${story.gradient} shadow-2xs group-hover:scale-105 transition-transform`}>
+                    <div className="w-12 h-12 rounded-full bg-white p-1 flex items-center justify-center relative">
+                      <div className="w-full h-full rounded-full bg-slate-50 flex items-center justify-center text-slate-800 group-hover:bg-blue-50/50 transition-colors">
+                        <Icon size={18} className="text-[#002855]" />
+                      </div>
+                      {story.badge && (
+                        <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-emerald-500 text-white font-black text-[6.5px] uppercase tracking-wider shadow-xs">
+                          {story.badge}
+                        </span>
+                      )}
+                      {story.count && (
+                        <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-blue-600 text-white font-black text-[6.5px] uppercase tracking-wider shadow-xs">
+                          {story.count}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-700 max-w-[56px] truncate text-center leading-tight">
+                    {story.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* 2. HERO BANNER (CLEAN, FLUID, COMPACT PROPORTIONS) */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#002855] via-[#003875] to-[#001c3d] text-white p-3.5 sm:p-4 shadow-md shadow-blue-950/10 space-y-2">
-            <div className="flex items-start justify-between gap-2.5">
-              <div className="space-y-0.5">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/15 text-cyan-200 text-[8.5px] font-black uppercase tracking-wider backdrop-blur-md">
-                  <ShieldCheck size={9} />
-                  {currentUser ? `Active Member · #${currentUser.ieee_id || "VERIFIED"}` : "STB Code 64581 · Madras Section"}
-                </span>
-                <h1 className="text-base sm:text-lg font-black text-white leading-tight">
+          {/* 2. FLAGSHIP HERO PASS CARD (DEEP ROYAL & GOLD MESH) */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#001c3d] via-[#002b5e] to-[#004080] text-white p-4 sm:p-5 shadow-lg shadow-blue-950/20 space-y-3.5 border border-white/10">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-cyan-400/15 via-blue-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-amber-400/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+
+            <div className="flex items-start justify-between gap-3 relative z-10">
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-cyan-200 text-[8.5px] font-black uppercase tracking-wider shadow-2xs">
+                  <ShieldCheck size={10} className="text-cyan-300" />
+                  <span>{currentUser ? `Active Member · #${currentUser.ieee_id || "VERIFIED"}` : "STB Code 64581 · Madras Section"}</span>
+                </div>
+                <h1 className="text-lg sm:text-xl font-black text-white leading-tight tracking-tight">
                   {currentUser ? `Welcome, ${currentUser.first_name}` : "IEEE Student Branch SREC"}
                 </h1>
-                <p className="text-[11px] text-blue-100 font-medium leading-tight">
+                <p className="text-[11.5px] text-blue-100/90 font-medium leading-tight">
                   {currentUser ? `${currentUser.department} · ${currentUser.roll_number}` : "Advancing Technology for Humanity · Region 10 APAC"}
                 </p>
               </div>
-              <img src={ieeeStamp} alt="Seal" className="h-8 w-8 object-contain opacity-90 brightness-200 shrink-0" />
+              <img src={ieeeStamp} alt="Seal" className="h-11 w-11 object-contain opacity-90 brightness-200 shrink-0 drop-shadow-md" />
             </div>
 
-            {/* Seamless Inline Stats Row (NO BOXES) */}
-            <div className="flex items-center justify-between py-1.5 border-t border-white/15 text-[10.5px] text-blue-100 font-medium">
-              <span><strong className="text-white font-black text-xs">180+</strong> Members</span>
-              <span className="text-white/30">·</span>
-              <span><strong className="text-white font-black text-xs">8</strong> Societies</span>
-              <span className="text-white/30">·</span>
-              <span><strong className="text-white font-black text-xs">21</strong> Officers</span>
-              <span className="text-white/30">·</span>
-              <span><strong className="text-white font-black text-xs">12+</strong> Awards</span>
-            </div>
-
-            {/* Quick Action Navigation Pills (NO CHUNKY BOXES) */}
-            <div className="flex items-center gap-1.5 pt-0.5">
-              <button
-                onClick={() => {
-                  handleTabChange("menu");
-                  setAllPagesCategory("office-bearers");
-                }}
-                className="flex-1 py-1.5 px-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-[10.5px] font-black uppercase tracking-wider flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer"
-              >
-                <Crown size={12} />
-                <span>Office Bearers</span>
-              </button>
-
-              <button
-                onClick={() => handleTabChange("id")}
-                className="flex-1 py-1.5 px-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[10.5px] font-black uppercase tracking-wider flex items-center justify-center gap-1 backdrop-blur-md active:scale-95 transition-all cursor-pointer"
-              >
-                <IdCard size={12} />
-                <span>{currentUser ? "My Digital ID" : "Digital ID Portal"}</span>
-              </button>
+            {/* Seamless Metrics Counter Strip */}
+            <div className="grid grid-cols-4 gap-1 p-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-center relative z-10">
+              <div>
+                <span className="block text-sm sm:text-base font-black text-white">180+</span>
+                <span className="block text-[8.5px] font-bold text-blue-200 uppercase tracking-wider">Members</span>
+              </div>
+              <div className="border-l border-white/10">
+                <span className="block text-sm sm:text-base font-black text-cyan-300">8</span>
+                <span className="block text-[8.5px] font-bold text-blue-200 uppercase tracking-wider">Societies</span>
+              </div>
+              <div className="border-l border-white/10">
+                <span className="block text-sm sm:text-base font-black text-amber-300">21</span>
+                <span className="block text-[8.5px] font-bold text-blue-200 uppercase tracking-wider">Officers</span>
+              </div>
+              <div className="border-l border-white/10">
+                <span className="block text-sm sm:text-base font-black text-emerald-300">12+</span>
+                <span className="block text-[8.5px] font-bold text-blue-200 uppercase tracking-wider">Awards</span>
+              </div>
             </div>
           </div>
 
-          {/* 3. EXPLORE PAGES & MODULES (CLEAN BORDERLESS COMPACT LIST) */}
-          <div className="rounded-2xl bg-white shadow-xs overflow-hidden divide-y divide-slate-100 border border-slate-200/80">
-            <div className="px-3 py-2 flex items-center justify-between">
-              <div>
-                <h2 className="text-[11px] font-black uppercase tracking-wider text-slate-900 flex items-center gap-1">
-                  <LayoutGrid size={13} className="text-[#002855]" />
-                  <span>All Pages &amp; Modules</span>
-                </h2>
-                <p className="text-[9.5px] text-slate-500">1-tap instant navigation to all branch portals</p>
-              </div>
-              <button onClick={() => handleTabChange("menu")} className="text-[9.5px] text-[#002855] font-black uppercase tracking-wider hover:underline flex items-center gap-0.5">
-                <span>Directory</span>
-                <ChevronRight size={11} />
+          {/* 3. FEATURED EVENT SHOWCASE (AECTSD 2027) */}
+          <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200/90 shadow-sm p-4 space-y-3 group hover:border-[#002855]/40 transition-all">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-900 border border-amber-300/40 text-[9px] font-black uppercase tracking-wider">
+                <Sparkles size={11} className="text-amber-600" />
+                <span>Flagship 2027</span>
+              </span>
+              <span className="text-[10px] font-black text-[#002855] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                Feb 18-20, 2027
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-sm sm:text-base font-black text-slate-900 leading-tight">
+                AECTSD 2027: International Conference
+              </h3>
+              <p className="text-[11px] text-slate-600 leading-relaxed font-normal">
+                Advances in Electrical, Communication &amp; Thermal Systems for Sustainable Development.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
+                <Building2 size={12} className="text-slate-400" />
+                <span>SREC Auditorium</span>
+              </span>
+              <a
+                href="http://aectsd2027.srecieee.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#002855] to-[#004080] hover:from-[#001c3d] hover:to-[#002855] text-white font-bold text-[10px] uppercase tracking-wider shadow-xs active:scale-95 transition-all"
+              >
+                <span>Portal</span>
+                <ExternalLink size={10} />
+              </a>
+            </div>
+          </div>
+
+          {/* 4. CHAPTERS & SOCIETIES SPOTLIGHT GRID (2x2 MODERN CARDS) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Cpu size={14} className="text-[#002855]" />
+                <span>Specialized Technical Chapters</span>
+              </h2>
+              <button
+                onClick={() => handleTabChange("societies")}
+                className="text-[10px] font-black text-[#002855] uppercase tracking-wider hover:underline flex items-center gap-0.5 cursor-pointer"
+              >
+                <span>View All 8</span>
+                <ChevronRight size={12} />
               </button>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="grid grid-cols-2 gap-2.5">
               {[
-                { label: "Office Bearers & Leadership", desc: "2026-2027 Executive Body & Team", icon: Crown, iconBg: "bg-amber-50 text-amber-600", tabKey: "office-bearers" },
-                { label: "Technical Society Chapters", desc: "8 specialized IEEE technical chapters (CS, CIS, etc.)", icon: Cpu, iconBg: "bg-blue-50 text-[#002855]", tabType: "societies" },
-                { label: "Activities & Annual Plans", desc: "Flagship symposiums, hackathons & yearly roadmap", icon: Calendar, iconBg: "bg-sky-50 text-sky-600", tabKey: "plans" },
-                { label: "Awards & Accolades", desc: "IEEE Madras Section & Region 10 Honors", icon: Award, iconBg: "bg-purple-50 text-purple-600", tabKey: "awards" },
-                { label: "Event Reports & Activity Hub", desc: "Official activity documentation & PDF downloads", icon: FileText, iconBg: "bg-cyan-50 text-cyan-600", tabKey: "reports" },
-                { label: "Funding & Grants Breakdown", desc: "Madras Section & institutional support", icon: DollarSign, iconBg: "bg-emerald-50 text-emerald-600", tabKey: "funding" },
-                { label: "Past Bearers Hall of Fame", desc: "2022–2025 leadership timeline & legacy", icon: GraduationCap, iconBg: "bg-indigo-50 text-indigo-600", tabKey: "past-bearers" },
-                { label: "Photo Gallery & Memories", desc: "Event albums, conclaves & celebrations", icon: ImageIcon, iconBg: "bg-pink-50 text-pink-600", tabKey: "gallery" },
-                { label: "About SREC Student Branch", desc: "Code 64581 history, milestones & counselor", icon: Info, iconBg: "bg-blue-50 text-[#002855]", tabKey: "about" },
-                { label: "Membership Registration", desc: "Join IEEE SB SREC & store directly in DB", icon: UserPlus, iconBg: "bg-emerald-50 text-emerald-700", modal: "register" },
-                { label: "Switch to Complete Website", desc: "Access full desktop portal & archives", icon: Globe, iconBg: "bg-slate-100 text-slate-700", route: "/web" },
-              ].map((item, idx) => {
-                const Icon = item.icon;
+                { name: "Computer Society", code: "CS (SBC 64581A)", icon: Laptop, color: "text-blue-600", bg: "bg-blue-50/70 border-blue-200/70" },
+                { name: "Robotics & Automation", code: "RAS (SBC 64581B)", icon: Cpu, color: "text-purple-600", bg: "bg-purple-50/70 border-purple-200/70" },
+                { name: "Power Electronics", code: "PELS (SBC 64581C)", icon: Zap, color: "text-amber-600", bg: "bg-amber-50/70 border-amber-200/70" },
+                { name: "Communications", code: "ComSoc (SBC 64581D)", icon: Globe, color: "text-emerald-600", bg: "bg-emerald-50/70 border-emerald-200/70" },
+              ].map((soc, idx) => {
+                const Icon = soc.icon;
                 return (
-                  <div
+                  <button
                     key={idx}
-                    onClick={() => {
-                      if (item.modal === "register") setIsRegisterModalOpen(true);
-                      else if (item.tabType) handleTabChange(item.tabType);
-                      else if (item.tabKey) { handleTabChange("menu"); setAllPagesCategory(item.tabKey); }
-                      else if (item.route) navigate(item.route);
-                    }}
-                    className="flex items-center justify-between px-3 py-1.5 hover:bg-slate-50/80 cursor-pointer active:bg-slate-100 transition-colors"
+                    onClick={() => handleTabChange("societies")}
+                    className={`p-3 rounded-2xl ${soc.bg} border text-left flex flex-col justify-between space-y-2 hover:shadow-xs active:scale-95 transition-all cursor-pointer group`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`w-7.5 h-7.5 rounded-lg ${item.iconBg} flex items-center justify-center shrink-0 shadow-xs`}>
-                        <Icon size={14} />
+                    <div className="flex items-center justify-between">
+                      <div className={`w-8 h-8 rounded-xl bg-white shadow-2xs flex items-center justify-center ${soc.color} group-hover:scale-110 transition-transform`}>
+                        <Icon size={16} />
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-extrabold text-slate-900 text-[11px] truncate leading-tight">
-                          {item.label}
-                        </p>
-                        <p className="text-[9.5px] text-slate-500 truncate mt-0.5">
-                          {item.desc}
-                        </p>
-                      </div>
+                      <ChevronRight size={12} className="text-slate-400 group-hover:text-slate-700 transition-colors" />
                     </div>
-                    <ChevronRight size={13} className="text-slate-400 shrink-0 ml-2" />
-                  </div>
+                    <div>
+                      <h4 className="font-black text-slate-900 text-[11px] leading-tight">
+                        {soc.name}
+                      </h4>
+                      <p className="text-[9px] text-slate-500 font-medium mt-0.5 truncate">
+                        {soc.code}
+                      </p>
+                    </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          {/* 4. UPCOMING FLAGSHIP CONCLAVE CARD (COMPACT) */}
-          <div className="p-3 rounded-2xl bg-white shadow-xs space-y-1.5 border border-slate-200/80">
-            <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 font-extrabold text-[8px] uppercase tracking-wider flex items-center gap-1">
-                <Sparkles size={9} className="text-amber-600" /> Flagship 2027
-              </span>
-              <span className="text-[9px] font-bold text-slate-500">Feb 18-20, 2027</span>
+          {/* 5. EXPLORE DIRECTORY LINK */}
+          <div className="p-3.5 rounded-2xl bg-slate-900 text-white shadow-md flex items-center justify-between gap-3">
+            <div className="min-w-0 space-y-0.5">
+              <p className="font-black text-white text-xs leading-tight">
+                IEEE SB SREC Complete Directory
+              </p>
+              <p className="text-[9.5px] text-slate-400 truncate">
+                Reports, archives, past bearers &amp; portals
+              </p>
             </div>
-            <h3 className="text-xs font-black text-slate-900">
-              AECTSD 2027: International Conference
-            </h3>
-            <p className="text-[10px] text-slate-600 leading-snug">
-              Advances in Electrical, Communication &amp; Thermal Systems for Sustainable Development.
-            </p>
-            <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 text-xs">
-              <span className="text-[9px] text-slate-500 font-medium">Venue: SREC Auditorium</span>
-              <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#002855] text-white font-bold text-[9px] uppercase shadow-sm active:scale-95 transition-all">
-                <span>Portal</span>
-                <ExternalLink size={9} />
-              </a>
-            </div>
+            <button
+              onClick={() => handleTabChange("menu")}
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-950 text-[10px] font-black uppercase tracking-wider active:scale-95 transition-all shrink-0 flex items-center gap-1 shadow-xs cursor-pointer"
+            >
+              <span>Explore</span>
+              <ChevronRight size={12} />
+            </button>
           </div>
 
         </div>
@@ -1734,10 +1854,10 @@ export const MobileAppPage = ({
                 {/* ── TOP HEADER BAR: SREC Emblem + IEEE Diamond + Status ── */}
                 <div className="flex items-center justify-between relative z-10">
                   <div className="flex items-center gap-1.5">
-                    <div className="px-2 py-0.5 rounded-lg bg-white/95 border border-white/80 shadow-xs flex items-center gap-1.5 backdrop-blur-sm">
-                      <img src={srecLogo} alt="SREC" className="h-4 sm:h-5 w-auto object-contain" />
+                    <div className="px-2 py-0.5 rounded-lg bg-white/95 border border-white/80 shadow-xs flex items-center gap-1.5 backdrop-blur-sm h-6 overflow-hidden">
+                      <img src={srecLogo} alt="SREC" className="h-4 sm:h-5 w-auto max-h-5 object-contain" />
                       <div className="w-[1px] h-3 bg-slate-300" />
-                      <img src={ieeeLogo} alt="IEEE" className="h-3.5 sm:h-4.5 w-auto object-contain" />
+                      <img src={ieeeLogo} alt="IEEE" className="h-3.5 sm:h-4 w-auto max-h-4 object-contain" />
                     </div>
                   </div>
 
@@ -2336,7 +2456,13 @@ export const MobileAppPage = ({
 {
   activeTab === "societies" && (<div className="space-y-3">
     {selectedSocietyId ? (() => {
-      const soc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
+      const rawSoc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
+      const dyn = dynamicSocietyLeaders[rawSoc.id];
+      const soc = {
+        ...rawSoc,
+        chair: dyn?.chair || rawSoc.chair,
+        advisor: dyn?.advisor || rawSoc.advisor,
+      };
       const userSocList = Array.isArray(currentUser?.target_societies)
         ? currentUser.target_societies
         : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);

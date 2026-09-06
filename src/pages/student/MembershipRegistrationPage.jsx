@@ -840,7 +840,7 @@ const MembershipRegistrationPage = () => {
                   {/* Section 1: Applicant Credentials */}
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-1.5 h-4.5 rounded-full bg-[#003366]"/>
+                      <div className="w-1.5 h-4 rounded-full bg-[#003366]"/>
                       <h3 className="font-black text-xs uppercase tracking-widest text-[#003366]">1. Applicant Credentials</h3>
                     </div>
 
@@ -920,7 +920,7 @@ const MembershipRegistrationPage = () => {
                   {/* Section 2: Membership & Chapter Affiliation */}
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-1.5 h-4.5 rounded-full bg-[#003366]"/>
+                      <div className="w-1.5 h-4 rounded-full bg-[#003366]"/>
                       <h3 className="font-black text-xs uppercase tracking-widest text-[#003366]">2. Membership &amp; Chapter Affiliation</h3>
                     </div>
                     <div style={{ border: "1px solid #cbd5e1" }} className="rounded-xl overflow-hidden shadow-xs">
@@ -989,7 +989,7 @@ const MembershipRegistrationPage = () => {
                 return (<div>
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-4.5 rounded-full bg-[#003366]"/>
+                            <div className="w-1.5 h-4 rounded-full bg-[#003366]"/>
                             <h3 className="font-black text-xs uppercase tracking-widest text-[#003366]">3. Official Fee &amp; Tax Summary (Itemized USD Breakdown)</h3>
                           </div>
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[9.5px] font-bold text-emerald-800">

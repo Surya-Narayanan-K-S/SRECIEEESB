@@ -4,7 +4,6 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import MobileAppPage from "@/pages/mobile/MobileAppPage";
 
-// Mock Supabase calls in testing environment
 vi.mock("@/lib/supabase", () => {
   const mockFrom = vi.fn().mockReturnValue({
     select: vi.fn().mockReturnValue({
@@ -40,11 +39,11 @@ describe("MobileAppPage Rendering & Tabs", () => {
     // Verify quick action cards & flagship conference
     expect(screen.getByText("AECTSD 2027: International Conference")).toBeDefined();
     // Verify bottom nav items
-    expect(screen.getByText("Feed")).toBeDefined();
+    expect(screen.getAllByText("Feed").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Societies").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Digital ID").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Events").length).toBeGreaterThan(0);
-    expect(screen.getByText("Explore")).toBeDefined();
+    expect(screen.getAllByText("Explore").length).toBeGreaterThan(0);
 
     expect(container.innerHTML.length).toBeGreaterThan(1000);
   });
