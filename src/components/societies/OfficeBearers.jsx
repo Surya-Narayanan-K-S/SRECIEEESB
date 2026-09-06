@@ -95,7 +95,6 @@ const OfficeBearers = () => {
             ] = await Promise.all([
                 safeFetch("office_bearers"),
                 safeFetch("srec_office_bearers"),
-                safeFetch("new_office_bearers"),
                 safeFetch("cs_office_bearers"),
                 safeFetch("cis_office_bearers"),
                 safeFetch("comsoc_office_bearers"),
@@ -128,7 +127,6 @@ const OfficeBearers = () => {
 
             // Add chapter specific tables first if populated
             addRows(srecRows, "srec", "srec_office_bearers");
-            addRows(newRows, "srec", "new_office_bearers");
             addRows(csRows, "cs", "cs_office_bearers");
             addRows(cisRows, "cis", "cis_office_bearers");
             addRows(comsocRows, "comsoc", "comsoc_office_bearers");
@@ -152,7 +150,6 @@ const OfficeBearers = () => {
             const [
                 mainRows,
                 srecRows,
-                newRows,
                 csRows,
                 cisRows,
                 comsocRows,
@@ -166,7 +163,6 @@ const OfficeBearers = () => {
             ] = await Promise.all([
                 safeFetch("executive_members"),
                 safeFetch("srec_executive_members"),
-                safeFetch("new_executive_members"),
                 safeFetch("cs_executive_members"),
                 safeFetch("cis_executive_members"),
                 safeFetch("comsoc_executive_members"),
@@ -198,7 +194,6 @@ const OfficeBearers = () => {
             };
 
             addRows(srecRows, "srec", "srec_executive_members");
-            addRows(newRows, "srec", "new_executive_members");
             addRows(csRows, "cs", "cs_executive_members");
             addRows(cisRows, "cis", "cis_executive_members");
             addRows(comsocRows, "comsoc", "comsoc_executive_members");
@@ -322,14 +317,6 @@ const OfficeBearers = () => {
                 }
             }
 
-            // Fallback to legacy/alt tables if table doesn't exist
-            if (res.error && (res.error.message?.includes("does not exist") || res.error.message?.includes("schema cache"))) {
-                const altTable = activeSubTab === "bearers" ? "new_office_bearers" : "new_executive_members";
-                res = form.id
-                    ? await supabase.from(altTable).update(curPayload).eq("id", form.id)
-                    : await supabase.from(altTable).insert([curPayload]);
-            }
-
             if (res.error)
                 throw res.error;
 
@@ -377,10 +364,8 @@ const OfficeBearers = () => {
             if (error) {
                 // Try fallback tables
                 await supabase.from("office_bearers").delete().eq("id", id);
-                await supabase.from("new_office_bearers").delete().eq("id", id);
                 await supabase.from("srec_office_bearers").delete().eq("id", id);
                 await supabase.from("executive_members").delete().eq("id", id);
-                await supabase.from("new_executive_members").delete().eq("id", id);
                 await supabase.from("srec_executive_members").delete().eq("id", id);
             }
             await loadData();

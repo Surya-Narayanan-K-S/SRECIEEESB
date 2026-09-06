@@ -54,6 +54,17 @@ class SoundFX {
     }
   }
 
+  destroy() {
+    if (this.ctx) {
+      try {
+        this.ctx.close();
+      } catch {
+        // Ignore
+      }
+      this.ctx = null;
+    }
+  }
+
   playCountdown(step) {
     if (!this.enabled) return;
     this.init();
@@ -331,6 +342,7 @@ export const LaunchPage = () => {
       supabase.removeChannel(channel);
       if (bc) bc.close();
       clearInterval(interval);
+      sfx.destroy();
     };
   }, [loadConfig, startCountdown, triggerLaunch, resetLaunch, launchState]);
 
@@ -451,16 +463,16 @@ export const LaunchPage = () => {
           muted
           playsInline
           className={`w-full h-full object-cover object-center transition-all duration-700 ${launchState === "countdown" || launchState === "launched"
-              ? "opacity-100 scale-100"
-              : "opacity-0 pointer-events-none"
+            ? "opacity-100 scale-100"
+            : "opacity-0 pointer-events-none"
             }`}
         />
 
         {/* Subtle Overlay (Clear during countdown so video is fully visible) */}
         <div
           className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${launchState === "standby"
-              ? "bg-gradient-to-t from-[#050b14]/80 via-[#050b14]/40 to-[#050b14]/70"
-              : "bg-black/10"
+            ? "bg-gradient-to-t from-[#050b14]/80 via-[#050b14]/40 to-[#050b14]/70"
+            : "bg-black/10"
             }`}
         />
       </div>

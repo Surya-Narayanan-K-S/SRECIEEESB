@@ -406,8 +406,8 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
                     break;
                 case "srec":
                 default:
-                    bearerTables = ["srec_office_bearers", "new_office_bearers"];
-                    execTables = ["srec_executive_members", "new_executive_members"];
+                    bearerTables = ["srec_office_bearers"];
+                    execTables = ["srec_executive_members"];
                     break;
             }
             // Fetch ONLY from this society's dedicated tables
@@ -499,11 +499,6 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
             channel
                 .on("postgres_changes", { event: "*", schema: "public", table: "cass_office_bearers" }, () => fetchLeadership())
                 .on("postgres_changes", { event: "*", schema: "public", table: "cass_executive_members" }, () => fetchLeadership());
-        }
-        else if (key === "srec") {
-            channel
-                .on("postgres_changes", { event: "*", schema: "public", table: "new_office_bearers" }, () => fetchLeadership())
-                .on("postgres_changes", { event: "*", schema: "public", table: "new_executive_members" }, () => fetchLeadership());
         }
         channel.subscribe();
         return () => {

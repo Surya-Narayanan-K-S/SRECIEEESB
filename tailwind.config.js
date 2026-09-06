@@ -97,12 +97,16 @@ export default {
           "100%": { transform: "scale(1)", opacity: "1" },
         },
         "pulse-glow": {
-          "0%, 100%": { opacity: "0.4" },
-          "50%": { opacity: "0.8" },
+          "0%, 100%": { opacity: "0.4", transform: "scale(1)" },
+          "50%": { opacity: "0.85", transform: "scale(1.04)" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" },
+        },
+        "float-slow": {
+          "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+          "50%": { transform: "translateY(-12px) rotate(1deg)" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
@@ -114,11 +118,20 @@ export default {
         },
         "bounce-subtle": {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-5px)" },
+          "50%": { transform: "translateY(-6px)" },
         },
         marquee: {
           "0%": { transform: "translateX(0%)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        "gradient-x": {
+          "0%, 100%": { "background-size": "200% 200%", "background-position": "left center" },
+          "50%": { "background-size": "200% 200%", "background-position": "right center" },
+        },
+        "aurora": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -20px) scale(1.1)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.95)" },
         },
       },
       animation: {
@@ -129,10 +142,13 @@ export default {
         "scale-in": "scale-in 0.3s ease-out",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
         float: "float 6s ease-in-out infinite",
+        "float-slow": "float-slow 8s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
         "spin-slow": "spin-slow 20s linear infinite",
-        "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
+        "bounce-subtle": "bounce-subtle 2.5s ease-in-out infinite",
         marquee: "marquee 35s linear infinite",
+        "gradient-x": "gradient-x 6s ease infinite",
+        "aurora": "aurora 14s ease-in-out infinite",
         enter: "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
       },
     },

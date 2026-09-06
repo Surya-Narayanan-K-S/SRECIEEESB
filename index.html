@@ -2,14 +2,23 @@
 <html lang="en">
 
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5XHW1PLHGT"></script>
+  <!-- Google tag (gtag.js) - Activated on production domains -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-5XHW1PLHGT');
+    
+    // Only load external GA script on live production domains to keep local dev network clean
+    (function() {
+      var isDevHost = /^(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(window.location.hostname);
+      if (!isDevHost) {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-5XHW1PLHGT';
+        document.head.appendChild(script);
+        gtag('js', new Date());
+        gtag('config', 'G-5XHW1PLHGT');
+      }
+    })();
   </script>
 
   <meta charset="UTF-8" />

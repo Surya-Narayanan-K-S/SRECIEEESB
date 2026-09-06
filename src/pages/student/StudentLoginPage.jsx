@@ -582,34 +582,6 @@ const StudentLoginPage = () => {
                         Sign Up
                       </button>
                     </div>
-
-                    {/* Social/Federated Login Row */}
-                    <div className="pt-4 text-center space-y-4">
-                      <p className="text-xs text-slate-400 font-medium">Or sign up with</p>
-                      <div className="flex items-center justify-center gap-3.5">
-                        <button type="button" onClick={() => {
-                    setLoginInput("22EE104");
-                    setLoginPassword("srecieee@22EE104");
-                    setAuthMode("login");
-                }} className="w-10 h-10 rounded-full border border-slate-300 hover:border-[#6c4f6f] text-slate-600 hover:text-[#6c4f6f] flex items-center justify-center font-bold text-xs transition-all active:scale-90 shadow-sm" title="Quick Auto-Fill Demo 1">
-                          G
-                        </button>
-                        <button type="button" onClick={() => {
-                    setLoginInput("23CS218");
-                    setLoginPassword("srecieee@23CS218");
-                    setAuthMode("login");
-                }} className="w-10 h-10 rounded-full border border-slate-300 hover:border-[#6c4f6f] text-slate-600 hover:text-[#6c4f6f] flex items-center justify-center font-bold text-xs transition-all active:scale-90 shadow-sm" title="Quick Auto-Fill Demo 2">
-                          f
-                        </button>
-                        <button type="button" onClick={() => {
-                    setLoginInput("23BM042");
-                    setLoginPassword("srecieee@23BM042");
-                    setAuthMode("login");
-                }} className="w-10 h-10 rounded-full border border-slate-300 hover:border-[#6c4f6f] text-slate-600 hover:text-[#6c4f6f] flex items-center justify-center font-bold text-xs transition-all active:scale-90 shadow-sm" title="Quick Auto-Fill Demo 3">
-                          in
-                        </button>
-                      </div>
-                    </div>
                   </div>)}
 
                 {/* ════ SCREEN 2: LOGIN SCREEN ════ */}

@@ -106,31 +106,29 @@
 }
 
 /* ==========================================================================
-   DESKTOP VIEW STYLES & ENHANCEMENTS (>= 1024px)
+   DESKTOP & GLOBAL MODERN SCROLLBAR & CONTAINERS
    ========================================================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00629b 0%, #003366 100%);
+  border-radius: 9999px;
+  border: 2px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #0080c6 0%, #004d80 100%);
+}
+
 @media (min-width: 1024px) {
-  /* Modern Desktop Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 9999px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #00629b 0%, #003366 100%);
-    border-radius: 9999px;
-    border: 2px solid #f1f5f9;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #0080c6 0%, #004d80 100%);
-  }
-
-  /* Desktop Container Fluid Padding */
   .desktop-container {
     max-width: 1440px;
     margin-left: auto;
@@ -139,9 +137,8 @@
     padding-right: 2rem;
   }
 
-  /* Desktop Elevated 3D Tilt Card */
   .desktop-card-tilt {
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
     will-change: transform, box-shadow;
   }
 
@@ -150,7 +147,6 @@
     box-shadow: 0 25px 50px -12px rgba(0, 50, 110, 0.16), 0 0 0 1px rgba(0, 166, 214, 0.3);
   }
 
-  /* Desktop Glowing Border Card */
   .desktop-glow-card {
     position: relative;
     background: #ffffff;
@@ -166,7 +162,6 @@
     transform: translateY(-4px);
   }
 
-  /* Desktop Sticky Sidebar */
   .desktop-sticky-sidebar {
     position: sticky;
     top: 6rem;
@@ -174,7 +169,6 @@
     overflow-y: auto;
   }
 
-  /* Desktop Bento Grid */
   .desktop-bento-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -186,20 +180,17 @@
    PHONE / MOBILE VIEW STYLES & ENHANCEMENTS (<= 768px)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Prevent iOS input zoom by forcing 16px min size on mobile forms */
   input, select, textarea {
     font-size: 16px !important;
   }
 
-  /* Mobile Section Compact Padding */
   .section-padding {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
-    padding-top: 2.25rem !important;
-    padding-bottom: 2.25rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 
-  /* Mobile Touch Target & Tap Feedback */
   .mobile-touch-target {
     min-height: 44px;
     min-width: 44px;
@@ -217,7 +208,6 @@
     opacity: 0.85;
   }
 
-  /* Mobile Horizontal Scroll Strip with Snap */
   .mobile-snap-row {
     display: flex;
     overflow-x: auto;
@@ -234,12 +224,10 @@
     flex-shrink: 0;
   }
 
-  /* Hide scrollbar on mobile scroll snap strips */
   .mobile-snap-row::-webkit-scrollbar {
     display: none;
   }
 
-  /* Mobile Sticky Action Bar */
   .mobile-sticky-action-bar {
     position: fixed;
     bottom: 0;
@@ -254,7 +242,6 @@
     box-shadow: 0 -10px 30px rgba(0, 30, 70, 0.1);
   }
 
-  /* Mobile Bottom Dock Glass */
   .mobile-dock-glass {
     background: rgba(255, 255, 255, 0.88);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
@@ -263,7 +250,6 @@
     box-shadow: 0 -8px 32px rgba(0, 30, 80, 0.12);
   }
 
-  /* Mobile Card Compact */
   .mobile-card-compact {
     padding: 1rem !important;
     border-radius: 1.25rem !important;
@@ -284,7 +270,7 @@
 }
 
 /* ==========================================================================
-   SHARED UI COMPONENTS & GLASSMORPHISM SYSTEM
+   SHARED UI COMPONENTS, GLASSMORPHISM & ANIMATION SYSTEM
    ========================================================================== */
 @layer components {
   .section-padding {
@@ -298,6 +284,21 @@
     backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.92);
     box-shadow: 0 10px 35px -10px rgba(0, 40, 85, 0.08), 0 2px 6px -1px rgba(0, 40, 85, 0.03);
+  }
+
+  .glass-card-interactive {
+    background: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 30px -10px rgba(0, 40, 85, 0.07);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card-interactive:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px -12px rgba(0, 98, 155, 0.18), 0 0 0 1px rgba(0, 166, 214, 0.4);
+    border-color: rgba(0, 166, 214, 0.5);
   }
 
   .dark-glass-panel {
@@ -362,7 +363,7 @@
     background: #ffffff;
     border: 1px solid #e2e8f0;
     box-shadow: 0 10px 30px -10px rgba(0, 32, 74, 0.08);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .white-card-elevated:hover {
@@ -395,13 +396,13 @@
     background: linear-gradient(
       45deg,
       transparent 20%,
-      rgba(255, 255, 255, 0.15) 35%,
-      rgba(0, 210, 255, 0.25) 50%,
-      rgba(251, 191, 36, 0.2) 65%,
+      rgba(255, 255, 255, 0.18) 35%,
+      rgba(0, 210, 255, 0.28) 50%,
+      rgba(251, 191, 36, 0.22) 65%,
       transparent 80%
     );
     transform: rotate(25deg);
-    animation: hologramGlint 6s infinite ease-in-out;
+    animation: hologramGlint 5s infinite ease-in-out;
     pointer-events: none;
   }
 
@@ -523,7 +524,7 @@
 }
 
 /* ==========================================================================
-   UTILITY CLASSES & ANIMATIONS
+   UTILITY CLASSES, PARTICLES & ANIMATIONS
    ========================================================================== */
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
@@ -628,6 +629,19 @@
   .animate-spin-reverse {
     animation: spinReverse 22s linear infinite;
     will-change: transform;
+  }
+
+  /* Aurora Mesh Gradient */
+  .aurora-bg {
+    background: radial-gradient(ellipse at 20% 20%, rgba(0, 98, 155, 0.15), transparent 45%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 210, 255, 0.12), transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.06), transparent 50%);
+  }
+
+  .aurora-bg-dark {
+    background: radial-gradient(ellipse at 20% 20%, rgba(0, 98, 155, 0.35), transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 210, 255, 0.25), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.2), transparent 60%);
   }
 }
 

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CreditCard, Crown, ShieldCheck, Search, Printer, Upload, ExternalLink, Edit2, RefreshCw, X, FileText, FileSpreadsheet, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, Phone, Building2, Calendar, Layers, ArrowRight, Loader2, Check, Maximize2, Copy, Zap, UserCheck, ChevronDown, Clock } from "lucide-react";
 import srecCampus from "@/assets/srec-campus.png";
 import ieeeCustomCardLogo from "@/assets/ieee-custom-card-logo.png";
+import ieeeStamp from "@/assets/ieees.png";
 import counselorSignature from "@/assets/counselor-signature.png";
 import snrTrustLogo from "@/assets/snr-trust-logo.png";
 import { getPrimaryMemberCardPdfUrl, uploadMemberCardPdf } from "@/utils/cardPdfHelper";
@@ -136,7 +137,7 @@ export const OfficeBearerCardsAdmin = () => {
             const collectedOfficers = [];
             // 2. Fetch for each society
             const societiesToFetch = [
-                { code: "srec", name: "IEEE Student Branch SREC (Main SB)", bTable: "srec_office_bearers", eTable: "srec_executive_members", altB: "new_office_bearers", altE: "new_executive_members" },
+                { code: "srec", name: "IEEE Student Branch SREC (Main SB)", bTable: "srec_office_bearers", eTable: "srec_executive_members" },
                 { code: "cs", name: "IEEE Computer Society (CS)", bTable: "cs_office_bearers", eTable: "cs_executive_members" },
                 { code: "cis", name: "IEEE Computational Intelligence Society (CIS)", bTable: "cis_office_bearers", eTable: "cis_executive_members" },
                 { code: "comsoc", name: "IEEE Communications Society (ComSoc)", bTable: "comsoc_office_bearers", eTable: "comsoc_executive_members" },
@@ -1063,7 +1064,7 @@ export const OfficeBearerCardsAdmin = () => {
                         {/* IEEE Official Crest */}
                         <div className="w-[32px] h-[32px] rounded-full p-[2px] bg-gradient-to-tr from-[#001c3d] via-[#002855] to-[#0066ff] shadow-md flex items-center justify-center shrink-0">
                           <div className="w-full h-full rounded-full bg-white p-0.5 flex items-center justify-center overflow-hidden">
-                            <img src={ieeeCustomCardLogo} alt="IEEE" className="w-full h-full object-contain"/>
+                            <img src={ieeeStamp} alt="IEEE" className="w-full h-full object-contain"/>
                           </div>
                         </div>
                       </div>
@@ -1639,7 +1640,7 @@ export const OfficeBearerCardsAdmin = () => {
                       </div>
                       <div className="w-[42px] h-[42px] rounded-full p-[2px] bg-gradient-to-tr from-[#001c3d] via-[#002855] to-[#0066ff] shadow-md flex items-center justify-center shrink-0">
                         <div className="w-full h-full rounded-full bg-white p-0.5 flex items-center justify-center overflow-hidden">
-                          <img src={ieeeCustomCardLogo} alt="IEEE" className="w-full h-full object-contain"/>
+                          <img src={ieeeStamp} alt="IEEE" className="w-full h-full object-contain"/>
                         </div>
                       </div>
                     </div>

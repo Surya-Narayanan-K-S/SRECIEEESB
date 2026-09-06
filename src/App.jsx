@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, HashRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes, useLocation, useSearchParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/feedback/sonner";
 import { Toaster } from "@/components/ui/feedback/toaster";
 import { TooltipProvider } from "@/components/ui/overlays/tooltip";
@@ -10,6 +10,7 @@ import { Capacitor } from "@capacitor/core";
 import { AnimatePresence, motion } from "framer-motion";
 import srecCampus from "@/assets/srec-campus.png";
 import { supabase } from "@/lib/supabase";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { LaunchPage } from "./pages/launch/LaunchPage";
 import { LaunchRemote } from "./pages/launch/LaunchRemote";
 import { HomePage } from "./pages/home";
@@ -24,6 +25,7 @@ import { AdminDashboardRoute, AdminLoginPage, TrafficAnalyticsAdmin } from "./pa
 import { InspectionSecurityGuard } from "@/components/security/InspectionSecurityGuard";
 import { useVisitorTracker } from "@/hooks/useVisitorTracker";
 import { ErrorBoundary } from "@/components/feedback/ErrorBoundary";
+import FloatingUIWidget from "@/components/layout/FloatingUIWidget";
 const queryClient = new QueryClient();
 // Global College Campus Background across the entire site
 const GlobalCollegeBackground = () => (<div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none" aria-hidden="true">
@@ -63,15 +65,9 @@ const RouterComponent = Capacitor.isNativePlatform()
 // Page Transition & Fault Isolation Wrapper — guarantees EVERY page is protected by ErrorBoundary + Report Bug
 const PageTransition = ({ children }) => (
   <ErrorBoundary>
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="relative z-10"
-    >
+    <div className="relative z-10 w-full min-h-screen">
       {children}
-    </motion.div>
+    </div>
   </ErrorBoundary>
 );
 // Global Launch Mode Guard — intercepts ALL public routes (e.g. /about, /societies, /gallery, etc.)
@@ -125,55 +121,81 @@ const GlobalLaunchModeGuard = ({ children }) => {
   return children;
 };
 
-// Smart Domain & Platform Routing
-const ResponsiveHome = () => {
-    const isNativeApp = Capacitor.isNativePlatform();
-    const hostname = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+// Universal Smart Responsive Route Wrapper
+// Automatically provides full Mobile App view on mobile viewports/devices/apps
+// and Desktop Web Experience on desktop viewports.
+const ResponsiveRoute = ({
+  desktop: DesktopComponent,
+  mobileTab = "home",
+  mobileCategory = "menu",
+  focusSociety = null,
+  forceLogin = false,
+  desktopProps = {}
+}) => {
+  const isNativeApp = Capacitor.isNativePlatform();
+  const isMobileDevice = useIsMobile();
+  const [searchParams] = useSearchParams();
+  const forceView = searchParams.get("view"); // Allow ?view=desktop or ?view=mobile
+  const hostname = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
 
-    // Environment variable flags
-    const appMode = (import.meta.env.VITE_APP_MODE || import.meta.env.MODE || "").toLowerCase();
-    const isStandalonePortalEnv = appMode === "portal" ||
-        appMode === "student" ||
-        appMode === "id" ||
-        appMode === "member";
-    const isStandaloneAppEnv = appMode === "app" ||
-        appMode === "mobile" ||
-        appMode === "android" ||
-        appMode === "ios";
-    // Hostname matching
-    const isPortalDomain = isStandalonePortalEnv ||
-        hostname.startsWith("portal.") ||
-        hostname.startsWith("student.") ||
-        hostname.startsWith("id.") ||
-        hostname.startsWith("members.") ||
-        hostname.startsWith("membership.") ||
-        hostname.includes("srecieeeportal") ||
-        hostname.includes("srecieeestudent") ||
-        (hostname.includes("srecieee.org") && hostname.includes("portal"));
-    const isAppDomain = isNativeApp ||
-        isStandaloneAppEnv ||
-        hostname.includes("srec-ieee-app") ||
-        hostname.includes("srecieeeapp") ||
-        hostname.includes("srecieeestudent") ||
-        hostname.startsWith("srecieeestudent.") ||
-        hostname.startsWith("app.") ||
-        hostname.startsWith("m.") ||
-        hostname.startsWith("mobile.") ||
-        hostname.includes("-app") ||
-        hostname.includes("app-") ||
-        hostname.includes("ieee-app") ||
-        hostname.includes("srec-app") ||
-        hostname.includes("student-app") ||
-        (hostname.includes("srecieee.org") && hostname.includes("student"));
+  const userPrefersDesktop =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("ieee_preferred_view") === "desktop" || forceView === "desktop");
+  const userPrefersMobile =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("ieee_preferred_view") === "mobile" || forceView === "mobile" || forceView === "app");
 
-    if (isAppDomain) {
-        return <MobileAppPage />;
-    }
-    if (isPortalDomain) {
-        return <StudentLoginPage />;
-    }
-    return <HomePage />;
+  if (userPrefersDesktop) {
+    return <DesktopComponent {...desktopProps} />;
+  }
+  if (userPrefersMobile) {
+    return (
+      <MobileAppPage
+        defaultTab={mobileTab}
+        defaultCategory={mobileCategory}
+        focusSociety={focusSociety}
+        forceLogin={forceLogin}
+      />
+    );
+  }
+
+  // Environment variable flags
+  const appMode = (import.meta.env.VITE_APP_MODE || import.meta.env.MODE || "").toLowerCase();
+  const isStandaloneAppEnv =
+    appMode === "app" || appMode === "mobile" || appMode === "android" || appMode === "ios";
+
+  const isAppDomain =
+    isNativeApp ||
+    isStandaloneAppEnv ||
+    isMobileDevice ||
+    hostname.includes("srec-ieee-app") ||
+    hostname.includes("srecieeeapp") ||
+    hostname.includes("srecieeestudent") ||
+    hostname.startsWith("srecieeestudent.") ||
+    hostname.startsWith("app.") ||
+    hostname.startsWith("m.") ||
+    hostname.startsWith("mobile.") ||
+    hostname.includes("-app") ||
+    hostname.includes("app-") ||
+    hostname.includes("ieee-app") ||
+    hostname.includes("srec-app") ||
+    hostname.includes("student-app") ||
+    (hostname.includes("srecieee.org") && hostname.includes("student"));
+
+  if (isAppDomain) {
+    return (
+      <MobileAppPage
+        defaultTab={mobileTab}
+        defaultCategory={mobileCategory}
+        focusSociety={focusSociety}
+        forceLogin={forceLogin}
+      />
+    );
+  }
+
+  return <DesktopComponent {...desktopProps} />;
 };
+
 const AnimatedRoutes = () => {
     useVisitorTracker();
     const location = useLocation();
@@ -181,9 +203,11 @@ const AnimatedRoutes = () => {
       <GlobalLaunchModeGuard>
         <ScrollToTop />
         <GlobalCollegeBackground />
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageTransition><ResponsiveHome /></PageTransition>}/>
+        <Routes location={location} key={location.pathname}>
+          {/* Main Home Route */}
+          <Route path="/" element={<PageTransition><ResponsiveRoute desktop={HomePage} mobileTab="home" /></PageTransition>}/>
+
+          {/* Launch & Inauguration Protocols */}
           <Route path="/launch" element={<PageTransition><LaunchPage /></PageTransition>}/>
           <Route path="/inauguration" element={<PageTransition><LaunchPage /></PageTransition>}/>
           <Route path="/stage" element={<PageTransition><LaunchPage forceMode="stage" /></PageTransition>}/>
@@ -194,60 +218,75 @@ const AnimatedRoutes = () => {
           <Route path="/launch/remote" element={<PageTransition><LaunchRemote /></PageTransition>}/>
           <Route path="/remote-control" element={<PageTransition><LaunchRemote /></PageTransition>}/>
           <Route path="/remote-mode" element={<PageTransition><LaunchRemote /></PageTransition>}/>
+
+          {/* Explicit Platform Overrides */}
           <Route path="/web" element={<PageTransition><HomePage /></PageTransition>}/>
           <Route path="/desktop" element={<PageTransition><HomePage /></PageTransition>}/>
-          <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>}/>
-          <Route path="/activities" element={<PageTransition><ActivitiesPage /></PageTransition>}/>
-          <Route path="/reports" element={<PageTransition><EventReportsPage /></PageTransition>}/>
-          <Route path="/event-reports" element={<PageTransition><EventReportsPage /></PageTransition>}/>
-          <Route path="/activity-reports" element={<PageTransition><EventReportsPage /></PageTransition>}/>
-          <Route path="/hub-congress" element={<PageTransition><EventReportsPage /></PageTransition>}/>
-          <Route path="/team" element={<PageTransition><TeamPage /></PageTransition>}/>
-          <Route path="/office-bearers" element={<PageTransition><OfficeBearersPage /></PageTransition>}/>
-          <Route path="/past-bearers" element={<PageTransition><PastOfficeBearersPage /></PageTransition>}/>
-          <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>}/>
-          <Route path="/awards" element={<PageTransition><AwardsPage /></PageTransition>}/>
-          <Route path="/annual-plans" element={<PageTransition><AnnualPlansPage /></PageTransition>}/>
-          <Route path="/funding" element={<PageTransition><FundingsPlanPage /></PageTransition>}/>
-          <Route path="/societies" element={<PageTransition><SocietiesPage /></PageTransition>}/>
-          <Route path="/societies/office-bearers" element={<PageTransition><SocietyOfficeBearersPage /></PageTransition>}/>
-          <Route path="/societies/:id/office-bearers" element={<PageTransition><SocietyOfficeBearersPage /></PageTransition>}/>
-          <Route path="/society-office-bearers" element={<PageTransition><SocietyOfficeBearersPage /></PageTransition>}/>
-          <Route path="/societies/srec" element={<PageTransition><SrecBranchPage /></PageTransition>}/>
-          <Route path="/societies/wie" element={<PageTransition><WiePage /></PageTransition>}/>
-          <Route path="/societies/embs" element={<PageTransition><EmbsPage /></PageTransition>}/>
-          <Route path="/societies/cs" element={<PageTransition><CsPage /></PageTransition>}/>
-          <Route path="/societies/comsoc" element={<PageTransition><ComsocPage /></PageTransition>}/>
-          <Route path="/societies/pels" element={<PageTransition><PelsPage /></PageTransition>}/>
-          <Route path="/societies/im" element={<PageTransition><ImPage /></PageTransition>}/>
-          <Route path="/societies/cis" element={<PageTransition><CisPage /></PageTransition>}/>
-          <Route path="/societies/cas" element={<PageTransition><CasPage /></PageTransition>}/>
-          <Route path="/societies/cass" element={<PageTransition><CasPage /></PageTransition>}/>
-          <Route path="/join" element={<PageTransition><JoinPage /></PageTransition>}/>
-          <Route path="/membership-registration" element={<PageTransition><MembershipRegistrationPage /></PageTransition>}/>
-          <Route path="/register" element={<PageTransition><MembershipRegistrationPage /></PageTransition>}/>
-          <Route path="/student-login" element={<PageTransition><StudentLoginPage /></PageTransition>}/>
-          <Route path="/student-portal" element={<PageTransition><StudentLoginPage /></PageTransition>}/>
-          <Route path="/member-portal" element={<PageTransition><StudentLoginPage /></PageTransition>}/>
-          <Route path="/student-dashboard" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
-          <Route path="/member-dashboard" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
-          <Route path="/dashboard" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
-          <Route path="/member-card" element={<PageTransition><StudentDashboardPage /></PageTransition>}/>
+          <Route path="/app" element={<PageTransition><MobileAppPage /></PageTransition>}/>
+          <Route path="/mobile" element={<PageTransition><MobileAppPage /></PageTransition>}/>
+          <Route path="/m" element={<PageTransition><MobileAppPage /></PageTransition>}/>
+
+          {/* Core Information & Branch Pages (Dual Mobile/Desktop) */}
+          <Route path="/about" element={<PageTransition><ResponsiveRoute desktop={AboutPage} mobileTab="menu" mobileCategory="about" /></PageTransition>}/>
+          <Route path="/activities" element={<PageTransition><ResponsiveRoute desktop={ActivitiesPage} mobileTab="events" /></PageTransition>}/>
+          <Route path="/reports" element={<PageTransition><ResponsiveRoute desktop={EventReportsPage} mobileTab="menu" mobileCategory="reports" /></PageTransition>}/>
+          <Route path="/event-reports" element={<PageTransition><ResponsiveRoute desktop={EventReportsPage} mobileTab="menu" mobileCategory="reports" /></PageTransition>}/>
+          <Route path="/activity-reports" element={<PageTransition><ResponsiveRoute desktop={EventReportsPage} mobileTab="menu" mobileCategory="reports" /></PageTransition>}/>
+          <Route path="/hub-congress" element={<PageTransition><ResponsiveRoute desktop={EventReportsPage} mobileTab="menu" mobileCategory="reports" /></PageTransition>}/>
+          <Route path="/team" element={<PageTransition><ResponsiveRoute desktop={TeamPage} mobileTab="menu" mobileCategory="team" /></PageTransition>}/>
+          <Route path="/executive-committee" element={<PageTransition><ResponsiveRoute desktop={TeamPage} mobileTab="menu" mobileCategory="team" /></PageTransition>}/>
+          <Route path="/office-bearers" element={<PageTransition><ResponsiveRoute desktop={OfficeBearersPage} mobileTab="menu" mobileCategory="office-bearers" /></PageTransition>}/>
+          <Route path="/past-bearers" element={<PageTransition><ResponsiveRoute desktop={PastOfficeBearersPage} mobileTab="menu" mobileCategory="past-bearers" /></PageTransition>}/>
+          <Route path="/past-office-bearers" element={<PageTransition><ResponsiveRoute desktop={PastOfficeBearersPage} mobileTab="menu" mobileCategory="past-bearers" /></PageTransition>}/>
+          <Route path="/gallery" element={<PageTransition><ResponsiveRoute desktop={GalleryPage} mobileTab="menu" mobileCategory="gallery" /></PageTransition>}/>
+          <Route path="/awards" element={<PageTransition><ResponsiveRoute desktop={AwardsPage} mobileTab="menu" mobileCategory="awards" /></PageTransition>}/>
+          <Route path="/annual-plans" element={<PageTransition><ResponsiveRoute desktop={AnnualPlansPage} mobileTab="menu" mobileCategory="plans" /></PageTransition>}/>
+          <Route path="/funding" element={<PageTransition><ResponsiveRoute desktop={FundingsPlanPage} mobileTab="menu" mobileCategory="funding" /></PageTransition>}/>
+          <Route path="/contact" element={<PageTransition><ResponsiveRoute desktop={ContactPage} mobileTab="menu" mobileCategory="contact" /></PageTransition>}/>
+
+          {/* Technical Societies Pages (Dual Mobile/Desktop) */}
+          <Route path="/societies" element={<PageTransition><ResponsiveRoute desktop={SocietiesPage} mobileTab="societies" /></PageTransition>}/>
+          <Route path="/societies/office-bearers" element={<PageTransition><ResponsiveRoute desktop={SocietyOfficeBearersPage} mobileTab="societies" /></PageTransition>}/>
+          <Route path="/societies/:id/office-bearers" element={<PageTransition><ResponsiveRoute desktop={SocietyOfficeBearersPage} mobileTab="societies" /></PageTransition>}/>
+          <Route path="/society-office-bearers" element={<PageTransition><ResponsiveRoute desktop={SocietyOfficeBearersPage} mobileTab="societies" /></PageTransition>}/>
+          <Route path="/societies/srec" element={<PageTransition><ResponsiveRoute desktop={SrecBranchPage} mobileTab="societies" focusSociety="srec" /></PageTransition>}/>
+          <Route path="/societies/wie" element={<PageTransition><ResponsiveRoute desktop={WiePage} mobileTab="societies" focusSociety="wie" /></PageTransition>}/>
+          <Route path="/societies/embs" element={<PageTransition><ResponsiveRoute desktop={EmbsPage} mobileTab="societies" focusSociety="embs" /></PageTransition>}/>
+          <Route path="/societies/cs" element={<PageTransition><ResponsiveRoute desktop={CsPage} mobileTab="societies" focusSociety="cs" /></PageTransition>}/>
+          <Route path="/societies/comsoc" element={<PageTransition><ResponsiveRoute desktop={ComsocPage} mobileTab="societies" focusSociety="comsoc" /></PageTransition>}/>
+          <Route path="/societies/pels" element={<PageTransition><ResponsiveRoute desktop={PelsPage} mobileTab="societies" focusSociety="pels" /></PageTransition>}/>
+          <Route path="/societies/im" element={<PageTransition><ResponsiveRoute desktop={ImPage} mobileTab="societies" focusSociety="im" /></PageTransition>}/>
+          <Route path="/societies/cis" element={<PageTransition><ResponsiveRoute desktop={CisPage} mobileTab="societies" focusSociety="cis" /></PageTransition>}/>
+          <Route path="/societies/cas" element={<PageTransition><ResponsiveRoute desktop={CasPage} mobileTab="societies" focusSociety="cas" /></PageTransition>}/>
+          <Route path="/societies/cass" element={<PageTransition><ResponsiveRoute desktop={CasPage} mobileTab="societies" focusSociety="cas" /></PageTransition>}/>
+          <Route path="/societies/:id" element={<PageTransition><ResponsiveRoute desktop={SocietyDetailPage} mobileTab="societies" /></PageTransition>}/>
+
+          {/* Student Portal & Member Dashboards (Dual Mobile/Desktop) */}
+          <Route path="/join" element={<PageTransition><ResponsiveRoute desktop={JoinPage} mobileTab="home" /></PageTransition>}/>
+          <Route path="/membership-registration" element={<PageTransition><ResponsiveRoute desktop={MembershipRegistrationPage} mobileTab="home" /></PageTransition>}/>
+          <Route path="/register" element={<PageTransition><ResponsiveRoute desktop={MembershipRegistrationPage} mobileTab="home" /></PageTransition>}/>
+          <Route path="/student-login" element={<PageTransition><ResponsiveRoute desktop={StudentLoginPage} mobileTab="id" forceLogin={true} /></PageTransition>}/>
+          <Route path="/student-portal" element={<PageTransition><ResponsiveRoute desktop={StudentLoginPage} mobileTab="id" forceLogin={true} /></PageTransition>}/>
+          <Route path="/member-portal" element={<PageTransition><ResponsiveRoute desktop={StudentLoginPage} mobileTab="id" forceLogin={true} /></PageTransition>}/>
+          <Route path="/student-dashboard" element={<PageTransition><ResponsiveRoute desktop={StudentDashboardPage} mobileTab="id" /></PageTransition>}/>
+          <Route path="/member-dashboard" element={<PageTransition><ResponsiveRoute desktop={StudentDashboardPage} mobileTab="id" /></PageTransition>}/>
+          <Route path="/dashboard" element={<PageTransition><ResponsiveRoute desktop={StudentDashboardPage} mobileTab="id" /></PageTransition>}/>
+          <Route path="/member-card" element={<PageTransition><ResponsiveRoute desktop={StudentDashboardPage} mobileTab="id" /></PageTransition>}/>
+
+          {/* Document & Utility Viewers */}
           <Route path="/pdf-viewer" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
           <Route path="/view-pdf" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
           <Route path="/document" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
           <Route path="/document-viewer" element={<PageTransition><PdfViewerPage /></PageTransition>}/>
-          <Route path="/app" element={<PageTransition><MobileAppPage /></PageTransition>}/>
-          <Route path="/mobile" element={<PageTransition><MobileAppPage /></PageTransition>}/>
-          <Route path="/m" element={<PageTransition><MobileAppPage /></PageTransition>}/>
-          <Route path="/societies/:id" element={<PageTransition><SocietyDetailPage /></PageTransition>}/>
-          <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>}/>
+
+          {/* Administrative Portals */}
           <Route path="/admin-login" element={<PageTransition><AdminLoginPage /></PageTransition>}/>
           <Route path="/admin/traffic" element={<PageTransition><TrafficAnalyticsAdmin /></PageTransition>}/>
           <Route path="/admin/*" element={<PageTransition><AdminDashboardRoute /></PageTransition>}/>
+
+          {/* 404 Fallback */}
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>}/>
         </Routes>
-      </AnimatePresence>
     </GlobalLaunchModeGuard>);
 };
 const App = () => {
@@ -266,6 +305,7 @@ const App = () => {
             <InspectionSecurityGuard>
               <RouterComponent>
                 <AnimatedRoutes />
+                <FloatingUIWidget />
               </RouterComponent>
             </InspectionSecurityGuard>
           </TooltipProvider>

@@ -309,13 +309,13 @@ const Navbar = () => {
         {/* MOBILE ONLY - Top Bar with Logos and Hamburger */}
         <div className="xl:hidden w-full pointer-events-auto z-50 flex flex-col items-center">
           <div className="w-full bg-[#000814]/95 backdrop-blur-2xl border-b border-white/10 py-3 px-4 sm:px-6 flex items-center justify-between shadow-md">
-            <div className="flex items-center gap-3 sm:gap-6">
-              <Link to="/" className="p-1 px-2.5 rounded-xl bg-white/95 backdrop-blur border border-white/30 flex items-center shrink-0">
-                <img src={srecLogo} alt="SREC Logo" className="h-8 sm:h-10 w-auto object-contain" />
-              </Link>
-              <div className="w-px h-6 bg-white/20" />
-              <Link to="/" className="p-1 px-2.5 rounded-xl bg-white/95 backdrop-blur border border-white/30 flex items-center shrink-0">
-                <img src={ieeeStamp} alt="IEEE SREC Logo" className="h-8 sm:h-10 w-auto object-contain" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link to="/" className="px-2.5 py-1.5 rounded-xl bg-white backdrop-blur border border-white/40 flex items-center gap-2 shadow-sm">
+                <img src={srecLogo} alt="SREC Logo" className="h-6 sm:h-7 w-auto object-contain" />
+                <div className="w-[1px] h-4 bg-slate-300" />
+                <img src={ieeeStamp} alt="IEEE SREC Logo" className="h-6 sm:h-7 w-auto object-contain" />
+                <div className="w-[1px] h-4 bg-slate-300" />
+                <img src={snrLogo} alt="SNR Trust Logo" className="h-6 sm:h-7 w-auto object-contain" />
               </Link>
             </div>
 
@@ -359,9 +359,11 @@ const Navbar = () => {
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-cyan-500/20 shrink-0">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="px-2.5 py-1.5 rounded-2xl bg-white backdrop-blur border border-slate-200 shadow-md flex items-center gap-2 shrink-0">
-                    <img src={srecLogo} alt="SREC" className="h-6 sm:h-7 w-auto object-contain" />
-                    <div className="w-px h-4 bg-slate-300" />
+                    <img src={srecLogo} alt="SREC" className="h-5 sm:h-6 w-auto object-contain" />
+                    <div className="w-px h-3.5 bg-slate-300" />
                     <img src={ieeeStamp} alt="IEEE" className="h-5 sm:h-6 w-auto object-contain" />
+                    <div className="w-px h-3.5 bg-slate-300" />
+                    <img src={snrLogo} alt="SNR" className="h-5 sm:h-6 w-auto object-contain" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">

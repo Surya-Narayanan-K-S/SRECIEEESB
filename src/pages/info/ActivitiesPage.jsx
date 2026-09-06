@@ -10,7 +10,7 @@ const getValidImageUrl = (url) => {
     if (!url || !url.trim())
         return fallbackImage;
     const target = url.trim();
-    if (target.includes("salesforce.com") || target.includes("pardot.com")) {
+    if (target.includes("salesforce.com") || target.includes("pardot.com") || target.includes("googleusercontent.com/proxy")) {
         return fallbackImage;
     }
     if (target.includes("drive.google.com")) {

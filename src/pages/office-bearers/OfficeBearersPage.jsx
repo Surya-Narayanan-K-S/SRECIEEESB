@@ -534,15 +534,13 @@ const OfficeBearersPage = () => {
         const load = async (isBackground = false) => {
             if (!isBackground) setLoading(true);
             try {
-                const [b1, e1, b2, e2] = await Promise.all([
+                const [b1, e1] = await Promise.all([
                     supabase.from("srec_office_bearers").select("*"),
                     supabase.from("srec_executive_members").select("*"),
-                    supabase.from("new_office_bearers").select("*"),
-                    supabase.from("new_executive_members").select("*"),
                 ]);
                 if (!isMounted) return;
-                const srecB = (b1.data && b1.data.length > 0) ? b1.data : (b2.data && b2.data.length > 0) ? b2.data : [];
-                const srecE = (e1.data && e1.data.length > 0) ? e1.data : (e2.data && e2.data.length > 0) ? e2.data : [];
+                const srecB = (b1.data && b1.data.length > 0) ? b1.data : [];
+                const srecE = (e1.data && e1.data.length > 0) ? e1.data : [];
                 if (srecB.length > 0)
                     setBearers(srecB);
                 if (srecE.length > 0)

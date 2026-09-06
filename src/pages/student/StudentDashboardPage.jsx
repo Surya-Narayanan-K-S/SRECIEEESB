@@ -19,6 +19,7 @@ import embsLogo from "@/assets/societies/EMBS.jpg";
 import imLogo from "@/assets/societies/IM.jpg";
 import wieLogo from "@/assets/societies/WIE.jpg";
 import pelsLogo from "@/assets/societies/pels.png";
+import casLogo from "@/assets/societies/css.svg";
 // Pre-configured Verified Demo Member Profile
 const DEFAULT_USER = {
   id: "stu-srec-2025-001",
@@ -482,7 +483,7 @@ const StudentDashboardPage = () => {
                         {/* Top-Right Circular IEEE Logo Emblem Badge (Enlarged on Desktop) */}
                         <div className="w-[38px] h-[38px] sm:w-[50px] sm:h-[50px] md:w-[62px] md:h-[62px] lg:w-[68px] lg:h-[68px] rounded-full p-[2px] sm:p-[2.5px] md:p-[3px] bg-gradient-to-tr from-[#001c3d] via-[#002855] to-[#0066ff] shadow-[0_6px_16px_rgba(0,40,85,0.35)] flex items-center justify-center shrink-0">
                           <div className="w-full h-full rounded-full bg-white p-0.5 md:p-1 flex items-center justify-center overflow-hidden">
-                            <img src={ieeeCustomCardLogo} alt="IEEE" className="w-full h-full object-contain block max-w-full max-h-full" />
+                            <img src={ieeeStamp} alt="IEEE" className="w-full h-full object-contain block max-w-full max-h-full" />
                           </div>
                         </div>
                       </div>
@@ -648,7 +649,7 @@ const StudentDashboardPage = () => {
 
                         <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full p-[2.5px] md:p-[3.5px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 shadow-[0_0_25px_rgba(0,212,255,0.45)] flex items-center justify-center shrink-0">
                           <div className="w-full h-full rounded-full bg-white p-1 md:p-1.5 flex items-center justify-center overflow-hidden">
-                            <img src={ieeeCustomCardLogo} alt="IEEE" className="w-full h-full object-contain scale-110" />
+                            <img src={ieeeStamp} alt="IEEE" className="w-full h-full object-contain" />
                           </div>
                         </div>
                       </div>

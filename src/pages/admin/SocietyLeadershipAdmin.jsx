@@ -49,16 +49,12 @@ export const SocietyLeadershipAdmin = () => {
                 }
             };
             if (selectedSociety === "srec") {
-                const [bearersData, execsData, newB, newE] = await Promise.all([
+                const [bearersData, execsData] = await Promise.all([
                     safeFetch("srec_office_bearers"),
                     safeFetch("srec_executive_members"),
-                    safeFetch("new_office_bearers"),
-                    safeFetch("new_executive_members"),
                 ]);
-                const finalB = bearersData.length > 0 ? bearersData : newB;
-                const finalE = execsData.length > 0 ? execsData : newE;
-                setBearers(finalB.map((m) => ({ ...m, _sourceTable: bearersData.length > 0 ? "srec_office_bearers" : "new_office_bearers" })));
-                setExecutives(finalE.map((m) => ({ ...m, _sourceTable: execsData.length > 0 ? "srec_executive_members" : "new_executive_members" })));
+                setBearers(bearersData.map((m) => ({ ...m, _sourceTable: "srec_office_bearers" })));
+                setExecutives(execsData.map((m) => ({ ...m, _sourceTable: "srec_executive_members" })));
             }
             else {
                 const dedicatedTableB = `${selectedSociety}_office_bearers`;
@@ -205,11 +201,6 @@ export const SocietyLeadershipAdmin = () => {
                 return res;
             };
             let result = await executeSave(primaryTable, payload);
-            // Fallback for SREC Student Branch
-            if (result.error && selectedSociety === "srec") {
-                const fallbackTable = isBearer ? "new_office_bearers" : "new_executive_members";
-                result = await executeSave(fallbackTable, payload);
-            }
             if (result.error)
                 throw result.error;
             alert(editingId ? `Updated ${form.name} successfully!` : `Added ${form.name} to ${currentSocietyObj.name} successfully!`);

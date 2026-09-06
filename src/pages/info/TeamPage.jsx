@@ -373,7 +373,7 @@ const TeamPage = () => {
             try {
                 const [seniorsRes, bearersRes, countsRes] = await Promise.all([
                     supabase.from("senior_members").select("*").order("s_no", { ascending: true }),
-                    supabase.from("new_office_bearers").select("*").order("year", { ascending: false }).order("id", { ascending: true }),
+                    supabase.from("srec_office_bearers").select("*").order("id", { ascending: true }),
                     supabase.from("member_counts").select("*").order("year", { ascending: false })
                 ]);
                 if (seniorsRes.data)

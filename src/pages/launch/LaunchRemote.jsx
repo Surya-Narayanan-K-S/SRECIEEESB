@@ -40,6 +40,17 @@ class RemoteAudio {
     }
   }
 
+  destroy() {
+    if (this.ctx) {
+      try {
+        this.ctx.close();
+      } catch {
+        // Ignore
+      }
+      this.ctx = null;
+    }
+  }
+
   playTap() {
     if (!this.enabled) return;
     this.init();
@@ -113,6 +124,7 @@ export const LaunchRemote = () => {
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [ripples, setRipples] = useState([]);
   const broadcastChannelRef = useRef(null);
+  const realtimeChannelRef = useRef(null);
 
   // Toggle audio
   const toggleAudio = () => {
@@ -176,18 +188,15 @@ export const LaunchRemote = () => {
       remoteAudio.playTap();
     }
 
-    // 1. Supabase Realtime broadcast
+    // 1. Supabase Realtime broadcast via persistent channel
     try {
-      const channel = supabase.channel("launch_control_room");
-      channel.subscribe(status => {
-        if (status === "SUBSCRIBED") {
-          channel.send({
-            type: "broadcast",
-            event: "launch_event",
-            payload: { action, countdown: cd, timestamp: Date.now() },
-          });
-        }
-      });
+      if (realtimeChannelRef.current) {
+        realtimeChannelRef.current.send({
+          type: "broadcast",
+          event: "launch_event",
+          payload: { action, countdown: cd, timestamp: Date.now() },
+        });
+      }
     } catch {
       // Ignore broadcast errors
     }
@@ -234,7 +243,6 @@ export const LaunchRemote = () => {
   };
 
   const handleLaunchClick = (e) => {
-    // If already launched, ignore clicks
     if (launchState === "launched") {
       return;
     }
@@ -264,7 +272,6 @@ export const LaunchRemote = () => {
       return () => clearTimeout(timer);
     } else if (countdown === 0) {
       setLaunchState("launched");
-      // Deactivate launch mode in Supabase & localStorage
       try {
         supabase.from("page_content").upsert([
           { page_key: "launch_config", content_key: "launch_active", content_text: "false" },
@@ -295,10 +302,9 @@ export const LaunchRemote = () => {
       };
     }
 
-    let channel;
     try {
-      channel = supabase
-        .channel("launch_control_room_remote")
+      const ch = supabase
+        .channel("launch_control_room")
         .on("broadcast", { event: "launch_event" }, (payload) => {
           const { action, countdown: cd } = payload.payload || {};
           if (action === "countdown") {
@@ -311,6 +317,8 @@ export const LaunchRemote = () => {
           }
         })
         .subscribe();
+
+      realtimeChannelRef.current = ch;
     } catch {
       // Offline fallback
     }
@@ -319,9 +327,10 @@ export const LaunchRemote = () => {
       if (broadcastChannelRef.current) {
         broadcastChannelRef.current.close();
       }
-      if (channel) {
-        supabase.removeChannel(channel);
+      if (realtimeChannelRef.current) {
+        supabase.removeChannel(realtimeChannelRef.current);
       }
+      remoteAudio.destroy();
     };
   }, [loadState]);
 
@@ -330,306 +339,248 @@ export const LaunchRemote = () => {
       {/* ── AMBIENT BACKGROUND LIGHTING ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div
-          className={`absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[140px] transition-all duration-700 ${launchState === "countdown"
+          className={`absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[140px] transition-all duration-700 ${
+            launchState === "countdown"
               ? "bg-amber-600/30 scale-125"
               : launchState === "launched"
                 ? "bg-emerald-600/25 scale-110"
                 : "bg-[#0066cc]/25 scale-100"
-            }`}
+          }`}
         />
         <div className="absolute inset-0 bg-[radial-gradient(#0066cc_1px,transparent_1px)] [background-size:32px_32px] opacity-10" />
       </div>
 
-      {/* Ripple Animation Rings */}
-      {ripples.map(r => (
-        <motion.div
-          key={r.id}
-          initial={{ scale: 0.2, opacity: 0.8 }}
-          animate={{ scale: 3.5, opacity: 0 }}
-          transition={{ duration: 1.1, ease: "easeOut" }}
-          className="fixed pointer-events-none rounded-full border-2 border-cyan-400/70 -translate-x-1/2 -translate-y-1/2 z-30"
-          style={{ left: r.x, top: r.y, width: "120px", height: "120px" }}
-        />
-      ))}
+      {/* ── TOP BAR: LOGOS & SYSTEM STATUS ── */}
+      <header className="relative z-10 w-full max-w-lg mx-auto flex items-center justify-between bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-3 px-4 shadow-xl">
+        {/* Institutional Logos */}
+        <div className="flex items-center gap-3 bg-white/95 px-3 py-1.5 rounded-xl shadow-inner">
+          <img src={srecLogo} alt="SREC" className="h-6 w-auto object-contain" />
+          <div className="w-[1px] h-4 bg-slate-300" />
+          <img src={ieeeSrecLogo} alt="IEEE SREC" className="h-6 w-auto object-contain" />
+        </div>
 
-      {/* ── TOP VIP CONTROL HEADER ── */}
-      <header className="relative z-20 w-full max-w-lg mx-auto flex flex-col items-center">
-        {/* Top Action Utility Row */}
-        <div className="flex items-center justify-between w-full mb-3 px-1">
-          <div className="flex items-center gap-2">
-            <span
-              className={`w-2.5 h-2.5 rounded-full ${launchState === "countdown"
-                  ? "bg-amber-400 animate-ping shadow-[0_0_10px_#f59e0b]"
+        {/* Status Indicators */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleAudio}
+            className={`p-2 rounded-xl border transition-all ${
+              isAudioMuted
+                ? "bg-slate-800 text-slate-400 border-white/10"
+                : "bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
+            }`}
+            title={isAudioMuted ? "Unmute sound" : "Mute sound"}
+          >
+            {isAudioMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-white/10 text-xs font-mono font-bold">
+            <Radio
+              size={14}
+              className={`animate-pulse ${
+                launchState === "countdown"
+                  ? "text-amber-400"
                   : launchState === "launched"
-                    ? "bg-emerald-400 shadow-[0_0_10px_#10b981]"
-                    : "bg-cyan-400 shadow-[0_0_10px_#00d2ff]"
-                }`}
+                    ? "text-emerald-400"
+                    : "text-cyan-400"
+              }`}
             />
-            <span className="text-[11px] font-black tracking-wider uppercase text-slate-300">
-              AUDITORIUM STAGE SYNC:{" "}
-              <span
-                className={
-                  launchState === "countdown"
-                    ? "text-amber-400 font-bold"
-                    : launchState === "launched"
-                      ? "text-emerald-400 font-bold"
-                      : "text-cyan-400 font-bold"
-                }
-              >
-                {launchState === "countdown"
-                  ? `COUNTDOWN T-${countdown}s`
-                  : launchState === "launched"
-                    ? "INAUGURATED"
-                    : "STANDBY READY"}
-              </span>
+            <span className="uppercase text-[11px] tracking-wider text-slate-300 font-sans font-bold">
+              {launchState === "countdown" ? "ARMED" : launchState === "launched" ? "LIVE" : "SYNCED"}
             </span>
           </div>
-
-          <div className="flex items-center gap-2">
-            {/* Audio Feedback Toggle */}
-            <button
-              onClick={toggleAudio}
-              className={`p-2 rounded-xl border transition-all cursor-pointer ${isAudioMuted
-                  ? "bg-slate-800/80 border-slate-700 text-slate-400"
-                  : "bg-cyan-500/15 border-cyan-400/40 text-cyan-300"
-                }`}
-              title={isAudioMuted ? "Unmute Audio Feedback" : "Mute Audio Feedback"}
-            >
-              {isAudioMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-            </button>
-
-            {/* Stage Preview Link */}
-            <a
-              href="/launch"
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-slate-200 hover:text-white transition-all"
-              title="Open Stage Projector Window"
-            >
-              <ExternalLink size={14} />
-            </a>
-          </div>
         </div>
+      </header>
 
-        {/* Institutional Emblem Header Card */}
-        <div className="w-full bg-white/[0.98] backdrop-blur-xl px-5 py-2.5 rounded-2xl shadow-xl border border-white flex items-center justify-between gap-4">
-          <img src={srecLogo} alt="SREC Emblem" className="h-8 sm:h-10 w-auto object-contain" />
-          <div className="h-6 w-[1px] bg-slate-300" />
-          <img src={ieeeSrecLogo} alt="IEEE SB SREC Logo" className="h-9 sm:h-12 w-auto object-contain" />
-          <div className="h-6 w-[1px] bg-slate-300" />
-          <img src={snrLogo} alt="SNR Sons Charitable Trust" className="h-8 sm:h-10 w-auto object-contain" />
-        </div>
-
-        {/* Executive Chief Guest VIP Card */}
-        <div className="mt-3 w-full p-4 rounded-3xl bg-gradient-to-b from-[#09152b] via-[#071123] to-[#040915] border border-cyan-500/30 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-80" />
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-[10px] font-black uppercase tracking-[0.2em] mb-1.5">
-            <Award size={12} className="text-amber-400" />
-            <span>CHIEF GUEST VIP INAUGURATOR</span>
+      {/* ── CENTER LAUNCH PAD / MASTER TRIGGER ── */}
+      <main className="relative z-10 w-full max-w-lg mx-auto my-auto flex flex-col items-center justify-center py-6 px-2">
+        {/* Chief Guest Recognition Banner */}
+        <div className="text-center mb-6 space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-1">
+            <Award size={13} className="text-amber-400" />
+            <span>Grand Inauguration Ceremony</span>
           </div>
-
-          <h2 className="text-lg sm:text-xl font-black text-white font-serif tracking-tight drop-shadow">
-            {chiefGuest || "Dr. M. Venkateshkumar"}
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white font-heading">
+            {chiefGuest}
           </h2>
-          <p className="text-[11px] sm:text-xs font-bold text-amber-300/90 uppercase tracking-wider mt-0.5">
-            {chiefGuestTitle || "Chairman, IEEE Power and Electronics Society"}
+          <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto line-clamp-1">
+            {chiefGuestTitle}
           </p>
         </div>
 
-        {/* Action Status Toast */}
+        {/* Biometric Interactive Launch Trigger Button */}
+        <div className="relative flex items-center justify-center my-4">
+          {/* Animated Glowing Wave Rings */}
+          <div
+            className={`absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full border-2 transition-all duration-1000 ${
+              launchState === "countdown"
+                ? "border-amber-400/50 animate-ping"
+                : launchState === "launched"
+                  ? "border-emerald-400/40 animate-pulse"
+                  : "border-cyan-400/30 animate-spin-slow"
+            }`}
+          />
+          <div
+            className={`absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full border transition-all duration-700 ${
+              launchState === "countdown"
+                ? "border-amber-400/30"
+                : launchState === "launched"
+                  ? "border-emerald-400/30"
+                  : "border-blue-500/20"
+            }`}
+          />
+
+          {/* Touch Ripples */}
+          {ripples.map((rip) => (
+            <motion.div
+              key={rip.id}
+              initial={{ scale: 0.8, opacity: 0.9 }}
+              animate={{ scale: 2.2, opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute w-52 h-52 rounded-full bg-cyan-400/20 pointer-events-none"
+            />
+          ))}
+
+          {/* Main Push Button */}
+          <motion.button
+            whileTap={{ scale: 0.93 }}
+            onClick={handleLaunchClick}
+            disabled={launchState === "launched"}
+            className={`relative w-56 h-56 sm:w-64 sm:h-64 rounded-full flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-500 shadow-2xl border-4 ${
+              launchState === "countdown"
+                ? "bg-gradient-to-b from-amber-500 to-orange-600 border-amber-300 shadow-[0_0_60px_rgba(245,158,11,0.6)] text-slate-950"
+                : launchState === "launched"
+                  ? "bg-gradient-to-b from-emerald-600 to-teal-800 border-emerald-300 shadow-[0_0_60px_rgba(16,185,129,0.5)] text-white cursor-default"
+                  : "bg-gradient-to-b from-cyan-500 via-blue-600 to-[#002b66] border-cyan-300 shadow-[0_0_60px_rgba(0,210,255,0.45)] text-white hover:shadow-[0_0_80px_rgba(0,210,255,0.7)]"
+            }`}
+          >
+            {launchState === "countdown" ? (
+              <motion.div
+                key="countdown-mode"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex flex-col items-center justify-center"
+              >
+                <span className="text-6xl sm:text-7xl font-black font-mono leading-none tracking-tighter text-slate-950 drop-shadow-md">
+                  {countdown}
+                </span>
+                <span className="text-xs font-black uppercase tracking-widest mt-2 text-slate-900">
+                  Launching...
+                </span>
+              </motion.div>
+            ) : launchState === "launched" ? (
+              <motion.div
+                key="launched-mode"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex flex-col items-center justify-center"
+              >
+                <CheckCircle2 size={54} className="text-white mb-2 animate-bounce" />
+                <span className="text-lg font-black uppercase tracking-wider">Inaugurated</span>
+                <span className="text-[10px] text-emerald-200 font-bold uppercase tracking-widest mt-0.5">
+                  Platform Live
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="standby-mode"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex flex-col items-center justify-center"
+              >
+                <div className="w-16 h-16 rounded-full bg-white/15 border border-white/30 flex items-center justify-center mb-2 shadow-inner">
+                  <Fingerprint size={36} className="text-white animate-pulse" />
+                </div>
+                <span className="text-xl sm:text-2xl font-black uppercase tracking-wider font-heading leading-tight">
+                  TOUCH TO<br />INAUGURATE
+                </span>
+                <span className="text-[10px] font-bold text-cyan-200 uppercase tracking-widest mt-1">
+                  Tap Once to Trigger
+                </span>
+              </motion.div>
+            )}
+          </motion.button>
+        </div>
+
+        {/* Live Feedback Notification Toast */}
         <AnimatePresence>
           {lastActionStatus && (
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              className="mt-2 text-center text-xs font-black text-cyan-300 bg-cyan-500/20 py-1.5 px-4 rounded-xl border border-cyan-400/50 shadow-md w-full"
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-4 px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold shadow-lg flex items-center gap-2"
             >
-              {lastActionStatus}
+              <Zap size={14} className="text-cyan-400" />
+              <span>{lastActionStatus}</span>
             </motion.div>
           )}
         </AnimatePresence>
-      </header>
-
-      {/* ── CENTER LAUNCH ACTIVATOR ── */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center py-5 w-full max-w-sm mx-auto my-auto">
-        <div className="relative flex flex-col items-center justify-center">
-          {/* Subtle Outer Glowing Halo */}
-          <div
-            className={`absolute -inset-8 rounded-full blur-2xl transition-all duration-700 pointer-events-none ${launchState === "countdown"
-                ? "bg-amber-500/40 scale-125 animate-pulse"
-                : launchState === "launched"
-                  ? "bg-emerald-500/35 scale-110"
-                  : "bg-cyan-500/30 scale-105"
-              }`}
-          />
-
-          {/* Luxury Touch Core Activator Disc */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={handleLaunchClick}
-            className={`relative z-10 w-60 h-60 sm:w-68 sm:h-68 rounded-full p-1.5 transition-all duration-300 cursor-pointer flex items-center justify-center select-none shadow-[0_20px_60px_rgba(0,0,0,0.9)] ${launchState === "countdown"
-                ? "bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-300 shadow-[0_0_60px_rgba(245,158,11,0.7)] animate-pulse"
-                : launchState === "launched"
-                  ? "bg-gradient-to-tr from-emerald-400 via-teal-400 to-cyan-400 shadow-[0_0_60px_rgba(16,185,129,0.7)]"
-                  : "bg-gradient-to-tr from-cyan-400 via-[#0066cc] to-amber-400 shadow-[0_0_50px_rgba(0,102,204,0.6)] hover:shadow-[0_0_70px_rgba(0,210,255,0.8)]"
-              }`}
-          >
-            {/* Core Inset Disc */}
-            <div className="w-full h-full rounded-full bg-gradient-to-b from-[#08152c] via-[#040c1a] to-[#02060e] border-2 border-white/25 flex flex-col items-center justify-center p-4 relative overflow-hidden group shadow-inner">
-
-              <AnimatePresence mode="wait">
-                {launchState === "countdown" ? (
-                  <motion.div
-                    key="countdown"
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.6, opacity: 0 }}
-                    className="relative z-10 flex flex-col items-center justify-center"
-                  >
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-amber-400 mb-1 animate-pulse">
-                      IGNITING STAGE IN
-                    </span>
-                    <span className="text-6xl sm:text-7xl font-black font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-amber-100 to-amber-400 drop-shadow-[0_0_25px_rgba(245,158,11,0.9)]">
-                      {countdown}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 mt-1">
-                      SECONDS
-                    </span>
-                  </motion.div>
-                ) : launchState === "launched" ? (
-                  <motion.div
-                    key="launched"
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.6, opacity: 0 }}
-                    className="relative z-10 flex flex-col items-center justify-center text-center px-2"
-                  >
-                    <CheckCircle2 size={52} className="text-emerald-400 drop-shadow-[0_0_20px_#10b981] mb-2 animate-bounce" />
-                    <span className="text-xl font-black font-serif text-white uppercase tracking-wider drop-shadow">
-                      INAUGURATED
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300 mt-1">
-                      STAGE BROADCAST LIVE
-                    </span>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="standby"
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.6, opacity: 0 }}
-                    className="relative z-10 flex flex-col items-center justify-center"
-                  >
-                    <div className="relative mb-2">
-                      <Fingerprint
-                        size={76}
-                        className="text-cyan-300 drop-shadow-[0_0_25px_#00d2ff] group-hover:scale-105 group-hover:text-amber-300 transition-all duration-300"
-                      />
-                      <Sparkles
-                        size={18}
-                        className="absolute -top-1 -right-1 text-amber-400 animate-pulse"
-                      />
-                    </div>
-
-                    <span className="text-2xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-cyan-200 font-serif drop-shadow">
-                      LAUNCH
-                    </span>
-
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/90 mt-0.5">
-                      TAP TO INAUGURATE
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.button>
-
-          {/* Quick Countdown Duration Selector (Only on Standby) */}
-          {launchState === "standby" && (
-            <div className="mt-5 flex items-center justify-center gap-2 bg-[#0a162b]/80 p-1.5 rounded-2xl border border-white/10 backdrop-blur-md">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-2 flex items-center gap-1">
-                <Clock size={12} />
-                <span>Timer:</span>
-              </span>
-              {[3, 5, 10].map(sec => (
-                <button
-                  key={sec}
-                  onClick={() => {
-                    setSelectedDuration(sec);
-                    setCountdown(sec);
-                  }}
-                  className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${selectedDuration === sec
-                      ? "bg-cyan-500 text-slate-950 shadow-md font-bold"
-                      : "text-slate-400 hover:text-white hover:bg-white/10"
-                    }`}
-                >
-                  {sec}s
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Operational Guidance & Post-Launch Action */}
-          {launchState === "launched" ? (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4 flex flex-col items-center gap-2.5"
-            >
-              <a
-                href="/web"
-                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-xl flex items-center gap-2 hover:scale-105 transition-transform"
-              >
-                <ExternalLink size={15} />
-                <span>Visit Live Web Portal</span>
-              </a>
-              <p className="text-[11px] text-emerald-300 font-bold uppercase tracking-wider text-center">
-                ✓ Public Website Unlocked &amp; Accessible to All
-              </p>
-            </motion.div>
-          ) : (
-            <p className="text-xs text-slate-400 text-center max-w-xs mt-3 leading-relaxed">
-              {launchState === "countdown"
-                ? "Synchronized video & countdown active on auditorium stage."
-                : "Chief Guest touch activator — Tap to ignite the inauguration."}
-            </p>
-          )}
-        </div>
       </main>
 
-      {/* ── BOTTOM VIP DOCK ── */}
-      <footer className="relative z-20 w-full max-w-lg mx-auto flex flex-col items-center gap-2.5 pb-2">
-        {/* Reset / Instant Trigger Buttons */}
-        <div className="grid grid-cols-2 gap-2.5 w-full">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => broadcastCommand("reset")}
-            className="py-3 px-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-white/15 text-slate-300 hover:text-white text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
-          >
-            <RotateCcw size={14} className="text-cyan-400" />
-            <span>Reset Standby</span>
-          </motion.button>
+      {/* ── BOTTOM DOCK: DURATION PICKER & ADMIN CONTROLS ── */}
+      <footer className="relative z-10 w-full max-w-lg mx-auto bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl space-y-3">
+        {/* Countdown Duration Selector */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-bold uppercase tracking-wider">
+            <Clock size={13} />
+            <span>Timer:</span>
+          </div>
 
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => broadcastCommand("instant_launch")}
-            className="py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20"
-          >
-            <Zap size={14} />
-            <span>Instant Launch</span>
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            {[3, 5, 10].map((dur) => (
+              <button
+                key={dur}
+                onClick={() => {
+                  setSelectedDuration(dur);
+                  setCountdown(dur);
+                  remoteAudio.playTap();
+                }}
+                disabled={launchState === "countdown"}
+                className={`px-3 py-1 rounded-xl text-xs font-black transition-all ${
+                  selectedDuration === dur
+                    ? "bg-cyan-500 text-slate-950 font-black shadow-md scale-105"
+                    : "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-white/5"
+                }`}
+              >
+                {dur}s
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Security & Branch Endmark */}
-        <div className="flex items-center justify-between w-full px-2 text-[10px] font-bold text-slate-500 tracking-wider uppercase pt-1">
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <ShieldCheck size={13} className="text-emerald-400" />
-            <span>ENCRYPTED TELEMETRY</span>
-          </div>
-          <span>IEEE SREC • STB32131</span>
+        <div className="h-px bg-white/10 w-full" />
+
+        {/* Emergency Secondary Controls */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            onClick={() => broadcastCommand("instant_launch")}
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-95"
+          >
+            <Sparkles size={14} />
+            <span>Instant Launch</span>
+          </button>
+
+          <button
+            onClick={() => broadcastCommand("reset")}
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-95"
+          >
+            <RotateCcw size={14} />
+            <span>Reset Standby</span>
+          </button>
+        </div>
+
+        {/* Open Stage Preview Link */}
+        <div className="text-center pt-1">
+          <a
+            href="/stage"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[11px] text-cyan-400 hover:text-cyan-300 font-bold uppercase tracking-wider transition-colors"
+          >
+            <Tv size={12} />
+            <span>Open Auditorium Projector Display</span>
+            <ExternalLink size={10} />
+          </a>
         </div>
       </footer>
     </div>
