@@ -261,20 +261,20 @@ export const LaunchRemote = () => {
 
       {/* ── TOP BAR: LARGER LOGOS (SREC, IEEE SREC, SNR TRUST) & STATUS ── */}
       <header className="relative z-10 w-full max-w-lg mx-auto flex items-center justify-between bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-3 px-4 shadow-xl">
-        {/* Institutional Logos (Enlarged + SNR Trust) */}
-        <div className="flex items-center gap-3 sm:gap-4 bg-white/95 px-3.5 sm:px-4 py-2 rounded-xl shadow-inner border border-white">
-          <img src={srecLogo} alt="SREC" className="h-8 sm:h-9 w-auto object-contain" />
-          <div className="w-[1.5px] h-6 bg-slate-300" />
-          <img src={ieeeSrecLogo} alt="IEEE SREC" className="h-8 sm:h-9 w-auto object-contain" />
-          <div className="w-[1.5px] h-6 bg-slate-300" />
-          <img src={snrLogo} alt="SNR Trust" className="h-8 sm:h-9 w-auto object-contain" />
+        {/* Institutional Logos (SREC, IEEE SREC, SNR Trust) */}
+        <div className="flex items-center gap-2 sm:gap-3.5 bg-white/95 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl shadow-inner border border-white shrink-0">
+          <img src={srecLogo} alt="SREC" className="h-7 sm:h-9 w-auto object-contain shrink-0" />
+          <div className="w-[1.5px] h-5 sm:h-6 bg-slate-300 shrink-0" />
+          <img src={ieeeSrecLogo} alt="IEEE SREC" className="h-7 sm:h-9 w-auto object-contain shrink-0" />
+          <div className="w-[1.5px] h-5 sm:h-6 bg-slate-300 shrink-0" />
+          <img src={snrLogo} alt="SNR Trust" className="h-7 sm:h-9 w-auto object-contain shrink-0" />
         </div>
 
-        {/* Status Indicator */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 border border-white/10 text-xs font-mono font-bold">
+        {/* Status Indicator & Small Reset Icon */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-800/80 border border-white/10 text-xs font-mono font-bold">
             <Radio
-              size={14}
+              size={13}
               className={`animate-pulse ${
                 launchState === "countdown"
                   ? "text-amber-400"
@@ -283,10 +283,20 @@ export const LaunchRemote = () => {
                     : "text-cyan-400"
               }`}
             />
-            <span className="uppercase text-[11px] tracking-wider text-slate-300 font-sans font-bold">
+            <span className="uppercase text-[10px] sm:text-[11px] tracking-wider text-slate-300 font-sans font-bold">
               {launchState === "countdown" ? "ARMED" : launchState === "launched" ? "LIVE" : "SYNCED"}
             </span>
           </div>
+
+          {/* Small Reset Button */}
+          <button
+            onClick={() => broadcastCommand("reset")}
+            className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700/90 active:scale-90 border border-white/10 text-slate-400 hover:text-cyan-300 flex items-center justify-center transition-all shadow-sm"
+            title="Reset to Standby"
+            aria-label="Reset to Standby"
+          >
+            <RotateCcw size={14} />
+          </button>
         </div>
       </header>
 

@@ -275,14 +275,15 @@ const Navbar = () => {
                 <span>Admin</span>
               </Link>
 
-              <Link
-                to="/app"
-                className="inline-flex items-center gap-1.5 px-3 2xl:px-4 py-1.5 2xl:py-2.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white font-black text-[11px] 2xl:text-xs uppercase tracking-wider transition-all active:scale-95 whitespace-nowrap shrink-0"
-                title="Open Mobile App View"
+              <button
+                type="button"
+                onClick={() => setDownloadModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 2xl:px-4 py-1.5 2xl:py-2.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white font-black text-[11px] 2xl:text-xs uppercase tracking-wider transition-all active:scale-95 whitespace-nowrap shrink-0 cursor-pointer"
+                title="Scan QR & Install Mobile App"
               >
                 <Smartphone size={13} className="text-cyan-400" />
                 <span>Mobile App</span>
-              </Link>
+              </button>
             </nav>
 
           </div>

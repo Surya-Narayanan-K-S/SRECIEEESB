@@ -40,6 +40,9 @@ describe("LaunchRemote Component", () => {
 
     // Verify central Touch to Inaugurate button
     expect(screen.getByText(/TOUCH TO/i)).toBeDefined();
+
+    // Verify small Reset button in header
+    expect(screen.getByLabelText(/Reset to Standby/i)).toBeDefined();
     expect(container.innerHTML.length).toBeGreaterThan(500);
   });
 
@@ -53,5 +56,17 @@ describe("LaunchRemote Component", () => {
     const button = screen.getByText(/TOUCH TO/i).closest("button");
     expect(button).toBeDefined();
     fireEvent.click(button);
+  });
+
+  it("handles reset button click", () => {
+    render(
+      <MemoryRouter>
+        <LaunchRemote />
+      </MemoryRouter>
+    );
+
+    const resetBtn = screen.getByLabelText(/Reset to Standby/i);
+    expect(resetBtn).toBeDefined();
+    fireEvent.click(resetBtn);
   });
 });
