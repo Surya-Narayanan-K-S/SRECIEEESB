@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import MobileAppPage from "@/pages/mobile/MobileAppPage";
@@ -60,47 +60,18 @@ describe("MobileAppPage Rendering & Tabs", () => {
     expect(screen.getByText(/AECTSD 2027/i)).toBeDefined();
   });
 
-  it("renders Digital ID tab and all Student Dashboard Bento modules without errors", () => {
+  it("renders Digital ID tab with login card when no user is authenticated", () => {
     render(
       <MemoryRouter initialEntries={["/?tab=id"]}>
         <MobileAppPage defaultTab="id" />
       </MemoryRouter>
     );
 
-    // Top actions bar
-    expect(screen.getByText("Official IEEE ID")).toBeDefined();
-    expect(screen.getByText("Renew")).toBeDefined();
-    expect(screen.getAllByText("View PDF").length).toBeGreaterThan(0);
-    expect(screen.getByText("Flip")).toBeDefined();
-
-    // Module 1: Credentials & Quick Copy
-    expect(screen.getByText("Credentials & Quick Copy")).toBeDefined();
-
-    // Module 2: Profile details
-    expect(screen.getAllByText(/Chairperson/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Joselyn/i).length).toBeGreaterThan(0);
-
-    // Module 3: Academic Affiliation & Standing
-    expect(screen.getByText("Academic Affiliation & Standing")).toBeDefined();
-
-    // Module 4: Specializations
-    expect(screen.getByText("Technical Specializations & Domains")).toBeDefined();
-
-    // Module 5: Enrolled Chapters
-    expect(screen.getByText("Enrolled Technical Chapters")).toBeDefined();
-
-    // Module 6: Event participations
-    expect(screen.getByText(/Verified Event Participations/i)).toBeDefined();
-
-    // Module 7: Dossier Table
-    expect(screen.getByText("Structured Membership Dossier")).toBeDefined();
-
-    // Module 8: Member Resources
-    expect(screen.getByText("IEEE Xplore")).toBeDefined();
-    expect(screen.getByText("Collabratec")).toBeDefined();
-
-    // Module 9: Member switcher
-    expect(screen.getByText("Switch Verified Member Card")).toBeDefined();
+    // When no user is logged in, the ID tab shows a login card
+    expect(screen.getByText("Student Digital ID Card")).toBeDefined();
+    expect(screen.getByText("View Official Digital ID")).toBeDefined();
+    // No demo member switcher should appear
+    expect(screen.queryByText("Switch Verified Member Card")).toBeNull();
   });
 
   it("renders Societies tab without errors", () => {
@@ -135,8 +106,7 @@ describe("MobileAppPage Rendering & Tabs", () => {
     expect(screen.getByText("SB 64581")).toBeDefined();
   });
 
-  it("renders Student Login screen when forceLogin is true and transitions to Dashboard upon login", async () => {
-    const { fireEvent } = await import("@testing-library/react");
+  it("renders Student Login screen when forceLogin is true and allows roll number entry", async () => {
     render(
       <MemoryRouter initialEntries={["/student-login"]}>
         <MobileAppPage forceLogin={true} />
@@ -145,15 +115,17 @@ describe("MobileAppPage Rendering & Tabs", () => {
 
     // Verify Login page is rendered first
     expect(screen.getByText("Member Sign In")).toBeDefined();
-    expect(screen.getByText(/1-Tap Demo Student Login/i)).toBeDefined();
 
-    // Click 1-tap demo login button
-    const demoButton = screen.getByText(/22EE104/i);
-    fireEvent.click(demoButton);
+    // Verify no 1-Tap Demo Login section exists
+    expect(screen.queryByText(/1-Tap Demo Student Login/i)).toBeNull();
+    expect(screen.queryByText(/22EE104/i)).toBeNull();
 
-    // Verify it transitions directly into the Student Dashboard
-    expect(screen.getByText("Official IEEE ID")).toBeDefined();
-    expect(screen.getByText("Credentials & Quick Copy")).toBeDefined();
-    expect(screen.getAllByText(/Joselyn/i).length).toBeGreaterThan(0);
+    // Verify the roll number input is present
+    const rollInput = screen.getByPlaceholderText(/98421045 or 22EE104/i);
+    expect(rollInput).toBeDefined();
+
+    // Type a roll number into the input
+    fireEvent.change(rollInput, { target: { value: "24EE112" } });
+    expect(rollInput.value).toBe("24EE112");
   });
 });
