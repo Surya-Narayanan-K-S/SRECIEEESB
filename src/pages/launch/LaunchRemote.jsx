@@ -285,51 +285,31 @@ export const LaunchRemote = () => {
       </header>
 
       {/* ── CENTER LAUNCH PAD / MASTER TRIGGER ── */}
-      <main className="relative z-10 w-full max-w-lg mx-auto my-auto flex flex-col items-center justify-center py-5 px-2">
+      <main className="relative z-10 flex-1 w-full max-w-lg mx-auto flex flex-col items-center justify-center text-center py-4 px-2 my-auto">
         {/* Chief Guest Recognition Banner */}
-        <div className="text-center mb-5 space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-1">
+        <div className="text-center mb-4 space-y-1 w-full flex flex-col items-center justify-center">
+          <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider mx-auto">
             <Award size={13} className="text-amber-400" />
             <span>Grand Inauguration Ceremony</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white font-heading">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white font-heading text-center">
             {chiefGuest}
           </h2>
-          <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto line-clamp-1">
+          <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xs sm:max-w-sm mx-auto text-center line-clamp-1">
             {chiefGuestTitle}
           </p>
         </div>
 
-        {/* Biometric Interactive Launch Trigger Button */}
-        <div className="relative flex items-center justify-center my-3">
-          {/* Animated Glowing Wave Rings */}
-          <div
-            className={`absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full border-2 transition-all duration-1000 ${
-              launchState === "countdown"
-                ? "border-amber-400/50 animate-ping"
-                : launchState === "launched"
-                  ? "border-emerald-400/40 animate-pulse"
-                  : "border-cyan-400/30 animate-spin-slow"
-            }`}
-          />
-          <div
-            className={`absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full border transition-all duration-700 ${
-              launchState === "countdown"
-                ? "border-amber-400/30"
-                : launchState === "launched"
-                  ? "border-emerald-400/30"
-                  : "border-blue-500/20"
-            }`}
-          />
-
-          {/* Touch Ripples */}
+        {/* Biometric Interactive Launch Trigger Button (Clean Centered) */}
+        <div className="relative flex items-center justify-center my-4 mx-auto select-none">
+          {/* Concentric Touch Ripples */}
           {ripples.map((rip) => (
             <motion.div
               key={rip.id}
               initial={{ scale: 0.8, opacity: 0.9 }}
               animate={{ scale: 2.2, opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute w-52 h-52 rounded-full bg-cyan-400/20 pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 sm:w-60 sm:h-60 rounded-full bg-cyan-400/25 pointer-events-none"
             />
           ))}
 
@@ -338,7 +318,7 @@ export const LaunchRemote = () => {
             whileTap={{ scale: 0.93 }}
             onClick={handleLaunchClick}
             disabled={launchState === "launched"}
-            className={`relative w-52 h-52 sm:w-60 sm:h-60 rounded-full flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-500 shadow-2xl border-4 ${
+            className={`relative z-10 w-52 h-52 sm:w-60 sm:h-60 rounded-full flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-500 shadow-2xl border-4 ${
               launchState === "countdown"
                 ? "bg-gradient-to-b from-amber-500 to-orange-600 border-amber-300 shadow-[0_0_60px_rgba(245,158,11,0.6)] text-slate-950"
                 : launchState === "launched"
@@ -351,7 +331,7 @@ export const LaunchRemote = () => {
                 key="countdown-mode"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="flex flex-col items-center justify-center"
+                className="flex flex-col items-center justify-center text-center"
               >
                 <span className="text-6xl sm:text-7xl font-black font-mono leading-none tracking-tighter text-slate-950 drop-shadow-md">
                   {countdown}
@@ -365,7 +345,7 @@ export const LaunchRemote = () => {
                 key="launched-mode"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="flex flex-col items-center justify-center"
+                className="flex flex-col items-center justify-center text-center"
               >
                 <CheckCircle2 size={54} className="text-white mb-2 animate-bounce" />
                 <span className="text-lg font-black uppercase tracking-wider">Inaugurated</span>
@@ -378,15 +358,15 @@ export const LaunchRemote = () => {
                 key="standby-mode"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="flex flex-col items-center justify-center"
+                className="flex flex-col items-center justify-center text-center"
               >
                 <div className="w-14 h-14 rounded-full bg-white/15 border border-white/30 flex items-center justify-center mb-1.5 shadow-inner">
                   <Fingerprint size={32} className="text-white animate-pulse" />
                 </div>
-                <span className="text-lg sm:text-xl font-black uppercase tracking-wider font-heading leading-tight">
+                <span className="text-lg sm:text-xl font-black uppercase tracking-wider font-heading leading-tight text-center">
                   TOUCH TO<br />INAUGURATE
                 </span>
-                <span className="text-[10px] font-bold text-cyan-200 uppercase tracking-widest mt-1">
+                <span className="text-[10px] font-bold text-cyan-200 uppercase tracking-widest mt-1 text-center">
                   Tap to Start 5s Countdown
                 </span>
               </motion.div>
@@ -401,7 +381,7 @@ export const LaunchRemote = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mt-3 px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold shadow-lg flex items-center gap-2"
+              className="mt-2 px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold shadow-lg flex items-center justify-center gap-2 mx-auto"
             >
               <Zap size={14} className="text-cyan-400" />
               <span>{lastActionStatus}</span>
