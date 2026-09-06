@@ -6,9 +6,7 @@ import { X, QrCode } from "lucide-react";
 export const DownloadAppModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const appUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/app`
-    : "https://srecieee.org/app";
+  const appUrl = "https://srecieee.org/app";
 
   return (
     <AnimatePresence>
@@ -60,14 +58,14 @@ export const DownloadAppModal = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Simple Clean Instruction Word */}
-          <div className="space-y-1">
+          {/* Simple Clean Instruction Word & URL */}
+          <div className="space-y-1.5">
             <h4 className="text-sm font-black text-white uppercase tracking-wider">
               SCAN WITH ANY PHONE CAMERA
             </h4>
-            <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto">
-              Opens the full IEEE SREC Mobile App instantly on your device.
-            </p>
+            <div className="inline-block px-3 py-1 rounded-xl bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-bold tracking-wide">
+              srecieee.org/app
+            </div>
           </div>
         </motion.div>
       </div>
