@@ -204,8 +204,20 @@ const AnimatedRoutes = () => {
         <ScrollToTop />
         <GlobalCollegeBackground />
         <Routes location={location} key={location.pathname}>
-          {/* Main Home Route */}
-          <Route path="/" element={<PageTransition><ResponsiveRoute desktop={HomePage} mobileTab="home" /></PageTransition>}/>
+          {/* Main Home Route - Standalone Remote Mode Support */}
+          <Route
+            path="/"
+            element={
+              <PageTransition>
+                {import.meta.env.VITE_STANDALONE_REMOTE === "true" ||
+                import.meta.env.VITE_APP_TARGET === "remote" ? (
+                  <LaunchRemote />
+                ) : (
+                  <ResponsiveRoute desktop={HomePage} mobileTab="home" />
+                )}
+              </PageTransition>
+            }
+          />
 
           {/* Launch & Inauguration Protocols */}
           <Route path="/launch" element={<PageTransition><LaunchPage /></PageTransition>}/>

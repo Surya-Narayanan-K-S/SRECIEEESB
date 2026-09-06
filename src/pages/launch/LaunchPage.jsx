@@ -35,117 +35,6 @@ const SOCIETY_CHAPTERS = [
   { name: "Women in Engineering Affinity Group", shortName: "WIE", logo: wieLogo },
 ];
 
-// Audio Synthesizer using Web Audio API (Zero external assets needed, 100% reliable)
-class SoundFX {
-  constructor() {
-    this.ctx = null;
-    this.enabled = true;
-  }
-
-  init() {
-    if (!this.ctx && typeof window !== "undefined") {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) {
-        this.ctx = new AudioContext();
-      }
-    }
-    if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume();
-    }
-  }
-
-  destroy() {
-    if (this.ctx) {
-      try {
-        this.ctx.close();
-      } catch {
-        // Ignore
-      }
-      this.ctx = null;
-    }
-  }
-
-  playCountdown(step) {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    const isFinal = step <= 0;
-    const isCritical = step <= 3;
-
-    // Rich dual oscillator synth sound
-    osc.type = isFinal ? "sawtooth" : isCritical ? "triangle" : "sine";
-    const baseFreq = isFinal ? 980 : isCritical ? 620 + (3 - step) * 120 : 440 + (10 - step) * 35;
-    osc.frequency.setValueAtTime(baseFreq, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * (isCritical ? 1.5 : 1.2), this.ctx.currentTime + (isFinal ? 0.5 : 0.3));
-
-    gain.gain.setValueAtTime(isCritical ? 0.5 : 0.35, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + (isFinal ? 0.6 : 0.35));
-
-    // Sub-bass thud on critical ticks
-    if (isCritical && !isFinal) {
-      const subOsc = this.ctx.createOscillator();
-      const subGain = this.ctx.createGain();
-      subOsc.type = "sine";
-      subOsc.frequency.setValueAtTime(90, this.ctx.currentTime);
-      subOsc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.3);
-      subGain.gain.setValueAtTime(0.6, this.ctx.currentTime);
-      subGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
-      subOsc.connect(subGain);
-      subGain.connect(this.ctx.destination);
-      subOsc.start();
-      subOsc.stop(this.ctx.currentTime + 0.3);
-    }
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + (isFinal ? 0.6 : 0.35));
-  }
-
-  playLaunch() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    // Massive Sub-bass sweep
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(25, this.ctx.currentTime + 2.0);
-
-    gain.gain.setValueAtTime(0.7, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 2.5);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start();
-    osc.stop(this.ctx.currentTime + 2.5);
-
-    // Chime chords
-    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((freq, i) => {
-      const chordOsc = this.ctx.createOscillator();
-      const chordGain = this.ctx.createGain();
-      chordOsc.type = "triangle";
-      chordOsc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.08);
-
-      chordGain.gain.setValueAtTime(0.3, this.ctx.currentTime + i * 0.08);
-      chordGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 3.0);
-
-      chordOsc.connect(chordGain);
-      chordGain.connect(this.ctx.destination);
-      chordOsc.start(this.ctx.currentTime + i * 0.08);
-      chordOsc.stop(this.ctx.currentTime + 3.0);
-    });
-  }
-}
-
-const sfx = new SoundFX();
-
 export const LaunchPage = () => {
   const navigate = useNavigate();
 
@@ -270,7 +159,6 @@ export const LaunchPage = () => {
 
   // Trigger grand launch
   const triggerLaunch = useCallback(() => {
-    sfx.playLaunch();
     setLaunchState("launched");
     fireConfetti();
 
@@ -290,7 +178,6 @@ export const LaunchPage = () => {
   const startCountdown = useCallback((startSec = 5) => {
     // If already launched, ignore countdown commands from remote
     if (launchState === "launched") return;
-    sfx.init();
     setCountdown(startSec);
     setLaunchState("countdown");
   }, [launchState]);
@@ -342,19 +229,19 @@ export const LaunchPage = () => {
       supabase.removeChannel(channel);
       if (bc) bc.close();
       clearInterval(interval);
-      sfx.destroy();
     };
   }, [loadConfig, startCountdown, triggerLaunch, resetLaunch, launchState]);
 
-  // Manage video playback based on launchState (Standby -> Image, Countdown -> Video plays!)
+  // Manage video playback based on launchState (Standby -> Image, Countdown/Launched -> Video plays!)
   useEffect(() => {
     if (videoRef.current) {
-      if (launchState === "countdown") {
+      videoRef.current.muted = true;
+      if (launchState === "countdown" || launchState === "launched") {
         videoRef.current.currentTime = 0;
         const playPromise = videoRef.current.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            // Auto-play was prevented
+            // Auto-play fallback
           });
         }
       } else if (launchState === "standby") {
@@ -368,7 +255,6 @@ export const LaunchPage = () => {
     if (launchState !== "countdown") return;
 
     if (countdown > 0) {
-      sfx.playCountdown(countdown);
       const timer = setTimeout(() => {
         setCountdown(prev => prev - 1);
       }, 1000);
@@ -389,12 +275,17 @@ export const LaunchPage = () => {
     return () => clearTimeout(timer);
   }, [launchState, navigate]);
 
-  // Ambient Starfield Canvas
+  // Ambient Starfield Canvas (Only during standby so countdown video stays 100% crisp & clear)
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || launchState === "launched") return;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    if (launchState !== "standby") {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
 
     let animId;
     const resize = () => {
@@ -441,20 +332,26 @@ export const LaunchPage = () => {
     <div className="fixed inset-0 min-h-screen w-screen bg-[#050b14] text-white overflow-hidden flex flex-col items-center justify-between select-none font-sans z-50">
       {/* ========================================================================= */}
       {/* BACKGROUND LAYERS (FULL SCREEN 100vw x 100vh) */}
-      {/* 1. STANDBY: High-Resolution Background Image */}
-      {/* 2. TIMER / COUNTDOWN: Dynamic Video Plays (FULLY VISIBLE) */}
+      {/* 1. SREC COLLEGE CAMPUS BACKGROUND WITH FROSTED GLASS BLUR EFFECT */}
+      {/* 2. TIMER / COUNTDOWN: Dynamic Video Plays (FULLY VISIBLE & SEAMLESS) */}
       {/* ========================================================================= */}
-      <div className="fixed inset-0 w-screen h-screen z-0 overflow-hidden bg-black">
-        {/* STANDBY BACKGROUND IMAGE LAYER WITH BLUR EFFECT */}
+      <div className="fixed inset-0 w-screen h-screen z-0 overflow-hidden bg-slate-950">
+        {/* SREC COLLEGE CAMPUS PHOTO LAYER (Clearer, Recognizable Architecture) */}
         <div
-          className={`absolute -inset-6 w-[calc(100%+3rem)] h-[calc(100%+3rem)] bg-cover bg-center bg-no-repeat transition-opacity duration-1000 transform filter blur-md sm:blur-lg scale-105 ${launchState === "standby" ? "opacity-95" : "opacity-0 pointer-events-none"
-            }`}
+          className="absolute -inset-4 w-[calc(100%+2rem)] h-[calc(100%+2rem)] bg-cover bg-center bg-no-repeat scale-105 opacity-85 transition-all duration-1000"
           style={{
-            backgroundImage: `url(${inaugurationPoster})`,
+            backgroundImage: `url(${srecCampus})`,
           }}
         />
 
-        {/* TIMER / COUNTDOWN VIDEO LAYER (100% Fully Visible) */}
+        {/* LUXURY FROSTED GLASS BLUR OVERLAY (Backdrop Glassmorphism Effect) */}
+        <div className="absolute inset-0 backdrop-blur-md sm:backdrop-blur-lg bg-slate-950/40 border-b border-white/10" />
+
+        {/* Subtle Ambient Vignette & Cyan Flare Glow */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/60 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vh] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none" />
+
+        {/* TIMER / COUNTDOWN MAIN VIDEO LAYER (100% Sharp, Centered, Glass Glow) */}
         <video
           ref={videoRef}
           src={launchVideo}
@@ -462,18 +359,12 @@ export const LaunchPage = () => {
           loop
           muted
           playsInline
-          className={`w-full h-full object-cover object-center transition-all duration-700 ${launchState === "countdown" || launchState === "launched"
-            ? "opacity-100 scale-100"
-            : "opacity-0 pointer-events-none"
-            }`}
-        />
-
-        {/* Subtle Overlay (Clear during countdown so video is fully visible) */}
-        <div
-          className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${launchState === "standby"
-            ? "bg-gradient-to-t from-[#050b14]/80 via-[#050b14]/40 to-[#050b14]/70"
-            : "bg-black/10"
-            }`}
+          preload="auto"
+          className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-700 drop-shadow-[0_0_40px_rgba(0,102,204,0.35)] ${
+            launchState === "countdown" || launchState === "launched"
+              ? "opacity-100 z-10"
+              : "opacity-0 pointer-events-none z-0"
+          }`}
         />
       </div>
 
@@ -621,37 +512,40 @@ export const LaunchPage = () => {
           )}
 
           {/* ========================================================================= */}
-          {/* STAGE 2: CEREMONY COUNTDOWN (BOTTOM-MIDDLE OF SCREEN - ZERO BUTTONS) */}
+          {/* STAGE 2: CEREMONY COUNTDOWN (ULTRA-SLEEK BROADCAST HUD) */}
           {/* ========================================================================= */}
           {launchState === "countdown" && (
             <motion.div
               key="countdown"
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.95 }}
-              transition={{ duration: 0.4 }}
-              className="relative flex flex-col items-center justify-end flex-1 w-full pb-8 mx-auto mt-auto max-w-2xl sm:max-w-3xl px-4"
+              exit={{ opacity: 0, y: 30, scale: 0.96 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="relative flex flex-col items-center justify-end flex-1 w-full pb-6 mx-auto mt-auto max-w-xl sm:max-w-2xl px-4 z-30"
             >
-              {/* Bottom-Middle Luxury Glass HUD Bar */}
-              <div className="w-full bg-[#030914]/85 backdrop-blur-2xl border border-cyan-400/60 rounded-3xl p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.95),0_0_40px_rgba(0,210,255,0.3)] flex flex-col items-center text-center ring-1 ring-white/10">
-                {/* Top Row: Badge + Countdown Digit */}
-                <div className="flex items-center justify-between w-full mb-2.5 px-2">
-                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[11px] font-black uppercase tracking-widest shadow-sm">
-                    <Sparkles size={13} className="text-cyan-400 animate-pulse" />
+              {/* Sleek Floating Glass Capsule */}
+              <div className="w-full bg-slate-950/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(0,102,204,0.2)] flex flex-col items-center text-center relative overflow-hidden">
+                {/* Subtle top ambient sheen */}
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+
+                {/* Top Row: Ceremony Badge + Sleek Glowing Counter */}
+                <div className="flex items-center justify-between w-full mb-3 px-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold uppercase tracking-wider shadow-inner">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                     <span>INAUGURATION COUNTDOWN</span>
                   </div>
 
-                  {/* Large Floating Glowing Countdown Digit */}
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-400">T-MINUS</span>
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-400 to-amber-300 text-slate-950 font-black text-2xl sm:text-3xl flex items-center justify-center font-serif shadow-[0_0_30px_rgba(245,158,11,0.9)] border-2 border-white">
+                  {/* High-Tech Glowing Numeric Badge */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">T-MINUS</span>
+                    <div className="min-w-[42px] h-[42px] sm:min-w-[48px] sm:h-[48px] px-2.5 rounded-2xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-500 text-white font-black text-xl sm:text-2xl flex items-center justify-center font-mono shadow-[0_0_25px_rgba(0,163,255,0.7)] border border-cyan-300/40">
                       <AnimatePresence mode="popLayout">
                         <motion.span
                           key={countdown}
-                          initial={{ scale: 1.6, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.5, opacity: 0 }}
-                          transition={{ duration: 0.25 }}
+                          initial={{ scale: 1.5, opacity: 0, y: -5 }}
+                          animate={{ scale: 1, opacity: 1, y: 0 }}
+                          exit={{ scale: 0.6, opacity: 0, y: 5 }}
+                          transition={{ duration: 0.2 }}
                         >
                           {countdown > 0 ? countdown : "0"}
                         </motion.span>
@@ -660,24 +554,24 @@ export const LaunchPage = () => {
                   </div>
                 </div>
 
-                {/* Wide Bottom-Middle Progress Bar */}
-                <div className="w-full my-2">
-                  <div className="h-3 w-full rounded-full bg-slate-900/90 border border-white/20 overflow-hidden shadow-inner p-[1.5px]">
+                {/* Laser Progress Bar */}
+                <div className="w-full my-1.5">
+                  <div className="h-2 w-full rounded-full bg-slate-900/90 border border-white/10 overflow-hidden shadow-inner p-[1px]">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-amber-400 shadow-[0_0_15px_#00d2ff]"
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 shadow-[0_0_12px_#38bdf8]"
                       initial={{ width: "0%" }}
-                      animate={{ width: `${Math.max(5, 100 - (countdown / (config.countdownSeconds || 5)) * 100)}%` }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      animate={{ width: `${Math.max(8, 100 - (countdown / (config.countdownSeconds || 5)) * 100)}%` }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
                     />
                   </div>
                 </div>
 
-                {/* Bottom Row: Ceremony Subtitle (Zero Buttons) */}
-                <div className="flex flex-col items-center text-center w-full pt-2 border-t border-white/10">
-                  <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-wider font-serif drop-shadow">
+                {/* Bottom Row: Typography */}
+                <div className="flex flex-col items-center text-center w-full pt-2.5 border-t border-white/10">
+                  <h2 className="text-sm sm:text-base font-extrabold text-white uppercase tracking-wider">
                     IEEE STUDENT BRANCH SREC
                   </h2>
-                  <p className="text-[10px] sm:text-xs font-bold text-cyan-300 uppercase tracking-wider mt-0.5">
+                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mt-0.5">
                     Induction of Office Bearers (2026–2027) &amp; Digital Platform Launch
                   </p>
                 </div>
@@ -686,37 +580,38 @@ export const LaunchPage = () => {
           )}
 
           {/* ========================================================================= */}
-          {/* STAGE 3: LAUNCHED & DEDICATED (BOTTOM-MIDDLE OF SCREEN - ZERO BUTTONS) */}
+          {/* STAGE 3: LAUNCHED & DEDICATED (ULTRA-SLEEK BROADCAST HUD) */}
           {/* ========================================================================= */}
           {launchState === "launched" && (
             <motion.div
               key="launched"
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative flex flex-col items-center justify-end flex-1 w-full pb-8 mx-auto mt-auto max-w-2xl sm:max-w-3xl px-4"
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="relative flex flex-col items-center justify-end flex-1 w-full pb-6 mx-auto mt-auto max-w-xl sm:max-w-2xl px-4 z-30"
             >
-              {/* Bottom-Middle Luxury Glass HUD Bar */}
-              <div className="w-full bg-[#030914]/90 backdrop-blur-2xl border-2 border-emerald-400/80 rounded-3xl p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.95),0_0_50px_rgba(16,185,129,0.4)] flex flex-col items-center text-center ring-1 ring-white/15">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 font-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.8)] border border-white/80">
-                    <CheckCircle2 size={24} className="text-slate-950 animate-bounce" />
+              <div className="w-full bg-slate-950/85 backdrop-blur-2xl border border-emerald-400/50 rounded-3xl p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(16,185,129,0.3)] flex flex-col items-center text-center relative overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.8)] border border-white/80">
+                    <CheckCircle2 size={20} className="text-slate-950 animate-bounce" />
                   </div>
                   <div className="text-left">
-                    <div className="text-[10px] font-black text-emerald-300 uppercase tracking-widest drop-shadow">
+                    <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
                       OFFICIALLY INAUGURATED
                     </div>
-                    <h1 className="text-base sm:text-xl font-black text-white uppercase tracking-wider font-serif drop-shadow">
+                    <h1 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider">
                       WELCOME TO IEEE SREC 2026–2027
                     </h1>
                   </div>
                 </div>
 
                 {/* Progress bar loading redirect */}
-                <div className="w-full my-2">
-                  <div className="h-2.5 w-full rounded-full bg-slate-900 border border-emerald-500/40 overflow-hidden shadow-inner p-[1px]">
+                <div className="w-full my-1.5">
+                  <div className="h-2 w-full rounded-full bg-slate-900 border border-emerald-500/30 overflow-hidden shadow-inner p-[1px]">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 shadow-[0_0_15px_#10b981]"
+                      className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 shadow-[0_0_12px_#10b981]"
                       initial={{ width: "0%" }}
                       animate={{ width: "100%" }}
                       transition={{ duration: 2.5, ease: "easeInOut" }}
@@ -724,9 +619,9 @@ export const LaunchPage = () => {
                   </div>
                 </div>
 
-                <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-200 text-xs font-black shadow-lg animate-pulse mt-1">
-                  <Rocket size={14} className="animate-pulse text-cyan-300" />
-                  <span>🚀 Launching Digital Platform Home Page...</span>
+                <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-emerald-950/60 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold shadow-lg mt-1">
+                  <Rocket size={13} className="animate-pulse text-emerald-400" />
+                  <span>Entering Official IEEE SREC Platform...</span>
                 </div>
               </div>
             </motion.div>

@@ -4,136 +4,52 @@ import { supabase } from "@/lib/supabase";
 import {
   RotateCcw,
   Fingerprint,
-  Sparkles,
   Radio,
-  ShieldCheck,
-  CheckCircle2,
-  Award,
-  Volume2,
-  VolumeX,
   Tv,
   Zap,
-  Clock,
-  ExternalLink
+  Award,
+  CheckCircle2,
+  ExternalLink,
+  Layers
 } from "lucide-react";
 
 import srecLogo from "@/assets/srec-logo.png";
 import ieeeSrecLogo from "@/assets/ieees.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 
-// Professional Tactile Audio Synthesizer (Web Audio API)
-class RemoteAudio {
-  constructor() {
-    this.ctx = null;
-    this.enabled = true;
-  }
+// Technical Society & Affinity Group Logos
+import csLogo from "@/assets/societies/CS.png";
+import cisLogo from "@/assets/societies/CIS.webp";
+import comsocLogo from "@/assets/societies/ComSoc.jpg";
+import embsLogo from "@/assets/societies/EMBS.jpg";
+import pelsLogo from "@/assets/societies/pels.png";
+import casLogo from "@/assets/societies/css.svg";
+import imLogo from "@/assets/societies/IM.jpg";
+import wieLogo from "@/assets/societies/WIE.jpg";
 
-  init() {
-    if (!this.ctx && typeof window !== "undefined") {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        this.ctx = new AudioCtx();
-      }
-    }
-    if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume();
-    }
-  }
-
-  destroy() {
-    if (this.ctx) {
-      try {
-        this.ctx.close();
-      } catch {
-        // Ignore
-      }
-      this.ctx = null;
-    }
-  }
-
-  playTap() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(560, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(160, this.ctx.currentTime + 0.1);
-
-    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.1);
-  }
-
-  playLaunchTrigger() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    // Harmonious chord fanfare
-    [440, 554.37, 659.25, 880].forEach((freq, i) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.05);
-      gain.gain.setValueAtTime(0.25, this.ctx.currentTime + i * 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(this.ctx.currentTime + i * 0.05);
-      osc.stop(this.ctx.currentTime + 0.6);
-    });
-  }
-
-  playCountdownTick() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(750, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.12);
-
-    gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.12);
-  }
-}
-
-const remoteAudio = new RemoteAudio();
+const SOCIETY_CHAPTERS = [
+  { name: "Computer Society", code: "CS", logo: csLogo },
+  { name: "Computational Intelligence", code: "CIS", logo: cisLogo },
+  { name: "Communications Society", code: "ComSoc", logo: comsocLogo },
+  { name: "Engineering in Medicine & Biology", code: "EMBS", logo: embsLogo },
+  { name: "Power Electronics", code: "PELS", logo: pelsLogo },
+  { name: "Circuits & Systems", code: "CAS", logo: casLogo },
+  { name: "Instrumentation & Measurement", code: "IMS", logo: imLogo },
+  { name: "Women in Engineering", code: "WIE", logo: wieLogo },
+];
 
 export const LaunchRemote = () => {
   const [launchState, setLaunchState] = useState("standby"); // "standby" | "countdown" | "launched"
   const [countdown, setCountdown] = useState(5);
-  const [selectedDuration, setSelectedDuration] = useState(5);
+  const fixedDuration = 5; // Fixed 5-second inauguration countdown
   const [chiefGuest, setChiefGuest] = useState("Dr. M. Venkateshkumar");
   const [chiefGuestTitle, setChiefGuestTitle] = useState("Chairman, IEEE Power and Electronics Society");
   const [lastActionStatus, setLastActionStatus] = useState("");
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [ripples, setRipples] = useState([]);
   const broadcastChannelRef = useRef(null);
   const realtimeChannelRef = useRef(null);
 
-  // Toggle audio
-  const toggleAudio = () => {
-    const nextState = !isAudioMuted;
-    setIsAudioMuted(nextState);
-    remoteAudio.enabled = !nextState;
-  };
-
-  // Tactile haptic vibration for mobile devices
+  // Tactile haptic vibration for mobile devices (Silent)
   const triggerHaptic = (pattern = [60]) => {
     if (typeof window !== "undefined" && "navigator" in window && navigator.vibrate) {
       try {
@@ -161,11 +77,6 @@ export const LaunchRemote = () => {
         if (confMap.launch_state) {
           setLaunchState(confMap.launch_state);
         }
-        if (confMap.launch_countdown_seconds) {
-          const sec = Number(confMap.launch_countdown_seconds) || 5;
-          setCountdown(sec);
-          setSelectedDuration(sec);
-        }
         if (confMap.launch_chief_guest) {
           setChiefGuest(confMap.launch_chief_guest);
         }
@@ -179,14 +90,8 @@ export const LaunchRemote = () => {
   }, []);
 
   // Broadcast command to Auditorium Stage Display
-  const broadcastCommand = async (action, cd = selectedDuration) => {
+  const broadcastCommand = async (action, cd = fixedDuration) => {
     triggerHaptic([80, 40, 80]);
-
-    if (action === "countdown" || action === "instant_launch") {
-      remoteAudio.playLaunchTrigger();
-    } else {
-      remoteAudio.playTap();
-    }
 
     // 1. Supabase Realtime broadcast via persistent channel
     try {
@@ -214,11 +119,11 @@ export const LaunchRemote = () => {
     }
 
     if (action === "countdown") {
-      setLastActionStatus("🚀 Auditorium Countdown Triggered!");
+      setLastActionStatus("🚀 5-Second Auditorium Countdown Triggered!");
     } else if (action === "instant_launch") {
-      setLastActionStatus("✨ Instant Launch Fired!");
+      setLastActionStatus("✨ Inaugurated Instantly!");
     } else if (action === "reset") {
-      setLastActionStatus("🔄 Reset Stage to Standby");
+      setLastActionStatus("🔄 Stage Reset to Standby");
     }
 
     try {
@@ -256,16 +161,15 @@ export const LaunchRemote = () => {
     };
     setRipples(prev => [...prev.slice(-2), newRipple]);
 
-    broadcastCommand("countdown", selectedDuration);
+    broadcastCommand("countdown", fixedDuration);
   };
 
-  // Local countdown tick
+  // Local countdown tick (Silent)
   useEffect(() => {
     if (launchState !== "countdown") return;
 
     if (countdown > 0) {
       const timer = setTimeout(() => {
-        remoteAudio.playCountdownTick();
         triggerHaptic([40]);
         setCountdown(prev => prev - 1);
       }, 1000);
@@ -330,7 +234,6 @@ export const LaunchRemote = () => {
       if (realtimeChannelRef.current) {
         supabase.removeChannel(realtimeChannelRef.current);
       }
-      remoteAudio.destroy();
     };
   }, [loadState]);
 
@@ -350,30 +253,20 @@ export const LaunchRemote = () => {
         <div className="absolute inset-0 bg-[radial-gradient(#0066cc_1px,transparent_1px)] [background-size:32px_32px] opacity-10" />
       </div>
 
-      {/* ── TOP BAR: LOGOS & SYSTEM STATUS ── */}
+      {/* ── TOP BAR: LARGER LOGOS (SREC, IEEE SREC, SNR TRUST) & STATUS ── */}
       <header className="relative z-10 w-full max-w-lg mx-auto flex items-center justify-between bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-3 px-4 shadow-xl">
-        {/* Institutional Logos */}
-        <div className="flex items-center gap-3 bg-white/95 px-3 py-1.5 rounded-xl shadow-inner">
-          <img src={srecLogo} alt="SREC" className="h-6 w-auto object-contain" />
-          <div className="w-[1px] h-4 bg-slate-300" />
-          <img src={ieeeSrecLogo} alt="IEEE SREC" className="h-6 w-auto object-contain" />
+        {/* Institutional Logos (Enlarged + SNR Trust) */}
+        <div className="flex items-center gap-3 sm:gap-4 bg-white/95 px-3.5 sm:px-4 py-2 rounded-xl shadow-inner border border-white">
+          <img src={srecLogo} alt="SREC" className="h-8 sm:h-9 w-auto object-contain" />
+          <div className="w-[1.5px] h-6 bg-slate-300" />
+          <img src={ieeeSrecLogo} alt="IEEE SREC" className="h-8 sm:h-9 w-auto object-contain" />
+          <div className="w-[1.5px] h-6 bg-slate-300" />
+          <img src={snrLogo} alt="SNR Trust" className="h-8 sm:h-9 w-auto object-contain" />
         </div>
 
-        {/* Status Indicators */}
+        {/* Status Indicator */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={toggleAudio}
-            className={`p-2 rounded-xl border transition-all ${
-              isAudioMuted
-                ? "bg-slate-800 text-slate-400 border-white/10"
-                : "bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-sm"
-            }`}
-            title={isAudioMuted ? "Unmute sound" : "Mute sound"}
-          >
-            {isAudioMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          </button>
-
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-white/10 text-xs font-mono font-bold">
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 border border-white/10 text-xs font-mono font-bold">
             <Radio
               size={14}
               className={`animate-pulse ${
@@ -392,9 +285,9 @@ export const LaunchRemote = () => {
       </header>
 
       {/* ── CENTER LAUNCH PAD / MASTER TRIGGER ── */}
-      <main className="relative z-10 w-full max-w-lg mx-auto my-auto flex flex-col items-center justify-center py-6 px-2">
+      <main className="relative z-10 w-full max-w-lg mx-auto my-auto flex flex-col items-center justify-center py-5 px-2">
         {/* Chief Guest Recognition Banner */}
-        <div className="text-center mb-6 space-y-1">
+        <div className="text-center mb-5 space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-1">
             <Award size={13} className="text-amber-400" />
             <span>Grand Inauguration Ceremony</span>
@@ -408,7 +301,7 @@ export const LaunchRemote = () => {
         </div>
 
         {/* Biometric Interactive Launch Trigger Button */}
-        <div className="relative flex items-center justify-center my-4">
+        <div className="relative flex items-center justify-center my-3">
           {/* Animated Glowing Wave Rings */}
           <div
             className={`absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full border-2 transition-all duration-1000 ${
@@ -445,7 +338,7 @@ export const LaunchRemote = () => {
             whileTap={{ scale: 0.93 }}
             onClick={handleLaunchClick}
             disabled={launchState === "launched"}
-            className={`relative w-56 h-56 sm:w-64 sm:h-64 rounded-full flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-500 shadow-2xl border-4 ${
+            className={`relative w-52 h-52 sm:w-60 sm:h-60 rounded-full flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-500 shadow-2xl border-4 ${
               launchState === "countdown"
                 ? "bg-gradient-to-b from-amber-500 to-orange-600 border-amber-300 shadow-[0_0_60px_rgba(245,158,11,0.6)] text-slate-950"
                 : launchState === "launched"
@@ -487,14 +380,14 @@ export const LaunchRemote = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 className="flex flex-col items-center justify-center"
               >
-                <div className="w-16 h-16 rounded-full bg-white/15 border border-white/30 flex items-center justify-center mb-2 shadow-inner">
-                  <Fingerprint size={36} className="text-white animate-pulse" />
+                <div className="w-14 h-14 rounded-full bg-white/15 border border-white/30 flex items-center justify-center mb-1.5 shadow-inner">
+                  <Fingerprint size={32} className="text-white animate-pulse" />
                 </div>
-                <span className="text-xl sm:text-2xl font-black uppercase tracking-wider font-heading leading-tight">
+                <span className="text-lg sm:text-xl font-black uppercase tracking-wider font-heading leading-tight">
                   TOUCH TO<br />INAUGURATE
                 </span>
                 <span className="text-[10px] font-bold text-cyan-200 uppercase tracking-widest mt-1">
-                  Tap Once to Trigger
+                  Tap to Start 5s Countdown
                 </span>
               </motion.div>
             )}
@@ -508,7 +401,7 @@ export const LaunchRemote = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mt-4 px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold shadow-lg flex items-center gap-2"
+              className="mt-3 px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold shadow-lg flex items-center gap-2"
             >
               <Zap size={14} className="text-cyan-400" />
               <span>{lastActionStatus}</span>
@@ -517,60 +410,46 @@ export const LaunchRemote = () => {
         </AnimatePresence>
       </main>
 
-      {/* ── BOTTOM DOCK: DURATION PICKER & ADMIN CONTROLS ── */}
-      <footer className="relative z-10 w-full max-w-lg mx-auto bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl space-y-3">
-        {/* Countdown Duration Selector */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-bold uppercase tracking-wider">
-            <Clock size={13} />
-            <span>Timer:</span>
+      {/* ── BOTTOM DOCK: TECHNICAL SOCIETIES & RESET CONTROL ── */}
+      <footer className="relative z-10 w-full max-w-lg mx-auto bg-slate-900/85 backdrop-blur-xl border border-white/10 rounded-2xl p-3.5 sm:p-4 shadow-2xl space-y-3">
+        {/* Technical Chapters & Affinity Groups Logo Showcase (Logos Only) */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+              <Layers size={12} className="text-cyan-400" />
+              <span>IEEE TECHNICAL CHAPTERS &amp; AFFINITY GROUPS</span>
+            </span>
+            <span className="text-[10px] font-mono font-bold text-cyan-400">8 CHAPTERS</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {[3, 5, 10].map((dur) => (
-              <button
-                key={dur}
-                onClick={() => {
-                  setSelectedDuration(dur);
-                  setCountdown(dur);
-                  remoteAudio.playTap();
-                }}
-                disabled={launchState === "countdown"}
-                className={`px-3 py-1 rounded-xl text-xs font-black transition-all ${
-                  selectedDuration === dur
-                    ? "bg-cyan-500 text-slate-950 font-black shadow-md scale-105"
-                    : "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-white/5"
-                }`}
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 p-2.5 rounded-2xl bg-slate-950/70 border border-white/10 shadow-inner">
+            {SOCIETY_CHAPTERS.map((soc) => (
+              <div
+                key={soc.code}
+                className="group flex items-center justify-center p-2 rounded-xl bg-white/95 hover:bg-white transition-all duration-300 shadow-md hover:shadow-cyan-500/20 hover:scale-105 h-11 sm:h-12 border border-white"
+                title={soc.name}
               >
-                {dur}s
-              </button>
+                <img
+                  src={soc.logo}
+                  alt={soc.name}
+                  className="h-7 sm:h-8 w-full object-contain transition-transform group-hover:scale-105"
+                />
+              </div>
             ))}
           </div>
         </div>
 
-        <div className="h-px bg-white/10 w-full" />
-
-        {/* Emergency Secondary Controls */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <button
-            onClick={() => broadcastCommand("instant_launch")}
-            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-95"
-          >
-            <Sparkles size={14} />
-            <span>Instant Launch</span>
-          </button>
-
-          <button
-            onClick={() => broadcastCommand("reset")}
-            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-95"
-          >
-            <RotateCcw size={14} />
-            <span>Reset Standby</span>
-          </button>
-        </div>
+        {/* Reset Button */}
+        <button
+          onClick={() => broadcastCommand("reset")}
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all active:scale-98 shadow-sm"
+        >
+          <RotateCcw size={14} className="text-slate-300" />
+          <span>Reset Stage to Standby</span>
+        </button>
 
         {/* Open Stage Preview Link */}
-        <div className="text-center pt-1">
+        <div className="text-center pt-0.5">
           <a
             href="/stage"
             target="_blank"
