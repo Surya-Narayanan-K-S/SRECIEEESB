@@ -90,6 +90,23 @@
     @apply border-border;
   }
 
+  /* Ensure animated elements are always visible - critical for mobile */
+  .animate-fade-in {
+    animation-fill-mode: both !important;
+    animation-play-state: running !important;
+  }
+
+  /* When user prefers reduced motion, skip animation entirely and show content immediately */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-scale-in,
+    .animate-fade-out {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
