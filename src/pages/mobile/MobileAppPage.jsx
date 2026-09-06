@@ -1291,7 +1291,7 @@ export const MobileAppPage = ({
             TAB 1: HOME DASHBOARD (WHITE THEME - DEFAULT & SAFE FALLBACK)
         ════════════════════════════════════════════════════════════════════ */}
       {(activeTab === "home" || !["events", "id", "societies", "menu"].includes(activeTab)) && (
-        <div className="space-y-4 animate-fade-in">
+        <div className="space-y-4">
 
           {/* 1. TOP SLEEK PILL NAVIGATION (NO CHUNKY CIRCULAR BOXES) */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
@@ -1466,7 +1466,7 @@ export const MobileAppPage = ({
       {/* ═══════════════════════════════════════════════════════════════════
             TAB 2: EVENTS & ACTIVITIES (WHITE THEME)
         ════════════════════════════════════════════════════════════════════ */}
-      {activeTab === "events" && (<div className="space-y-3 animate-fade-in">
+      {activeTab === "events" && (<div className="space-y-3">
         {/* Header & Filter Controls */}
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
           <div className="flex items-center justify-between">
@@ -1568,7 +1568,7 @@ export const MobileAppPage = ({
         ════════════════════════════════════════════════════════════════════ */}
       {activeTab === "id" && (
         !activeMember ? (
-          <div className="space-y-4 animate-fade-in py-6">
+          <div className="space-y-4 py-6">
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/40 text-center space-y-4 max-w-md mx-auto">
               <div className="w-16 h-16 rounded-2xl bg-[#002855] text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-900/20">
                 <IdCard size={32} />
@@ -1636,7 +1636,7 @@ export const MobileAppPage = ({
             </div>
           </div>
         ) : (
-        <div className="space-y-4 animate-fade-in pb-16">
+        <div className="space-y-4 pb-16">
 
           {/* ── TOP ACTIONS TOOLBAR: Status, View PDF, Flip, Save PNG & RENEW ── */}
           <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-1.5">
@@ -2334,7 +2334,7 @@ export const MobileAppPage = ({
           TAB 4: TECHNICAL SOCIETIES (WHITE THEME)
       ════════════════════════════════════════════════════════════════════ */}
 {
-  activeTab === "societies" && (<div className="space-y-3 animate-fade-in">
+  activeTab === "societies" && (<div className="space-y-3">
     {selectedSocietyId ? (() => {
       const soc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
       const userSocList = Array.isArray(currentUser?.target_societies)
@@ -2370,7 +2370,7 @@ export const MobileAppPage = ({
       });
 
       return (
-        <div className="space-y-3 animate-fade-in">
+        <div className="space-y-3">
           <button onClick={() => setSelectedSocietyId(null)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
             <ArrowLeft size={13} /> Back to All Chapters
           </button>
@@ -2610,7 +2610,7 @@ export const MobileAppPage = ({
             TAB 5: ALL PAGES DIRECTORY (WHITE THEME & REVAMPED OFFICE BEARERS)
         ════════════════════════════════════════════════════════════════════ */}
 {
-  activeTab === "menu" && (<div className="space-y-3 animate-fade-in">
+  activeTab === "menu" && (<div className="space-y-3">
     {["office-bearers", "past-bearers", "awards", "plans", "funding", "contact", "about", "team", "reports", "gallery"].includes(allPagesCategory) ? (<div className="space-y-3">
       <button onClick={() => setAllPagesCategory("menu")} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
         <ArrowLeft size={13} /> Back to All Pages Menu

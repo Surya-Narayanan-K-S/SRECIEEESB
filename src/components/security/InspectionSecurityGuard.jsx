@@ -83,6 +83,14 @@ export const InspectionSecurityGuard = ({ children }) => {
 
     // Right Click (Context Menu / Inspect) Interception
     const handleContextMenu = (e) => {
+      // Do not trigger security modal on mobile viewports, touch interactions, or input fields
+      if (e.pointerType === "touch" || (typeof window !== "undefined" && window.innerWidth < 768)) {
+        return;
+      }
+      const targetTag = e.target?.tagName?.toLowerCase();
+      if (targetTag === "input" || targetTag === "textarea" || targetTag === "select") {
+        return;
+      }
       if (!isUnlocked) {
         e.preventDefault();
         setShowAdminModal(true);
