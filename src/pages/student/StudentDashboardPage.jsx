@@ -338,9 +338,10 @@ const StudentDashboardPage = () => {
     return ieeeStamp;
   };
   const formatShortSocieties = (societies) => {
-    if (!societies)
-      return "SB SREC";
-    const list = Array.isArray(societies) ? societies : [societies];
+    if (!societies) return "SB SREC";
+    const list = Array.isArray(societies)
+      ? societies
+      : (typeof societies === "string" ? societies.split(",") : [societies]);
     const shortMap = {
       "IEEE Student Branch SREC": "SB SREC",
       "IEEE Women in Engineering (WIE)": "WIE",
@@ -352,14 +353,18 @@ const StudentDashboardPage = () => {
       "IEEE Instrumentation and Measurement (IM)": "IM",
       "IEEE Circuits and Systems Society (CAS)": "CAS",
     };
-    return list.map((s) => {
-      if (shortMap[s])
-        return shortMap[s];
-      const match = s.match(/\(([^)]+)\)/);
-      if (match)
-        return match[1];
-      return s.replace(/^IEEE\s+/i, "").replace(/\s+Society/i, "").replace(/Student Branch/i, "SB");
-    }).join(", ");
+    return list
+      .filter(Boolean)
+      .map((raw) => {
+        const s = String(raw || "").trim();
+        if (!s) return "";
+        if (shortMap[s]) return shortMap[s];
+        const match = s.match(/\(([^)]+)\)/);
+        if (match) return match[1];
+        return s.replace(/^IEEE\s+/i, "").replace(/\s+Society/i, "").replace(/Student Branch/i, "SB");
+      })
+      .filter(Boolean)
+      .join(", ") || "SB SREC";
   };
   if (!currentUser) {
     return (<div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center">
@@ -369,6 +374,18 @@ const StudentDashboardPage = () => {
   const validityInfo = getMembershipValidity(currentUser.join_date);
   const membershipValidityDate = validityInfo.formattedExpiry;
   const isMembershipActive = !validityInfo.isExpired && currentUser.membership_status !== "EXPIRED";
+
+  const userSkills = Array.isArray(currentUser.skills)
+    ? currentUser.skills
+    : (typeof currentUser.skills === "string"
+      ? currentUser.skills.split(",").map((s) => s.trim()).filter(Boolean)
+      : ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management"]);
+
+  const userSocieties = Array.isArray(currentUser.target_societies)
+    ? currentUser.target_societies
+    : (typeof currentUser.target_societies === "string"
+      ? currentUser.target_societies.split(",").map((s) => s.trim()).filter(Boolean)
+      : ["IEEE Student Branch SREC"]);
   return (<div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col font-sans selection:bg-[#002855] selection:text-white relative overflow-x-hidden">
 
     {/* Crisp White Ambient Mesh Canvas */}
@@ -503,7 +520,7 @@ const StudentDashboardPage = () => {
                             {/* Sheared/Angled Royal Blue Role Badge */}
                             <div className="inline-flex items-center px-2 sm:px-2.5 md:px-3 py-0.5 md:py-1 rounded-sm bg-[#004899] text-white font-black text-[7.5px] sm:text-[9px] md:text-[11px] uppercase tracking-wider transform -skew-x-12 mt-0.5 md:mt-1 shadow-xs">
                               <span className="transform skew-x-12 truncate max-w-[150px] sm:max-w-none">
-                                {currentUser.member_type || "STUDENT MEMBER"} - {currentUser.department ? currentUser.department.split(" ")[0] : "IEEE"}
+                                {currentUser.member_type || "STUDENT MEMBER"} - {currentUser.department ? String(currentUser.department).split(" ")[0] : "IEEE"}
                               </span>
                             </div>
                           </div>
@@ -875,12 +892,12 @@ const StudentDashboardPage = () => {
                 <span>Technical Specializations &amp; Domains</span>
               </h4>
               <span className="text-[10px] font-bold text-slate-400 uppercase">
-                {currentUser.skills.length} Areas Verified
+                {userSkills.length} Areas Verified
               </span>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {currentUser.skills.map((skill, i) => (<span key={i} className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs">
+              {userSkills.map((skill, i) => (<span key={i} className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs">
                 {skill}
               </span>))}
             </div>
@@ -904,7 +921,7 @@ const StudentDashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {currentUser.target_societies.map((socName, idx) => {
+              {userSocieties.map((socName, idx) => {
                 const logo = getSocietyLogo(socName);
                 return (<div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#002855]/40 hover:bg-white transition-all flex flex-col justify-between space-y-3 group">
                   <div className="flex items-center justify-between">

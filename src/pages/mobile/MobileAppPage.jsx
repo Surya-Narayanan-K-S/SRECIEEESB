@@ -586,7 +586,9 @@ const EVENTS_DATA = [
 // Helper to format short chapter names on card back
 const formatShortSocieties = (societies) => {
   if (!societies) return "SB SREC";
-  const list = Array.isArray(societies) ? societies : [societies];
+  const list = Array.isArray(societies)
+    ? societies
+    : (typeof societies === "string" ? societies.split(",") : [societies]);
   const shortMap = {
     "IEEE Student Branch SREC": "SB SREC",
     "IEEE Women in Engineering (WIE)": "WIE",
@@ -629,7 +631,16 @@ export const MobileAppPage = ({
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem("srec_ieee_app_user") || localStorage.getItem("ieee_student_session");
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Clear any old dummy demo session
+        if (parsed && (parsed.id === "stu-001" || parsed.id === "stu-002" || parsed.id === "stu-003" || parsed.roll_number === "22EE104")) {
+          localStorage.removeItem("srec_ieee_app_user");
+          localStorage.removeItem("ieee_student_session");
+          return null;
+        }
+        return parsed;
+      }
     } catch {}
     return null;
   });
@@ -649,6 +660,8 @@ export const MobileAppPage = ({
   const [activeTab, setActiveTab] = useState(initialTab);
   // Sub-page category in "All Pages" menu
   const [allPagesCategory, setAllPagesCategory] = useState(defaultCategory || "menu");
+  // Focused Society Detail Chapter (if any)
+  const [selectedSocietyId, setSelectedSocietyId] = useState(focusSociety || null);
   // Office Bearers Category Filter: all | leadership | core | tech_design | exec
   const [officerCategory, setOfficerCategory] = useState("all");
   const [dbOfficers, setDbOfficers] = useState(REAL_OFFICE_BEARERS);
@@ -662,15 +675,16 @@ export const MobileAppPage = ({
       setActiveTab(defaultTab);
     }
     if (defaultCategory) setAllPagesCategory(defaultCategory);
+    if (focusSociety) setSelectedSocietyId(focusSociety);
     if (forceLogin) setIsGuestMode(false);
-  }, [searchParams, defaultTab, defaultCategory, forceLogin]);
+  }, [searchParams, defaultTab, defaultCategory, focusSociety, forceLogin]);
   // Events Category Filter: all | Upcoming | Symposium | Hackathon | Workshop | Celebration | Outreach
   const [eventCategoryFilter, setEventCategoryFilter] = useState("All");
   // View Mode toggle: "table" vs "cards"
   const [viewMode, setViewMode] = useState("cards");
-  // Members list & Selected member
+  // Members list & Selected member (no demo default)
   const [members, setMembers] = useState(SEED_MEMBERS);
-  const [selectedMember, setSelectedMember] = useState(SEED_MEMBERS[0]);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deptFilter, setDeptFilter] = useState("All");
   // Digital ID Card states (Single Official IEEE Navy Style)
@@ -845,14 +859,17 @@ export const MobileAppPage = ({
   const filteredMembers = useMemo(() => {
     return members.filter((m) => {
       const q = searchQuery.toLowerCase().trim();
+      const targetSocArr = Array.isArray(m.target_societies)
+        ? m.target_societies
+        : (typeof m.target_societies === "string" ? m.target_societies.split(",") : []);
       const matchesSearch = !q ||
-        m.first_name.toLowerCase().includes(q) ||
-        m.last_name.toLowerCase().includes(q) ||
-        m.roll_number.toLowerCase().includes(q) ||
-        m.ieee_id.toLowerCase().includes(q) ||
-        m.department.toLowerCase().includes(q) ||
-        m.target_societies.some((s) => s.toLowerCase().includes(q));
-      const matchesDept = deptFilter === "All" || m.department.includes(deptFilter);
+        (m.first_name || "").toLowerCase().includes(q) ||
+        (m.last_name || "").toLowerCase().includes(q) ||
+        (m.roll_number || "").toLowerCase().includes(q) ||
+        (m.ieee_id || "").toLowerCase().includes(q) ||
+        (m.department || "").toLowerCase().includes(q) ||
+        targetSocArr.some((s) => String(s || "").toLowerCase().includes(q));
+      const matchesDept = deptFilter === "All" || (m.department || "").includes(deptFilter);
       return matchesSearch && matchesDept;
     });
   }, [members, searchQuery, deptFilter]);
@@ -867,13 +884,16 @@ export const MobileAppPage = ({
   }, [officerCategory, dbOfficers]);
   // Student's registered societies filter
   const studentRegisteredSocieties = useMemo(() => {
-    if (!currentUser || !currentUser.target_societies || currentUser.target_societies.length === 0) {
+    const userSocArray = Array.isArray(currentUser?.target_societies)
+      ? currentUser.target_societies
+      : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+    if (!currentUser || userSocArray.length === 0) {
       return SOCIETIES_DATA;
     }
-    const enrolled = SOCIETIES_DATA.filter((soc) => currentUser.target_societies.some((ts) => {
-      const t = ts.toLowerCase();
-      const code = soc.code.toLowerCase();
-      const name = soc.name.toLowerCase();
+    const enrolled = SOCIETIES_DATA.filter((soc) => userSocArray.some((ts) => {
+      const t = String(ts || "").toLowerCase();
+      const code = (soc.code || "").toLowerCase();
+      const name = (soc.name || "").toLowerCase();
       return (t.includes(code) ||
         t.includes(name) ||
         (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
@@ -1336,13 +1356,13 @@ export const MobileAppPage = ({
   // ════════════════════════════════════════════════════════════════════════
   // 2. MAIN LOGGED-IN MOBILE APP (WHITE THEME & GLASSMORPHISM)
   // ════════════════════════════════════════════════════════════════════════
-  const activeMember = selectedMember || SEED_MEMBERS[0] || {};
+  const activeMember = currentUser || selectedMember || null;
 
   return (<div className="min-h-screen bg-slate-50 text-slate-900 pb-24 font-sans selection:bg-[#002855] selection:text-white">
 
     {/* ── TOP GLASSMORPHIC APP BAR (CLEAN & NON-SQUISHED) ──────────────── */}
     <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-2xl border-b border-slate-200/80 shadow-[0_2px_15px_rgba(0,40,85,0.04)] px-2.5 sm:px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] transition-all">
-      <div className="max-w-md mx-auto flex items-center justify-between gap-1.5">
+      <div className="w-full max-w-2xl mx-auto flex items-center justify-between gap-1.5 px-3.5 sm:px-6">
 
         {/* Brand & Logos (Clean, proportional, non-squished) */}
         <button onClick={() => handleTabChange("home")} className="flex items-center gap-1.5 shrink-0 hover:opacity-90 transition-opacity text-left min-w-0">
@@ -1398,180 +1418,168 @@ export const MobileAppPage = ({
         <CheckCircle2 size={18} className="shrink-0 text-emerald-200" />
         <div className="text-xs">
           <p className="font-extrabold">Membership Renewed Successfully!</p>
-          <p className="text-[10px] text-emerald-100">Valid through {selectedMember.valid_thru}</p>
+          <p className="text-[10px] text-emerald-100">Valid through {activeMember?.valid_thru || "DEC 31, 2026"}</p>
         </div>
       </motion.div>)}
     </AnimatePresence>
 
     {/* ── MAIN CONTENT ACCORDING TO ACTIVE TAB ───────────────────────── */}
-    <main className="max-w-md mx-auto px-3 pt-3">
+    <main className="w-full max-w-2xl mx-auto px-3.5 sm:px-6 pt-3 space-y-4">
 
       {/* ═══════════════════════════════════════════════════════════════════
             TAB 1: HOME DASHBOARD (WHITE THEME - DEFAULT & SAFE FALLBACK)
         ════════════════════════════════════════════════════════════════════ */}
       {(activeTab === "home" || !["events", "id", "societies", "menu"].includes(activeTab)) && (
-        <div className="space-y-3.5 animate-fade-in">
-          {/* Top Stories / Highlights Carousel */}
-          <div className="overflow-x-auto no-scrollbar flex items-center gap-3 py-1 -mx-3 px-3">
+        <div className="space-y-4 animate-fade-in">
+
+          {/* 1. TOP SLEEK PILL NAVIGATION (NO CHUNKY CIRCULAR BOXES) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
             {[
-              { title: "Office Bearers", tag: "2026-27", color: "from-amber-400 to-orange-500", action: () => { handleTabChange("menu"); setAllPagesCategory("office-bearers"); } },
-              { title: "Events", tag: "Flagship", color: "from-indigo-600 to-blue-500", action: () => handleTabChange("events") },
-              { title: "Digital ID", tag: "3D Card", color: "from-blue-600 to-cyan-500", action: () => handleTabChange("id") },
-              { title: "My Societies", tag: "Enrolled", color: "from-emerald-500 to-teal-600", action: () => handleTabChange("societies") },
-              { title: "Full Website", tag: "Desktop", color: "from-blue-600 to-indigo-600", link: "/" },
-              { title: "AECTSD '27", tag: "Flagship", color: "from-rose-500 to-red-600", link: "http://aectsd2027.srecieee.org/" }
-            ].map((story, i) => (<div key={i} onClick={() => {
-              if (story.action)
-                story.action();
-              else if (story.link) {
-                if (story.link.startsWith("http"))
-                  window.open(story.link, "_blank");
-                else
-                  navigate(story.link);
-              }
-            }} className="flex flex-col items-center shrink-0 cursor-pointer active:scale-95 transition-transform">
-              <div className={`w-13 h-13 rounded-full p-[2px] bg-gradient-to-tr ${story.color} shadow-sm`}>
-                <div className="w-full h-full rounded-full bg-white flex items-center justify-center p-1 text-center">
-                  <Sparkles size={16} className="text-[#002855]" />
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-slate-700 mt-1 truncate max-w-[64px]">
-                {story.title}
-              </span>
-            </div>))}
+              { label: "Overview", tab: "home" },
+              { label: "Office Bearers", tab: "menu", cat: "office-bearers" },
+              { label: "Societies (8)", tab: "societies" },
+              { label: "Digital ID", tab: "id" },
+              { label: "Activities & Events", tab: "events" },
+              { label: "Event Reports", tab: "menu", cat: "reports" },
+              { label: "Photo Gallery", tab: "menu", cat: "gallery" },
+              { label: "Full Web", external: "/web" },
+            ].map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  if (item.external) navigate(item.external);
+                  else if (item.cat) { handleTabChange("menu"); setAllPagesCategory(item.cat); }
+                  else if (item.tab) { handleTabChange(item.tab); }
+                }}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold whitespace-nowrap transition-all shadow-xs cursor-pointer active:scale-95 ${
+                  idx === 0
+                    ? "bg-[#002855] text-white"
+                    : "bg-white text-slate-700 hover:bg-[#002855] hover:text-white"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
-          {/* Hero Welcome Card */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002855] via-[#003d7a] to-[#001c3d] text-white p-4 sm:p-5 shadow-lg shadow-blue-950/15">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/15 text-white text-[9px] font-black uppercase tracking-wider backdrop-blur-md">
-                  <ShieldCheck size={10} /> Active Session
+          {/* 2. HERO BANNER (CLEAN, FLUID, NO RECTANGULAR BOXES INSIDE) */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002855] via-[#003875] to-[#001c3d] text-white p-5 sm:p-6 shadow-md shadow-blue-950/10 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/15 text-cyan-200 text-[9px] font-black uppercase tracking-wider backdrop-blur-md">
+                  <ShieldCheck size={10} />
+                  {currentUser ? `Active Member · #${currentUser.ieee_id || "VERIFIED"}` : "STB Code 64581 · Madras Section"}
                 </span>
-                <h1 className="text-lg font-black text-white mt-1.5 leading-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
                   {currentUser ? `Welcome, ${currentUser.first_name}` : "IEEE Student Branch SREC"}
                 </h1>
-                <p className="text-xs text-blue-100 mt-0.5 font-medium">
-                  {currentUser ? `${currentUser.department} · ${currentUser.roll_number}` : "Code 64581 · Advancing Technology for Humanity"}
+                <p className="text-xs text-blue-100 font-medium leading-snug">
+                  {currentUser ? `${currentUser.department} · ${currentUser.roll_number}` : "Advancing Technology for Humanity · Region 10 APAC"}
                 </p>
               </div>
-              <img src={ieeeStamp} alt="Seal" className="h-10 w-10 object-contain opacity-90 brightness-200" />
+              <img src={ieeeStamp} alt="Seal" className="h-11 w-11 object-contain opacity-90 brightness-200 shrink-0" />
             </div>
 
-            {/* Quick Action Buttons */}
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              <button onClick={() => {
-                handleTabChange("menu");
-                setAllPagesCategory("office-bearers");
-              }} className="flex items-center gap-2 p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-left active:scale-95 transition-all backdrop-blur-md">
-                <div className="p-2 rounded-xl bg-amber-400 text-slate-950 shadow-sm">
-                  <Crown size={16} />
-                </div>
-                <div>
-                  <p className="text-xs font-black text-white">Office Bearers</p>
-                  <p className="text-[9px] text-amber-200">2026-27 Team</p>
-                </div>
-              </button>
-
-              <button onClick={() => handleTabChange("id")} className="flex items-center gap-2 p-2.5 rounded-2xl bg-white text-slate-900 text-left active:scale-95 transition-all shadow-md">
-                <div className="p-2 rounded-xl bg-[#002855] text-white">
-                  <IdCard size={16} />
-                </div>
-                <div>
-                  <p className="text-xs font-black text-slate-900">My Digital ID</p>
-                  <p className="text-[9px] text-[#002855] font-semibold">3D Card &amp; Dossier</p>
-                </div>
-              </button>
+            {/* Seamless Inline Stats Row (NO BOXES) */}
+            <div className="flex items-center justify-between py-2.5 border-t border-white/15 text-xs text-blue-100 font-medium">
+              <span><strong className="text-white font-black text-sm">180+</strong> Members</span>
+              <span className="text-white/30">·</span>
+              <span><strong className="text-white font-black text-sm">8</strong> Societies</span>
+              <span className="text-white/30">·</span>
+              <span><strong className="text-white font-black text-sm">21</strong> Officers</span>
+              <span className="text-white/30">·</span>
+              <span><strong className="text-white font-black text-sm">12+</strong> Awards</span>
             </div>
 
-            {/* Metrics Row */}
-            <div className="grid grid-cols-4 gap-1.5 mt-3 pt-3 border-t border-white/15 text-center">
-              <div className="p-1 rounded-xl bg-white/10">
-                <p className="text-sm font-black text-white">180+</p>
-                <p className="text-[8px] text-blue-200 font-bold uppercase">Members</p>
-              </div>
-              <div className="p-1 rounded-xl bg-white/10">
-                <p className="text-sm font-black text-white">8</p>
-                <p className="text-[8px] text-blue-200 font-bold uppercase">Societies</p>
-              </div>
-              <div className="p-1 rounded-xl bg-white/10">
-                <p className="text-sm font-black text-white">21</p>
-                <p className="text-[8px] text-blue-200 font-bold uppercase">Officers</p>
-              </div>
-              <div className="p-1 rounded-xl bg-white/10">
-                <p className="text-sm font-black text-white">12+</p>
-                <p className="text-[8px] text-blue-200 font-bold uppercase">Awards</p>
-              </div>
+            {/* Quick Action Navigation Pills (NO CHUNKY BOXES) */}
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => {
+                  handleTabChange("menu");
+                  setAllPagesCategory("office-bearers");
+                }}
+                className="flex-1 py-2 px-3 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+              >
+                <Crown size={14} />
+                <span>Office Bearers</span>
+              </button>
+
+              <button
+                onClick={() => handleTabChange("id")}
+                className="flex-1 py-2 px-3 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 backdrop-blur-md active:scale-95 transition-all cursor-pointer"
+              >
+                <IdCard size={14} />
+                <span>{currentUser ? "My Digital ID" : "Digital ID Portal"}</span>
+              </button>
             </div>
           </div>
 
-          {/* 🌐 PROMINENT COMPLETE WEBSITE BUTTON CARD */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border border-blue-200/90 shadow-sm flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-[#002855] text-white flex items-center justify-center shadow-md shrink-0">
-                <Globe size={20} />
+          {/* 3. EXPLORE PAGES & MODULES (CLEAN BORDERLESS LIST — NO CHUNKY BOXES!) */}
+          <div className="rounded-3xl bg-white shadow-xs overflow-hidden divide-y divide-slate-100">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <LayoutGrid size={15} className="text-[#002855]" />
+                  <span>All Pages &amp; Modules</span>
+                </h2>
+                <p className="text-[10px] text-slate-500">1-tap instant navigation to all branch portals</p>
               </div>
-              <div className="leading-tight">
-                <h3 className="font-extrabold text-slate-900 text-xs">View Complete Website</h3>
-                <p className="text-[10px] text-slate-500">Full desktop portal, archives &amp; gallery</p>
-              </div>
-            </div>
-            <Link to="/web" className="px-3 py-2 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase flex items-center gap-1.5 shadow-md shadow-blue-900/10 active:scale-95 transition-all whitespace-nowrap">
-              <span>Full Web</span>
-              <ExternalLink size={12} />
-            </Link>
-          </div>
-
-          {/* Quick Access Menu Cards (White Theme) */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <LayoutGrid size={14} className="text-[#002855]" />
-                Explore Pages &amp; Tables
-              </h2>
-              <button onClick={() => handleTabChange("menu")} className="text-[10px] text-[#002855] font-bold hover:underline flex items-center">
-                All 16 Pages <ChevronRight size={12} />
+              <button onClick={() => handleTabChange("menu")} className="text-[10px] text-[#002855] font-black uppercase tracking-wider hover:underline flex items-center gap-0.5">
+                <span>Directory</span>
+                <ChevronRight size={12} />
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="divide-y divide-slate-100">
               {[
-                { label: "Office Bearers", icon: Crown, tabKey: "office-bearers", color: "bg-amber-50 text-amber-900 border-amber-200" },
-                { label: "Societies Hub", icon: Cpu, tabType: "societies", color: "bg-blue-50 text-blue-900 border-blue-200" },
-                { label: "Activities", icon: Calendar, tabKey: "plans", color: "bg-sky-50 text-sky-900 border-sky-200" },
-                { label: "Awards & Honors", icon: Award, tabKey: "awards", color: "bg-purple-50 text-purple-900 border-purple-200" },
-                { label: "Funding Plan", icon: DollarSign, tabKey: "funding", color: "bg-emerald-50 text-emerald-900 border-emerald-200" },
-                { label: "Annual Plans", icon: SlidersHorizontal, tabKey: "plans", color: "bg-rose-50 text-rose-900 border-rose-200" },
-                { label: "Past Bearers", icon: GraduationCap, tabKey: "past-bearers", color: "bg-slate-100 text-slate-900 border-slate-200" },
-                { label: "Gallery", icon: ImageIcon, route: "/gallery", color: "bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200" },
-                { label: "Register / Join", icon: UserPlus, route: "/membership-registration", color: "bg-[#002855] text-white border-[#002855]" }
+                { label: "Office Bearers & Leadership", desc: "2026-2027 Executive Body & Team", icon: Crown, iconBg: "bg-amber-50 text-amber-600", tabKey: "office-bearers" },
+                { label: "Technical Society Chapters", desc: "8 specialized IEEE technical chapters (CS, CIS, etc.)", icon: Cpu, iconBg: "bg-blue-50 text-[#002855]", tabType: "societies" },
+                { label: "Activities & Annual Plans", desc: "Flagship symposiums, hackathons & yearly roadmap", icon: Calendar, iconBg: "bg-sky-50 text-sky-600", tabKey: "plans" },
+                { label: "Awards & Accolades", desc: "IEEE Madras Section & Region 10 Honors", icon: Award, iconBg: "bg-purple-50 text-purple-600", tabKey: "awards" },
+                { label: "Event Reports & Activity Hub", desc: "Official activity documentation & PDF downloads", icon: FileText, iconBg: "bg-cyan-50 text-cyan-600", tabKey: "reports" },
+                { label: "Funding & Grants Breakdown", desc: "Madras Section & institutional support", icon: DollarSign, iconBg: "bg-emerald-50 text-emerald-600", tabKey: "funding" },
+                { label: "Past Bearers Hall of Fame", desc: "2022–2025 leadership timeline & legacy", icon: GraduationCap, iconBg: "bg-indigo-50 text-indigo-600", tabKey: "past-bearers" },
+                { label: "Photo Gallery & Memories", desc: "Event albums, conclaves & celebrations", icon: ImageIcon, iconBg: "bg-pink-50 text-pink-600", tabKey: "gallery" },
+                { label: "About SREC Student Branch", desc: "Code 64581 history, milestones & counselor", icon: Info, iconBg: "bg-blue-50 text-[#002855]", tabKey: "about" },
+                { label: "Membership Registration", desc: "Join IEEE SB SREC & store directly in DB", icon: UserPlus, iconBg: "bg-emerald-50 text-emerald-700", modal: "register" },
+                { label: "Switch to Complete Website", desc: "Access full desktop portal & archives", icon: Globe, iconBg: "bg-slate-100 text-slate-700", route: "/web" },
               ].map((item, idx) => {
                 const Icon = item.icon;
-                return (<button key={idx} onClick={() => {
-                  if (item.tabType) {
-                    handleTabChange(item.tabType);
-                  }
-                  else if (item.tabKey) {
-                    handleTabChange("menu");
-                    setAllPagesCategory(item.tabKey);
-                  }
-                  else if (item.route) {
-                    navigate(item.route);
-                  }
-                }} className={`flex flex-col items-center justify-center p-3 rounded-2xl ${item.color} border text-center active:scale-95 transition-all shadow-sm`}>
-                  <Icon size={18} className="mb-1" />
-                  <span className="text-[10px] font-black uppercase tracking-tight leading-tight">
-                    {item.label}
-                  </span>
-                </button>);
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      if (item.modal === "register") setIsRegisterModalOpen(true);
+                      else if (item.tabType) handleTabChange(item.tabType);
+                      else if (item.tabKey) { handleTabChange("menu"); setAllPagesCategory(item.tabKey); }
+                      else if (item.route) navigate(item.route);
+                    }}
+                    className="flex items-center justify-between p-3 sm:p-3.5 hover:bg-slate-50/80 cursor-pointer active:bg-slate-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-9 h-9 rounded-2xl ${item.iconBg} flex items-center justify-center shrink-0 shadow-xs`}>
+                        <Icon size={18} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-extrabold text-slate-900 text-xs truncate leading-tight">
+                          {item.label}
+                        </p>
+                        <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-slate-400 shrink-0 ml-2" />
+                  </div>
+                );
               })}
             </div>
           </div>
 
-          {/* Upcoming Flagship Event Card */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2">
+          {/* 4. UPCOMING FLAGSHIP CONCLAVE CARD (NO CHUNKY BOXES) */}
+          <div className="p-4 rounded-3xl bg-white shadow-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-extrabold text-[9px] uppercase tracking-wider flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 font-extrabold text-[9px] uppercase tracking-wider flex items-center gap-1">
                 <Sparkles size={10} className="text-amber-600" /> Flagship 2027
               </span>
               <span className="text-[10px] font-bold text-slate-500">Feb 18-20, 2027</span>
@@ -1582,15 +1590,17 @@ export const MobileAppPage = ({
             <p className="text-[11px] text-slate-600 leading-snug">
               Advances in Electrical, Communication &amp; Thermal Systems for Sustainable Development.
             </p>
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
               <span className="text-[10px] text-slate-500 font-medium">Venue: SREC Auditorium</span>
-              <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-[#002855] text-white font-bold text-[10px] uppercase shadow-sm">
+              <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#002855] text-white font-bold text-[10px] uppercase shadow-sm active:scale-95 transition-all">
                 <span>Portal</span>
                 <ExternalLink size={10} />
               </a>
             </div>
           </div>
-        </div>)}
+
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════
             TAB 2: EVENTS & ACTIVITIES (WHITE THEME)
@@ -1705,15 +1715,15 @@ export const MobileAppPage = ({
                 <IdCard size={14} className="text-[#002855]" />
                 <span>Official IEEE ID</span>
               </span>
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${(selectedMember.membership_status === "ACTIVE" || !selectedMember.membership_status)
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status)
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-300"
                   : "bg-rose-50 text-rose-800 border border-rose-300"
                 }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${(selectedMember.membership_status === "ACTIVE" || !selectedMember.membership_status)
+                <span className={`w-1.5 h-1.5 rounded-full ${(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status)
                     ? "bg-emerald-500 animate-pulse"
                     : "bg-rose-500"
                   }`} />
-                <span>{(selectedMember.membership_status === "ACTIVE" || !selectedMember.membership_status) ? "Active" : "Inactive"}</span>
+                <span>{(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status) ? "Active" : "Inactive"}</span>
               </span>
             </div>
 
@@ -1814,7 +1824,7 @@ export const MobileAppPage = ({
                   {/* Portrait Photo Frame */}
                   <div className="relative shrink-0">
                     <div className="w-[52px] h-[52px] sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl sm:rounded-2xl p-[2px] bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_12px_rgba(251,191,36,0.35)] overflow-hidden">
-                      <img src={selectedMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.first_name + " " + selectedMember.last_name)}&background=002855&color=fff&size=512`} alt={selectedMember.first_name} className="w-full h-full rounded-[10px] sm:rounded-[14px] object-cover bg-slate-900" />
+                      <img src={activeMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((activeMember.first_name || "Student") + " " + (activeMember.last_name || ""))}&background=002855&color=fff&size=512`} alt={activeMember.first_name || "Student"} className="w-full h-full rounded-[10px] sm:rounded-[14px] object-cover bg-slate-900" />
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#000a17] flex items-center justify-center text-white shadow">
                       <Check size={8} className="stroke-[3]" />
@@ -1824,18 +1834,18 @@ export const MobileAppPage = ({
                   {/* Member Credentials Info */}
                   <div className="leading-tight min-w-0 flex-1">
                     <h2 className="text-xs sm:text-base font-black text-white uppercase truncate font-sans leading-snug">
-                      {selectedMember.first_name} {selectedMember.last_name}
+                      {activeMember.first_name} {activeMember.last_name}
                     </h2>
 
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <div className="card-roll-badge inline-flex items-center px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-300/40 text-amber-300 font-mono text-[9px] font-black tracking-wider leading-none">
-                        ROLL: {selectedMember.roll_number}
+                        ROLL: {activeMember.roll_number}
                       </div>
                     </div>
 
                     {/* Department and SREC IEEE Member in ONE SINGLE LINE */}
                     <p className="text-[9px] sm:text-[10px] text-sky-200 uppercase font-black tracking-wide mt-1 truncate font-sans">
-                      {selectedMember.department} · SREC IEEE {selectedMember.member_type || "STUDENT MEMBER"}{selectedMember.year_of_study ? ` · ${selectedMember.year_of_study}` : ""}
+                      {activeMember.department} · SREC IEEE {activeMember.member_type || "STUDENT MEMBER"}{activeMember.year_of_study ? ` · ${activeMember.year_of_study}` : ""}
                     </p>
                   </div>
 
@@ -1863,10 +1873,10 @@ export const MobileAppPage = ({
                       OFFICIAL IEEE MEMBERSHIP ID
                     </span>
                     <span className="text-xs sm:text-base font-black font-mono tracking-widest text-white drop-shadow-md block mt-0.5">
-                      {!selectedMember.ieee_id || selectedMember.ieee_id === "PENDING" ? "ALLOCATING..." : selectedMember.ieee_id}
+                      {!activeMember.ieee_id || activeMember.ieee_id === "PENDING" ? "ALLOCATING..." : activeMember.ieee_id}
                     </span>
                     <span className="text-[7.5px] sm:text-[9px] font-sans font-bold text-amber-200/90 block mt-0.5 tracking-wider">
-                      VALID THRU: {selectedMember.valid_thru || "DEC 31, 2026"}
+                      VALID THRU: {activeMember.valid_thru || "DEC 31, 2026"}
                     </span>
                   </div>
 
@@ -1905,12 +1915,12 @@ export const MobileAppPage = ({
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-amber-300 font-bold">College Email:</span>
-                    <span className="font-mono text-sky-200 truncate max-w-[160px]">{selectedMember.email}</span>
+                    <span className="font-mono text-sky-200 truncate max-w-[160px]">{activeMember.email}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-amber-300 font-bold">Enrolled Chapters:</span>
                     <span className="text-white font-bold tracking-wide truncate max-w-[200px]">
-                      {formatShortSocieties(selectedMember.target_societies)}
+                      {formatShortSocieties(activeMember.target_societies)}
                     </span>
                   </div>
                 </div>
@@ -1918,7 +1928,7 @@ export const MobileAppPage = ({
                 {/* Counselor & Authorization Footer */}
                 <div className="pt-1.5 border-t border-white/15 flex items-center justify-between text-[7.5px] text-slate-300">
                   <div>
-                    <span className="font-mono font-black text-amber-300 block">AUTH: {selectedMember.ieee_id || "PENDING"}-SB64581</span>
+                    <span className="font-mono font-black text-amber-300 block">AUTH: {activeMember.ieee_id || "PENDING"}-SB64581</span>
                     <span className="text-[6.5px] text-slate-400">Valid for IEEE &amp; Collegiate Events</span>
                   </div>
                   <div className="text-right flex flex-col items-end">
@@ -1947,7 +1957,7 @@ export const MobileAppPage = ({
                 <span className="text-[8.5px] text-[#002855] uppercase font-bold block">Official IEEE Card</span>
                 <span className="font-mono text-xs font-black text-[#002855] flex items-center gap-1 truncate">
                   <FileText size={12} className="text-blue-600 shrink-0" />
-                  <span className="truncate">{selectedMember.ieee_id && selectedMember.ieee_id !== 'PENDING' ? `${selectedMember.ieee_id}.pdf` : 'IEEE_Card.pdf'}</span>
+                  <span className="truncate">{activeMember.ieee_id && activeMember.ieee_id !== 'PENDING' ? `${activeMember.ieee_id}.pdf` : 'IEEE_Card.pdf'}</span>
                 </span>
               </div>
               <button
@@ -1965,11 +1975,11 @@ export const MobileAppPage = ({
               <div className="p-2.5 rounded-xl bg-blue-50/50 border border-blue-200 flex items-center justify-between">
                 <div>
                   <span className="text-[8.5px] text-[#002855] uppercase font-bold block">IEEE ID</span>
-                  <span className="font-mono text-sm font-black text-[#002855]">#{selectedMember.ieee_id || "PENDING"}</span>
+                  <span className="font-mono text-sm font-black text-[#002855]">#{activeMember.ieee_id || "PENDING"}</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy(selectedMember.ieee_id, "id")}
+                  onClick={() => handleCopy(activeMember.ieee_id, "id")}
                   className="p-1.5 rounded-lg bg-[#002855] text-white hover:bg-[#001c3d] transition-all shadow-xs cursor-pointer"
                   title="Copy IEEE ID"
                 >
@@ -1981,11 +1991,11 @@ export const MobileAppPage = ({
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
                   <span className="text-[8.5px] text-slate-400 uppercase font-bold block">Roll Number</span>
-                  <span className="font-mono text-xs font-bold text-slate-900">{selectedMember.roll_number}</span>
+                  <span className="font-mono text-xs font-bold text-slate-900">{activeMember.roll_number}</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy(selectedMember.roll_number, "roll")}
+                  onClick={() => handleCopy(activeMember.roll_number, "roll")}
                   className="p-1.5 rounded-lg bg-slate-200 hover:bg-[#002855] hover:text-white transition-all text-slate-700 cursor-pointer"
                   title="Copy Roll Number"
                 >
@@ -1997,11 +2007,11 @@ export const MobileAppPage = ({
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between sm:col-span-2">
                 <div className="min-w-0 pr-2">
                   <span className="text-[8.5px] text-slate-400 uppercase font-bold block">Official Email</span>
-                  <span className="font-mono text-xs font-medium text-slate-700 truncate block">{selectedMember.email}</span>
+                  <span className="font-mono text-xs font-medium text-slate-700 truncate block">{activeMember.email}</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy(selectedMember.email, "email")}
+                  onClick={() => handleCopy(activeMember.email, "email")}
                   className="p-1.5 rounded-lg bg-slate-200 hover:bg-[#002855] hover:text-white transition-all text-slate-700 shrink-0 cursor-pointer"
                   title="Copy Email"
                 >
@@ -2043,8 +2053,8 @@ export const MobileAppPage = ({
               {/* Avatar with Camera Uploader */}
               <div className="relative shrink-0 group">
                 <img
-                  src={selectedMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.first_name + " " + selectedMember.last_name)}&background=002855&color=fff&size=512`}
-                  alt={selectedMember.first_name}
+                  src={activeMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((activeMember.first_name || "Student") + " " + (activeMember.last_name || ""))}&background=002855&color=fff&size=512`}
+                  alt={activeMember.first_name || "Student"}
                   className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover object-top border-2 border-slate-200 shadow-sm bg-slate-900"
                 />
                 <label
@@ -2074,17 +2084,17 @@ export const MobileAppPage = ({
 
               <div className="min-w-0 flex-1">
                 <h2 className="text-base font-black text-slate-900 uppercase truncate">
-                  {selectedMember.first_name} {selectedMember.last_name}
+                  {activeMember.first_name} {activeMember.last_name}
                 </h2>
                 <p className="text-xs text-[#002855] font-bold truncate mt-0.5">
-                  {selectedMember.member_type || "Student Member"}
+                  {activeMember.member_type || "Student Member"}
                 </p>
                 <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                  {selectedMember.department}
+                  {activeMember.department}
                 </p>
                 <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-[#002855] font-mono text-[9.5px] font-black">
                   <span>IEEE ID:</span>
-                  <span>#{selectedMember.ieee_id}</span>
+                  <span>#{activeMember.ieee_id}</span>
                 </div>
               </div>
             </div>
@@ -2092,11 +2102,11 @@ export const MobileAppPage = ({
             <div className="pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-[8.5px] text-slate-400 font-bold uppercase block">College Roll</span>
-                <span className="font-mono font-bold text-slate-900">{selectedMember.roll_number}</span>
+                <span className="font-mono font-bold text-slate-900">{activeMember.roll_number}</span>
               </div>
               <div>
                 <span className="text-[8.5px] text-slate-400 font-bold uppercase block">Phone Contact</span>
-                <span className="font-medium text-slate-700 truncate block">{selectedMember.phone}</span>
+                <span className="font-medium text-slate-700 truncate block">{activeMember.phone}</span>
               </div>
             </div>
           </div>
@@ -2110,21 +2120,21 @@ export const MobileAppPage = ({
 
             <div>
               <h3 className="text-sm font-black text-slate-900 leading-snug">
-                {selectedMember.department}
+                {activeMember.department}
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                {selectedMember.year_of_study || "IV Year (2022-2026)"} · Sri Ramakrishna Engineering College
+                {activeMember.year_of_study || "IV Year (2022-2026)"} · Sri Ramakrishna Engineering College
               </p>
             </div>
 
             <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
               <div>
                 <span className="text-[8.5px] text-slate-400 font-bold uppercase block">Registered On</span>
-                <span className="font-bold text-slate-800">{selectedMember.join_date || "16 Aug 2025"}</span>
+                <span className="font-bold text-slate-800">{activeMember.join_date || "16 Aug 2025"}</span>
               </div>
               <div className="text-right">
                 <span className="text-[8.5px] text-slate-400 font-bold uppercase block">1 Year Validity</span>
-                <span className="font-black text-emerald-600">{selectedMember.valid_thru || "DEC 31, 2026"}</span>
+                <span className="font-black text-emerald-600">{activeMember.valid_thru || "DEC 31, 2026"}</span>
               </div>
             </div>
           </div>
@@ -2137,12 +2147,12 @@ export const MobileAppPage = ({
                 <span>Technical Specializations &amp; Domains</span>
               </h4>
               <span className="text-[9px] font-bold text-slate-400 uppercase">
-                {(selectedMember.skills || []).length} Verified
+                {(Array.isArray(activeMember.skills) ? activeMember.skills : []).length} Verified
               </span>
             </div>
 
             <div className="flex flex-wrap gap-1.5">
-              {(selectedMember.skills || ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions"]).map((skill, i) => (
+              {(Array.isArray(activeMember.skills) ? activeMember.skills : ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions"]).map((skill, i) => (
                 <span
                   key={i}
                   className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-[11px] font-bold transition-all shadow-2xs"
@@ -2152,9 +2162,9 @@ export const MobileAppPage = ({
               ))}
             </div>
 
-            {selectedMember.bio_sop && (
+            {activeMember.bio_sop && (
               <div className="p-3 rounded-2xl bg-blue-50/50 border border-blue-100 text-[11px] text-slate-700 italic">
-                "{selectedMember.bio_sop}"
+                "{activeMember.bio_sop}"
               </div>
             )}
           </div>
@@ -2176,7 +2186,7 @@ export const MobileAppPage = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {(selectedMember.target_societies || ["IEEE Student Branch SREC"]).map((socName, idx) => {
+              {(Array.isArray(activeMember.target_societies) ? activeMember.target_societies : ["IEEE Student Branch SREC"]).map((socName, idx) => {
                 const logo = getSocietyLogo(socName);
                 return (
                   <div
@@ -2212,12 +2222,12 @@ export const MobileAppPage = ({
                 <span>Verified Event Participations &amp; Logs</span>
               </h4>
               <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                {(selectedMember.events_attended || []).length || 4} Logs
+                {(Array.isArray(activeMember.events_attended) ? activeMember.events_attended : []).length || 4} Logs
               </span>
             </div>
 
             <div className="space-y-2">
-              {(selectedMember.events_attended || [
+              {(Array.isArray(activeMember.events_attended) ? activeMember.events_attended : [
                 { title: "VisionX 2025 – AI & Edge Computing Expo", date: "Aug 2025", category: "National Symposium" },
                 { title: "IEEE Madras Section Leadership Conclave", date: "May 2025", category: "Leadership Summit" },
                 { title: "IEEE International Renewable Energy Workshop", date: "Jan 2025", category: "Technical Workshop" },
@@ -2257,7 +2267,7 @@ export const MobileAppPage = ({
                 <span>Structured Membership Dossier</span>
               </h3>
               <span className="text-[10px] font-mono font-bold text-[#002855]">
-                {selectedMember.roll_number}
+                {activeMember.roll_number}
               </span>
             </div>
 
@@ -2266,15 +2276,15 @@ export const MobileAppPage = ({
                 <tbody className="divide-y divide-slate-100">
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px] w-1/3">Full Name</td>
-                    <td className="py-2 px-2 font-extrabold text-slate-900">{selectedMember.first_name} {selectedMember.last_name}</td>
+                    <td className="py-2 px-2 font-extrabold text-slate-900">{activeMember.first_name} {activeMember.last_name}</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">IEEE Member ID</td>
                     <td className="py-2 px-2 font-mono font-bold text-[#002855]">
                       <div className="flex items-center justify-between">
-                        <span>{!selectedMember.ieee_id || selectedMember.ieee_id === "PENDING" ? "Pending Allocation" : `#${selectedMember.ieee_id}`}</span>
-                        {selectedMember.ieee_id && selectedMember.ieee_id !== "PENDING" && (
-                          <button onClick={() => handleCopy(selectedMember.ieee_id, "id")} className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer">
+                        <span>{!activeMember.ieee_id || activeMember.ieee_id === "PENDING" ? "Pending Allocation" : `#${activeMember.ieee_id}`}</span>
+                        {activeMember.ieee_id && activeMember.ieee_id !== "PENDING" && (
+                          <button onClick={() => handleCopy(activeMember.ieee_id, "id")} className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer">
                             {copiedText === "id" ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
                           </button>
                         )}
@@ -2283,26 +2293,26 @@ export const MobileAppPage = ({
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">College Roll No</td>
-                    <td className="py-2 px-2 font-mono font-bold text-slate-900">{selectedMember.roll_number}</td>
+                    <td className="py-2 px-2 font-mono font-bold text-slate-900">{activeMember.roll_number}</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Department</td>
-                    <td className="py-2 px-2 text-slate-800 font-semibold">{selectedMember.department}</td>
+                    <td className="py-2 px-2 text-slate-800 font-semibold">{activeMember.department}</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Year &amp; Batch</td>
-                    <td className="py-2 px-2 text-slate-800 font-semibold">{selectedMember.year_of_study || selectedMember.join_date || "IV Year (2022-2026)"}</td>
+                    <td className="py-2 px-2 text-slate-800 font-semibold">{activeMember.year_of_study || activeMember.join_date || "IV Year (2022-2026)"}</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Branch Role</td>
-                    <td className="py-2 px-2 font-extrabold text-[#002855]">{selectedMember.member_type || "Student Member"}</td>
+                    <td className="py-2 px-2 font-extrabold text-[#002855]">{activeMember.member_type || "Student Member"}</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Status &amp; Validity</td>
                     <td className="py-2 px-2">
                       <div className="flex items-center justify-between gap-1">
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[8.5px] font-black border border-emerald-200">
-                          ACTIVE ({selectedMember.valid_thru || "DEC 31, 2026"})
+                          ACTIVE ({activeMember.valid_thru || "DEC 31, 2026"})
                         </span>
                         <button onClick={() => setIsRenewModalOpen(true)} className="px-2 py-0.5 rounded-md bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-black text-[8.5px] uppercase transition-colors cursor-pointer">
                           ⚡ Renew
@@ -2314,7 +2324,7 @@ export const MobileAppPage = ({
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Societies</td>
                     <td className="py-2 px-2">
                       <div className="flex flex-wrap gap-1">
-                        {(selectedMember.target_societies || []).map((s, idx) => (
+                        {(Array.isArray(activeMember.target_societies) ? activeMember.target_societies : (typeof activeMember.target_societies === "string" ? activeMember.target_societies.split(",") : [])).map((s, idx) => (
                           <span key={idx} className="px-1.5 py-0.5 rounded-lg bg-blue-50/90 border border-blue-200 text-[8.5px] text-[#002855] font-semibold">
                             {s}
                           </span>
@@ -2325,8 +2335,12 @@ export const MobileAppPage = ({
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Email</td>
                     <td className="py-2 px-2 text-[#002855] font-mono text-[10px] truncate max-w-[180px]">
-                      <a href={`mailto:${selectedMember.email}`}>{selectedMember.email}</a>
+                      <a href={`mailto:${activeMember.email}`}>{activeMember.email}</a>
                     </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Phone</td>
+                    <td className="py-2 px-2 text-slate-800 font-mono text-[10px]">{activeMember.phone}</td>
                   </tr>
                   <tr>
                     <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Phone</td>
@@ -2396,7 +2410,7 @@ export const MobileAppPage = ({
                     setSelectedMember(m);
                     setIsFlipped(false);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all border cursor-pointer ${selectedMember.id === m.id
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all border cursor-pointer ${activeMember?.id === m.id
                       ? "bg-[#002855] text-white border-[#002855] font-bold shadow-xs"
                       : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                     }`}
@@ -2420,129 +2434,274 @@ export const MobileAppPage = ({
       ════════════════════════════════════════════════════════════════════ */}
 {
   activeTab === "societies" && (<div className="space-y-3 animate-fade-in">
-    <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-            <Cpu size={16} className="text-[#002855]" />
-            {societyScope === "registered" && currentUser
-              ? `My Enrolled Societies (${studentRegisteredSocieties.length})`
-              : "8 Technical Society Chapters"}
-          </h2>
-          <p className="text-[10px] text-slate-500">
-            {societyScope === "registered" && currentUser
-              ? `Active memberships for ${currentUser.first_name} ${currentUser.last_name}`
-              : "Affiliated technical societies at IEEE SB SREC"}
-          </p>
-        </div>
-        <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
-          {displayedSocieties.length} Chapters
-        </span>
-      </div>
+    {selectedSocietyId ? (() => {
+      const soc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
+      const userSocList = Array.isArray(currentUser?.target_societies)
+        ? currentUser.target_societies
+        : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+      const isEnrolled = userSocList.some((ts) => {
+        const t = String(ts || "").toLowerCase();
+        const code = (soc.code || "").toLowerCase();
+        const name = (soc.name || "").toLowerCase();
+        return (
+          t.includes(code) ||
+          t.includes(name) ||
+          (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
+          (soc.id === "cs" && t.includes("computer")) ||
+          (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
+          (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
+          (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
+          (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
+          (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
+          (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+        );
+      });
+      const socOfficers = REAL_OFFICE_BEARERS.filter(ob => {
+        const r = (ob.role || "").toLowerCase();
+        const d = (ob.department || "").toLowerCase();
+        if (soc.id === "cs") return r.includes("cs") || d.includes("cse") || r.includes("computer");
+        if (soc.id === "cis") return r.includes("cis") || d.includes("ai") || r.includes("computational");
+        if (soc.id === "wie") return r.includes("wie") || r.includes("women");
+        if (soc.id === "pels") return r.includes("pels") || d.includes("eee");
+        if (soc.id === "embs") return r.includes("embs") || d.includes("bme");
+        if (soc.id === "comsoc") return r.includes("comsoc") || d.includes("ece");
+        return true;
+      });
 
-      {/* Registered vs All Scope Switcher (when user is logged in) */}
-      {currentUser && (<div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
-        <button onClick={() => setSocietyScope("registered")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "registered"
-          ? "bg-[#002855] text-white shadow-sm"
-          : "text-slate-600 hover:text-slate-900"}`}>
-          <CheckCircle2 size={12} className={societyScope === "registered" ? "text-cyan-300" : "text-slate-400"} />
-          <span>My Registered ({studentRegisteredSocieties.length})</span>
-        </button>
-        <button onClick={() => setSocietyScope("all")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "all"
-          ? "bg-[#002855] text-white shadow-sm"
-          : "text-slate-600 hover:text-slate-900"}`}>
-          <span>All 8 Chapters</span>
-        </button>
-      </div>)}
-    </div>
+      return (
+        <div className="space-y-3 animate-fade-in">
+          <button onClick={() => setSelectedSocietyId(null)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
+            <ArrowLeft size={13} /> Back to All Chapters
+          </button>
 
-    {/* TABULAR SOCIETIES VIEW */}
-    {viewMode === "table" ? (<div className="rounded-2xl border border-slate-200/90 overflow-hidden bg-white shadow-sm">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[500px]">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
-              <th className="py-2.5 px-3">Society Chapter</th>
-              <th className="py-2.5 px-3">Faculty Advisor</th>
-              <th className="py-2.5 px-3">Student Chair</th>
-              <th className="py-2.5 px-3 text-center">Status</th>
-              <th className="py-2.5 px-3 text-right">Fee (USD)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-xs">
-            {displayedSocieties.map((soc) => {
-              const isEnrolled = currentUser?.target_societies.some((ts) => ts.toLowerCase().includes(soc.code.toLowerCase()) ||
-                ts.toLowerCase().includes(soc.name.toLowerCase()) ||
-                (soc.id === "srec" && (ts.toLowerCase().includes("srec") || ts.toLowerCase().includes("student branch"))) ||
-                (soc.id === "cs" && ts.toLowerCase().includes("computer")) ||
-                (soc.id === "cis" && (ts.toLowerCase().includes("computational") || ts.toLowerCase().includes("intelligence"))) ||
-                (soc.id === "comsoc" && (ts.toLowerCase().includes("communication") || ts.toLowerCase().includes("comsoc"))) ||
-                (soc.id === "embs" && (ts.toLowerCase().includes("medicine") || ts.toLowerCase().includes("biology") || ts.toLowerCase().includes("embs"))) ||
-                (soc.id === "pels" && (ts.toLowerCase().includes("power") || ts.toLowerCase().includes("pels"))) ||
-                (soc.id === "im" && (ts.toLowerCase().includes("instrumentation") || ts.toLowerCase().includes("measurement"))) ||
-                (soc.id === "wie" && (ts.toLowerCase().includes("women") || ts.toLowerCase().includes("wie"))));
-              return (<tr key={soc.id} onClick={() => navigate(soc.href)} className="hover:bg-blue-50/50 transition-colors cursor-pointer">
-                <td className="py-2.5 px-3">
-                  <div className="flex items-center gap-2">
-                    <img src={soc.logo} alt={soc.code} className="w-7 h-7 rounded-lg object-contain bg-slate-100 p-0.5 border border-slate-200" />
-                    <div>
-                      <p className="font-extrabold text-slate-900 leading-tight">{soc.name}</p>
-                      <p className="text-[9px] text-[#002855] font-bold">{soc.badge}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-2.5 px-3 text-[11px] text-slate-700">{soc.advisor}</td>
-                <td className="py-2.5 px-3 text-[11px] text-slate-900 font-bold">{soc.chair}</td>
-                <td className="py-2.5 px-3 text-center">
-                  {isEnrolled ? (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    ENROLLED
-                  </span>) : (<span className="text-[9px] text-slate-400 font-medium">Available</span>)}
-                </td>
-                <td className="py-2.5 px-3 text-right font-mono font-black text-amber-700">{soc.feeUSD}</td>
-              </tr>);
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>) : (
-      /* CARD VIEW */
-      <div className="space-y-2.5">
-        {displayedSocieties.map((soc) => {
-          const isEnrolled = currentUser?.target_societies.some((ts) => ts.toLowerCase().includes(soc.code.toLowerCase()) ||
-            ts.toLowerCase().includes(soc.name.toLowerCase()) ||
-            (soc.id === "srec" && (ts.toLowerCase().includes("srec") || ts.toLowerCase().includes("student branch"))) ||
-            (soc.id === "cs" && ts.toLowerCase().includes("computer")) ||
-            (soc.id === "cis" && (ts.toLowerCase().includes("computational") || ts.toLowerCase().includes("intelligence"))) ||
-            (soc.id === "comsoc" && (ts.toLowerCase().includes("communication") || ts.toLowerCase().includes("comsoc"))) ||
-            (soc.id === "embs" && (ts.toLowerCase().includes("medicine") || ts.toLowerCase().includes("biology") || ts.toLowerCase().includes("embs"))) ||
-            (soc.id === "pels" && (ts.toLowerCase().includes("power") || ts.toLowerCase().includes("pels"))) ||
-            (soc.id === "im" && (ts.toLowerCase().includes("instrumentation") || ts.toLowerCase().includes("measurement"))) ||
-            (soc.id === "wie" && (ts.toLowerCase().includes("women") || ts.toLowerCase().includes("wie"))));
-          return (<div key={soc.id} onClick={() => navigate(soc.href)} className="p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-[#002855]/50 shadow-sm cursor-pointer active:scale-[0.99] transition-all">
-            <div className="flex items-start justify-between">
+          {/* Society Detail Header Card */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <img src={soc.logo} alt={soc.code} className="w-10 h-10 rounded-xl object-contain bg-slate-50 p-1 border border-slate-200" />
+                <img src={soc.logo} alt={soc.code} className="w-12 h-12 rounded-2xl object-contain bg-slate-50 p-1 border border-slate-200 shadow-sm" />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className="font-extrabold text-slate-900 text-sm">{soc.name}</h3>
-                    {isEnrolled && (<span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black">
-                      ENROLLED
-                    </span>)}
+                    <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-extrabold text-[9px] uppercase tracking-wider">
+                      {soc.badge}
+                    </span>
+                    {isEnrolled && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px] flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> ENROLLED
+                      </span>
+                    )}
                   </div>
-                  <p className="text-[10px] text-[#002855] font-bold">{soc.badge} · Advisor: {soc.advisor}</p>
+                  <h3 className="text-base font-black text-slate-900 mt-1 leading-tight">{soc.name}</h3>
+                  <p className="text-[10px] text-[#002855] font-bold mt-0.5">{soc.code} · {soc.category}</p>
                 </div>
               </div>
-              <ChevronRight size={16} className="text-slate-400" />
+              <Link to={soc.href} className="text-[10px] text-[#002855] font-bold hover:underline shrink-0">
+                Full Web →
+              </Link>
             </div>
-            <p className="text-[11px] text-slate-600 mt-2">{soc.description}</p>
-            <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 text-[10px]">
-              <span className="text-slate-500">Chair: <strong className="text-slate-900">{soc.chair}</strong></span>
-              <span className="font-bold text-amber-700 font-mono">Fee: {soc.feeUSD}</span>
+
+            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+              {soc.description}
+            </p>
+
+            {/* Advisor & Chair */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[9px] text-slate-400 font-bold uppercase block">Faculty Advisor</span>
+                <p className="font-extrabold text-slate-900 text-xs mt-0.5">{soc.advisor}</p>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[9px] text-slate-400 font-bold uppercase block">Student Chair</span>
+                <p className="font-extrabold text-slate-900 text-xs mt-0.5">{soc.chair}</p>
+              </div>
             </div>
-          </div>);
-        })}
-      </div>)}
+
+            {/* Pricing & Join Button */}
+            <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between text-xs">
+              <div>
+                <p className="text-[9px] text-amber-800 font-bold uppercase">Membership Fee</p>
+                <p className="font-mono font-black text-amber-900 text-xs">{soc.feeUSD}</p>
+              </div>
+              <button
+                onClick={() => setIsRegisterModalOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-[#002855] text-white text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all"
+              >
+                {isEnrolled ? "Renew Chapter" : "Join Chapter"}
+              </button>
+            </div>
+          </div>
+
+          {/* Chapter Officers List */}
+          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+              <Users size={14} className="text-[#002855]" /> Chapter Leadership Roster
+            </h4>
+            <div className="space-y-1.5">
+              {socOfficers.slice(0, 4).map((ob, idx) => (
+                <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#002855] text-white font-black text-[10px] flex items-center justify-center shrink-0">
+                      {ob.name[0]}
+                    </div>
+                    <div>
+                      <p className="font-extrabold text-slate-900 text-xs leading-tight">{ob.name}</p>
+                      <p className="text-[9px] text-slate-500">{ob.role}</p>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono text-[#002855] font-bold">{ob.department}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    })() : (
+      /* CHAPTERS LIST (CARDS / TABLE) */
+      <>
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Cpu size={16} className="text-[#002855]" />
+                {societyScope === "registered" && currentUser
+                  ? `My Enrolled Societies (${studentRegisteredSocieties.length})`
+                  : "8 Technical Society Chapters"}
+              </h2>
+              <p className="text-[10px] text-slate-500">
+                {societyScope === "registered" && currentUser
+                  ? `Active memberships for ${currentUser.first_name} ${currentUser.last_name}`
+                  : "Affiliated technical societies at IEEE SB SREC"}
+              </p>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
+              {displayedSocieties.length} Chapters
+            </span>
+          </div>
+
+          {/* Registered vs All Scope Switcher (when user is logged in) */}
+          {currentUser && (<div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+            <button onClick={() => setSocietyScope("registered")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "registered"
+              ? "bg-[#002855] text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900"}`}>
+              <CheckCircle2 size={12} className={societyScope === "registered" ? "text-cyan-300" : "text-slate-400"} />
+              <span>My Registered ({studentRegisteredSocieties.length})</span>
+            </button>
+            <button onClick={() => setSocietyScope("all")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "all"
+              ? "bg-[#002855] text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900"}`}>
+              <span>All 8 Chapters</span>
+            </button>
+          </div>)}
+        </div>
+
+        {/* TABULAR SOCIETIES VIEW */}
+        {viewMode === "table" ? (<div className="rounded-2xl border border-slate-200/90 overflow-hidden bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[500px]">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
+                  <th className="py-2.5 px-3">Society Chapter</th>
+                  <th className="py-2.5 px-3">Faculty Advisor</th>
+                  <th className="py-2.5 px-3">Student Chair</th>
+                  <th className="py-2.5 px-3 text-center">Status</th>
+                  <th className="py-2.5 px-3 text-right">Fee (USD)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs">
+                {displayedSocieties.map((soc) => {
+                  const userSocList = Array.isArray(currentUser?.target_societies)
+                    ? currentUser.target_societies
+                    : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+                  const isEnrolled = userSocList.some((ts) => {
+                    const t = String(ts || "").toLowerCase();
+                    const code = (soc.code || "").toLowerCase();
+                    const name = (soc.name || "").toLowerCase();
+                    return (
+                      t.includes(code) ||
+                      t.includes(name) ||
+                      (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
+                      (soc.id === "cs" && t.includes("computer")) ||
+                      (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
+                      (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
+                      (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
+                      (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
+                      (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
+                      (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+                    );
+                  });
+                  return (<tr key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="hover:bg-blue-50/50 transition-colors cursor-pointer">
+                    <td className="py-2.5 px-3">
+                      <div className="flex items-center gap-2">
+                        <img src={soc.logo} alt={soc.code} className="w-7 h-7 rounded-lg object-contain bg-slate-100 p-0.5 border border-slate-200" />
+                        <div>
+                          <p className="font-extrabold text-slate-900 leading-tight">{soc.name}</p>
+                          <p className="text-[9px] text-[#002855] font-bold">{soc.badge}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-3 text-[11px] text-slate-700">{soc.advisor}</td>
+                    <td className="py-2.5 px-3 text-[11px] text-slate-900 font-bold">{soc.chair}</td>
+                    <td className="py-2.5 px-3 text-center">
+                      {isEnrolled ? (<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        ENROLLED
+                      </span>) : (<span className="text-[9px] text-slate-400 font-medium">Available</span>)}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono font-black text-amber-700">{soc.feeUSD}</td>
+                  </tr>);
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>) : (
+          /* CARD VIEW */
+          <div className="space-y-2.5">
+            {displayedSocieties.map((soc) => {
+              const userSocList = Array.isArray(currentUser?.target_societies)
+                ? currentUser.target_societies
+                : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+              const isEnrolled = userSocList.some((ts) => {
+                const t = String(ts || "").toLowerCase();
+                const code = (soc.code || "").toLowerCase();
+                const name = (soc.name || "").toLowerCase();
+                return (
+                  t.includes(code) ||
+                  t.includes(name) ||
+                  (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
+                  (soc.id === "cs" && t.includes("computer")) ||
+                  (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
+                  (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
+                  (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
+                  (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
+                  (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
+                  (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+                );
+              });
+              return (<div key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-[#002855]/50 shadow-sm cursor-pointer active:scale-[0.99] transition-all">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <img src={soc.logo} alt={soc.code} className="w-10 h-10 rounded-xl object-contain bg-slate-50 p-1 border border-slate-200" />
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-extrabold text-slate-900 text-sm">{soc.name}</h3>
+                        {isEnrolled && (<span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black">
+                          ENROLLED
+                        </span>)}
+                      </div>
+                      <p className="text-[10px] text-[#002855] font-bold">{soc.badge} · Advisor: {soc.advisor}</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400" />
+                </div>
+                <p className="text-[11px] text-slate-600 mt-2">{soc.description}</p>
+                <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 text-[10px]">
+                  <span className="text-slate-500">Chair: <strong className="text-slate-900">{soc.chair}</strong></span>
+                  <span className="font-bold text-amber-700 font-mono">Fee: {soc.feeUSD}</span>
+                </div>
+              </div>);
+            })}
+          </div>)}
+      </>
+    )}
   </div>)
 }
 
@@ -2551,7 +2710,7 @@ export const MobileAppPage = ({
         ════════════════════════════════════════════════════════════════════ */}
 {
   activeTab === "menu" && (<div className="space-y-3 animate-fade-in">
-    {["office-bearers", "past-bearers", "awards", "plans", "funding", "contact"].includes(allPagesCategory) ? (<div className="space-y-3">
+    {["office-bearers", "past-bearers", "awards", "plans", "funding", "contact", "about", "team", "reports", "gallery"].includes(allPagesCategory) ? (<div className="space-y-3">
       <button onClick={() => setAllPagesCategory("menu")} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
         <ArrowLeft size={13} /> Back to All Pages Menu
       </button>
@@ -2622,67 +2781,46 @@ export const MobileAppPage = ({
                   </div>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                  <span className="text-slate-500 italic truncate max-w-[170px]">
-                    "{officer.tagline}"
+                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider" style={{ color: officer.color, backgroundColor: officer.bg }}>
+                    {officer.tagline}
                   </span>
-                  {officer.email && (<a href={`mailto:${officer.email}`} className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-[#002855] font-bold flex items-center gap-1 transition-colors">
-                    <Mail size={11} />
-                    <span>Email</span>
-                  </a>)}
+                  <button onClick={() => setDetailModalMember(officer)} className="text-[10px] text-[#002855] font-extrabold hover:underline flex items-center gap-0.5">
+                    <span>Dossier</span>
+                    <ArrowRight size={10} />
+                  </button>
                 </div>
               </motion.div>);
             })}
           </div>) : (
-          /* ── REVAMPED EXECUTIVE TABLE VIEW ── */
+          /* ── TABLE VIEW FOR OFFICE BEARERS ── */
           <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left border-collapse min-w-[500px]">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                    <th className="py-2.5 px-3">Officer &amp; Role</th>
+                    <th className="py-2.5 px-3">Officer</th>
+                    <th className="py-2.5 px-3">Role</th>
                     <th className="py-2.5 px-3">Department</th>
-                    <th className="py-2.5 px-3">Tagline</th>
-                    <th className="py-2.5 px-3 text-right">Contact</th>
+                    <th className="py-2.5 px-3 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredOfficers.map((officer) => {
-                    const Icon = officer.icon;
-                    return (<tr key={officer.id} className="hover:bg-blue-50/40">
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-2">
-                          {officer.image_url ? (
-                            <img src={officer.image_url} alt={officer.name} className="w-7 h-7 rounded-xl object-cover shrink-0 shadow-sm border border-slate-200" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                          ) : null}
-                          {!officer.image_url && (
-                            <div className="w-7 h-7 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm" style={{ backgroundColor: officer.color }}>
-                              <Icon size={14} />
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-extrabold text-slate-900 leading-tight">
-                              {officer.name}
-                            </p>
-                            <p className="text-[10px] font-black" style={{ color: officer.color }}>
-                              {officer.role}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-600 font-medium">
-                        {officer.department}
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-500 text-[10px] italic">
-                        {officer.tagline}
-                      </td>
-                      <td className="py-2.5 px-3 text-right">
-                        {officer.email ? (<a href={`mailto:${officer.email}`} className="text-[#002855] underline font-mono text-[10px]">
-                          {officer.email.split("@")[0]}
-                        </a>) : (<span className="text-slate-400">—</span>)}
-                      </td>
-                    </tr>);
-                  })}
+                  {filteredOfficers.map((ob) => (<tr key={ob.id} className="hover:bg-blue-50/50">
+                    <td className="py-2.5 px-3">
+                      <div className="flex items-center gap-2">
+                        <img src={getOfficerImg(ob)} alt={ob.name} className="w-7 h-7 rounded-xl object-cover border border-slate-200 shrink-0" onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ob.name)}&background=002855&color=fff`; }} />
+                        <span className="font-extrabold text-slate-900 text-xs">{ob.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-3 text-xs font-bold" style={{ color: ob.color }}>{ob.role}</td>
+                    <td className="py-2.5 px-3 text-[11px] text-slate-600">{ob.department}</td>
+                    <td className="py-2.5 px-3 text-right">
+                      <button onClick={() => setDetailModalMember(ob)} className="px-2 py-1 rounded-lg bg-blue-50 text-[#002855] text-[10px] font-black hover:bg-blue-100">
+                        View
+                      </button>
+                    </td>
+                  </tr>))}
                 </tbody>
               </table>
             </div>
@@ -2694,7 +2832,7 @@ export const MobileAppPage = ({
       {allPagesCategory === "past-bearers" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
         <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-            <GraduationCap size={14} className="text-[#002855]" /> Past Office Bearers Timeline
+            <GraduationCap size={14} className="text-[#002855]" /> Past Office Bearers Hall of Fame
           </h3>
           <Link to="/past-bearers" className="text-[10px] text-[#002855] font-bold hover:underline">
             Full Page →
@@ -2704,23 +2842,286 @@ export const MobileAppPage = ({
           <table className="w-full text-xs text-left border-collapse min-w-[450px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                <th className="py-2.5 px-3">Tenure</th>
+                <th className="py-2.5 px-3">Tenure Year</th>
+                <th className="py-2.5 px-3">Name</th>
                 <th className="py-2.5 px-3">Role</th>
-                <th className="py-2.5 px-3">Leader Name</th>
+                <th className="py-2.5 px-3">Dept</th>
                 <th className="py-2.5 px-3">Key Achievement</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {PAST_BEARERS_DATA.map((pb, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
                 <td className="py-2 px-3 font-mono font-bold text-[#002855]">{pb.year}</td>
-                <td className="py-2 px-3 text-slate-700 font-bold">{pb.role}</td>
-                <td className="py-2 px-3 text-slate-900 font-extrabold">{pb.name} ({pb.dept})</td>
+                <td className="py-2 px-3 font-extrabold text-slate-900">{pb.name}</td>
+                <td className="py-2 px-3 text-slate-700 font-semibold">{pb.role}</td>
+                <td className="py-2 px-3 text-slate-500 text-[11px]">{pb.dept}</td>
                 <td className="py-2 px-3 text-amber-700 text-[10px] font-semibold">{pb.achievement}</td>
               </tr>))}
             </tbody>
           </table>
         </div>
       </div>)}
+
+      {/* Sub-view: Dedicated About SREC SB Screen */}
+      {allPagesCategory === "about" && (
+        <div className="space-y-3">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#002855] via-[#003b7a] to-[#0055a5] text-white shadow-md space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 font-mono font-extrabold text-[9px] uppercase tracking-wider">
+                STB Code 64581
+              </span>
+              <Link to="/about" className="text-[10px] text-sky-200 font-bold hover:underline flex items-center gap-1">
+                Full Web View <ExternalLink size={10} />
+              </Link>
+            </div>
+            <h3 className="text-base font-black leading-tight text-white">
+              IEEE SREC Student Branch
+            </h3>
+            <p className="text-[11px] text-sky-100/90 leading-snug">
+              Established in 2001 at Sri Ramakrishna Engineering College, Coimbatore. Operating under IEEE Madras Section (Region 10).
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+              <p className="text-xl font-black text-[#002855]">24+ Years</p>
+              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Active Operations</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+              <p className="text-xl font-black text-amber-600">300+</p>
+              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Active Members</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+              <p className="text-xl font-black text-emerald-600">8 Chapters</p>
+              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Technical Societies</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+              <p className="text-xl font-black text-purple-600">50+</p>
+              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Annual Conclaves</p>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+            <div className="flex items-center gap-3">
+              <img src="https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg" alt="Counselor" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-xs">Dr. K. Balamurugan</h4>
+                <p className="text-[10px] text-purple-700 font-extrabold">Student Branch Counsellor</p>
+                <p className="text-[9px] text-slate-500">Associate Professor / EEE</p>
+              </div>
+            </div>
+            <blockquote className="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+              "Our goal is to cultivate world-class engineers by providing active hands-on technical projects, global IEEE networking, and student leadership opportunities."
+            </blockquote>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+              <Trophy size={14} className="text-[#002855]" /> Student Branch Milestones
+            </h4>
+            <div className="space-y-2.5">
+              {[
+                { year: "2001", title: "Inception & Chartering", desc: "Inaugurated on June 11, 2001 under Madras Section." },
+                { year: "2008", title: "CS & PELS Society Expansion", desc: "Formed dedicated Technical Society chapters." },
+                { year: "2015", title: "HQ Global Recognition", desc: "Awarded continuous Exemplary Student Branch accolade." },
+                { year: "2020", title: "Digital & Virtual Hackathons", desc: "Hosted IEEE Xtreme & national virtual hackathons." },
+                { year: "2026", title: "AECTSD 2027 Flagship Prep", desc: "Organizing premier IEEE international conference." }
+              ].map((m, idx) => (
+                <div key={idx} className="flex gap-2.5 items-start">
+                  <span className="px-2 py-0.5 rounded-lg bg-blue-50 text-[#002855] border border-blue-200 font-mono text-[9px] font-black shrink-0">
+                    {m.year}
+                  </span>
+                  <div>
+                    <p className="text-xs font-extrabold text-slate-900 leading-tight">{m.title}</p>
+                    <p className="text-[10px] text-slate-500">{m.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sub-view: Dedicated Executive Committee & Team Screen */}
+      {allPagesCategory === "team" && (
+        <div className="space-y-3">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] font-extrabold text-[9px] uppercase tracking-wider">
+                  Directory 2026-2027
+                </span>
+                <h3 className="text-base font-black text-slate-900 mt-1">
+                  Executive Committee &amp; Team
+                </h3>
+              </div>
+              <Link to="/team" className="text-[10px] text-[#002855] font-bold hover:underline">
+                Full Page →
+              </Link>
+            </div>
+
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search team by name, role, dept..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#002855]"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+              {[
+                { id: "all", label: "All Team" },
+                { id: "leadership", label: "Leadership" },
+                { id: "core", label: "Core Secretariat" },
+                { id: "tech_design", label: "Tech & Design" },
+                { id: "exec", label: "Executive Team" }
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setOfficerCategory(cat.id)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-black uppercase whitespace-nowrap transition-all ${
+                    officerCategory === cat.id
+                      ? "bg-[#002855] text-white shadow-sm"
+                      : "bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {filteredOfficers
+              .filter((off) => {
+                if (!searchQuery) return true;
+                const q = searchQuery.toLowerCase();
+                return (
+                  (off.name || "").toLowerCase().includes(q) ||
+                  (off.role || "").toLowerCase().includes(q) ||
+                  (off.department || "").toLowerCase().includes(q)
+                );
+              })
+              .map((officer) => (
+                <div
+                  key={officer.id}
+                  onClick={() => setDetailModalMember(officer)}
+                  className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
+                >
+                  <img
+                    src={getOfficerImg(officer)}
+                    alt={officer.name}
+                    className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-sm border border-slate-200"
+                    onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(officer.name)}&background=002855&color=fff`; }}
+                  />
+                  <div className="leading-tight flex-1 min-w-0">
+                    <h4 className="font-extrabold text-slate-900 text-xs truncate">
+                      {officer.name}
+                    </h4>
+                    <p className="text-[10px] font-black mt-0.5 truncate" style={{ color: officer.color || "#002855" }}>
+                      {officer.role}
+                    </p>
+                    <p className="text-[9px] text-slate-500 truncate mt-0.5">
+                      {officer.department}
+                    </p>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-400 shrink-0" />
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sub-view: Dedicated Event Reports & Activity Hub Screen */}
+      {allPagesCategory === "reports" && (
+        <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm space-y-0">
+          <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div>
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                <FileText size={14} className="text-[#002855]" /> Event Reports &amp; Hub Congress
+              </h3>
+              <p className="text-[10px] text-slate-500">Official documentation of all IEEE SREC activities</p>
+            </div>
+            <Link to="/reports" className="text-[10px] text-[#002855] font-bold hover:underline">
+              Full Page →
+            </Link>
+          </div>
+
+          <div className="p-3 space-y-2.5">
+            {EVENTS_DATA.map((evt, idx) => (
+              <div key={idx} className="p-3 rounded-2xl border border-slate-200 bg-white hover:border-[#002855]/40 transition-all space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 text-[8px] font-black uppercase">
+                    {evt.category || "Report"} · {evt.society || "IEEE SREC"}
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-slate-500">{evt.date}</span>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-slate-900 text-xs leading-tight">{evt.title}</h4>
+                  <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{evt.description}</p>
+                </div>
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
+                  <span className="text-slate-600 font-medium flex items-center gap-1">
+                    <Building2 size={11} className="text-slate-400" /> {evt.venue || "SREC Campus"}
+                  </span>
+                  <a
+                    href="#report-pdf"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      alert(`Official Event Report for "${evt.title}" is archived in IEEE SB Database.`);
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 text-[#002855] font-black text-[9px] hover:bg-slate-200 transition-all"
+                  >
+                    <Download size={10} /> Report PDF
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sub-view: Dedicated Photo Gallery Screen */}
+      {allPagesCategory === "gallery" && (
+        <div className="space-y-3">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                <Camera size={14} className="text-pink-600" /> IEEE SREC Photo Gallery
+              </h3>
+              <Link to="/gallery" className="text-[10px] text-[#002855] font-bold hover:underline">
+                Full Page →
+              </Link>
+            </div>
+            <p className="text-[10px] text-slate-500">Memories, flagship symposia, and awards ceremonies</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { title: "AECTSD Conference Kickoff", date: "2026", src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80", tag: "Conference" },
+              { title: "VisionX Coding Arena", date: "2025", src: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80", tag: "Symposium" },
+              { title: "IEEE Xtreme 24H Arena", date: "2025", src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&auto=format&fit=crop&q=80", tag: "Hackathon" },
+              { title: "IEEE Day Celebration", date: "2025", src: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80", tag: "IEEE Day" },
+              { title: "Smart Grid EV Lab", date: "2025", src: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&auto=format&fit=crop&q=80", tag: "Workshop" },
+              { title: "WIE STEM School Drive", date: "2025", src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&auto=format&fit=crop&q=80", tag: "Outreach" }
+            ].map((item, idx) => (
+              <div key={idx} className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 shadow-sm aspect-video">
+                <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent p-2 flex flex-col justify-end">
+                  <span className="px-1.5 py-0.2 w-max rounded bg-pink-500/80 text-white font-black text-[7px] uppercase tracking-wider mb-0.5">
+                    {item.tag}
+                  </span>
+                  <p className="text-[10px] font-extrabold text-white leading-tight line-clamp-1">{item.title}</p>
+                  <p className="text-[8px] text-slate-300 font-mono">{item.date}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Sub-view: Awards Table */}
       {allPagesCategory === "awards" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
@@ -2895,16 +3296,16 @@ export const MobileAppPage = ({
               <p className="text-xs font-black text-slate-900">Past Bearers</p>
               <p className="text-[9px] text-slate-500">2022-2025 Timeline</p>
             </button>
-            <Link to="/team" className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+            <button onClick={() => setAllPagesCategory("team")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
               <Users size={18} className="text-[#002855] mb-1" />
               <p className="text-xs font-black text-slate-900">Executive Team</p>
               <p className="text-[9px] text-slate-500">Full Directory</p>
-            </Link>
-            <Link to="/about" className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+            </button>
+            <button onClick={() => setAllPagesCategory("about")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
               <Info size={18} className="text-indigo-600 mb-1" />
               <p className="text-xs font-black text-slate-900">About SREC SB</p>
               <p className="text-[9px] text-slate-500">Code 64581 History</p>
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -2924,16 +3325,16 @@ export const MobileAppPage = ({
               <p className="text-xs font-black text-slate-900">Annual Plans</p>
               <p className="text-[9px] text-slate-500">Yearly Roadmap</p>
             </button>
-            <button onClick={() => setAllPagesCategory("funding")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <DollarSign size={18} className="text-emerald-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Funding &amp; Grants</p>
-              <p className="text-[9px] text-slate-500">Budget Breakdown</p>
+            <button onClick={() => setAllPagesCategory("reports")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+              <FileText size={18} className="text-cyan-600 mb-1" />
+              <p className="text-xs font-black text-slate-900">Event Reports</p>
+              <p className="text-[9px] text-slate-500">Hub &amp; Conclave Hub</p>
             </button>
-            <Link to="/gallery" className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+            <button onClick={() => setAllPagesCategory("gallery")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
               <ImageIcon size={18} className="text-pink-600 mb-1" />
               <p className="text-xs font-black text-slate-900">Photo Gallery</p>
               <p className="text-[9px] text-slate-500">Event Memories</p>
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -3004,7 +3405,7 @@ export const MobileAppPage = ({
         <div>
           <span className="text-[9px] uppercase font-bold text-slate-400">Enrolled Societies</span>
           <div className="flex flex-wrap gap-1 mt-1">
-            {detailModalMember.target_societies.map((s, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[9px] text-[#002855] font-semibold">
+            {(Array.isArray(detailModalMember.target_societies) ? detailModalMember.target_societies : (typeof detailModalMember.target_societies === "string" ? detailModalMember.target_societies.split(",") : [])).map((s, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[9px] text-[#002855] font-semibold">
               {s}
             </span>))}
           </div>
@@ -3012,7 +3413,7 @@ export const MobileAppPage = ({
         <div>
           <span className="text-[9px] uppercase font-bold text-slate-400">Skills &amp; Specialties</span>
           <div className="flex flex-wrap gap-1 mt-1">
-            {detailModalMember.skills.map((sk, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-slate-100 text-[9px] text-slate-700">
+            {(Array.isArray(detailModalMember.skills) ? detailModalMember.skills : (typeof detailModalMember.skills === "string" ? detailModalMember.skills.split(",") : [])).map((sk, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-slate-100 text-[9px] text-slate-700">
               {sk}
             </span>))}
           </div>

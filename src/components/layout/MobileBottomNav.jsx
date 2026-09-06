@@ -27,7 +27,7 @@ export const MobileBottomNav = ({ activeTab, onChangeTab }) => {
       aria-label="Mobile Navigation Dock"
       className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-2xl border-t border-slate-200/90 px-2 pt-1.5 pb-[max(0.65rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,40,85,0.06)]"
     >
-      <div className="max-w-md mx-auto flex items-center justify-around">
+      <div className="w-full max-w-2xl mx-auto flex items-center justify-around">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
