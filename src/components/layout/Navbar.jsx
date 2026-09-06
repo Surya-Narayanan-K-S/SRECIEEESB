@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown, Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Crown, FileText, BookOpen } from "lucide-react";
+import { X, Menu, Sparkles, Shield, ExternalLink, ChevronRight, Home, ChevronDown, Image, Phone, UserPlus, LayoutGrid, Users, Calendar, Award, DollarSign, Info, Compass, IdCard, Crown, FileText, BookOpen, Smartphone } from "lucide-react";
 import ieeeStamp from "@/assets/ieees.png";
 import srecLogo from "@/assets/srec-logo.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
@@ -273,6 +273,15 @@ const Navbar = () => {
               >
                 <Shield size={13} className="text-cyan-400" />
                 <span>Admin</span>
+              </Link>
+
+              <Link
+                to="/app"
+                className="inline-flex items-center gap-1.5 px-3 2xl:px-4 py-1.5 2xl:py-2.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white font-black text-[11px] 2xl:text-xs uppercase tracking-wider transition-all active:scale-95 whitespace-nowrap shrink-0"
+                title="Open Mobile App View"
+              >
+                <Smartphone size={13} className="text-cyan-400" />
+                <span>Mobile App</span>
               </Link>
             </nav>
 

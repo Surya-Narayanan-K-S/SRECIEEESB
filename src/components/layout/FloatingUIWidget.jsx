@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, Compass, Sparkles, IdCard, Users, Calendar, Shield, X, Command } from "lucide-react";
+import { ChevronUp, Compass, Sparkles, IdCard, Users, Calendar, Shield, X, Command, Smartphone } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export const FloatingUIWidget = () => {
@@ -40,6 +40,7 @@ export const FloatingUIWidget = () => {
   if (isLaunchOrRemote) return null;
 
   const quickLinks = [
+    { label: "Mobile App View", href: "/app", icon: Smartphone, color: "text-pink-400" },
     { label: "Student Portal", href: "/student-login", icon: IdCard, color: "text-amber-400" },
     { label: "Technical Societies", href: "/societies", icon: Users, color: "text-cyan-400" },
     { label: "Branch Activities", href: "/activities", icon: Calendar, color: "text-blue-400" },
