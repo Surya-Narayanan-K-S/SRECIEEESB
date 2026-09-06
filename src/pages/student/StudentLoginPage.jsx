@@ -16,92 +16,8 @@ import embsLogo from "@/assets/societies/EMBS.jpg";
 import imLogo from "@/assets/societies/IM.jpg";
 import wieLogo from "@/assets/societies/WIE.jpg";
 import pelsLogo from "@/assets/societies/pels.png";
-// Pre-configured Verified Demo Member Profiles for 1-Click Instant Login
-const DEMO_MEMBERS = [
-    {
-        id: "stu-srec-2025-001",
-        ieee_id: "98421045",
-        roll_number: "22EE104",
-        first_name: "P.",
-        last_name: "Joselyn",
-        email: "joselyn.220104@srec.ac.in",
-        phone: "+91 94882 14502",
-        department: "Electrical & Electronics Engineering",
-        year_of_study: "IV Year (2022-2026)",
-        member_type: "Student Branch Chairperson",
-        join_date: "August 2022",
-        valid_thru: "DEC 2026",
-        membership_status: "ACTIVE",
-        target_societies: [
-            "IEEE Student Branch SREC",
-            "IEEE Power Electronics Society (PELS)",
-            "IEEE Women in Engineering (WIE)"
-        ],
-        skills: ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions"],
-        bio_sop: "Active IEEE SB leader committed to advancing power technology and inspiring engineering students across Madras Section.",
-        avatar_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-        events_attended: [
-            { title: "VisionX 2025 – AI & Edge Computing Expo", date: "Aug 2025", category: "National Symposium" },
-            { title: "IEEE Madras Section Leadership Conclave", date: "May 2025", category: "Leadership" },
-            { title: "IEEE International Renewable Energy Workshop", date: "Jan 2025", category: "Workshop" }
-        ],
-        awards_count: 3
-    },
-    {
-        id: "stu-srec-2025-002",
-        ieee_id: "98319240",
-        roll_number: "23CS218",
-        first_name: "Aravind",
-        last_name: "Karthik",
-        email: "aravind.karthik.23cs@srec.ac.in",
-        phone: "+91 98402 33419",
-        department: "Computer Science & Engineering",
-        year_of_study: "III Year (2023-2027)",
-        member_type: "Student Member",
-        join_date: "September 2023",
-        valid_thru: "DEC 2026",
-        membership_status: "ACTIVE",
-        target_societies: [
-            "IEEE Computer Society (CS)",
-            "IEEE Computational Intelligence Society (CIS)"
-        ],
-        skills: ["Machine Learning", "Full-Stack Development", "Cloud Architecture", "Python", "Data Structures"],
-        bio_sop: "Passionate CS researcher focusing on applied artificial intelligence, open-source algorithms, and scalable web apps.",
-        avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-        events_attended: [
-            { title: "HackIEEE 2025 - 24hr National Hackathon", date: "Jul 2025", category: "Hackathon Winner" },
-            { title: "Workshop on LLM Fine-Tuning & RAG", date: "Mar 2025", category: "Hands-on Technical" }
-        ],
-        awards_count: 2
-    },
-    {
-        id: "stu-srec-2025-003",
-        ieee_id: "98553108",
-        roll_number: "23BM042",
-        first_name: "Anjanalakshmi",
-        last_name: "S Prabhu",
-        email: "anjanalakshmi.23bm@srec.ac.in",
-        phone: "+91 91234 56780",
-        department: "Biomedical Engineering",
-        year_of_study: "III Year (2023-2027)",
-        member_type: "Activities Co-ordinator",
-        join_date: "October 2023",
-        valid_thru: "DEC 2026",
-        membership_status: "ACTIVE",
-        target_societies: [
-            "IEEE Engineering in Medicine & Biology Society (EMBS)",
-            "IEEE Women in Engineering (WIE)"
-        ],
-        skills: ["Biosensors", "Medical Image Processing", "Healthcare AI", "MATLAB", "Event Organizing"],
-        bio_sop: "Fostering interdisciplinary research at the intersection of medicine and smart instrumentation systems.",
-        avatar_url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80",
-        events_attended: [
-            { title: "BioMedTech 2025 Innovators Summit", date: "Sep 2025", category: "Conference" },
-            { title: "IEEE WIE Global Outreach & STEM Camp", date: "Feb 2025", category: "Community Outreach" }
-        ],
-        awards_count: 4
-    }
-];
+// Member authentication
+const DEMO_MEMBERS = [];
 const StudentLoginPage = () => {
     const navigate = useNavigate();
     // Authentication State
@@ -220,14 +136,6 @@ const StudentLoginPage = () => {
         // Enforce email domain if user inputs an email address
         if (query.includes("@") && !query.endsWith("@srec.ac.in")) {
             setLoginError("Invalid email. Please use your official college email ending with @srec.ac.in");
-            return;
-        }
-        // Check demo accounts first for instantaneous login
-        const matchingDemo = DEMO_MEMBERS.find((m) => m.roll_number.toLowerCase() === query ||
-            m.ieee_id.toLowerCase() === query ||
-            m.email.toLowerCase() === query);
-        if (matchingDemo) {
-            handleLoginSuccess(matchingDemo);
             return;
         }
         setIsLoading(true);

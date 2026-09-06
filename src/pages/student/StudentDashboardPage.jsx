@@ -20,36 +20,7 @@ import imLogo from "@/assets/societies/IM.jpg";
 import wieLogo from "@/assets/societies/WIE.jpg";
 import pelsLogo from "@/assets/societies/pels.png";
 import casLogo from "@/assets/societies/css.svg";
-// Pre-configured Verified Demo Member Profile
-const DEFAULT_USER = {
-  id: "stu-srec-2025-001",
-  ieee_id: "98421045",
-  roll_number: "22EE104",
-  first_name: "P.",
-  last_name: "Joselyn",
-  email: "joselyn.220104@srec.ac.in",
-  phone: "+91 94882 14502",
-  department: "Electrical & Electronics Engineering",
-  year_of_study: "IV Year (2022-2026)",
-  member_type: "Student Branch Chairperson",
-  join_date: "16 Aug 2025",
-  membership_status: "ACTIVE",
-  target_societies: [
-    "IEEE Student Branch SREC",
-    "IEEE Power Electronics Society (PELS)",
-    "IEEE Women in Engineering (WIE)"
-  ],
-  skills: ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions", "MATLAB & Simulink"],
-  bio_sop: "Active IEEE SB leader committed to advancing power technology and inspiring engineering students across Madras Section.",
-  avatar_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-  events_attended: [
-    { title: "VisionX 2025 – AI & Edge Computing Expo", date: "Aug 2025", category: "National Symposium" },
-    { title: "IEEE Madras Section Leadership Conclave", date: "May 2025", category: "Leadership Summit" },
-    { title: "IEEE International Renewable Energy Workshop", date: "Jan 2025", category: "Technical Workshop" },
-    { title: "IEEE Student Branch Induction & Oath Ceremony", date: "Sep 2024", category: "Collegiate Event" }
-  ],
-  awards_count: 3
-};
+// Authenticated Student Member Dashboard
 // Calculate Membership Validity strictly as Dec 31st of Next Year from Registration Date
 export const getMembershipValidity = (joinDateStr) => {
   let startDate = new Date();
@@ -184,7 +155,7 @@ const StudentDashboardPage = () => {
         console.warn("Could not refresh member from DB:", err);
       }
     };
-    let activeUser = DEFAULT_USER;
+    let activeUser = null;
     const saved = localStorage.getItem("ieee_student_session") || localStorage.getItem("srec_ieee_app_user");
     if (saved) {
       try {
@@ -194,17 +165,10 @@ const StudentDashboardPage = () => {
           setCurrentUser(parsed);
           fetchLatestData(parsed);
         }
-        else {
-          setCurrentUser(DEFAULT_USER);
-        }
       }
       catch (err) {
         localStorage.removeItem("ieee_student_session");
-        setCurrentUser(DEFAULT_USER);
       }
-    }
-    else {
-      setCurrentUser(DEFAULT_USER);
     }
     // 5. Supabase Realtime Subscription: Instant live update when database rows change
     const channel = supabase

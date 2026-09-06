@@ -340,98 +340,8 @@ const REAL_OFFICE_BEARERS = [
     image_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80"
   }
 ];
-// Verified Seed Student Members
-const SEED_MEMBERS = [
-  {
-    id: "stu-001",
-    ieee_id: "98421045",
-    roll_number: "22EE104",
-    first_name: "P.",
-    last_name: "Joselyn",
-    email: "joselyn.220104@srec.ac.in",
-    phone: "+91 94882 14502",
-    department: "Electrical & Electronics Engineering",
-    year_of_study: "IV Year (2022-2026)",
-    member_type: "Student Branch Chairperson",
-    join_date: "16 Aug 2025",
-    valid_thru: "DEC 31, 2026",
-    membership_status: "ACTIVE",
-    target_societies: [
-      "IEEE Student Branch SREC",
-      "IEEE Power Electronics Society (PELS)",
-      "IEEE Women in Engineering (WIE)"
-    ],
-    skills: ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions", "MATLAB & Simulink"],
-    bio_sop: "Active IEEE SB leader committed to advancing power technology and inspiring engineering students across Madras Section.",
-    avatar_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-    events_attended: [
-      { title: "VisionX 2025 – AI & Edge Computing Expo", date: "Aug 2025", category: "National Symposium" },
-      { title: "IEEE Madras Section Leadership Conclave", date: "May 2025", category: "Leadership Summit" },
-      { title: "IEEE International Renewable Energy Workshop", date: "Jan 2025", category: "Technical Workshop" },
-      { title: "IEEE Student Branch Induction & Oath Ceremony", date: "Sep 2024", category: "Collegiate Event" }
-    ],
-    events_count: 14,
-    awards_count: 3
-  },
-  {
-    id: "stu-002",
-    ieee_id: "98319240",
-    roll_number: "23CS218",
-    first_name: "R",
-    last_name: "Vishnu Kaarthik",
-    email: "vishnukaarthik.230105@srec.ac.in",
-    phone: "+91 98402 33419",
-    department: "Electrical & Electronics Engineering",
-    year_of_study: "III Year (2023-2027)",
-    member_type: "Secretary",
-    join_date: "September 2023",
-    valid_thru: "DEC 31, 2026",
-    membership_status: "ACTIVE",
-    target_societies: [
-      "IEEE Computer Society (CS)",
-      "IEEE Computational Intelligence Society (CIS)"
-    ],
-    skills: ["Machine Learning", "Full-Stack Development", "Cloud Architecture", "Python", "Data Structures"],
-    bio_sop: "Passionate researcher focusing on applied artificial intelligence, open-source algorithms, and scalable web apps.",
-    avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
-    events_attended: [
-      { title: "IEEE Xtreme 19.0 Global Hackathon", date: "Oct 2025", category: "Global Hackathon" },
-      { title: "National Level AI & LLM Bootcamp", date: "Mar 2025", category: "Bootcamp" },
-      { title: "IEEE Day Project Expo & Hack", date: "Oct 2024", category: "Collegiate Event" }
-    ],
-    events_count: 9,
-    awards_count: 2
-  },
-  {
-    id: "stu-003",
-    ieee_id: "98553108",
-    roll_number: "24EE112",
-    first_name: "K S",
-    last_name: "Surya Narayanan",
-    email: "suryanarayanan.240112@srec.ac.in",
-    phone: "+91 91234 56780",
-    department: "Electrical & Electronics Engineering",
-    year_of_study: "II Year (2024-2028)",
-    member_type: "Web Designer & Digital Lead",
-    join_date: "August 2024",
-    valid_thru: "DEC 31, 2026",
-    membership_status: "ACTIVE",
-    target_societies: [
-      "IEEE Student Branch SREC",
-      "IEEE Computer Society (CS)"
-    ],
-    skills: ["Web Development", "React.js", "TypeScript", "UI/UX Design", "Capacitor Mobile Apps"],
-    bio_sop: "Architecting modern digital experiences and high-performance apps for IEEE Student Branch SREC.",
-    avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
-    events_attended: [
-      { title: "IEEE Web Platform & Portal Launch", date: "Jan 2025", category: "Digital Initiative" },
-      { title: "IEEE Madras Section Digital Summit", date: "Nov 2024", category: "Section Summit" },
-      { title: "IEEE SB SREC Orientation & Oath", date: "Aug 2024", category: "Branch Event" }
-    ],
-    events_count: 12,
-    awards_count: 4
-  }
-];
+// Verified Student Members (loaded dynamically from database)
+const SEED_MEMBERS = [];
 // Societies Data with Exact Real IEEE Student Membership Pricing (+ 18% GST Tax)
 const SOCIETIES_DATA = [
   { id: "srec", code: "IEEE SB SREC", name: "IEEE Student Branch SREC", logo: ieeeStamp, category: "Parent Branch", advisor: "Dr. K. Balamurugan", chair: "S Darshan", members: "180+", feeUSD: "$7.00 USD + 18% GST (≈ ₹684 total)", badge: "Core Chapter", href: "/societies/srec", description: "Primary membership giving full access to all SB flagship events, workshops, and IEEE global portal." },
@@ -748,9 +658,6 @@ export const MobileAppPage = ({
 
         if (membersRes.data && membersRes.data.length > 0) {
           setMembers(membersRes.data);
-          if (!saved) {
-            setSelectedMember(membersRes.data[0]);
-          }
         }
 
         // Process live office bearers from tables
@@ -1008,7 +915,8 @@ export const MobileAppPage = ({
     return ieeeStamp;
   };
   const handleOpenPdfModal = () => {
-    const target = selectedMember || currentUser || SEED_MEMBERS[0];
+    const target = selectedMember || currentUser;
+    if (!target) return;
     const primary = getPrimaryMemberCardPdfUrl(target);
     setActivePdfUrl(primary);
     setIsPdfModalOpen(true);
@@ -1056,8 +964,8 @@ export const MobileAppPage = ({
   };
   const handleDownloadDigitalCardPng = async () => {
     const targetEl = cardFrontRef.current || idCardRef.current;
-    const target = selectedMember || currentUser || SEED_MEMBERS[0];
-    if (!targetEl) return;
+    const target = selectedMember || currentUser;
+    if (!targetEl || !target) return;
     try {
       setIsDownloadingCardImg(true);
       const clone = targetEl.cloneNode(true);
@@ -1273,53 +1181,6 @@ export const MobileAppPage = ({
           </button>
         </form>
 
-        {/* ⚡ 1-TAP DEMO INSTANT STUDENT LOGIN */}
-        <div className="space-y-2 pt-2 border-t border-slate-100">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider flex items-center gap-1">
-              <Sparkles size={12} className="text-amber-500" />
-              <span>1-Tap Demo Student Login</span>
-            </span>
-            <span className="text-[9px] text-slate-400 font-medium">Instant Access</span>
-          </div>
-
-          <div className="grid grid-cols-1 gap-1.5">
-            {SEED_MEMBERS.map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => {
-                  setCurrentUser(m);
-                  setSelectedMember(m);
-                  localStorage.setItem("srec_ieee_app_user", JSON.stringify(m));
-                  localStorage.setItem("ieee_student_session", JSON.stringify(m));
-                  setIsGuestMode(true);
-                  setActiveTab("id");
-                }}
-                className="flex items-center justify-between p-2 rounded-2xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-left transition-all active:scale-98 group cursor-pointer"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <img
-                    src={m.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.first_name + " " + m.last_name)}&background=002855&color=fff&size=80`}
-                    alt={m.first_name}
-                    className="w-7.5 h-7.5 rounded-xl object-cover"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs font-black text-slate-900 group-hover:text-[#002855] truncate">
-                      {m.first_name} {m.last_name}
-                    </p>
-                    <p className="text-[10px] text-slate-500 font-mono truncate">
-                      {m.roll_number} · #{m.ieee_id} · <span className="text-[#002855] font-semibold">{m.member_type || "Student Member"}</span>
-                    </p>
-                  </div>
-                </div>
-                <span className="text-[9.5px] font-black text-[#002855] uppercase px-2 py-1 rounded-lg bg-white border border-slate-200 shrink-0 group-hover:bg-[#002855] group-hover:text-white transition-colors">
-                  Open →
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* 📝 NEW MEMBERSHIP REGISTRATION CALLOUT */}
         <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200 text-center space-y-1">
@@ -1706,6 +1567,75 @@ export const MobileAppPage = ({
             TAB 3: COMPLETE MOBILE STUDENT DASHBOARD & DIGITAL SMART ID VAULT
         ════════════════════════════════════════════════════════════════════ */}
       {activeTab === "id" && (
+        !activeMember ? (
+          <div className="space-y-4 animate-fade-in py-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/40 text-center space-y-4 max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-2xl bg-[#002855] text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-900/20">
+                <IdCard size={32} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-black text-slate-900">Student Digital ID Card</h3>
+                <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                  Enter your IEEE Member ID or Roll Number to access and verify your official smart card.
+                </p>
+              </div>
+
+              <form onSubmit={handleLoginSubmit} className="space-y-3 pt-2 text-left">
+                <div>
+                  <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1">
+                    IEEE Member ID / College Roll Number
+                  </label>
+                  <div className="relative">
+                    <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={loginInput}
+                      onChange={(e) => setLoginInput(e.target.value)}
+                      placeholder="e.g. 98421045 or 22EE104"
+                      className="w-full pl-10 pr-3 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs font-semibold placeholder-slate-400 focus:outline-none focus:border-[#002855] focus:bg-white transition-all shadow-inner"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {loginError && (
+                  <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                    {loginError}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoggingIn}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#002855] to-[#00629B] hover:from-[#001c3d] hover:to-[#004e8a] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-blue-900/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                >
+                  {isLoggingIn ? (
+                    <>
+                      <RotateCw size={15} className="animate-spin" />
+                      <span>Retrieving Card...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>View Official Digital ID</span>
+                      <ArrowRight size={15} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-500 text-[11px]">Not yet an IEEE member?</span>
+                <button
+                  type="button"
+                  onClick={() => setIsRegisterModalOpen(true)}
+                  className="text-[#002855] font-black hover:underline cursor-pointer text-[11px]"
+                >
+                  Register Online →
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="space-y-4 animate-fade-in pb-16">
 
           {/* ── TOP ACTIONS TOOLBAR: Status, View PDF, Flip, Save PNG & RENEW ── */}
@@ -2397,37 +2327,8 @@ export const MobileAppPage = ({
             </button>
           </div>
 
-          {/* ── BENTO MODULE 9: SWITCH VERIFIED MEMBER CARD SCROLLER ── */}
-          <div className="p-3.5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
-            <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider block">
-              Switch Verified Member Card
-            </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-              {members.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => {
-                    setSelectedMember(m);
-                    setIsFlipped(false);
-                  }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all border cursor-pointer ${activeMember?.id === m.id
-                      ? "bg-[#002855] text-white border-[#002855] font-bold shadow-xs"
-                      : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
-                    }`}
-                >
-                  <img
-                    src={m.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80"}
-                    alt="Photo"
-                    className="w-4 h-4 rounded-full object-cover"
-                  />
-                  <span>{m.first_name} ({m.roll_number})</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
         </div>
-      )}
+      ))}
 
       {/* ═══════════════════════════════════════════════════════════════════
           TAB 4: TECHNICAL SOCIETIES (WHITE THEME)
