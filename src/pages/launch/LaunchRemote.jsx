@@ -108,7 +108,7 @@ export const LaunchRemote = () => {
   const [countdown, setCountdown] = useState(5);
   const [selectedDuration, setSelectedDuration] = useState(5);
   const [chiefGuest, setChiefGuest] = useState("Dr. M. Venkateshkumar");
-  const [chiefGuestTitle, setChiefGuestTitle] = useState("Chairman, IEEE Power & Energy Society");
+  const [chiefGuestTitle, setChiefGuestTitle] = useState("Chairman, IEEE Power and Electronics Society");
   const [lastActionStatus, setLastActionStatus] = useState("");
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [ripples, setRipples] = useState([]);
@@ -269,7 +269,7 @@ export const LaunchRemote = () => {
         supabase.from("page_content").upsert([
           { page_key: "launch_config", content_key: "launch_active", content_text: "false" },
           { page_key: "launch_config", content_key: "launch_state", content_text: "launched" }
-        ], { onConflict: "page_key,content_key" }).then(() => {});
+        ], { onConflict: "page_key,content_key" }).then(() => { });
         localStorage.setItem("ieee_launch_mode_active", "false");
       } catch {
         // Ignore
@@ -330,13 +330,12 @@ export const LaunchRemote = () => {
       {/* ── AMBIENT BACKGROUND LIGHTING ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div
-          className={`absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[140px] transition-all duration-700 ${
-            launchState === "countdown"
+          className={`absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[140px] transition-all duration-700 ${launchState === "countdown"
               ? "bg-amber-600/30 scale-125"
               : launchState === "launched"
-              ? "bg-emerald-600/25 scale-110"
-              : "bg-[#0066cc]/25 scale-100"
-          }`}
+                ? "bg-emerald-600/25 scale-110"
+                : "bg-[#0066cc]/25 scale-100"
+            }`}
         />
         <div className="absolute inset-0 bg-[radial-gradient(#0066cc_1px,transparent_1px)] [background-size:32px_32px] opacity-10" />
       </div>
@@ -359,13 +358,12 @@ export const LaunchRemote = () => {
         <div className="flex items-center justify-between w-full mb-3 px-1">
           <div className="flex items-center gap-2">
             <span
-              className={`w-2.5 h-2.5 rounded-full ${
-                launchState === "countdown"
+              className={`w-2.5 h-2.5 rounded-full ${launchState === "countdown"
                   ? "bg-amber-400 animate-ping shadow-[0_0_10px_#f59e0b]"
                   : launchState === "launched"
-                  ? "bg-emerald-400 shadow-[0_0_10px_#10b981]"
-                  : "bg-cyan-400 shadow-[0_0_10px_#00d2ff]"
-              }`}
+                    ? "bg-emerald-400 shadow-[0_0_10px_#10b981]"
+                    : "bg-cyan-400 shadow-[0_0_10px_#00d2ff]"
+                }`}
             />
             <span className="text-[11px] font-black tracking-wider uppercase text-slate-300">
               AUDITORIUM STAGE SYNC:{" "}
@@ -374,15 +372,15 @@ export const LaunchRemote = () => {
                   launchState === "countdown"
                     ? "text-amber-400 font-bold"
                     : launchState === "launched"
-                    ? "text-emerald-400 font-bold"
-                    : "text-cyan-400 font-bold"
+                      ? "text-emerald-400 font-bold"
+                      : "text-cyan-400 font-bold"
                 }
               >
                 {launchState === "countdown"
                   ? `COUNTDOWN T-${countdown}s`
                   : launchState === "launched"
-                  ? "INAUGURATED"
-                  : "STANDBY READY"}
+                    ? "INAUGURATED"
+                    : "STANDBY READY"}
               </span>
             </span>
           </div>
@@ -391,11 +389,10 @@ export const LaunchRemote = () => {
             {/* Audio Feedback Toggle */}
             <button
               onClick={toggleAudio}
-              className={`p-2 rounded-xl border transition-all cursor-pointer ${
-                isAudioMuted
+              className={`p-2 rounded-xl border transition-all cursor-pointer ${isAudioMuted
                   ? "bg-slate-800/80 border-slate-700 text-slate-400"
                   : "bg-cyan-500/15 border-cyan-400/40 text-cyan-300"
-              }`}
+                }`}
               title={isAudioMuted ? "Unmute Audio Feedback" : "Mute Audio Feedback"}
             >
               {isAudioMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -436,7 +433,7 @@ export const LaunchRemote = () => {
             {chiefGuest || "Dr. M. Venkateshkumar"}
           </h2>
           <p className="text-[11px] sm:text-xs font-bold text-amber-300/90 uppercase tracking-wider mt-0.5">
-            {chiefGuestTitle || "Chairman, IEEE Power & Energy Society"}
+            {chiefGuestTitle || "Chairman, IEEE Power and Electronics Society"}
           </p>
         </div>
 
@@ -460,13 +457,12 @@ export const LaunchRemote = () => {
         <div className="relative flex flex-col items-center justify-center">
           {/* Subtle Outer Glowing Halo */}
           <div
-            className={`absolute -inset-8 rounded-full blur-2xl transition-all duration-700 pointer-events-none ${
-              launchState === "countdown"
+            className={`absolute -inset-8 rounded-full blur-2xl transition-all duration-700 pointer-events-none ${launchState === "countdown"
                 ? "bg-amber-500/40 scale-125 animate-pulse"
                 : launchState === "launched"
-                ? "bg-emerald-500/35 scale-110"
-                : "bg-cyan-500/30 scale-105"
-            }`}
+                  ? "bg-emerald-500/35 scale-110"
+                  : "bg-cyan-500/30 scale-105"
+              }`}
           />
 
           {/* Luxury Touch Core Activator Disc */}
@@ -474,17 +470,16 @@ export const LaunchRemote = () => {
             whileTap={{ scale: 0.92 }}
             whileHover={{ scale: 1.02 }}
             onClick={handleLaunchClick}
-            className={`relative z-10 w-60 h-60 sm:w-68 sm:h-68 rounded-full p-1.5 transition-all duration-300 cursor-pointer flex items-center justify-center select-none shadow-[0_20px_60px_rgba(0,0,0,0.9)] ${
-              launchState === "countdown"
+            className={`relative z-10 w-60 h-60 sm:w-68 sm:h-68 rounded-full p-1.5 transition-all duration-300 cursor-pointer flex items-center justify-center select-none shadow-[0_20px_60px_rgba(0,0,0,0.9)] ${launchState === "countdown"
                 ? "bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-300 shadow-[0_0_60px_rgba(245,158,11,0.7)] animate-pulse"
                 : launchState === "launched"
-                ? "bg-gradient-to-tr from-emerald-400 via-teal-400 to-cyan-400 shadow-[0_0_60px_rgba(16,185,129,0.7)]"
-                : "bg-gradient-to-tr from-cyan-400 via-[#0066cc] to-amber-400 shadow-[0_0_50px_rgba(0,102,204,0.6)] hover:shadow-[0_0_70px_rgba(0,210,255,0.8)]"
-            }`}
+                  ? "bg-gradient-to-tr from-emerald-400 via-teal-400 to-cyan-400 shadow-[0_0_60px_rgba(16,185,129,0.7)]"
+                  : "bg-gradient-to-tr from-cyan-400 via-[#0066cc] to-amber-400 shadow-[0_0_50px_rgba(0,102,204,0.6)] hover:shadow-[0_0_70px_rgba(0,210,255,0.8)]"
+              }`}
           >
             {/* Core Inset Disc */}
             <div className="w-full h-full rounded-full bg-gradient-to-b from-[#08152c] via-[#040c1a] to-[#02060e] border-2 border-white/25 flex flex-col items-center justify-center p-4 relative overflow-hidden group shadow-inner">
-              
+
               <AnimatePresence mode="wait">
                 {launchState === "countdown" ? (
                   <motion.div
@@ -566,11 +561,10 @@ export const LaunchRemote = () => {
                     setSelectedDuration(sec);
                     setCountdown(sec);
                   }}
-                  className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                    selectedDuration === sec
+                  className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${selectedDuration === sec
                       ? "bg-cyan-500 text-slate-950 shadow-md font-bold"
                       : "text-slate-400 hover:text-white hover:bg-white/10"
-                  }`}
+                    }`}
                 >
                   {sec}s
                 </button>

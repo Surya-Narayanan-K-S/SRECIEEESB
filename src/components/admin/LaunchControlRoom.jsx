@@ -45,7 +45,7 @@ export const LaunchControlRoom = () => {
     subtitle: "Official Digital Platform & Innovation Ecosystem Inauguration",
     eventNote: "STB32131 / STB64071 • Sri Ramakrishna Engineering College",
     chiefGuest: "Dr. M. Venkateshkumar",
-    chiefGuestTitle: "Chairman, IEEE Power & Energy Society",
+    chiefGuestTitle: "Chairman, IEEE Power and Electronics Society",
     bgImageUrl: LAUNCH_BG_PRESETS[0].url,
     videoUrl: LAUNCH_VIDEO_PRESETS[0].url,
     redirectUrl: "/web",
@@ -264,11 +264,10 @@ export const LaunchControlRoom = () => {
                 MASTER LAUNCH GATEWAY
               </span>
               <span
-                className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider border ${
-                  isLaunchModeActive
+                className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider border ${isLaunchModeActive
                     ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse"
                     : "bg-slate-800 text-slate-400 border-slate-700"
-                }`}
+                  }`}
               >
                 {isLaunchModeActive ? "GATEWAY ACTIVE" : "GATEWAY OFF"}
               </span>
@@ -305,13 +304,12 @@ export const LaunchControlRoom = () => {
             </span>
             <div className="flex items-center gap-3 pt-2">
               <div
-                className={`w-4 h-4 rounded-full ${
-                  launchState === "countdown"
+                className={`w-4 h-4 rounded-full ${launchState === "countdown"
                     ? "bg-red-500 animate-ping"
                     : launchState === "launched"
-                    ? "bg-emerald-400 animate-pulse"
-                    : "bg-cyan-400"
-                }`}
+                      ? "bg-emerald-400 animate-pulse"
+                      : "bg-cyan-400"
+                  }`}
               />
               <span className="text-2xl font-black text-white uppercase font-mono tracking-wider">
                 {launchState}
@@ -321,8 +319,8 @@ export const LaunchControlRoom = () => {
               {launchState === "standby"
                 ? "Desktop screen is showing Background Image in Standby. Dignitaries and audience see the Inauguration Pad."
                 : launchState === "countdown"
-                ? "Countdown in progress! Dynamic Background Video & Ignition audio sirens active on desktop."
-                : "Official Launch Complete! Confetti & live website portal unlocked on stage."}
+                  ? "Countdown in progress! Dynamic Background Video & Ignition audio sirens active on desktop."
+                  : "Official Launch Complete! Confetti & live website portal unlocked on stage."}
             </p>
           </div>
 
@@ -367,11 +365,10 @@ export const LaunchControlRoom = () => {
             </span>
             <button
               onClick={() => setIsArmed(!isArmed)}
-              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition cursor-pointer ${
-                isArmed
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition cursor-pointer ${isArmed
                   ? "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20"
                   : "bg-blue-600 hover:bg-blue-500 text-white"
-              }`}
+                }`}
             >
               {isArmed ? "Lock Safety" : "Unlock to Arm"}
             </button>
@@ -409,11 +406,10 @@ export const LaunchControlRoom = () => {
                     <button
                       key={sec}
                       onClick={() => setSelectedCountdown(sec)}
-                      className={`px-4 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer ${
-                        selectedCountdown === sec
+                      className={`px-4 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer ${selectedCountdown === sec
                           ? "bg-cyan-500 text-slate-950 font-black shadow-md shadow-cyan-500/30 scale-105"
                           : "bg-slate-800/80 text-slate-300 border border-slate-700 hover:bg-slate-700"
-                      }`}
+                        }`}
                     >
                       {sec} Seconds
                     </button>
@@ -429,11 +425,10 @@ export const LaunchControlRoom = () => {
                 <button
                   disabled={!isArmed}
                   onClick={() => broadcastLaunch("countdown", selectedCountdown)}
-                  className={`relative group w-36 h-36 sm:w-40 sm:h-40 rounded-full p-[4px] transition-all select-none ${
-                    isArmed
+                  className={`relative group w-36 h-36 sm:w-40 sm:h-40 rounded-full p-[4px] transition-all select-none ${isArmed
                       ? "bg-gradient-to-b from-red-500 via-orange-500 to-amber-600 shadow-[0_0_50px_rgba(239,68,68,0.6)] hover:shadow-[0_0_70px_rgba(239,68,68,0.9)] hover:scale-105 active:scale-95 cursor-pointer animate-pulse"
                       : "bg-slate-800 opacity-40 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   <div className="w-full h-full rounded-full bg-gradient-to-b from-[#1a0808] to-[#2a0c0c] flex flex-col items-center justify-center p-3 text-center border-2 border-red-500/40">
                     <Flame size={36} className={isArmed ? "text-red-400 animate-bounce" : "text-slate-500"} />
@@ -455,11 +450,10 @@ export const LaunchControlRoom = () => {
                 <button
                   disabled={!isArmed}
                   onClick={() => broadcastLaunch("instant_launch")}
-                  className={`w-full py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition flex items-center justify-center gap-2 ${
-                    isArmed
+                  className={`w-full py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition flex items-center justify-center gap-2 ${isArmed
                       ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/25 cursor-pointer"
                       : "bg-slate-800 text-slate-500 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   <Sparkles size={16} />
                   <span>Instant Launch</span>
@@ -556,11 +550,10 @@ export const LaunchControlRoom = () => {
                 <div
                   key={preset.id}
                   onClick={() => setSettings({ ...settings, bgImageUrl: preset.url })}
-                  className={`group relative rounded-2xl border p-3 cursor-pointer transition-all overflow-hidden ${
-                    isSelected
+                  className={`group relative rounded-2xl border p-3 cursor-pointer transition-all overflow-hidden ${isSelected
                       ? "border-cyan-400 bg-cyan-500/10 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-400"
                       : "border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-800/60"
-                  }`}
+                    }`}
                 >
                   <div className="h-24 rounded-xl overflow-hidden mb-2 relative bg-slate-950">
                     <img src={preset.url} alt={preset.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
@@ -610,11 +603,10 @@ export const LaunchControlRoom = () => {
                 <div
                   key={preset.id}
                   onClick={() => setSettings({ ...settings, videoUrl: preset.url })}
-                  className={`group relative rounded-2xl border p-3 cursor-pointer transition-all overflow-hidden ${
-                    isSelected
+                  className={`group relative rounded-2xl border p-3 cursor-pointer transition-all overflow-hidden ${isSelected
                       ? "border-red-400 bg-red-500/10 shadow-lg shadow-red-500/20 ring-1 ring-red-400"
                       : "border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-800/60"
-                  }`}
+                    }`}
                 >
                   <div className="h-24 rounded-xl overflow-hidden mb-2 relative bg-slate-950">
                     <img src={preset.poster} alt={preset.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
@@ -696,7 +688,7 @@ export const LaunchControlRoom = () => {
                 value={settings.chiefGuestTitle}
                 onChange={(e) => setSettings({ ...settings, chiefGuestTitle: e.target.value })}
                 className="rounded-xl border border-amber-500/40 bg-slate-900 px-4 py-3 text-sm text-white font-medium focus:border-amber-400 focus:outline-none"
-                placeholder="Chairman, IEEE Power & Energy Society"
+                placeholder="Chairman, IEEE Power and Electronics Society"
               />
             </div>
 

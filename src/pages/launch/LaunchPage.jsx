@@ -144,7 +144,7 @@ export const LaunchPage = () => {
     subtitle: "Official Digital Platform & Innovation Ecosystem Inauguration",
     eventNote: "STB32131 / STB64071 • Sri Ramakrishna Engineering College",
     chiefGuest: "Dr. M. Venkateshkumar",
-    chiefGuestTitle: "Chairman, IEEE Power & Energy Society",
+    chiefGuestTitle: "Chairman, IEEE Power and Electronics Society",
     bgImageUrl: LAUNCH_BG_PRESETS[0].url,
     videoUrl: LAUNCH_VIDEO_PRESETS[0].url,
     countdownSeconds: 5,
@@ -268,7 +268,7 @@ export const LaunchPage = () => {
       supabase.from("page_content").upsert([
         { page_key: "launch_config", content_key: "launch_active", content_text: "false" },
         { page_key: "launch_config", content_key: "launch_state", content_text: "launched" }
-      ], { onConflict: "page_key,content_key" }).then(() => {});
+      ], { onConflict: "page_key,content_key" }).then(() => { });
       localStorage.setItem("ieee_launch_mode_active", "false");
     } catch {
       // Ignore
@@ -435,9 +435,8 @@ export const LaunchPage = () => {
       <div className="fixed inset-0 w-screen h-screen z-0 overflow-hidden bg-black">
         {/* STANDBY BACKGROUND IMAGE LAYER WITH BLUR EFFECT */}
         <div
-          className={`absolute -inset-6 w-[calc(100%+3rem)] h-[calc(100%+3rem)] bg-cover bg-center bg-no-repeat transition-opacity duration-1000 transform filter blur-md sm:blur-lg scale-105 ${
-            launchState === "standby" ? "opacity-95" : "opacity-0 pointer-events-none"
-          }`}
+          className={`absolute -inset-6 w-[calc(100%+3rem)] h-[calc(100%+3rem)] bg-cover bg-center bg-no-repeat transition-opacity duration-1000 transform filter blur-md sm:blur-lg scale-105 ${launchState === "standby" ? "opacity-95" : "opacity-0 pointer-events-none"
+            }`}
           style={{
             backgroundImage: `url(${inaugurationPoster})`,
           }}
@@ -451,20 +450,18 @@ export const LaunchPage = () => {
           loop
           muted
           playsInline
-          className={`w-full h-full object-cover object-center transition-all duration-700 ${
-            launchState === "countdown" || launchState === "launched"
+          className={`w-full h-full object-cover object-center transition-all duration-700 ${launchState === "countdown" || launchState === "launched"
               ? "opacity-100 scale-100"
               : "opacity-0 pointer-events-none"
-          }`}
+            }`}
         />
 
         {/* Subtle Overlay (Clear during countdown so video is fully visible) */}
         <div
-          className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${
-            launchState === "standby"
+          className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${launchState === "standby"
               ? "bg-gradient-to-t from-[#050b14]/80 via-[#050b14]/40 to-[#050b14]/70"
               : "bg-black/10"
-          }`}
+            }`}
         />
       </div>
 
@@ -501,7 +498,7 @@ export const LaunchPage = () => {
             >
               {/* Grand Split Presentation Card */}
               <div className="relative group w-full rounded-[2.5rem] bg-white text-slate-900 shadow-[0_30px_90px_rgba(0,0,0,0.7),0_0_60px_rgba(0,102,204,0.2)] border-2 border-white overflow-hidden flex flex-col lg:flex-row items-stretch text-left">
-                
+
                 {/* ── LEFT COLUMN: AERIAL CAMPUS PHOTO WITH ORGANIC S-CURVE WAVE ── */}
                 <div className="relative w-full lg:w-[46%] min-h-[260px] sm:min-h-[320px] lg:min-h-[620px] flex items-stretch overflow-hidden bg-slate-900">
                   <img
@@ -578,7 +575,7 @@ export const LaunchPage = () => {
                       {config.chiefGuest || "Dr. M. Venkateshkumar"}
                     </h3>
                     <p className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
-                      {config.chiefGuestTitle || "Chairman, IEEE Power & Energy Society"}
+                      {config.chiefGuestTitle || "Chairman, IEEE Power and Electronics Society"}
                     </p>
                   </div>
 
