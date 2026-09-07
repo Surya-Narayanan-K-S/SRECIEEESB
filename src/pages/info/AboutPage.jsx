@@ -3,7 +3,7 @@ import Footer from "@/components/layout/Footer";
 import CollegeAbout from "@/components/about/CollegeAbout";
 import Testimonials from "@/components/home/Testimonials";
 import { motion } from "framer-motion";
-import { Trophy, Globe2, Users, Rocket, Sparkles, BookOpen, Award, Heart, Quote } from "lucide-react";
+import { Trophy, Globe2, Users, Rocket, Sparkles, BookOpen, Award, Heart, Quote, GraduationCap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { usePageContent } from "@/hooks/useContent";
@@ -92,6 +92,17 @@ const AboutPage = () => {
       return data;
     }
   });
+  const { data: hod } = useQuery({
+    queryKey: ["hod_eee_info"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("senior_members")
+        .select("image_url, name, current_role")
+        .ilike("name", "%Allirani%")
+        .maybeSingle();
+      return data;
+    }
+  });
   const { data: content } = usePageContent("about");
   return (<div className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans">
 
@@ -136,55 +147,85 @@ const AboutPage = () => {
         </div>
 
         {/* Right Column: Executive Messages */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 space-y-4">
           {/* Principal Message Card */}
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all">
-            <Quote className="absolute top-3 right-3 text-slate-100 w-20 h-20 pointer-events-none" />
-            <div className="relative z-10 flex flex-row items-center gap-4 sm:gap-5">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-md relative overflow-hidden group hover:shadow-xl transition-all">
+            <Quote className="absolute top-3 right-3 text-slate-100 w-16 h-16 pointer-events-none" />
+            <div className="relative z-10 flex flex-row items-center gap-4">
               {/* Left Photo */}
               <div className="shrink-0">
-                {principal?.image_url ? (<img src={principal.image_url} alt={principal.name || "Dr. A. Soundarrajan"} className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl object-cover shadow-lg border-2 border-blue-600/30 shrink-0" />) : (<div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-2xl shadow-lg border-2 border-blue-600/30 shrink-0">
+                {principal?.image_url ? (<img src={principal.image_url} alt={principal.name || "Dr. A. Soundarrajan"} className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl object-cover shadow-md border-2 border-blue-600/30 shrink-0" />) : (<div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-xl shadow-md border-2 border-blue-600/30 shrink-0">
                   AS
                 </div>)}
               </div>
 
               {/* Right Content */}
               <div className="flex-1 min-w-0 text-left">
-                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-2 border border-blue-200">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-1 border border-blue-200">
                   <Award size={12} className="animate-pulse" />
                   <span>Principal Message</span>
                 </span>
-                <p className="text-slate-700 text-xs sm:text-sm italic leading-relaxed mb-3">
+                <p className="text-slate-700 text-xs italic leading-relaxed mb-2">
                   "{content?.principal_message || "Fostering innovation, research, and technical excellence to empower young minds to solve global challenges with ethical values and leadership."}"
                 </p>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm sm:text-base font-display leading-tight">{principal?.name || "Dr. A. Soundarrajan"}</h4>
+                  <h4 className="font-bold text-slate-900 text-sm font-display leading-tight">{principal?.name || "Dr. A. Soundarrajan"}</h4>
                   <p className="text-blue-700 text-[10px] sm:text-xs font-bold tracking-wider uppercase mt-0.5">Principal, SREC</p>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Counselor Message Card */}
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all">
-            <Quote className="absolute top-3 right-3 text-slate-100 w-20 h-20 pointer-events-none" />
-            <div className="relative z-10 flex flex-row items-center gap-4 sm:gap-5">
+          {/* HOD EEE Message Card */}
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-md relative overflow-hidden group hover:shadow-xl transition-all">
+            <Quote className="absolute top-3 right-3 text-slate-100 w-16 h-16 pointer-events-none" />
+            <div className="relative z-10 flex flex-row items-center gap-4">
               {/* Left Photo */}
               <div className="shrink-0">
-                <img src="https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg" alt={counselor?.name || "Dr. K. Balamurugan"} className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl object-cover shadow-lg border-2 border-indigo-600/30 shrink-0" />
+                {hod?.image_url ? (
+                  <img src={hod.image_url} alt={hod.name || "Dr. S. Allirani"} className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl object-cover shadow-md border-2 border-emerald-600/30 shrink-0" />
+                ) : (
+                  <img src="https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/sign/Senior%20members/allirani.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hOWZhYTNmMS01ZTgyLTQzYTYtYmQ3Yi00ZmU2ZjlkZmNiYmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJTZW5pb3IgbWVtYmVycy9hbGxpcmFuaS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg1MDgzNjQ3LCJleHAiOjIxMDA0NDM2NDd9.phgSEPLcFXxrC3fvJ9yxcser5Jzn5557nMyPNS9WCIU" alt="Dr. S. Allirani" className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl object-cover shadow-md border-2 border-emerald-600/30 shrink-0" onError={(e) => { e.currentTarget.src = "https://srec.ac.in/uploads/Faculty/imresizer-1683787612345.jpg"; }} />
+                )}
               </div>
 
               {/* Right Content */}
               <div className="flex-1 min-w-0 text-left">
-                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-2 border border-indigo-200">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-1 border border-emerald-200">
+                  <GraduationCap size={12} className="animate-pulse" />
+                  <span>HOD Message</span>
+                </span>
+                <p className="text-slate-700 text-xs italic leading-relaxed mb-2">
+                  "{content?.hod_message || "Empowering students with strong fundamentals, technological innovation, and practical excellence to lead the future of electrical and electronics engineering."}"
+                </p>
+                <div>
+                  <h4 className="font-bold text-slate-900 text-sm font-display leading-tight">{hod?.name || "Dr. S. Allirani"}</h4>
+                  <p className="text-emerald-700 text-[10px] sm:text-xs font-bold tracking-wider uppercase mt-0.5">HOD / Department of EEE, SREC</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Counselor Message Card */}
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-md relative overflow-hidden group hover:shadow-xl transition-all">
+            <Quote className="absolute top-3 right-3 text-slate-100 w-16 h-16 pointer-events-none" />
+            <div className="relative z-10 flex flex-row items-center gap-4">
+              {/* Left Photo */}
+              <div className="shrink-0">
+                <img src={counselor?.image_url || "https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg"} alt={counselor?.name || "Dr. K. Balamurugan"} className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl object-cover shadow-md border-2 border-indigo-600/30 shrink-0" />
+              </div>
+
+              {/* Right Content */}
+              <div className="flex-1 min-w-0 text-left">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-1 border border-indigo-200">
                   <Heart size={12} className="animate-pulse" />
                   <span>Counselor Message</span>
                 </span>
-                <p className="text-slate-700 text-xs sm:text-sm italic leading-relaxed mb-3">
+                <p className="text-slate-700 text-xs italic leading-relaxed mb-2">
                   "{content?.counselor_message || "Empowering students to transcend boundaries and embrace the technological future with confidence, leadership, and ethical responsibility."}"
                 </p>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm sm:text-base font-display leading-tight">{counselor?.name || "Dr. K. Balamurugan"}</h4>
+                  <h4 className="font-bold text-slate-900 text-sm font-display leading-tight">{counselor?.name || "Dr. K. Balamurugan"}</h4>
                   <p className="text-indigo-700 text-[10px] sm:text-xs font-bold tracking-wider uppercase mt-0.5">Branch Counselor, IEEE SREC</p>
                 </div>
               </div>

@@ -3744,19 +3744,23 @@ const LandingCMSForm = ({ pageContents, onSave }) => {
 const AboutCMSForm = ({ pageContents, onSave }) => {
   const introTextVal = pageContents.find(c => c.page_key === "about" && c.content_key === "intro_text")?.content_text || "The IEEE Student Branch of Sri Ramakrishna Engineering College...";
   const principalMsgVal = pageContents.find(c => c.page_key === "about" && c.content_key === "principal_message")?.content_text || "Fostering innovation, research, and technical excellence...";
+  const hodMsgVal = pageContents.find(c => c.page_key === "about" && c.content_key === "hod_message")?.content_text || "Empowering students with strong fundamentals, technological innovation, and practical excellence to lead the future of electrical and electronics engineering.";
   const counselorMsgVal = pageContents.find(c => c.page_key === "about" && c.content_key === "counselor_message")?.content_text || "Empowering students to transcend boundaries...";
   const [introText, setIntroText] = useState(introTextVal);
   const [principalMsg, setPrincipalMsg] = useState(principalMsgVal);
+  const [hodMsg, setHodMsg] = useState(hodMsgVal);
   const [counselorMsg, setCounselorMsg] = useState(counselorMsgVal);
   useEffect(() => {
     setIntroText(introTextVal);
     setPrincipalMsg(principalMsgVal);
+    setHodMsg(hodMsgVal);
     setCounselorMsg(counselorMsgVal);
-  }, [introTextVal, principalMsgVal, counselorMsgVal]);
+  }, [introTextVal, principalMsgVal, hodMsgVal, counselorMsgVal]);
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave("about", "intro_text", introText);
     onSave("about", "principal_message", principalMsg);
+    onSave("about", "hod_message", hodMsg);
     onSave("about", "counselor_message", counselorMsg);
     alert("About page content updated successfully!");
   };
@@ -3769,6 +3773,10 @@ const AboutCMSForm = ({ pageContents, onSave }) => {
       <div className="flex flex-col gap-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Principal Message Quote</label>
         <textarea rows={3} value={principalMsg} onChange={(e) => setPrincipalMsg(e.target.value)} className="rounded-lg border px-4 py-3 text-sm" required />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">HOD (EEE) Message Quote</label>
+        <textarea rows={3} value={hodMsg} onChange={(e) => setHodMsg(e.target.value)} className="rounded-lg border px-4 py-3 text-sm" required />
       </div>
       <div className="flex flex-col gap-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Counselor Message Quote</label>

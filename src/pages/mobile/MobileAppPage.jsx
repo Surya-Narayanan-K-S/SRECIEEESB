@@ -3640,6 +3640,20 @@ export const MobileAppPage = ({
 
           <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
             <div className="flex items-center gap-3">
+              <img src="https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/sign/Senior%20members/allirani.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hOWZhYTNmMS01ZTgyLTQzYTYtYmQ3Yi00ZmU2ZjlkZmNiYmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJTZW5pb3IgbWVtYmVycy9hbGxpcmFuaS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg1MDgzNjQ3LCJleHAiOjIxMDA0NDM2NDd9.phgSEPLcFXxrC3fvJ9yxcser5Jzn5557nMyPNS9WCIU" onError={(e) => { e.currentTarget.src = "https://srec.ac.in/uploads/Faculty/imresizer-1683787612345.jpg"; }} alt="HOD EEE" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-xs">Dr. S. Allirani</h4>
+                <p className="text-[10px] text-emerald-700 font-extrabold">Head of the Department</p>
+                <p className="text-[9px] text-slate-500">Professor & HOD / EEE</p>
+              </div>
+            </div>
+            <blockquote className="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+              "Empowering students with strong fundamentals, technological innovation, and practical excellence to lead the future of electrical and electronics engineering."
+            </blockquote>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+            <div className="flex items-center gap-3">
               <img src="https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg" alt="Counselor" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
               <div>
                 <h4 className="font-extrabold text-slate-900 text-xs">Dr. K. Balamurugan</h4>
