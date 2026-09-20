@@ -6,4 +6,5 @@ export * from "./navigation";
 export * from "./overlays";
 export * from "./layout";
 export * from "./PdfEmbedViewer";
+export * from "./ArcReactorBackdrop";
 

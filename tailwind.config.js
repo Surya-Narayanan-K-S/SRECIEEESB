@@ -61,9 +61,29 @@ export default {
         ieee: {
           blue: "#00629B",
           dark: "#002855",
+          navy: "#001428",
           light: "#00B5E2",
+          electric: "#0077C8",
+          cyan: "#00D2FF",
           gold: "#FFC72C",
+          goldGlow: "#F59E0B",
+          goldDark: "#B45309",
         },
+      },
+      boxShadow: {
+        "glow-blue": "0 0 25px -3px rgba(0, 119, 200, 0.45), 0 0 10px -2px rgba(0, 210, 255, 0.3)",
+        "glow-gold": "0 0 25px -3px rgba(255, 199, 44, 0.5), 0 0 10px -2px rgba(245, 158, 11, 0.35)",
+        "glow-cyan": "0 0 25px -3px rgba(0, 210, 255, 0.5), 0 0 10px -2px rgba(56, 189, 248, 0.35)",
+        "glass-card": "0 10px 30px -5px rgba(0, 40, 85, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.8)",
+        "glass-card-hover": "0 20px 45px -10px rgba(0, 98, 155, 0.2), 0 0 0 1px rgba(0, 210, 255, 0.35)",
+        "elevated-gold": "0 15px 35px -5px rgba(245, 158, 11, 0.3), 0 0 0 1px rgba(255, 199, 44, 0.4)",
+      },
+      backgroundImage: {
+        "gradient-ieee-hero": "linear-gradient(135deg, #001428 0%, #002855 40%, #00629B 80%, #0077C8 100%)",
+        "gradient-ieee-card": "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 247, 255, 0.92) 100%)",
+        "gradient-ieee-gold": "linear-gradient(135deg, #FFC72C 0%, #F59E0B 50%, #D97706 100%)",
+        "gradient-ieee-cyan": "linear-gradient(135deg, #00D2FF 0%, #00B5E2 50%, #00629B 100%)",
+        "gradient-radial-at-t": "radial-gradient(ellipse at top, var(--tw-gradient-stops))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -72,7 +92,7 @@ export default {
       },
       fontFamily: {
         sans: ["Outfit", "Plus Jakarta Sans", "system-ui", "sans-serif"],
-        heading: ["Space Grotesk", "sans-serif"],
+        heading: ["Space Grotesk", "Outfit", "sans-serif"],
         display: ["Space Grotesk", "sans-serif"],
       },
       keyframes: {

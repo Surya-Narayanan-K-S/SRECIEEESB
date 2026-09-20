@@ -16,7 +16,7 @@ export const ALL_CONFIGURABLE_PAGES = [
   { path: "/awards", label: "Awards & Recognitions", category: "Accolades", desc: "Accolades, honors & grants" },
   { path: "/annual-plans", label: "Annual Plans & Roadmap", category: "Planning", desc: "Annual activity schedules" },
   { path: "/funding", label: "Funding Requests", category: "Finance", desc: "Funding requests & financial support" },
-  { path: "/document", label: "Official SB PDF Handbook", category: "Documents", desc: "In-app PDF reader & guidebook" },
+  { path: "/document", label: "INNOQUEST (Official Handbook)", category: "Documents", desc: "In-app INNOQUEST Handbook PDF" },
   { path: "/membership-registration", label: "Membership Registration", category: "Members", desc: "New member enrollment form" },
   { path: "/student-login", label: "Student Portal Login", category: "Members", desc: "Member dashboard & digital ID" },
   { path: "/contact", label: "Contact Us", category: "General", desc: "Get in touch & location info" },

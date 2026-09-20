@@ -1,4 +1,7 @@
-export { default as About } from "./About";
-export { default as CollegeAbout } from "./CollegeAbout";
-export { default as Research } from "./Research";
-export { default as Publications } from "./Publications";
+import About from "./About";
+import CollegeAbout from "./CollegeAbout";
+import Research from "./Research";
+import Publications from "./Publications";
+
+export { About, CollegeAbout, Research, Publications };
+export default About;

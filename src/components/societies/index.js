@@ -1,3 +1,7 @@
-export { default as Societies } from "./Societies";
-export { default as SocietyOfficeBearers } from "./SocietyOfficeBearers";
-export { default as OfficeBearers } from "./OfficeBearers";
+import Societies from "./Societies";
+import SocietyOfficeBearers, { getSocietyKey } from "./SocietyOfficeBearers";
+import OfficeBearers from "./OfficeBearers";
+
+export { Societies, SocietyOfficeBearers, OfficeBearers, getSocietyKey };
+export * from "./SocietyOfficeBearers";
+export default Societies;

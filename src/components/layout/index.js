@@ -1,5 +1,8 @@
-export { default as Navbar } from "./Navbar";
-export { default as Footer } from "./Footer";
-export { default as NavLink } from "./NavLink";
-export { default as MobileBottomNav } from "./MobileBottomNav";
-export * from "./MobileBottomNav";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import NavLink from "./NavLink";
+import MobileBottomNav from "./MobileBottomNav";
+import FloatingUIWidget from "./FloatingUIWidget";
+
+export { Navbar, Footer, NavLink, MobileBottomNav, FloatingUIWidget };
+export default Navbar;
