@@ -356,20 +356,86 @@ const AdminDashboard = () => {
     }
     setActivitiesLoading(false);
   };
+const DEFAULT_SOCIETIES_LIST = [
+  { id: 1, name: "IEEE Student Branch SREC (Main SB)", short_code: "srec", established_year: "2001", coordinator: "Dr. K. Balamurugan", description: "Established on 11 June 2001 under IEEE Madras Section. School Code: 41347756, Branch Code: 61491.", member_count: 350 },
+  { id: 2, name: "IEEE Women in Engineering (WIE)", short_code: "wie", established_year: "2009", coordinator: "Mrs. Jansi Rani", description: "Supports and empowers women engineers and scientists through technical and leadership development.", member_count: 120 },
+  { id: 3, name: "IEEE Engineering in Medicine and Biology (EMBS)", short_code: "embs", established_year: "2018", coordinator: "Dr. Deepa B Prabhu", description: "Focusing on biomedical engineering, healthcare technologies, and scientific innovation.", member_count: 65 },
+  { id: 4, name: "IEEE Computer Society (CS)", short_code: "cs", established_year: "2019", coordinator: "Dr. J. Selvakumar", description: "Focusing on computer science, AI, software development, and emerging technologies.", member_count: 180 },
+  { id: 5, name: "IEEE Communication Society (ComSoc)", short_code: "comsoc", established_year: "2024", coordinator: "Dr. K. Balamurugan", description: "Focusing on communication systems, networking, and signal processing technologies.", member_count: 75 },
+  { id: 6, name: "IEEE Power Electronics Society (PELS)", short_code: "pels", established_year: "2024", coordinator: "Dr. C. Praveenkumar", description: "Focusing on power electronics, renewable energy systems, and electrical innovations.", member_count: 85 },
+  { id: 7, name: "IEEE Instrumentation and Measurement (IM)", short_code: "im", established_year: "2025", coordinator: "Dr. Y. Dharsan", description: "Focusing on measurement systems, instrumentation technologies, and precision engineering.", member_count: 60 },
+  { id: 8, name: "IEEE Computational Intelligence Society (CIS)", short_code: "cis", established_year: "2025", coordinator: "Dr. J. Selvakumar", description: "Focusing on artificial intelligence, machine learning, and intelligent systems.", member_count: 95 },
+  { id: 9, name: "IEEE Circuits and Systems Society (CAS)", short_code: "cas", established_year: "2025", coordinator: "Dr. K. Balamurugan", description: "Focusing on circuits, integrated systems, signal processing, and VLSI design.", member_count: 70 }
+];
+
+const DEFAULT_MEMBER_COUNTS_DATA = [
+  { id: 59, year: 2026, professional_members: 100, student_members: 250, total_members: 350 },
+  { id: 1, year: 2025, professional_members: 23, student_members: 52, total_members: 75 },
+  { id: 2, year: 2024, professional_members: 19, student_members: 60, total_members: 79 },
+  { id: 3, year: 2023, professional_members: 21, student_members: 89, total_members: 110 },
+  { id: 4, year: 2022, professional_members: 18, student_members: 102, total_members: 120 },
+  { id: 5, year: 2021, professional_members: 16, student_members: 33, total_members: 49 },
+  { id: 6, year: 2020, professional_members: 18, student_members: 63, total_members: 81 },
+  { id: 7, year: 2019, professional_members: 18, student_members: 52, total_members: 70 },
+  { id: 8, year: 2018, professional_members: 20, student_members: 104, total_members: 124 },
+  { id: 9, year: 2017, professional_members: 29, student_members: 115, total_members: 144 },
+  { id: 10, year: 2016, professional_members: 26, student_members: 118, total_members: 144 },
+  { id: 11, year: 2015, professional_members: 25, student_members: 80, total_members: 105 },
+  { id: 12, year: 2014, professional_members: 26, student_members: 132, total_members: 158 },
+  { id: 13, year: 2013, professional_members: 17, student_members: 100, total_members: 117 },
+  { id: 14, year: 2012, professional_members: 22, student_members: 90, total_members: 112 }
+];
+
+const DEFAULT_AWARDS_DATA = [
+  { id: 1, title: 'Appreciation Award', year: 2026, description: 'Outstanding student branch performance and technical activities', category: 'IEEE Madras Section', amount: 'Rs.5000/-', image_url: '2026.jpg' },
+  { id: 2, title: 'Appreciation Award', year: 2025, description: 'Appreciation award for organizing high-impact technical activities', category: 'IEEE Madras Section', amount: 'Rs.4500/-', image_url: '2025.jpeg' },
+  { id: 3, title: 'Appreciation Award', year: 2024, description: 'Exemplary student branch activity and membership growth', category: 'IEEE Madras Section', amount: 'Rs.4000/-', image_url: '2024.jpeg' },
+  { id: 4, title: 'Appreciation Award', year: 2023, description: 'Appreciation award for organizing IEEE technical activities', category: 'IEEE Madras Section', amount: 'Rs.3500/-', image_url: '2023.jpg' },
+  { id: 5, title: 'Appreciation Award', year: 2022, description: 'Consistent active branch performance', category: 'IEEE Madras Section', amount: 'Rs.3500/-', image_url: '2022.jpg' },
+  { id: 6, title: 'Appreciation Award', year: 2021, description: 'Excellence in organizing webinars & symposiums', category: 'IEEE Madras Section', amount: 'Rs.4000/-', image_url: '2021.jpg' },
+  { id: 7, title: 'Appreciation Award', year: 2020, description: 'Virtual engagement and resilience award', category: 'IEEE Madras Section', amount: 'Rs.3000/-', image_url: '2020.jpg' },
+  { id: 8, title: 'Appreciation Award', year: 2019, description: 'Active student chapter excellence', category: 'IEEE Madras Section', amount: 'Rs.3000/-', image_url: '2019.jpg' },
+  { id: 9, title: 'Appreciation Award', year: 2018, description: 'Distinguished student branch award', category: 'IEEE Madras Section', amount: 'Rs.3000/-', image_url: '2018.jpeg' },
+  { id: 10, title: 'Appreciation Award', year: 2017, description: 'Technical event participation & conference organizing', category: 'IEEE Madras Section', amount: 'Rs.2000/-', image_url: '2017.jpeg' }
+];
+
+const DEFAULT_SENIOR_MEMBERS_DATA = [
+  { s_no: 1, name: "Dr. A. Soundarrajan", current_role: "Principal & Chief Patron", college: "Sri Ramakrishna Engineering College" },
+  { s_no: 2, name: "Dr. K. Balamurugan", current_role: "Student Branch Counsellor", college: "Sri Ramakrishna Engineering College" },
+  { s_no: 3, name: "Dr. J. Selvakumar", current_role: "Faculty Advisor, IEEE Computer Society", college: "Sri Ramakrishna Engineering College" },
+  { s_no: 4, name: "Dr. C. Praveenkumar", current_role: "Faculty Advisor, IEEE Power Electronics Society", college: "Sri Ramakrishna Engineering College" },
+  { s_no: 5, name: "Mrs. Jansi Rani", current_role: "Faculty Advisor, IEEE Women in Engineering", college: "Sri Ramakrishna Engineering College" },
+  { s_no: 6, name: "Dr. Deepa B Prabhu", current_role: "Faculty Advisor, IEEE EMBS", college: "Sri Ramakrishna Engineering College" },
+  { s_no: 7, name: "Dr. Y. Dharsan", current_role: "Faculty Advisor, IEEE Instrumentation & Measurement", college: "Sri Ramakrishna Engineering College" }
+];
+
   const fetchOfficeBearers = async () => {
-    const { data } = await supabase
-      .from("office_bearers")
-      .select("*")
-      .order("year", { ascending: false })
-      .order("id", { ascending: true });
-    setOfficeRows(data || []);
+    try {
+      const { data } = await supabase
+        .from("office_bearers")
+        .select("*")
+        .order("year", { ascending: false })
+        .order("id", { ascending: true });
+      if (data && data.length > 0) {
+        setOfficeRows(data);
+      } else {
+        const { data: srecData } = await supabase.from("srec_office_bearers").select("*");
+        setOfficeRows(srecData && srecData.length > 0 ? srecData : []);
+      }
+    } catch {
+      setOfficeRows([]);
+    }
   };
   const fetchMembers = async () => {
-    const { data } = await supabase
-      .from("member_counts")
-      .select("*")
-      .order("year", { ascending: false });
-    setMemberRows(data || []);
+    try {
+      const { data } = await supabase
+        .from("member_counts")
+        .select("*")
+        .order("year", { ascending: false });
+      setMemberRows(data && data.length > 0 ? data : DEFAULT_MEMBER_COUNTS_DATA);
+    } catch {
+      setMemberRows(DEFAULT_MEMBER_COUNTS_DATA);
+    }
   };
   const fetchAnnualPlans = async () => {
     const { data } = await supabase.from("annual_plan").select("*").order("s_no", { ascending: true });
@@ -380,8 +446,12 @@ const AdminDashboard = () => {
     setFundingRequests(data || []);
   };
   const fetchSeniorMembers = async () => {
-    const { data } = await supabase.from("senior_members").select("*").order("s_no", { ascending: true });
-    setSeniorMembers(data || []);
+    try {
+      const { data } = await supabase.from("senior_members").select("*").order("s_no", { ascending: true });
+      setSeniorMembers(data && data.length > 0 ? data : DEFAULT_SENIOR_MEMBERS_DATA);
+    } catch {
+      setSeniorMembers(DEFAULT_SENIOR_MEMBERS_DATA);
+    }
   };
   const fetchPageContents = async () => {
     setContentLoading(true);
@@ -394,8 +464,12 @@ const AdminDashboard = () => {
     setContentLoading(false);
   };
   const fetchSocieties = async () => {
-    const { data } = await supabase.from("societies").select("*").order("id", { ascending: true });
-    setSocieties(data || []);
+    try {
+      const { data } = await supabase.from("societies").select("*").order("id", { ascending: true });
+      setSocieties(data && data.length > 0 ? data : DEFAULT_SOCIETIES_LIST);
+    } catch {
+      setSocieties(DEFAULT_SOCIETIES_LIST);
+    }
   };
   const fetchApplications = async () => {
     const { data } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
@@ -403,14 +477,19 @@ const AdminDashboard = () => {
   };
   const fetchStudentMembers = async () => {
     setStudentMembersLoading(true);
-    const { data, error } = await supabase
-      .from("student_members")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) {
-      setStudentMembers(data);
+    try {
+      const { data, error } = await supabase
+        .from("student_members")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data) {
+        setStudentMembers(data);
+      }
+    } catch (err) {
+      console.warn("fetchStudentMembers note:", err);
+    } finally {
+      setStudentMembersLoading(false);
     }
-    setStudentMembersLoading(false);
   };
   const updateStudentMember = async (e) => {
     e.preventDefault();
@@ -574,8 +653,12 @@ const AdminDashboard = () => {
     }
   };
   const fetchAwards = async () => {
-    const { data } = await supabase.from("awards").select("*").order("year", { ascending: false }).order("id", { ascending: true });
-    setAwards(data || []);
+    try {
+      const { data } = await supabase.from("awards").select("*").order("year", { ascending: false }).order("id", { ascending: true });
+      setAwards(data && data.length > 0 ? data : DEFAULT_AWARDS_DATA);
+    } catch {
+      setAwards(DEFAULT_AWARDS_DATA);
+    }
   };
   const fetchAdmins = async () => {
     const { data } = await supabase.from("admins").select("*").order("id", { ascending: true });
