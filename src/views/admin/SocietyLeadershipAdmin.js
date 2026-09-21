@@ -293,25 +293,26 @@ export const SocietyLeadershipAdmin = () => {
       e.role?.toLowerCase().includes(q) ||
       e.department?.toLowerCase().includes(q));
   }, [executives, searchQuery]);
-  return (<div className="space-y-10 text-zinc-100 font-sans">
+  return (<div className="space-y-10 text-zinc-100 font-sans animate-card-enter">
     {/* Header Banner */}
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0d0d12] via-[#121218] to-[#07070a] border border-amber-500/25 p-8 shadow-2xl">
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0d0d12] via-[#121218] to-[#07070a] border border-amber-500/30 p-8 shadow-2xl glass-card-interactive">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-orb-1" />
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-black uppercase tracking-wider mb-3">
-            <Crown size={14} />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-black uppercase tracking-wider mb-3 animate-gold-pulse">
+            <Crown size={14} className="text-amber-400" />
             <span>Society Leadership Console</span>
           </div>
-          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 tracking-tight">
+          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 tracking-tight gold-text-glow">
             Society Office Bearers &amp; Executives
           </h2>
-          <p className="text-zinc-400 text-sm mt-1 max-w-2xl">
+          <p className="text-zinc-400 text-sm mt-1 max-w-2xl font-medium">
             Create, update, and manage official office bearer tables, executive committee members, and photo files across all 9 IEEE student societies.
           </p>
         </div>
 
-        <button type="button" onClick={fetchLeadership} className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#14141c] hover:bg-[#1a1a24] border border-amber-500/30 text-amber-300 text-xs font-bold transition shadow-md cursor-pointer">
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+        <button type="button" onClick={fetchLeadership} className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#14141c] hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold transition-all shadow-lg hover-gold-lift cursor-pointer btn-cyber-interactive">
+          <RefreshCw size={14} className={loading ? "animate-spin text-amber-400" : "text-amber-400"} />
           <span>Refresh Leadership</span>
         </button>
       </div>
@@ -319,7 +320,8 @@ export const SocietyLeadershipAdmin = () => {
 
     {/* Society Switcher Grid */}
     <div className="space-y-3">
-      <label className="text-xs font-black text-amber-400 uppercase tracking-wider">
+      <label className="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
         Select Society to Manage
       </label>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -328,16 +330,16 @@ export const SocietyLeadershipAdmin = () => {
           return (<button key={soc.code} type="button" onClick={() => {
             setSelectedSociety(soc.code);
             resetForm();
-          }} className={`p-4 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${isSelected
-            ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black border-yellow-300 font-black shadow-lg shadow-amber-500/25 scale-[1.02]"
-            : "bg-[#0b0b0f] border-amber-500/20 text-zinc-400 hover:border-amber-500/40 hover:text-amber-300"}`}>
+          }} className={`p-4 rounded-2xl border text-left transition-all duration-300 relative overflow-hidden flex flex-col justify-between cursor-pointer ${isSelected
+            ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black border-yellow-300 font-black shadow-xl shadow-amber-500/30 scale-[1.03] animate-gold-pulse"
+            : "bg-[#0b0b0f] border-amber-500/20 text-zinc-400 hover:border-amber-500/50 hover:text-amber-300 hover-gold-lift"}`}>
             <div className="flex items-center justify-between mb-2">
-              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${isSelected ? "bg-black/20 text-black" : "bg-black/40 text-amber-300"}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${isSelected ? "bg-black/20 text-black font-extrabold" : "bg-black/40 text-amber-300"}`}>
                 {soc.code.toUpperCase()}
               </span>
               {isSelected && <CheckCircle2 size={16} className="text-black stroke-[3]" />}
             </div>
-            <span className={`font-bold text-xs leading-tight line-clamp-2 ${isSelected ? "text-black" : "text-zinc-200"}`}>
+            <span className={`font-bold text-xs leading-tight line-clamp-2 ${isSelected ? "text-black font-extrabold" : "text-zinc-200"}`}>
               {soc.name}
             </span>
           </button>);
@@ -346,14 +348,14 @@ export const SocietyLeadershipAdmin = () => {
     </div>
 
     {/* Add / Edit Member Form Card */}
-    <form onSubmit={handleSubmit} className="rounded-3xl bg-[#0b0b0f] border border-amber-500/25 p-8 shadow-2xl relative overflow-hidden">
+    <form onSubmit={handleSubmit} className="rounded-3xl bg-[#0b0b0f]/90 backdrop-blur-xl border border-amber-500/25 p-8 shadow-2xl relative overflow-hidden glass-card-interactive">
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-amber-500/20">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center animate-gold-pulse">
             {editingId ? <Edit2 size={18} /> : <Plus size={18} />}
           </div>
           <div>
-            <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+            <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
               {editingId ? "Edit Leadership Member" : `Add Member to ${currentSocietyObj.name}`}
             </h3>
             <p className="text-xs text-zinc-400">
@@ -362,7 +364,7 @@ export const SocietyLeadershipAdmin = () => {
           </div>
         </div>
 
-        {editingId && (<button type="button" onClick={resetForm} className="flex items-center gap-1 text-xs font-bold text-zinc-400 hover:text-white px-3 py-1.5 rounded-xl bg-[#14141c] border border-zinc-700 cursor-pointer">
+        {editingId && (<button type="button" onClick={resetForm} className="flex items-center gap-1 text-xs font-bold text-zinc-400 hover:text-white px-3 py-1.5 rounded-xl bg-[#14141c] border border-zinc-700 cursor-pointer transition hover:bg-zinc-800">
           <X size={14} /> Cancel Edit
         </button>)}
       </div>
@@ -373,7 +375,7 @@ export const SocietyLeadershipAdmin = () => {
           <label className="block text-xs font-bold text-amber-400/90 uppercase mb-2">
             Member Full Name *
           </label>
-          <input type="text" required placeholder="e.g. S Darshan" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/20 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none" />
+          <input type="text" required placeholder="e.g. S Darshan" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/25 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all" />
         </div>
 
         {/* Category */}
@@ -381,7 +383,7 @@ export const SocietyLeadershipAdmin = () => {
           <label className="block text-xs font-bold text-amber-400/90 uppercase mb-2">
             Category *
           </label>
-          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/20 text-sm font-semibold text-amber-300 focus:border-amber-400 focus:outline-none">
+          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/25 text-sm font-semibold text-amber-300 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all">
             <option value="bearers">Core Office Bearer</option>
             <option value="executives">Executive Committee Member</option>
           </select>
@@ -392,7 +394,7 @@ export const SocietyLeadershipAdmin = () => {
           <label className="block text-xs font-bold text-amber-400/90 uppercase mb-2">
             Designated Role *
           </label>
-          <input type="text" required list="admin-role-suggestions" placeholder="e.g. Program Coordinator / Chairperson / Secretary" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/20 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none" />
+          <input type="text" required list="admin-role-suggestions" placeholder="e.g. Program Coordinator / Chairperson / Secretary" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/25 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all" />
           <datalist id="admin-role-suggestions">
             <option value="Program Coordinator" />
             <option value="Faculty Advisor" />
@@ -420,7 +422,7 @@ export const SocietyLeadershipAdmin = () => {
           <label className="block text-xs font-bold text-amber-400/90 uppercase mb-2">
             Department &amp; Year
           </label>
-          <input type="text" placeholder="e.g. IV EEE / III CSE A" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/20 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none" />
+          <input type="text" placeholder="e.g. IV EEE / III CSE A" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/25 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all" />
         </div>
 
         {/* Academic Year */}
@@ -428,7 +430,7 @@ export const SocietyLeadershipAdmin = () => {
           <label className="block text-xs font-bold text-amber-400/90 uppercase mb-2">
             Academic Year
           </label>
-          <input type="text" placeholder="2024-2025" value={form.academic_year} onChange={(e) => setForm({ ...form, academic_year: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/20 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none" />
+          <input type="text" placeholder="2026-2027" value={form.academic_year} onChange={(e) => setForm({ ...form, academic_year: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-[#050507] border border-amber-500/25 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all" />
         </div>
 
         {/* LinkedIn Profile URL */}
@@ -437,7 +439,7 @@ export const SocietyLeadershipAdmin = () => {
             <Linkedin size={13} className="text-amber-400" /> LinkedIn Profile Link
           </label>
           <div className="relative">
-            <input type="url" placeholder="https://linkedin.com/in/username" value={form.linkedin_url} onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })} className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#050507] border border-amber-500/20 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none placeholder:text-zinc-500" />
+            <input type="url" placeholder="https://linkedin.com/in/username" value={form.linkedin_url} onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })} className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#050507] border border-amber-500/25 text-sm font-semibold text-white focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all placeholder:text-zinc-500" />
             <Linkedin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 pointer-events-none" />
           </div>
         </div>
@@ -448,13 +450,13 @@ export const SocietyLeadershipAdmin = () => {
             Upload Photo (Supabase Storage)
           </label>
           <div className="flex items-center gap-3">
-            <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-[#050507] text-xs font-bold text-zinc-300 transition">
+            <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-[#050507] text-xs font-bold text-zinc-300 transition-all hover:bg-amber-500/5">
               <Upload size={15} className="text-amber-400" />
               <span>{uploading ? "Uploading to Bucket..." : "Choose Image File"}</span>
               <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
             </label>
 
-            {form.image_url && (<div className="w-11 h-11 rounded-xl bg-[#14141c] overflow-hidden border border-amber-400 shrink-0">
+            {form.image_url && (<div className="w-11 h-11 rounded-xl bg-[#14141c] overflow-hidden border-2 border-amber-400 shrink-0 shadow-lg shadow-amber-500/20 animate-gold-pulse">
               <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
             </div>)}
           </div>
@@ -465,10 +467,10 @@ export const SocietyLeadershipAdmin = () => {
       </div>
 
       <div className="mt-8 pt-4 border-t border-amber-500/20 flex justify-end gap-3">
-        {editingId && (<button type="button" onClick={resetForm} className="px-6 py-3 rounded-xl border border-zinc-700 text-zinc-400 hover:text-white font-bold text-xs cursor-pointer">
+        {editingId && (<button type="button" onClick={resetForm} className="px-6 py-3 rounded-xl border border-zinc-700 text-zinc-400 hover:text-white font-bold text-xs cursor-pointer transition hover:bg-zinc-800">
           Cancel
         </button>)}
-        <button type="submit" disabled={submitting || uploading} className="px-8 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center gap-2 cursor-pointer">
+        <button type="submit" disabled={submitting || uploading} className="px-8 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition-all shadow-xl shadow-amber-500/25 flex items-center gap-2 cursor-pointer btn-cyber-interactive hover-gold-lift">
           {submitting ? <Loader2 size={16} className="animate-spin text-black" /> : <CheckCircle2 size={16} />}
           <span>{editingId ? "Update Member" : "Save Leadership Member"}</span>
         </button>
@@ -480,44 +482,46 @@ export const SocietyLeadershipAdmin = () => {
       {/* Toolbar: Category Filter & Search */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div className="flex gap-2">
-          <button type="button" onClick={() => setActiveCategory("all")} className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition cursor-pointer ${activeCategory === "all" ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black shadow-md shadow-amber-500/20" : "bg-[#12121a] text-zinc-400 hover:text-amber-300 border border-amber-500/20"}`}>
+          <button type="button" onClick={() => setActiveCategory("all")} className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${activeCategory === "all" ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black shadow-lg shadow-amber-500/25 scale-[1.02]" : "bg-[#12121a] text-zinc-400 hover:text-amber-300 border border-amber-500/20 hover:border-amber-500/40"}`}>
             All Tables ({bearers.length + executives.length})
           </button>
-          <button type="button" onClick={() => setActiveCategory("bearers")} className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition cursor-pointer ${activeCategory === "bearers" ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black shadow-md shadow-amber-500/20" : "bg-[#12121a] text-zinc-400 hover:text-amber-300 border border-amber-500/20"}`}>
+          <button type="button" onClick={() => setActiveCategory("bearers")} className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${activeCategory === "bearers" ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black shadow-lg shadow-amber-500/25 scale-[1.02]" : "bg-[#12121a] text-zinc-400 hover:text-amber-300 border border-amber-500/20 hover:border-amber-500/40"}`}>
             Office Bearers ({bearers.length})
           </button>
-          <button type="button" onClick={() => setActiveCategory("executives")} className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition cursor-pointer ${activeCategory === "executives" ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black shadow-md shadow-amber-500/20" : "bg-[#12121a] text-zinc-400 hover:text-amber-300 border border-amber-500/20"}`}>
+          <button type="button" onClick={() => setActiveCategory("executives")} className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${activeCategory === "executives" ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black shadow-lg shadow-amber-500/25 scale-[1.02]" : "bg-[#12121a] text-zinc-400 hover:text-amber-300 border border-amber-500/20 hover:border-amber-500/40"}`}>
             Executive Members ({executives.length})
           </button>
         </div>
 
         <div className="relative w-full sm:w-72">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400" />
-          <input type="text" placeholder="Search table..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#050507] border border-amber-500/20 text-xs font-semibold text-white focus:border-amber-400 focus:outline-none" />
+          <input type="text" placeholder="Search table..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#050507] border border-amber-500/25 text-xs font-semibold text-white focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all" />
         </div>
       </div>
 
-      {loading ? (<div className="p-16 flex flex-col items-center justify-center gap-3 bg-[#0b0b0f] border border-amber-500/20 rounded-3xl">
+      {loading ? (<div className="p-16 flex flex-col items-center justify-center gap-3 bg-[#0b0b0f] border border-amber-500/20 rounded-3xl animate-pulse">
         <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
         <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
           Loading {currentSocietyObj.name} records...
         </span>
       </div>) : (<div className="space-y-8">
         {/* Office Bearers Table */}
-        {(activeCategory === "all" || activeCategory === "bearers") && (<div className="rounded-3xl bg-[#0b0b0f] border border-amber-500/20 overflow-hidden shadow-2xl">
-          <div className="p-5 bg-[#050507] border-b border-amber-500/20 flex items-center justify-between">
+        {(activeCategory === "all" || activeCategory === "bearers") && (<div className="rounded-3xl bg-[#0b0b0f]/90 backdrop-blur-xl border border-amber-500/25 overflow-hidden shadow-2xl glass-card-interactive">
+          <div className="p-5 bg-gradient-to-r from-[#07070a] to-[#0f0f16] border-b border-amber-500/20 flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-white">
-              <Crown size={18} className="text-amber-400" />
-              <h4 className="font-bold text-sm sm:text-base text-amber-300">
+              <div className="p-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300">
+                <Crown size={18} className="text-amber-400" />
+              </div>
+              <h4 className="font-extrabold text-sm sm:text-base text-amber-300 tracking-tight">
                 {currentSocietyObj.name} — Office Bearers Table
               </h4>
             </div>
-            <span className="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-black uppercase">
+            <span className="px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-black uppercase tracking-wider shadow-sm">
               {filteredBearers.length} Officers
             </span>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar-gold">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-[#050507] text-amber-400 uppercase tracking-widest font-black border-b border-amber-500/20 text-[10px]">
@@ -537,35 +541,35 @@ export const SocietyLeadershipAdmin = () => {
                   </td>
                 </tr>) : (filteredBearers.map((person, idx) => {
                   const imgSrc = person.image_url || person.photo || person.photo_url;
-                  return (<tr key={person.id || idx} className="hover:bg-amber-500/5 transition">
-                    <td className="py-3 px-5 text-zinc-500 font-bold">{idx + 1}</td>
-                    <td className="py-3 px-5">
-                      <div className="w-9 h-9 rounded-xl bg-[#14141c] overflow-hidden border border-amber-500/30 flex items-center justify-center">
+                  return (<tr key={person.id || idx} className="table-row-hover-glow transition-all">
+                    <td className="py-3.5 px-5 text-zinc-500 font-bold">{idx + 1}</td>
+                    <td className="py-3.5 px-5">
+                      <div className="w-9 h-9 rounded-xl bg-[#14141c] overflow-hidden border border-amber-500/30 flex items-center justify-center shadow-md">
                         {imgSrc ? (<img src={imgSrc} alt={person.name} className="w-full h-full object-cover" />) : (<span className="font-bold text-xs text-amber-400">
                           {person.name?.slice(0, 2).toUpperCase()}
                         </span>)}
                       </div>
                     </td>
-                    <td className="py-3 px-5 font-bold text-white text-sm">
+                    <td className="py-3.5 px-5 font-bold text-white text-sm">
                       {person.name}
                     </td>
-                    <td className="py-3 px-5">
-                      <span className="inline-block px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-[11px] uppercase">
+                    <td className="py-3.5 px-5">
+                      <span className="inline-block px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-[11px] uppercase tracking-wide">
                         {person.role}
                       </span>
                     </td>
-                    <td className="py-3 px-5 text-zinc-400 font-semibold">
+                    <td className="py-3.5 px-5 text-zinc-400 font-semibold">
                       {person.department || "SREC"}
                     </td>
-                    <td className="py-3 px-5 text-zinc-400 font-mono">
+                    <td className="py-3.5 px-5 text-zinc-400 font-mono">
                       {person.academic_year || "2024-2025"}
                     </td>
-                    <td className="py-3 px-5 text-right">
+                    <td className="py-3.5 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button type="button" onClick={() => handleEdit(person, "bearers")} className="p-1.5 rounded-lg bg-[#14141c] hover:bg-amber-400 hover:text-black text-zinc-300 transition cursor-pointer border border-amber-500/20">
+                        <button type="button" onClick={() => handleEdit(person, "bearers")} className="p-2 rounded-xl bg-[#14141c] hover:bg-amber-400 hover:text-black text-zinc-300 transition-all cursor-pointer border border-amber-500/20 shadow hover-gold-lift">
                           <Edit2 size={13} />
                         </button>
-                        <button type="button" onClick={() => handleDelete(person.id, "bearers", person.name)} className="p-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white transition cursor-pointer border border-rose-500/30">
+                        <button type="button" onClick={() => handleDelete(person.id, "bearers", person.name)} className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white transition-all cursor-pointer border border-rose-500/30 shadow">
                           <Trash2 size={13} />
                         </button>
                       </div>
@@ -578,20 +582,22 @@ export const SocietyLeadershipAdmin = () => {
         </div>)}
 
         {/* Executive Members Table */}
-        {(activeCategory === "all" || activeCategory === "executives") && (<div className="rounded-3xl bg-[#0b0b0f] border border-amber-500/20 overflow-hidden shadow-2xl">
-          <div className="p-5 bg-[#050507] border-b border-amber-500/20 flex items-center justify-between">
+        {(activeCategory === "all" || activeCategory === "executives") && (<div className="rounded-3xl bg-[#0b0b0f]/90 backdrop-blur-xl border border-amber-500/25 overflow-hidden shadow-2xl glass-card-interactive">
+          <div className="p-5 bg-gradient-to-r from-[#07070a] to-[#0f0f16] border-b border-amber-500/20 flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-white">
-              <ShieldCheck size={18} className="text-amber-400" />
-              <h4 className="font-bold text-sm sm:text-base text-amber-300">
+              <div className="p-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300">
+                <ShieldCheck size={18} className="text-amber-400" />
+              </div>
+              <h4 className="font-extrabold text-sm sm:text-base text-amber-300 tracking-tight">
                 {currentSocietyObj.name} — Executive Committee Members Table
               </h4>
             </div>
-            <span className="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-black uppercase">
+            <span className="px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-black uppercase tracking-wider shadow-sm">
               {filteredExecutives.length} Executives
             </span>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar-gold">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-[#050507] text-amber-400 uppercase tracking-widest font-black border-b border-amber-500/20 text-[10px]">
@@ -611,35 +617,35 @@ export const SocietyLeadershipAdmin = () => {
                   </td>
                 </tr>) : (filteredExecutives.map((person, idx) => {
                   const imgSrc = person.image_url || person.photo || person.photo_url;
-                  return (<tr key={person.id || idx} className="hover:bg-amber-500/5 transition">
-                    <td className="py-3 px-5 text-zinc-500 font-bold">{idx + 1}</td>
-                    <td className="py-3 px-5">
-                      <div className="w-9 h-9 rounded-xl bg-[#14141c] overflow-hidden border border-amber-500/30 flex items-center justify-center">
+                  return (<tr key={person.id || idx} className="table-row-hover-glow transition-all">
+                    <td className="py-3.5 px-5 text-zinc-500 font-bold">{idx + 1}</td>
+                    <td className="py-3.5 px-5">
+                      <div className="w-9 h-9 rounded-xl bg-[#14141c] overflow-hidden border border-amber-500/30 flex items-center justify-center shadow-md">
                         {imgSrc ? (<img src={imgSrc} alt={person.name} className="w-full h-full object-cover" />) : (<span className="font-bold text-xs text-amber-400">
                           {person.name?.slice(0, 2).toUpperCase()}
                         </span>)}
                       </div>
                     </td>
-                    <td className="py-3 px-5 font-bold text-white text-sm">
+                    <td className="py-3.5 px-5 font-bold text-white text-sm">
                       {person.name}
                     </td>
-                    <td className="py-3 px-5">
-                      <span className="inline-block px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-[11px] uppercase">
+                    <td className="py-3.5 px-5">
+                      <span className="inline-block px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-[11px] uppercase tracking-wide">
                         {person.role}
                       </span>
                     </td>
-                    <td className="py-3 px-5 text-zinc-400 font-semibold">
+                    <td className="py-3.5 px-5 text-zinc-400 font-semibold">
                       {person.department || "SREC"}
                     </td>
-                    <td className="py-3 px-5 text-zinc-400 font-mono">
+                    <td className="py-3.5 px-5 text-zinc-400 font-mono">
                       {person.academic_year || "2024-2025"}
                     </td>
-                    <td className="py-3 px-5 text-right">
+                    <td className="py-3.5 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button type="button" onClick={() => handleEdit(person, "executives")} className="p-1.5 rounded-lg bg-[#14141c] hover:bg-amber-400 hover:text-black text-zinc-300 transition cursor-pointer border border-amber-500/20">
+                        <button type="button" onClick={() => handleEdit(person, "executives")} className="p-2 rounded-xl bg-[#14141c] hover:bg-amber-400 hover:text-black text-zinc-300 transition-all cursor-pointer border border-amber-500/20 shadow hover-gold-lift">
                           <Edit2 size={13} />
                         </button>
-                        <button type="button" onClick={() => handleDelete(person.id, "executives", person.name)} className="p-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white transition cursor-pointer border border-rose-500/30">
+                        <button type="button" onClick={() => handleDelete(person.id, "executives", person.name)} className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white transition-all cursor-pointer border border-rose-500/30 shadow">
                           <Trash2 size={13} />
                         </button>
                       </div>

@@ -444,8 +444,10 @@ const AdminDashboard = () => {
         .eq("id", editingStudentMember.id);
 
       // Dynamically remove any column that is missing in Supabase schema cache and retry
-      while (result.error && result.error.message?.includes("Could not find the '")) {
-        const match = result.error.message.match(/Could not find the '([^']+)' column/);
+      while (result.error && result.error.message && (result.error.message.includes("Could not find the '") || result.error.message.includes("column") || result.error.message.includes("does not exist"))) {
+        const match = result.error.message.match(/Could not find the '([^']+)' column/) ||
+          result.error.message.match(/column "([^"]+)" of relation/) ||
+          result.error.message.match(/column "([^"]+)" does not exist/);
         if (match && match[1] && updateData[match[1]] !== undefined) {
           console.warn(`Removing missing column '${match[1]}' from update payload and retrying`);
           delete updateData[match[1]];
@@ -526,8 +528,10 @@ const AdminDashboard = () => {
       let result = await supabase.from("student_members").insert([payload]);
       
       // Dynamically remove any column missing in Supabase schema and retry
-      while (result.error && result.error.message?.includes("Could not find the '")) {
-        const match = result.error.message.match(/Could not find the '([^']+)' column/);
+      while (result.error && result.error.message && (result.error.message.includes("Could not find the '") || result.error.message.includes("column") || result.error.message.includes("does not exist"))) {
+        const match = result.error.message.match(/Could not find the '([^']+)' column/) ||
+          result.error.message.match(/column "([^"]+)" of relation/) ||
+          result.error.message.match(/column "([^"]+)" does not exist/);
         if (match && match[1] && payload[match[1]] !== undefined) {
           console.warn(`Removing missing column '${match[1]}' from insert payload and retrying`);
           delete payload[match[1]];

@@ -1144,3 +1144,302 @@ body.devtools-security-locked {
 .custom-scrollbar-gold::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 100%);
 }
+
+/* ==========================================================================
+   ADVANCED CYBER, NEON & LUXURY ANIMATION SUITE
+   ========================================================================== */
+
+/* Keyframe Animations */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes textShimmerFlow {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes radarPing {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+
+@keyframes laserBorderScan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 300% 0%;
+  }
+}
+
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(35px, -30px) scale(1.12); }
+  66% { transform: translate(-25px, 25px) scale(0.92); }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(-30px, 40px) scale(1.08); }
+  66% { transform: translate(30px, -20px) scale(0.95); }
+}
+
+@keyframes cardEntranceStagger {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes glowPulseCyan {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.2), 0 0 35px rgba(0, 98, 155, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.45), 0 0 60px rgba(0, 98, 155, 0.3);
+  }
+}
+
+@keyframes glowPulsePurple {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.2), 0 0 35px rgba(126, 34, 206, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.45), 0 0 60px rgba(126, 34, 206, 0.3);
+  }
+}
+
+@keyframes glowPulseEmerald {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), 0 0 35px rgba(5, 150, 105, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.45), 0 0 60px rgba(5, 150, 105, 0.3);
+  }
+}
+
+/* Dynamic Animation Utilities */
+.animate-gradient-flow {
+  background-size: 200% 200%;
+  animation: gradientFlow 6s ease infinite;
+}
+
+.animate-text-shimmer {
+  background-size: 200% auto;
+  animation: textShimmerFlow 3.5s linear infinite;
+}
+
+.animate-orb-1 {
+  animation: orbFloat1 12s infinite ease-in-out;
+}
+
+.animate-orb-2 {
+  animation: orbFloat2 15s infinite ease-in-out;
+}
+
+.animate-card-enter {
+  animation: cardEntranceStagger 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-cyan {
+  animation: glowPulseCyan 3s infinite ease-in-out;
+}
+
+.animate-pulse-purple {
+  animation: glowPulsePurple 3s infinite ease-in-out;
+}
+
+.animate-pulse-emerald {
+  animation: glowPulseEmerald 3s infinite ease-in-out;
+}
+
+/* High-End Glassmorphism & Surface Styles */
+.glass-card-luxury {
+  background: rgba(15, 15, 22, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.glass-card-interactive {
+  background: rgba(13, 13, 20, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow, border-color;
+}
+
+.glass-card-interactive:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px rgba(245, 158, 11, 0.15);
+}
+
+.glass-card-interactive-cyan:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(0, 210, 255, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 210, 255, 0.15);
+}
+
+.glass-card-interactive-purple:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px rgba(168, 85, 247, 0.15);
+}
+
+.glass-card-interactive-emerald:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px rgba(16, 185, 129, 0.15);
+}
+
+/* Glowing Dynamic Laser Borders */
+.laser-border-gold {
+  position: relative;
+  background: linear-gradient(60deg, #d97706, #fbbf24, #f59e0b, #d97706);
+  background-size: 300% 300%;
+  animation: laserBorderScan 6s ease infinite;
+}
+
+.laser-border-cyan {
+  position: relative;
+  background: linear-gradient(60deg, #0284c7, #00d2ff, #38bdf8, #00629b);
+  background-size: 300% 300%;
+  animation: laserBorderScan 6s ease infinite;
+}
+
+/* Vibrant Modern Gradient Text */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #fef08a 0%, #fbbf24 45%, #d97706 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #e0f2fe 0%, #38bdf8 45%, #0284c7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #f3e8ff 0%, #c084fc 45%, #7e22ce 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-emerald {
+  background: linear-gradient(135deg, #d1fae5 0%, #34d399 45%, #059669 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-rose {
+  background: linear-gradient(135deg, #ffe4e6 0%, #fb7185 45%, #e11d48 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glow Text */
+.cyan-text-glow {
+  text-shadow: 0 0 14px rgba(0, 210, 255, 0.5), 0 0 28px rgba(0, 98, 155, 0.3);
+}
+
+.purple-text-glow {
+  text-shadow: 0 0 14px rgba(168, 85, 247, 0.5), 0 0 28px rgba(126, 34, 206, 0.3);
+}
+
+.emerald-text-glow {
+  text-shadow: 0 0 14px rgba(52, 211, 153, 0.5), 0 0 28px rgba(5, 150, 105, 0.3);
+}
+
+/* Dynamic Cyber Badges */
+.badge-cyber-gold {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.1);
+}
+
+.badge-cyber-cyan {
+  background: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.35);
+  color: #38bdf8;
+  box-shadow: 0 2px 10px rgba(0, 210, 255, 0.1);
+}
+
+.badge-cyber-purple {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: #c084fc;
+  box-shadow: 0 2px 10px rgba(168, 85, 247, 0.1);
+}
+
+.badge-cyber-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.1);
+}
+
+.badge-cyber-rose {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #fb7185;
+  box-shadow: 0 2px 10px rgba(244, 63, 94, 0.1);
+}
+
+/* Micro-interaction Buttons */
+.btn-cyber-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-cyber-interactive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-cyber-interactive:hover::before {
+  left: 100%;
+}
+
+.btn-cyber-interactive:active {
+  transform: scale(0.97);
+}
+
+/* Interactive Table Enhancements */
+.table-row-hover-glow {
+  transition: all 0.25s ease;
+}
+
+.table-row-hover-glow:hover {
+  background: rgba(245, 158, 11, 0.06);
+  box-shadow: inset 3px 0 0 #f59e0b;
+}
+
+.table-row-hover-glow-cyan:hover {
+  background: rgba(0, 210, 255, 0.06);
+  box-shadow: inset 3px 0 0 #00d2ff;
+}

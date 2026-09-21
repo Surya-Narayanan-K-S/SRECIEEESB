@@ -652,7 +652,6 @@ const MembershipRegistrationPage = () => {
                 year_of_study: yearOfStudy,
                 gender: gender || "",
                 tshirt_size: tshirtSize || "L",
-                designation: designation || (applicantType === "professional" ? "Professional Member" : "Student Member"),
                 applicant_type: applicantType || "undergraduate",
                 membership_type: membershipType,
                 member_type: applicantType === "professional" ? "Professional Member" : "Student Member",
@@ -671,7 +670,20 @@ const MembershipRegistrationPage = () => {
                 events_count: 0
             };
             try {
-                const { error: smErr } = await supabase.from('student_members').upsert([memberRecord], { onConflict: 'roll_number' });
+                const curRecord = { ...memberRecord };
+                let { error: smErr } = await supabase.from('student_members').upsert([curRecord], { onConflict: 'roll_number' });
+                while (smErr && smErr.message && (smErr.message.includes("Could not find the '") || smErr.message.includes("column") || smErr.message.includes("does not exist"))) {
+                    const colMatch = smErr.message.match(/Could not find the '([^']+)' column/) ||
+                        smErr.message.match(/column "([^"]+)" of relation/) ||
+                        smErr.message.match(/column "([^"]+)" does not exist/);
+                    if (colMatch?.[1] && curRecord[colMatch[1]] !== undefined) {
+                        delete curRecord[colMatch[1]];
+                        const retry = await supabase.from('student_members').upsert([curRecord], { onConflict: 'roll_number' });
+                        smErr = retry.error;
+                    } else {
+                        break;
+                    }
+                }
                 if (smErr) {
                     console.warn("student_members upsert warning:", smErr);
                 }
