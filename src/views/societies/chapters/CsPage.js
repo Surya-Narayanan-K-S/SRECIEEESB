@@ -1,4 +1,4 @@
-import SocietyOfficeBearers from "@/components/societies";
+import SocietyOfficeBearers from "@/components/societies/SocietyOfficeBearers";
 import { ArrowLeft, Cpu, Globe2, ExternalLink, BookOpen, ArrowRight, Layers, Sparkles, Award, Users, Code2, Database, Building, GraduationCap, Calendar, Zap, Crown, } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";

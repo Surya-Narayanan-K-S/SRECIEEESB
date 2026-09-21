@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout";
 import Footer from "@/components/layout";
-import SocietyOfficeBearers from "@/components/societies";
+import SocietyOfficeBearers from "@/components/societies/SocietyOfficeBearers";
 import { ArrowLeft, GraduationCap, Sparkles, Users, Award, ArrowRight, ExternalLink, Building, Calendar, Globe2, Trophy, Crown, ChevronRight, } from "lucide-react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";

@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout";
 import Footer from "@/components/layout";
-import SocietyOfficeBearers from "@/components/societies";
+import SocietyOfficeBearers from "@/components/societies/SocietyOfficeBearers";
 import { ArrowLeft, Target, Users, Compass, Sparkles, ExternalLink, HelpCircle, Palette, Shield, Layers, Award, ArrowRight, Heart, Globe2, Crown, } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";

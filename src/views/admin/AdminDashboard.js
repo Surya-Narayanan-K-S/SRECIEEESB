@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import OfficeBearers from "@/components/societies";
+import OfficeBearers from "@/components/societies/OfficeBearers";
 import SocietyLeadershipAdmin from "./SocietyLeadershipAdmin";
 import OfficeBearerCardsAdmin from "./OfficeBearerCardsAdmin";
 import EventReportsAdmin from "./EventReportsAdmin";

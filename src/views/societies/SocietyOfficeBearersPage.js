@@ -3,7 +3,7 @@ import { useParams, useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout";
 import Footer from "@/components/layout";
-import SocietyOfficeBearers, { getSocietyKey } from "@/components/societies";
+import SocietyOfficeBearers, { getSocietyKey } from "@/components/societies/SocietyOfficeBearers";
 import { ArrowLeft, Crown, Users, Sparkles, ExternalLink, ChevronRight, ChevronLeft, Shield, Layers, Cpu, Zap, Radio, Activity, Gauge, Compass, Heart, RefreshCw, } from "lucide-react";
 import srecCampus from "@/assets/srec-campus.png";
 const SOCIETIES = [

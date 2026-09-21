@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/layout";
 import Footer from "@/components/layout";
-import SocietyOfficeBearers from "@/components/societies";
+import SocietyOfficeBearers from "@/components/societies/SocietyOfficeBearers";
 import { ArrowLeft, Loader2, Target, Calendar, Users, Layers, Sparkles, Crown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 // Helper function to map common IEEE societies to professional focus areas
