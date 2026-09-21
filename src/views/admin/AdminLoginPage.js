@@ -104,87 +104,89 @@ const AdminLoginPage = () => {
             setLoading(false);
         }
     };
-    return (<div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 relative overflow-hidden">
+    return (<div className="min-h-screen bg-[#050507] flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
       
-      {/* Decorative Animated Background */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl mix-blend-multiply animate-blob"></div>
-      <div className="absolute top-[20%] right-[-10%] w-[30rem] h-[30rem] bg-indigo-400/20 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-[-20%] left-[20%] w-[40rem] h-[40rem] bg-cyan-400/20 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-4000"></div>
+      {/* Decorative Animated Gold & Obsidian Background */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-amber-500/10 rounded-full blur-3xl mix-blend-screen animate-pulse pointer-events-none"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[30rem] h-[30rem] bg-yellow-500/10 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] left-[20%] w-[40rem] h-[40rem] bg-amber-600/10 rounded-full blur-3xl mix-blend-screen pointer-events-none"></div>
 
-      <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-[#0b3b8f] transition font-bold z-10 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-sm">
-        <ArrowLeft size={18}/>
-        Return to Portal
+      <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-amber-300 transition font-bold z-10 bg-[#0c0c12]/80 backdrop-blur border border-amber-500/20 px-4 py-2 rounded-full shadow-lg">
+        <ArrowLeft size={18} className="text-amber-400"/>
+        <span>Return to Portal</span>
       </Link>
 
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: "easeOut" }} className="w-full max-w-[420px] bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(11,59,143,0.15)] border border-white overflow-hidden relative z-10">
-        <div className="bg-gradient-to-br from-[#0b3b8f] to-indigo-900 p-10 text-center relative overflow-hidden">
-          {/* Subtle overlay pattern */}
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[length:12px_12px]"></div>
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: "easeOut" }} className="w-full max-w-[420px] bg-[#0b0b0f]/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(217,119,6,0.15)] border border-amber-500/30 overflow-hidden relative z-10">
+        <div className="bg-gradient-to-br from-[#14141c] via-[#0d0d12] to-[#07070a] border-b border-amber-500/20 p-10 text-center relative overflow-hidden">
+          {/* Overlay glow */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
           
-          <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] border border-white/20 relative z-10">
-            <Lock size={36} strokeWidth={1.5}/>
+          <div className="w-20 h-20 bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 text-black rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-lg shadow-amber-500/30 border border-yellow-300 relative z-10">
+            <Lock size={34} strokeWidth={2.2}/>
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight relative z-10">{isRegistering ? "Admin Registration" : "Admin Gateway"}</h1>
-          <p className="text-blue-100/80 font-medium mt-2 text-sm relative z-10">
+          <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 tracking-tight relative z-10">
+            {isRegistering ? "Admin Registration" : "Admin Gateway"}
+          </h1>
+          <p className="text-zinc-400 font-medium mt-2 text-xs relative z-10">
             {isRegistering ? "Provision a new security clearance" : "Authorized IEEE SREC personnel only"}
           </p>
         </div>
 
-        <div className="p-8 pt-10">
+        <div className="p-8 pt-8">
           <form onSubmit={handleAuth} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">
                 User ID / Username
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <User size={20}/>
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-amber-400">
+                  <User size={18}/>
                 </div>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0b3b8f] focus:border-transparent transition-all outline-none" placeholder="admin" required/>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-[#050507] border border-amber-500/20 rounded-xl text-white font-bold text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all outline-none" placeholder="admin" required/>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Lock size={20}/>
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-amber-400">
+                  <Lock size={18}/>
                 </div>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0b3b8f] focus:border-transparent transition-all outline-none" placeholder="••••••••" required/>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-[#050507] border border-amber-500/20 rounded-xl text-white text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all outline-none" placeholder="••••••••" required/>
               </div>
             </div>
 
             {isRegistering && (<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="overflow-hidden">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Local Admin Passkey <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">
+                  Local Admin Passkey <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-red-500">
-                    <Lock size={20}/>
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-rose-400">
+                    <Lock size={18}/>
                   </div>
-                  <input type="password" value={adminKey} onChange={(e) => setAdminKey(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-red-50 border border-red-200 rounded-xl focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none" placeholder="Enter system master key" required={isRegistering}/>
+                  <input type="password" value={adminKey} onChange={(e) => setAdminKey(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-[#140a0c] border border-rose-500/30 rounded-xl text-white text-sm focus:border-rose-400 transition-all outline-none" placeholder="Enter system master key" required={isRegistering}/>
                 </div>
               </motion.div>)}
 
-            <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 bg-[#0b3b8f] hover:bg-blue-800 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-70">
+            <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-sm uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/25 disabled:opacity-50 cursor-pointer">
               {loading ? (<>
-                  <Loader2 className="animate-spin" size={20}/>
-                  {isRegistering ? "Registering..." : "Authenticating..."}
+                  <Loader2 className="animate-spin text-black" size={18}/>
+                  <span>{isRegistering ? "Registering..." : "Authenticating..."}</span>
                 </>) : (isRegistering ? "Create Account" : "Secure Login")}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm font-semibold">
-            <button type="button" onClick={() => setIsRegistering(!isRegistering)} className="text-[#0b3b8f] hover:underline transition-all">
+          <div className="mt-6 text-center text-xs font-semibold">
+            <button type="button" onClick={() => setIsRegistering(!isRegistering)} className="text-amber-400 hover:text-amber-300 hover:underline transition-all cursor-pointer">
               {isRegistering ? "Already have an account? Sign In" : "Need access? Register here"}
             </button>
           </div>
 
-          <div className="mt-8 text-center text-xs text-slate-400 flex flex-col items-center gap-2">
-            <ShieldCheck size={18} className="text-[#0b3b8f]/50"/>
-            <p>Secured by 256-bit encryption & Supabase Auth.</p>
+          <div className="mt-8 text-center text-xs text-zinc-500 flex flex-col items-center gap-2">
+            <ShieldCheck size={18} className="text-amber-400/60"/>
+            <p>Secured by 256-bit encryption &amp; Supabase Auth.</p>
           </div>
         </div>
       </motion.div>

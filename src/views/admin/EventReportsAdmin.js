@@ -265,28 +265,28 @@ export const EventReportsAdmin = () => {
     const filteredReports = reports.filter((r) => r.title.toLowerCase().includes(search.toLowerCase()) ||
         r.venue.toLowerCase().includes(search.toLowerCase()) ||
         r.organized_by.toLowerCase().includes(search.toLowerCase()));
-    return (<div className="space-y-6 text-slate-100 font-sans">
+    return (<div className="space-y-6 text-zinc-100 font-sans">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#0c1626] p-6 rounded-2xl border border-slate-800 shadow-xl">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-[#0d0d12] to-[#07070a] p-6 rounded-3xl border border-amber-500/25 shadow-xl">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-blue-500/20 text-cyan-400 border border-blue-500/30">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2.5 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30">
               <FileText size={20}/>
             </span>
-            <h2 className="text-xl font-black text-white">Event Reports Manager</h2>
+            <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Event Reports Manager</h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Publish official IEEE Congress and Event reports with 3–4 photos per event stored in <code className="font-mono text-cyan-400">public.event_reports</code>.
+          <p className="text-xs text-zinc-400 mt-1">
+            Publish official IEEE Congress and Event reports with 3–4 photos per event stored in <code className="font-mono text-amber-400">public.event_reports</code>.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <a href="/reports" target="_blank" rel="noopener noreferrer" className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700">
+          <a href="/reports" target="_blank" rel="noopener noreferrer" className="px-4 py-2.5 rounded-xl bg-[#14141c] hover:bg-[#1a1a24] text-zinc-300 hover:text-amber-300 text-xs font-bold transition flex items-center gap-1.5 border border-amber-500/20">
             <Eye size={14}/>
             <span>View Public Reports</span>
           </a>
 
-          <button type="button" onClick={handleOpenAdd} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-black uppercase tracking-wider transition shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 cursor-pointer">
+          <button type="button" onClick={handleOpenAdd} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black text-xs font-black uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5 cursor-pointer">
             <PlusCircle size={16}/>
             <span>Add Event Report</span>
           </button>
@@ -294,66 +294,66 @@ export const EventReportsAdmin = () => {
       </div>
 
       {/* Search and Stats Bar */}
-      <div className="flex items-center justify-between gap-4 bg-[#09121f] p-4 rounded-xl border border-slate-800">
+      <div className="flex items-center justify-between gap-4 bg-[#0b0b0f] p-4 rounded-2xl border border-amber-500/20 shadow-md">
         <div className="relative flex-1 max-w-md">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"/>
-          <input type="text" placeholder="Search reports by title, venue, or organized by..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 rounded-lg bg-[#070e17] border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"/>
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400"/>
+          <input type="text" placeholder="Search reports by title, venue, or organized by..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#050507] border border-amber-500/20 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"/>
         </div>
 
-        <div className="text-xs text-slate-400 font-bold flex items-center gap-2">
+        <div className="text-xs text-zinc-400 font-bold flex items-center gap-2">
           <span>Total Database Reports:</span>
-          <span className="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-mono">
+          <span className="px-2.5 py-1 rounded-xl bg-amber-500/15 text-amber-300 font-mono border border-amber-500/30">
             {reports.length}
           </span>
         </div>
       </div>
 
       {/* Reports Table List */}
-      {loading ? (<div className="p-12 text-center text-slate-400 space-y-3 bg-[#0c1626] rounded-2xl border border-slate-800">
-          <Loader2 size={32} className="mx-auto text-cyan-400 animate-spin"/>
+      {loading ? (<div className="p-12 text-center text-zinc-400 space-y-3 bg-[#0b0b0f] rounded-3xl border border-amber-500/20">
+          <Loader2 size={32} className="mx-auto text-amber-400 animate-spin"/>
           <p className="text-xs font-mono">Loading reports from database...</p>
-        </div>) : filteredReports.length === 0 ? (<div className="p-12 text-center space-y-3 bg-[#0c1626] rounded-2xl border border-slate-800 text-slate-400">
-          <FileText size={36} className="mx-auto text-slate-600"/>
+        </div>) : filteredReports.length === 0 ? (<div className="p-12 text-center space-y-3 bg-[#0b0b0f] rounded-3xl border border-amber-500/20 text-zinc-400">
+          <FileText size={36} className="mx-auto text-zinc-600"/>
           <h3 className="text-sm font-bold text-white uppercase">No Event Reports Found in Database</h3>
-          <p className="text-xs text-slate-500">Click "Add Event Report" above to publish your report with 3–4 photos.</p>
-        </div>) : (<div className="overflow-x-auto rounded-2xl bg-[#0c1626] border border-slate-800 shadow-xl">
+          <p className="text-xs text-zinc-500">Click "Add Event Report" above to publish your report with 3–4 photos.</p>
+        </div>) : (<div className="overflow-x-auto rounded-3xl bg-[#0b0b0f] border border-amber-500/20 shadow-2xl">
           <table className="w-full text-xs text-left border-collapse">
             <thead>
-              <tr className="bg-[#09121f] text-slate-400 border-b border-slate-800">
-                <th className="p-4 font-bold uppercase text-[10px] tracking-wider">Report Title</th>
-                <th className="p-4 font-bold uppercase text-[10px] tracking-wider">Date &amp; Year</th>
-                <th className="p-4 font-bold uppercase text-[10px] tracking-wider">Venue</th>
-                <th className="p-4 font-bold uppercase text-[10px] tracking-wider">Photos</th>
-                <th className="p-4 font-bold uppercase text-[10px] tracking-wider">Organized By</th>
-                <th className="p-4 font-bold uppercase text-[10px] tracking-wider text-right">Actions</th>
+              <tr className="bg-[#050507] text-amber-400 border-b border-amber-500/20">
+                <th className="p-4 font-black uppercase text-[10px] tracking-wider">Report Title</th>
+                <th className="p-4 font-black uppercase text-[10px] tracking-wider">Date &amp; Year</th>
+                <th className="p-4 font-black uppercase text-[10px] tracking-wider">Venue</th>
+                <th className="p-4 font-black uppercase text-[10px] tracking-wider">Photos</th>
+                <th className="p-4 font-black uppercase text-[10px] tracking-wider">Organized By</th>
+                <th className="p-4 font-black uppercase text-[10px] tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-zinc-800/60">
               {filteredReports.map((row) => {
                 const photos = parsePhotos(row.photo_url, row.photo_urls);
-                return (<tr key={row.id} className="hover:bg-slate-800/40 transition-colors">
+                return (<tr key={row.id} className="hover:bg-amber-500/5 transition-colors">
                     <td className="p-4 min-w-[220px]">
                       <div className="font-black text-white">{row.title}</div>
-                      <div className="text-[10px] text-cyan-400 font-mono mt-0.5">{row.category || "Hub Congress"}</div>
+                      <div className="text-[10px] text-amber-400 font-mono mt-0.5">{row.category || "Hub Congress"}</div>
                     </td>
                     <td className="p-4 whitespace-nowrap">
-                      <div className="font-bold text-slate-200">{row.date}</div>
-                      <div className="text-[10px] text-slate-400">{row.academic_year || "2025-2026"}</div>
+                      <div className="font-bold text-zinc-200">{row.date}</div>
+                      <div className="text-[10px] text-zinc-400">{row.academic_year || "2025-2026"}</div>
                     </td>
-                    <td className="p-4 text-slate-300 max-w-[180px] truncate">{row.venue}</td>
+                    <td className="p-4 text-zinc-300 max-w-[180px] truncate">{row.venue}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-1">
-                        <span className="px-2 py-0.5 rounded bg-blue-500/20 text-cyan-300 font-mono text-[10px] font-bold border border-blue-500/30">
+                        <span className="px-2.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/30">
                           {photos.length} Photo{photos.length !== 1 ? "s" : ""}
                         </span>
                       </div>
                     </td>
-                    <td className="p-4 text-slate-300 font-bold">{row.organized_by}</td>
+                    <td className="p-4 text-zinc-300 font-bold">{row.organized_by}</td>
                     <td className="p-4 text-right whitespace-nowrap space-x-2">
-                      <button type="button" onClick={() => handleOpenEdit(row)} className="px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-cyan-300 text-xs font-bold transition cursor-pointer border border-blue-500/30">
+                      <button type="button" onClick={() => handleOpenEdit(row)} className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-400 hover:brightness-110 text-black text-xs font-black uppercase tracking-wider transition cursor-pointer">
                         Edit
                       </button>
-                      <button type="button" onClick={() => handleDelete(row.id)} className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold transition cursor-pointer border border-rose-500/30">
+                      <button type="button" onClick={() => handleDelete(row.id)} className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-bold transition cursor-pointer border border-rose-500/30">
                         Delete
                       </button>
                     </td>
@@ -364,16 +364,16 @@ export const EventReportsAdmin = () => {
         </div>)}
 
       {/* Add / Edit Modal */}
-      {isModalOpen && (<div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-[#0c1626] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-            <div className="p-5 bg-[#09121f] border-b border-slate-800 flex items-center justify-between">
+      {isModalOpen && (<div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-[#09090d] rounded-3xl border border-amber-500/30 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <div className="p-5 bg-gradient-to-r from-[#14141c] via-[#0f0f14] to-[#08080c] border-b border-amber-500/20 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <FileText size={20} className="text-cyan-400"/>
-                <h3 className="text-base font-black text-white">
+                <FileText size={20} className="text-amber-400"/>
+                <h3 className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
                   {editingReport ? "Edit Event Report" : "Publish New Event Report"}
                 </h3>
               </div>
-              <button type="button" onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+              <button type="button" onClick={() => setIsModalOpen(false)} className="p-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white cursor-pointer">
                 <X size={18}/>
               </button>
             </div>
@@ -381,48 +381,48 @@ export const EventReportsAdmin = () => {
             <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="font-bold text-slate-300 block mb-1">Report Title *</label>
-                  <input type="text" required placeholder="e.g. IEEE Madras Section Coimbatore Hub Congress 2025" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <label className="font-bold text-amber-400/90 block mb-1">Report Title *</label>
+                  <input type="text" required placeholder="e.g. IEEE Madras Section Coimbatore Hub Congress 2025" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-300 block mb-1">Event Date *</label>
-                  <input type="text" required placeholder="e.g. 13 September 2025" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <label className="font-bold text-amber-400/90 block mb-1">Event Date *</label>
+                  <input type="text" required placeholder="e.g. 13 September 2025" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-300 block mb-1">Organized By *</label>
-                  <input type="text" required placeholder="e.g. IEEE Madras Section" value={form.organized_by} onChange={(e) => setForm({ ...form, organized_by: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <label className="font-bold text-amber-400/90 block mb-1">Organized By *</label>
+                  <input type="text" required placeholder="e.g. IEEE Madras Section" value={form.organized_by} onChange={(e) => setForm({ ...form, organized_by: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="font-bold text-slate-300 block mb-1">Venue *</label>
-                  <input type="text" required placeholder="e.g. PSG Institute of Technology and Applied Research, Coimbatore" value={form.venue} onChange={(e) => setForm({ ...form, venue: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <label className="font-bold text-amber-400/90 block mb-1">Venue *</label>
+                  <input type="text" required placeholder="e.g. PSG Institute of Technology and Applied Research, Coimbatore" value={form.venue} onChange={(e) => setForm({ ...form, venue: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
 
                 {/* ─── MULTIPLE EVENT PHOTOS UPLOAD SECTION (3 to 4 photos) ─── */}
-                <div className="sm:col-span-2 p-4 rounded-2xl bg-[#070e17] border border-slate-800 space-y-3">
+                <div className="sm:col-span-2 p-4 rounded-2xl bg-[#0f0f14] border border-amber-500/20 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="font-bold text-cyan-300 flex items-center gap-1.5 text-xs">
+                    <label className="font-bold text-amber-300 flex items-center gap-1.5 text-xs">
                       <Images size={15}/>
                       <span>Event Photos (Upload 3 to 4 Photos to Bucket `reports`)</span>
                     </label>
-                    <span className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-[10px] text-zinc-400 font-mono">
                       {photosList.length} of 4 photos attached
                     </span>
                   </div>
 
                   {/* Upload button & Manual URL input */}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <label className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-xs uppercase tracking-wider cursor-pointer flex items-center justify-center gap-2 shrink-0 hover:from-cyan-400 hover:to-blue-500 transition shadow-md">
-                      {isUploadingPhoto ? <Loader2 size={14} className="animate-spin"/> : <Upload size={14}/>}
+                    <label className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black text-xs uppercase tracking-wider cursor-pointer flex items-center justify-center gap-2 shrink-0 hover:brightness-110 transition shadow-md">
+                      {isUploadingPhoto ? <Loader2 size={14} className="animate-spin text-black"/> : <Upload size={14}/>}
                       <span>Upload Photos</span>
                       <input type="file" accept="image/*" multiple onChange={handleUploadPhotos} disabled={isUploadingPhoto} className="hidden"/>
                     </label>
 
                     <div className="flex flex-1 items-center gap-1.5">
-                      <input type="text" placeholder="Or paste direct image URL (https://...)" value={newPhotoUrlInput} onChange={(e) => setNewPhotoUrlInput(e.target.value)} className="flex-1 px-3 py-2 rounded-xl bg-[#09121f] border border-slate-700 text-white font-mono text-xs focus:border-cyan-400 focus:outline-none"/>
-                      <button type="button" onClick={handleAddManualPhotoUrl} className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs shrink-0 border border-slate-700">
+                      <input type="text" placeholder="Or paste direct image URL (https://...)" value={newPhotoUrlInput} onChange={(e) => setNewPhotoUrlInput(e.target.value)} className="flex-1 px-3 py-2 rounded-xl bg-[#050507] border border-amber-500/20 text-white font-mono text-xs focus:border-amber-400 focus:outline-none"/>
+                      <button type="button" onClick={handleAddManualPhotoUrl} className="px-3.5 py-2 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-amber-300 font-bold text-xs shrink-0 border border-amber-500/30 cursor-pointer">
                         Add URL
                       </button>
                     </div>
@@ -430,44 +430,44 @@ export const EventReportsAdmin = () => {
 
                   {/* Attached Photos Grid Preview */}
                   {photosList.length > 0 ? (<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                      {photosList.map((url, idx) => (<div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 group">
+                      {photosList.map((url, idx) => (<div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-amber-500/30 bg-[#050507] group">
                           <img src={url} alt={`Event photo ${idx + 1}`} className="w-full h-full object-cover"/>
-                          <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-mono text-cyan-300 font-bold">
+                          <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono text-amber-300 font-bold border border-amber-500/30">
                             {idx === 0 ? "Featured" : `#${idx + 1}`}
                           </div>
-                          <button type="button" onClick={() => handleRemovePhoto(idx)} className="absolute top-1 right-1 p-1 rounded-full bg-rose-600/90 text-white hover:bg-rose-500 transition opacity-80 group-hover:opacity-100" title="Remove photo">
+                          <button type="button" onClick={() => handleRemovePhoto(idx)} className="absolute top-1 right-1 p-1 rounded-full bg-rose-600/90 text-white hover:bg-rose-500 transition opacity-80 group-hover:opacity-100 cursor-pointer" title="Remove photo">
                             <X size={11}/>
                           </button>
                         </div>))}
-                    </div>) : (<p className="text-[11px] text-slate-500 italic">
+                    </div>) : (<p className="text-[11px] text-zinc-500 italic">
                       No photos attached yet. You can attach 3 to 4 event photos (stage presentation, group photo, certificate award, audience).
                     </p>)}
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="font-bold text-slate-300 block mb-1">Event Overview</label>
-                  <textarea rows={4} placeholder="I had the privilege of participating in the IEEE Madras Section Coimbatore Hub Congress 2025..." value={form.event_overview} onChange={(e) => setForm({ ...form, event_overview: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <label className="font-bold text-amber-400/90 block mb-1">Event Overview</label>
+                  <textarea rows={4} placeholder="I had the privilege of participating in the IEEE Madras Section Coimbatore Hub Congress 2025..." value={form.event_overview} onChange={(e) => setForm({ ...form, event_overview: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="font-bold text-slate-300 block mb-1">
+                  <label className="font-bold text-amber-400/90 block mb-1">
                     Key Highlights &amp; Learnings (one bullet point per line)
                   </label>
-                  <textarea rows={5} placeholder="• IEEE leadership and effective student branch management.&#10;• Planning and execution of technical and professional activities..." value={form.key_highlights} onChange={(e) => setForm({ ...form, key_highlights: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white font-mono text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <textarea rows={5} placeholder="• IEEE leadership and effective student branch management.&#10;• Planning and execution of technical and professional activities..." value={form.key_highlights} onChange={(e) => setForm({ ...form, key_highlights: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white font-mono text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="font-bold text-slate-300 block mb-1">Concluding Remarks</label>
-                  <textarea rows={3} placeholder="The interactions and discussions provided a broader understanding..." value={form.conclusion_text} onChange={(e) => setForm({ ...form, conclusion_text: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#070e17] border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"/>
+                  <label className="font-bold text-amber-400/90 block mb-1">Concluding Remarks</label>
+                  <textarea rows={3} placeholder="The interactions and discussions provided a broader understanding..." value={form.conclusion_text} onChange={(e) => setForm({ ...form, conclusion_text: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl bg-[#050507] border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"/>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs uppercase">
+              <div className="pt-4 border-t border-zinc-800 flex items-center justify-end gap-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 font-bold text-xs uppercase border border-zinc-700 cursor-pointer">
                   Cancel
                 </button>
-                <button type="submit" disabled={isSaving} className="px-6 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-xs uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
-                  {isSaving ? <Loader2 size={14} className="animate-spin"/> : <Check size={14}/>}
+                <button type="submit" disabled={isSaving} className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-md shadow-amber-500/20">
+                  {isSaving ? <Loader2 size={14} className="animate-spin text-black"/> : <Check size={14}/>}
                   <span>{editingReport ? "Update Database Report" : "Publish to Database"}</span>
                 </button>
               </div>

@@ -9,7 +9,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import DownloadAppModal from "@/components/modals/DownloadAppModal";
 import { usePageVisibility } from "@/hooks/usePageVisibility";
 
-// Primary Desktop Navigation Links (Always visible in top capsule)
+// Primary Desktop Navigation Links (Always visible in top capsule - streamlined)
 const coreNavLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -18,19 +18,18 @@ const coreNavLinks = [
   { label: "Office Bearers", href: "/office-bearers" },
   { label: "Gallery", href: "/gallery" },
   { label: "Reports", href: "/reports", icon: FileText },
-  { label: "INNOQUEST", href: "/document", icon: BookOpen, desc: "Official Branch Handbook" },
   { label: "Register", href: "/membership-registration", icon: UserPlus, desc: "Become a member today" },
 ];
 
 // Clean "More" Dropdown Links (NO DUPLICATIONS with top bar)
 const moreLinks = [
-  { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Activity roadmap & schedules" },
-  { label: "Awards & Honors", href: "/awards", icon: Award, desc: "Accolades & recognitions" },
-  { label: "Funding & Grants", href: "/funding", icon: DollarSign, desc: "Funding requests & grants" },
+  { label: "INNOQUEST Handbook", href: "/document", icon: BookOpen, desc: "Official Branch Handbook & documentation" },
   { label: "Society Leaders", href: "/societies/office-bearers", icon: Crown, desc: "CS, WIE, PELS & chapter leadership" },
-  { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leadership records" },
   { label: "Executive Team", href: "/team", icon: Compass, desc: "Full executive committee roster" },
-  { label: "INNOQUEST Handbook", href: "/document", icon: BookOpen, desc: "View Official Handbook inside website" },
+  { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leadership records" },
+  { label: "Awards & Honors", href: "/awards", icon: Award, desc: "Accolades & recognitions" },
+  { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Activity roadmap & schedules" },
+  { label: "Funding & Grants", href: "/funding", icon: DollarSign, desc: "Funding requests & grants" },
   { label: "Student Portal", href: "/student-login", icon: IdCard, desc: "Member login & digital ID card" },
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with branch" },
 ];
@@ -43,14 +42,16 @@ const mobileGridLinks = [
   { label: "Society Leaders", href: "/societies/office-bearers", icon: Crown, desc: "Chapter leadership directory" },
   { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
   { label: "Gallery", href: "/gallery", icon: Image, desc: "Event photo archives" },
-  { label: "Reports", href: "/reports", icon: FileText, desc: "Official Congress & event reports" },
-  { label: "INNOQUEST", href: "/document", icon: BookOpen, desc: "Official SB Handbook" },
+  { label: "Reports", href: "/reports", icon: FileText, desc: "Official event reports" },
+  { label: "INNOQUEST Handbook", href: "/document", icon: BookOpen, desc: "Official SB Handbook" },
   { label: "Office Bearers", href: "/office-bearers", icon: Shield, desc: "Branch leadership" },
   { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leaders" },
   { label: "Executive Team", href: "/team", icon: Compass, desc: "Executive committee" },
-  { label: "Awards", href: "/awards", icon: Award, desc: "Accolades & honors" },
-  { label: "Funding", href: "/funding", icon: DollarSign, desc: "Grants & support" },
+  { label: "Awards & Honors", href: "/awards", icon: Award, desc: "Accolades & honors" },
+  { label: "Funding & Grants", href: "/funding", icon: DollarSign, desc: "Grants & support" },
   { label: "Annual Plans", href: "/annual-plans", icon: LayoutGrid, desc: "Roadmap & schedule" },
+  { label: "Student Portal", href: "/student-login", icon: IdCard, desc: "Member digital ID & dashboard" },
+  { label: "Register Member", href: "/membership-registration", icon: UserPlus, desc: "Join IEEE SREC" },
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with us" },
 ];
 // Quick actions for bottom navigation dock
