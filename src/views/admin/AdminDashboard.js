@@ -418,25 +418,25 @@ const AdminDashboard = () => {
       return;
     setIsSavingStudentMember(true);
     try {
+      const cleanRoll = String(editingStudentMember.roll_number || "").trim().toUpperCase();
       const updateData = {
-        ieee_id: editingStudentMember.ieee_id,
+        roll_number: cleanRoll,
+        email: editingStudentMember.email ? editingStudentMember.email.trim() : "",
+        first_name: editingStudentMember.first_name ? editingStudentMember.first_name.trim() : "",
+        last_name: editingStudentMember.last_name ? editingStudentMember.last_name.trim() : "",
+        ieee_id: editingStudentMember.ieee_id ? editingStudentMember.ieee_id.trim() : "PENDING",
         department: editingStudentMember.department,
         year_of_study: editingStudentMember.year_of_study,
         gender: editingStudentMember.gender,
         tshirt_size: editingStudentMember.tshirt_size,
         applicant_type: editingStudentMember.applicant_type,
         membership_status: editingStudentMember.membership_status,
-        first_name: editingStudentMember.first_name,
-        last_name: editingStudentMember.last_name,
-        email: editingStudentMember.email,
-        roll_number: editingStudentMember.roll_number,
-        phone: editingStudentMember.phone,
-        designation: editingStudentMember.designation,
-        password: editingStudentMember.password,
+        phone: editingStudentMember.phone ? editingStudentMember.phone.trim() : null,
+        designation: editingStudentMember.designation || null,
         target_societies: editingStudentMember.target_societies || ["IEEE Student Branch SREC"],
       };
       if (editingStudentMember.card_pdf_url !== undefined && editingStudentMember.card_pdf_url !== null) {
-        updateData.card_pdf_url = editingStudentMember.card_pdf_url;
+        updateData.card_pdf_url = editingStudentMember.card_pdf_url.trim();
       }
       let { error } = await supabase
         .from("student_members")
@@ -3428,16 +3428,87 @@ const AdminDashboard = () => {
 
               <form onSubmit={updateStudentMember} className="p-6 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Roll / Register Number (Editable) */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
+                      Roll / Register Number <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingStudentMember.roll_number || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, roll_number: e.target.value })}
+                      placeholder="e.g. 71812507044 or 21CS045"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Official Email (Editable) */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
+                      Official Email <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={editingStudentMember.email || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, email: e.target.value })}
+                      placeholder="student@srec.ac.in"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      required
+                    />
+                  </div>
+
+                  {/* First Name (Editable) */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
+                      First Name <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingStudentMember.first_name || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, first_name: e.target.value })}
+                      placeholder="e.g. Priyanka"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Last Name (Editable) */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
+                      Last Name <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingStudentMember.last_name || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, last_name: e.target.value })}
+                      placeholder="e.g. S"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      required
+                    />
+                  </div>
+
                   {/* IEEE Member ID */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">IEEE Member ID</label>
-                    <input type="text" value={editingStudentMember.ieee_id || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, ieee_id: e.target.value })} placeholder="e.g. 102075943 or PENDING" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                    <input
+                      type="text"
+                      value={editingStudentMember.ieee_id || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, ieee_id: e.target.value })}
+                      placeholder="e.g. 102075943 or PENDING"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                    />
                   </div>
 
                   {/* Department */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Department</label>
-                    <select value={editingStudentMember.department || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, department: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required>
+                    <select
+                      value={editingStudentMember.department || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, department: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      required
+                    >
                       <option value="CSE">CSE</option>
                       <option value="ECE">ECE</option>
                       <option value="EEE">EEE</option>
@@ -3457,7 +3528,12 @@ const AdminDashboard = () => {
                   {/* Year of Study */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Year of Study</label>
-                    <select value={editingStudentMember.year_of_study || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, year_of_study: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required>
+                    <select
+                      value={editingStudentMember.year_of_study || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, year_of_study: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      required
+                    >
                       <option value="1st Year">1st Year</option>
                       <option value="2nd Year">2nd Year</option>
                       <option value="3rd Year">3rd Year</option>
@@ -3470,7 +3546,11 @@ const AdminDashboard = () => {
                   {/* Gender */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Gender</label>
-                    <select value={editingStudentMember.gender || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, gender: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <select
+                      value={editingStudentMember.gender || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, gender: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                    >
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Other">Other</option>
@@ -3480,7 +3560,11 @@ const AdminDashboard = () => {
                   {/* T-Shirt Size */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">T-Shirt Size</label>
-                    <select value={editingStudentMember.tshirt_size || "L"} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, tshirt_size: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <select
+                      value={editingStudentMember.tshirt_size || "L"}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, tshirt_size: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                    >
                       <option value="XXS">XXS</option>
                       <option value="XS">XS</option>
                       <option value="S">S</option>
@@ -3495,39 +3579,85 @@ const AdminDashboard = () => {
                   {/* Applicant Type */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Applicant Category</label>
-                    <select value={editingStudentMember.applicant_type || "undergraduate"} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, applicant_type: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <select
+                      value={editingStudentMember.applicant_type || "undergraduate"}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, applicant_type: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                    >
                       <option value="undergraduate">Undergraduate (BE/B.Tech)</option>
                       <option value="postgraduate">Postgraduate (ME/M.Tech/MBA)</option>
                       <option value="professional">Professional / Faculty</option>
                     </select>
                   </div>
 
-                  {/* First Name */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">First Name</label>
-                    <input type="text" value={editingStudentMember.first_name || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, first_name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
-                  </div>
-
-                  {/* Last Name */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Last Name</label>
-                    <input type="text" value={editingStudentMember.last_name || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, last_name: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
-                  </div>
-
                   {/* Mobile Phone */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Phone Number</label>
-                    <input type="text" value={editingStudentMember.phone || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, phone: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                    <input
+                      type="text"
+                      value={editingStudentMember.phone || ""}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, phone: e.target.value })}
+                      placeholder="+91 9876543210"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                    />
                   </div>
 
                   {/* Membership Status */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Membership Status</label>
-                    <select value={editingStudentMember.membership_status || "ACTIVE"} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, membership_status: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <select
+                      value={editingStudentMember.membership_status || "ACTIVE"}
+                      onChange={(e) => setEditingStudentMember({ ...editingStudentMember, membership_status: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                    >
                       <option value="ACTIVE">ACTIVE</option>
                       <option value="INACTIVE">INACTIVE</option>
                       <option value="EXPIRED">EXPIRED</option>
                     </select>
+                  </div>
+
+                  {/* Selected Societies Checklist */}
+                  <div className="space-y-2 col-span-full pt-2 border-t border-zinc-800">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90 flex items-center justify-between">
+                      <span>Affiliated Chapters / Societies</span>
+                      <span className="text-[10px] text-amber-400 font-bold">
+                        ({(Array.isArray(editingStudentMember.target_societies) ? editingStudentMember.target_societies : []).length} Selected)
+                      </span>
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {ALL_TECHNICAL_SOCIETIES.map((socName) => {
+                        const currentSocieties = Array.isArray(editingStudentMember.target_societies)
+                          ? editingStudentMember.target_societies
+                          : [];
+                        const isSelected = currentSocieties.includes(socName);
+                        return (
+                          <button
+                            key={socName}
+                            type="button"
+                            onClick={() => {
+                              const next = isSelected
+                                ? currentSocieties.filter((s) => s !== socName)
+                                : [...currentSocieties, socName];
+                              setEditingStudentMember({ ...editingStudentMember, target_societies: next });
+                            }}
+                            className={`p-2 rounded-xl text-left text-[11px] font-bold border transition flex items-center justify-between cursor-pointer ${
+                              isSelected
+                                ? "bg-amber-500/20 border-amber-500 text-amber-300"
+                                : "bg-[#050507] border-amber-500/20 text-zinc-400 hover:text-white"
+                            }`}
+                          >
+                            <span className="truncate">{socName.replace("IEEE ", "")}</span>
+                            <div
+                              className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
+                                isSelected ? "bg-amber-400 border-amber-400 text-black" : "border-zinc-700 bg-transparent"
+                              }`}
+                            >
+                              {isSelected && <Check size={10} className="stroke-[3]" />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   {/* Original IEEE PDF Card Upload */}
@@ -3537,20 +3667,38 @@ const AdminDashboard = () => {
                       <span className="text-[10px] text-zinc-400 font-normal">Drop file or enter direct URL</span>
                     </label>
                     <div className="flex flex-col sm:flex-row items-center gap-2.5">
-                      <input type="text" value={editingStudentMember.card_pdf_url || ""} onChange={(e) => setEditingStudentMember({ ...editingStudentMember, card_pdf_url: e.target.value })} placeholder="e.g. /cards/102298938.pdf or Supabase URL" className="flex-1 w-full px-3.5 py-2 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                      <input
+                        type="text"
+                        value={editingStudentMember.card_pdf_url || ""}
+                        onChange={(e) => setEditingStudentMember({ ...editingStudentMember, card_pdf_url: e.target.value })}
+                        placeholder="e.g. /cards/102298938.pdf or Supabase URL"
+                        className="flex-1 w-full px-3.5 py-2 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      />
                       <label className={`px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs ${isUploadingAdminPdf ? 'opacity-50 pointer-events-none' : ''}`}>
                         {isUploadingAdminPdf ? <Loader2 size={13} className="animate-spin text-black" /> : <Upload size={13} />}
                         <span>{isUploadingAdminPdf ? "Uploading..." : "Upload PDF"}</span>
-                        <input type="file" accept="application/pdf" onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (f)
-                            handleAdminUploadPdf(f, true);
-                        }} disabled={isUploadingAdminPdf} className="hidden" />
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) handleAdminUploadPdf(f, true);
+                          }}
+                          disabled={isUploadingAdminPdf}
+                          className="hidden"
+                        />
                       </label>
-                      {(editingStudentMember.card_pdf_url || (editingStudentMember.ieee_id && editingStudentMember.ieee_id !== "PENDING")) && (<button type="button" onClick={() => window.open(getPrimaryMemberCardPdfUrl(editingStudentMember), "_blank")} className="px-3 py-2 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 font-bold text-xs uppercase tracking-wider transition flex items-center gap-1 shrink-0 cursor-pointer border border-zinc-700" title="Preview current PDF in new tab">
-                        <Eye size={13} />
-                        <span>Preview</span>
-                      </button>)}
+                      {(editingStudentMember.card_pdf_url || (editingStudentMember.ieee_id && editingStudentMember.ieee_id !== "PENDING")) && (
+                        <button
+                          type="button"
+                          onClick={() => window.open(getPrimaryMemberCardPdfUrl(editingStudentMember), "_blank")}
+                          className="px-3 py-2 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 font-bold text-xs uppercase tracking-wider transition flex items-center gap-1 shrink-0 cursor-pointer border border-zinc-700"
+                          title="Preview current PDF in new tab"
+                        >
+                          <Eye size={13} />
+                          <span>Preview</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
