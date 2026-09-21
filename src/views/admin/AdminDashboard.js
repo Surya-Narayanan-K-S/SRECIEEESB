@@ -2790,11 +2790,11 @@ const AdminDashboard = () => {
               {/* ─── 1. EXECUTIVE KPI SUMMARY RIBBON (METALLIC GOLD & OBSIDIAN) ─── */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                 {/* Master Total Registered Students Card */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-[#121218] via-[#0d0d12] to-[#07070a] p-5 rounded-2xl border-2 border-amber-500/40 shadow-xl shadow-amber-500/10 flex items-center justify-between group hover:border-amber-400 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative overflow-hidden bg-gradient-to-br from-[#14141c] via-[#0d0d12] to-[#07070a] p-5 rounded-2xl border-2 border-amber-500/40 shadow-xl shadow-amber-500/10 flex items-center justify-between group hover:border-amber-400 hover-gold-lift transition-all animate-gold-pulse">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
                   <div>
                     <p className="text-[10px] uppercase font-black tracking-widest text-amber-400">Total Registered Students</p>
-                    <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 mt-1">
+                    <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 mt-1 gold-text-glow">
                       {studentMembers.length}
                     </p>
                     <p className="text-[11px] text-zinc-400 font-semibold mt-0.5 flex items-center gap-1">
@@ -2802,13 +2802,13 @@ const AdminDashboard = () => {
                       <span>Live Database Verified</span>
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-300 shrink-0 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0 group-hover:scale-110 transition-transform">
                     <Users size={22} />
                   </div>
                 </div>
 
                 {/* Pending IEEE IDs */}
-                <div className="bg-[#0b0b0f] p-5 rounded-2xl border border-amber-500/20 shadow-md flex items-center justify-between hover:border-amber-500/40 transition-colors">
+                <div className="glass-obsidian-gold p-5 rounded-2xl shadow-md flex items-center justify-between hover-gold-lift transition-all">
                   <div>
                     <p className="text-[10px] uppercase font-black tracking-widest text-amber-400/80">Pending IEEE IDs</p>
                     <p className="text-2xl font-black text-amber-300 mt-1">
@@ -2825,7 +2825,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Assigned & Verified IEEE IDs */}
-                <div className="bg-[#0b0b0f] p-5 rounded-2xl border border-amber-500/20 shadow-md flex items-center justify-between hover:border-amber-500/40 transition-colors">
+                <div className="glass-obsidian-gold p-5 rounded-2xl shadow-md flex items-center justify-between hover-gold-lift transition-all">
                   <div>
                     <p className="text-[10px] uppercase font-black tracking-widest text-amber-400/80">Assigned IEEE IDs</p>
                     <p className="text-2xl font-black text-amber-300 mt-1">
@@ -3426,12 +3426,12 @@ const AdminDashboard = () => {
           </div>)}
 
           {/* EDIT STUDENT MEMBER MODAL OVERLAY (OBSIDIAN & GOLD) */}
-          {editingStudentMember && (<div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-            <div className="w-full max-w-2xl bg-[#09090d] rounded-3xl shadow-2xl border border-amber-500/30 overflow-hidden my-8 animate-fadeIn text-zinc-100">
-              <div className="bg-gradient-to-r from-[#14141c] via-[#0f0f14] to-[#08080c] border-b border-amber-500/20 p-6 flex items-center justify-between">
+          {editingStudentMember && (<div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-[#09090d] rounded-3xl shadow-2xl border-2 border-amber-500/40 gold-glow-intense overflow-hidden my-8 animate-fadeIn text-zinc-100">
+              <div className="bg-gradient-to-r from-[#14141c] via-[#0f0f14] to-[#08080c] border-b border-amber-500/30 p-6 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Edit Member Record</span>
-                  <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">{editingStudentMember.first_name} {editingStudentMember.last_name}</h3>
+                  <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 gold-text-glow">{editingStudentMember.first_name} {editingStudentMember.last_name}</h3>
                   <p className="text-xs text-zinc-400 font-mono">Roll: {editingStudentMember.roll_number} · Email: {editingStudentMember.email}</p>
                 </div>
                 <button type="button" onClick={() => setEditingStudentMember(null)} className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center justify-center transition cursor-pointer">

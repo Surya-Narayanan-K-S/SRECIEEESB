@@ -1027,3 +1027,120 @@ body.devtools-security-locked {
 .animate-shake {
   animation: security-shake 0.4s ease-in-out;
 }
+
+/* ==========================================================================
+   IMPERIAL OBSIDIAN & GOLD LUXURY ANIMATION SUITE
+   ========================================================================== */
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes goldPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2), 0 0 30px rgba(217, 119, 6, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4), 0 0 50px rgba(217, 119, 6, 0.25);
+  }
+}
+
+@keyframes floatSmooth {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes goldBorderSweep {
+  0% {
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    border-color: rgba(251, 191, 36, 0.8);
+  }
+  100% {
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+}
+
+.animate-gold-shimmer {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.4) 50%, rgba(245, 158, 11, 0.1) 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 3s infinite linear;
+}
+
+.animate-gold-pulse {
+  animation: goldPulseGlow 3s infinite ease-in-out;
+}
+
+.animate-float {
+  animation: floatSmooth 4s infinite ease-in-out;
+}
+
+.animate-gold-border {
+  animation: goldBorderSweep 3s infinite ease-in-out;
+}
+
+/* Glassmorphism & Gold Theme Utilities */
+.glass-obsidian-gold {
+  background: rgba(11, 11, 15, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 20px rgba(245, 158, 11, 0.05);
+}
+
+.glass-obsidian-gold:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 158, 11, 0.12);
+}
+
+.gold-text-glow {
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.45), 0 0 25px rgba(245, 158, 11, 0.25);
+}
+
+.gold-glow-subtle {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2), inset 0 0 10px rgba(245, 158, 11, 0.08);
+}
+
+.gold-glow-intense {
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.35), 0 0 70px rgba(217, 119, 6, 0.2);
+}
+
+.hover-gold-lift {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-gold-lift:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 158, 11, 0.2);
+}
+
+/* Custom Scrollbar for Obsidian Gold Dark Theme */
+.custom-scrollbar-gold::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.custom-scrollbar-gold::-webkit-scrollbar-track {
+  background: #07070a;
+  border-radius: 8px;
+}
+
+.custom-scrollbar-gold::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+  border-radius: 8px;
+  border: 1px solid #07070a;
+}
+
+.custom-scrollbar-gold::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 100%);
+}
