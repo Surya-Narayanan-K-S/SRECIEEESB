@@ -432,31 +432,37 @@ const AdminDashboard = () => {
         applicant_type: editingStudentMember.applicant_type,
         membership_status: editingStudentMember.membership_status,
         phone: editingStudentMember.phone ? editingStudentMember.phone.trim() : null,
-        designation: editingStudentMember.designation || null,
         target_societies: editingStudentMember.target_societies || ["IEEE Student Branch SREC"],
       };
-      if (editingStudentMember.card_pdf_url !== undefined && editingStudentMember.card_pdf_url !== null) {
+      if (editingStudentMember.card_pdf_url?.trim()) {
         updateData.card_pdf_url = editingStudentMember.card_pdf_url.trim();
       }
-      let { error } = await supabase
+
+      let result = await supabase
         .from("student_members")
         .update(updateData)
         .eq("id", editingStudentMember.id);
-      // If Supabase returns schema cache error for card_pdf_url, retry without it so edits still succeed
-      if (error && error.message?.toLowerCase().includes("card_pdf_url")) {
-        console.warn("Retrying student member update without card_pdf_url (add column to Supabase schema):", error.message);
-        delete updateData.card_pdf_url;
-        const retry = await supabase
-          .from("student_members")
-          .update(updateData)
-          .eq("id", editingStudentMember.id);
-        error = retry.error;
+
+      // Dynamically remove any column that is missing in Supabase schema cache and retry
+      while (result.error && result.error.message?.includes("Could not find the '")) {
+        const match = result.error.message.match(/Could not find the '([^']+)' column/);
+        if (match && match[1] && updateData[match[1]] !== undefined) {
+          console.warn(`Removing missing column '${match[1]}' from update payload and retrying`);
+          delete updateData[match[1]];
+          result = await supabase
+            .from("student_members")
+            .update(updateData)
+            .eq("id", editingStudentMember.id);
+        } else {
+          break;
+        }
       }
-      if (error) {
-        alert("Error updating member: " + error.message);
+
+      if (result.error) {
+        alert("Error updating member: " + result.error.message);
       }
       else {
-        alert("Student Member updated successfully!");
+        alert("Student Member record updated successfully!");
         setEditingStudentMember(null);
         fetchStudentMembers();
       }
@@ -517,15 +523,22 @@ const AdminDashboard = () => {
       if (newMemberForm.card_pdf_url?.trim()) {
         payload.card_pdf_url = newMemberForm.card_pdf_url.trim();
       }
-      let { error } = await supabase.from("student_members").insert([payload]);
-      if (error && error.message?.toLowerCase().includes("card_pdf_url")) {
-        console.warn("Retrying member insert without card_pdf_url:", error.message);
-        delete payload.card_pdf_url;
-        const retry = await supabase.from("student_members").insert([payload]);
-        error = retry.error;
+      let result = await supabase.from("student_members").insert([payload]);
+      
+      // Dynamically remove any column missing in Supabase schema and retry
+      while (result.error && result.error.message?.includes("Could not find the '")) {
+        const match = result.error.message.match(/Could not find the '([^']+)' column/);
+        if (match && match[1] && payload[match[1]] !== undefined) {
+          console.warn(`Removing missing column '${match[1]}' from insert payload and retrying`);
+          delete payload[match[1]];
+          result = await supabase.from("student_members").insert([payload]);
+        } else {
+          break;
+        }
       }
-      if (error) {
-        alert("Error adding student member: " + error.message);
+
+      if (result.error) {
+        alert("Error adding student member: " + result.error.message);
       }
       else {
         alert("New Student Member added successfully!");
@@ -550,7 +563,7 @@ const AdminDashboard = () => {
       }
     }
     catch (err) {
-      alert("Add failed: " + err.message);
+      alert("Add member failed: " + err.message);
     }
     finally {
       setIsAddingMember(false);
