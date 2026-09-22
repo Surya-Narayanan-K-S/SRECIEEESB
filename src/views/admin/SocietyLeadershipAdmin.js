@@ -434,7 +434,7 @@ export const SocietyLeadershipAdmin = () => {
 
         {/* LinkedIn Profile URL */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center gap-1.5">
+          <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase mb-2">
             <Linkedin size={13} className="text-blue-600" /> LinkedIn Profile Link
           </label>
           <input type="url" placeholder="https://linkedin.com/in/username" value={form.linkedin_url} onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900 focus:bg-white focus:border-blue-600 focus:outline-none transition-all" />
