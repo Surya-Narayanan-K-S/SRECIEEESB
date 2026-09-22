@@ -1443,3 +1443,393 @@ body.devtools-security-locked {
   background: rgba(0, 210, 255, 0.06);
   box-shadow: inset 3px 0 0 #00d2ff;
 }
+
+/* ==========================================================================
+   ADMIN DASHBOARD PREMIUM CSS & ANIMATION SUITE
+   ========================================================================== */
+
+/* Multi-layer Glassmorphism Panel */
+.admin-glass-card {
+  background: linear-gradient(135deg, rgba(18, 18, 24, 0.85) 0%, rgba(9, 9, 13, 0.95) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-glass-card:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 15px 35px -10px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Stat Card Highlight */
+.admin-stat-card-gold {
+  background: linear-gradient(135deg, rgba(26, 23, 8, 0.9) 0%, rgba(12, 11, 5, 0.95) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.2), inset 0 1px 0 rgba(251, 191, 36, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-stat-card-gold:hover {
+  border-color: rgba(251, 191, 36, 0.7);
+  box-shadow: 0 15px 40px -8px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(251, 191, 36, 0.3);
+  transform: translateY(-3px) scale(1.01);
+}
+
+/* Glowing Pulse Animation */
+@keyframes adminPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.55);
+  }
+}
+
+.admin-glow-pulse {
+  animation: adminPulseGlow 3s infinite ease-in-out;
+}
+
+/* Gradient Shimmer Text */
+.admin-shimmer-text {
+  background: linear-gradient(90deg, #fef08a 0%, #f59e0b 25%, #fde047 50%, #f59e0b 75%, #fef08a 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: adminShimmer 4s linear infinite;
+}
+
+@keyframes adminShimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Admin Sidebar Active Item */
+.admin-nav-item-active {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+  color: #050507 !important;
+  font-weight: 900;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+  border: 1px solid #fde047;
+}
+
+/* Admin Table Custom Scroll & Modern Hover */
+.admin-table-row {
+  transition: all 0.2s ease;
+}
+
+.admin-table-row:hover {
+  background: rgba(245, 158, 11, 0.05);
+  box-shadow: inset 4px 0 0 #f59e0b;
+}
+
+/* Subtle Floating Action Button */
+.admin-floating-badge {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.2);
+  transition: all 0.25s ease;
+}
+
+.admin-floating-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.35);
+}
+
+/* ==========================================================================
+   ADMIN DASHBOARD ULTRA ANIMATION & MICRO-INTERACTION SUITE
+   ========================================================================== */
+
+/* Keyframe Animations */
+@keyframes adminPulseRadar {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.85;
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5);
+  }
+  70% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.85;
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+@keyframes adminCardGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    border-color: rgba(226, 232, 240, 0.9);
+  }
+  50% {
+    box-shadow: 0 10px 30px -4px rgba(37, 99, 235, 0.12), 0 4px 12px -2px rgba(37, 99, 235, 0.08);
+    border-color: rgba(147, 197, 253, 0.7);
+  }
+}
+
+@keyframes adminFloatSoft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes adminSparkleTwinkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+  }
+}
+
+@keyframes adminShimmerSheen {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+@keyframes adminFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminScalePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes adminGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Animation Utility Classes */
+.animate-admin-radar {
+  animation: adminPulseRadar 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.animate-admin-float {
+  animation: adminFloatSoft 3.5s ease-in-out infinite;
+}
+
+.animate-admin-sparkle {
+  animation: adminSparkleTwinkle 4s ease-in-out infinite;
+}
+
+.animate-admin-fade-in {
+  animation: adminFadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-admin-pop {
+  animation: adminScalePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-admin-gradient {
+  background-size: 200% 200%;
+  animation: adminGradientFlow 6s ease infinite;
+}
+
+/* Elevated Milk-White Card */
+.admin-card-elevated {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-card-elevated:hover {
+  border-color: #93c5fd;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -8px rgba(37, 99, 235, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* KPI Stat Cards */
+.admin-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.admin-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #2563eb, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.admin-kpi-card:hover {
+  transform: translateY(-4px);
+  border-color: #bfdbfe;
+  box-shadow: 0 16px 32px -8px rgba(37, 99, 235, 0.14), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+}
+
+.admin-kpi-card:hover::before {
+  opacity: 1;
+}
+
+.admin-kpi-card .kpi-icon-box {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.admin-kpi-card:hover .kpi-icon-box {
+  transform: scale(1.1) rotate(4deg);
+  box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.25);
+}
+
+/* Quick Navigation Action Tiles */
+.admin-quick-tile {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+.admin-quick-tile:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  background: #f8fafc;
+  box-shadow: 0 10px 24px -4px rgba(37, 99, 235, 0.12);
+}
+
+.admin-quick-tile .tile-arrow {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.admin-quick-tile:hover .tile-arrow {
+  transform: translateX(4px);
+  color: #2563eb;
+}
+
+/* Tactile Interactive Buttons */
+.admin-btn-tactile {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-tactile::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.admin-btn-tactile:hover::after {
+  transform: translateX(100%);
+}
+
+.admin-btn-tactile:active {
+  transform: scale(0.96);
+}
+
+/* Admin Table Row Micro-Interactions */
+.admin-table-row-milk {
+  transition: all 0.2s ease;
+}
+
+.admin-table-row-milk:hover {
+  background: #f1f5f9;
+  box-shadow: inset 4px 0 0 #2563eb;
+}
+
+/* Radar Beacon Live Indicator */
+.admin-live-beacon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-live-beacon::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: inherit;
+  opacity: 0.75;
+  animation: adminPulseRadar 2s infinite cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Minimal Milk Scrollbar */
+.admin-custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-custom-scrollbar::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.admin-custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.admin-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

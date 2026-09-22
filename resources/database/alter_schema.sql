@@ -25,8 +25,15 @@ CREATE TABLE IF NOT EXISTS public.admins (
     id BIGSERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
+    role TEXT DEFAULT 'Master Administrator',
+    display_name TEXT,
+    avatar_url TEXT,
     created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+ALTER TABLE public.admins ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'Master Administrator';
+ALTER TABLE public.admins ADD COLUMN IF NOT EXISTS display_name TEXT;
+ALTER TABLE public.admins ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow public read admins" ON public.admins;

@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 
 /**
- * Data access service for Branch Activities
+ * Enhanced Data Access Service for Branch Activities & Events
  */
 export const activitiesService = {
   /**
@@ -23,7 +23,7 @@ export const activitiesService = {
   /**
    * Fetch latest highlight activities for landing page
    */
-  async getLatestHighlights(limit = 3) {
+  async getLatestHighlights(limit = 6) {
     const { data, error } = await supabase
       .from("activities")
       .select("*")
@@ -34,6 +34,21 @@ export const activitiesService = {
       console.error("[activitiesService] Error fetching highlights:", error);
       throw error;
     }
+    return data || [];
+  },
+
+  /**
+   * Search activities by title, chief guest, or description
+   */
+  async searchActivities(keyword) {
+    const k = keyword.trim();
+    const { data, error } = await supabase
+      .from("activities")
+      .select("*")
+      .or(`event.ilike.%${k}%,chief_guest.ilike.%${k}%,description.ilike.%${k}%`)
+      .order("s_no", { ascending: false });
+
+    if (error) throw error;
     return data || [];
   },
 
@@ -77,5 +92,27 @@ export const activitiesService = {
 
     if (error) throw error;
     return true;
+  },
+
+  /**
+   * Calculate activity metrics
+   */
+  async getActivityStats() {
+    const { data, error } = await supabase
+      .from("activities")
+      .select("id, participants, date");
+
+    if (error) return { totalActivities: 0, totalParticipants: 0 };
+
+    let totalParticipants = 0;
+    data?.forEach(act => {
+      const num = parseInt(act.participants, 10);
+      if (!isNaN(num)) totalParticipants += num;
+    });
+
+    return {
+      totalActivities: data?.length || 0,
+      totalParticipants
+    };
   }
 };

@@ -8,7 +8,7 @@ import EventReportsAdmin from "./EventReportsAdmin";
 import LaunchControlRoom from "@/components/admin/LaunchControlRoom";
 import PageVisibilityAdmin from "@/components/admin/PageVisibilityAdmin";
 import { getPrimaryMemberCardPdfUrl, uploadMemberCardPdf } from "@/utils/cardPdfHelper";
-import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv } from "lucide-react";
+import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv, Lock } from "lucide-react";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,10 +66,79 @@ const AdminDashboard = () => {
   const [adminForm, setAdminForm] = useState({
     username: "",
     password: "",
-    role: "admin",
+    role: "Master Administrator",
   });
+  const [adminProfile, setAdminProfile] = useState(() => {
+    const storedUser = sessionStorage.getItem("admin_username") || localStorage.getItem("admin_username") || "Admin Manager";
+    const storedRole = sessionStorage.getItem("admin_role") || localStorage.getItem("admin_role") || "Master Administrator";
+    const storedAvatar = sessionStorage.getItem("admin_avatar") || localStorage.getItem("admin_avatar") || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+    const storedEmail = sessionStorage.getItem("admin_email") || "admin@ieeesrec.org";
+    return {
+      username: storedUser,
+      role: storedRole,
+      avatar: storedAvatar,
+      email: storedEmail,
+    };
+  });
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    username: adminProfile.username,
+    role: adminProfile.role,
+    avatar: adminProfile.avatar,
+  });
+
+  // Role-Based Access Control (RBAC) Permissions Engine
+  const userRoleLower = (adminProfile.role || "Master Administrator").toLowerCase();
+  const isMaster = userRoleLower.includes("master") || userRoleLower.includes("super") || userRoleLower === "admin" || userRoleLower === "executive";
+  const isSocietyLead = userRoleLower.includes("society") || userRoleLower.includes("chapter");
+  const isEventManager = userRoleLower.includes("activit") || userRoleLower.includes("event") || userRoleLower.includes("program");
+  const isRegistrar = userRoleLower.includes("membership") || userRoleLower.includes("registrar") || userRoleLower.includes("admission") || userRoleLower.includes("roster");
+  const isAuditor = userRoleLower.includes("auditor") || userRoleLower.includes("viewer") || userRoleLower.includes("read-only");
+
+  const permissions = useMemo(() => ({
+    canManageAdmins: isMaster,
+    canEditCMS: isMaster,
+    canEditVisibility: isMaster,
+    canApproveStudents: isMaster || isRegistrar,
+    canDeleteStudents: isMaster || isRegistrar,
+    canEditActivities: isMaster || isEventManager || isSocietyLead,
+    canDeleteActivities: isMaster || isEventManager,
+    canEditSocieties: isMaster || isSocietyLead,
+    canDeleteSocieties: isMaster,
+    canManageLaunchMode: isMaster || isEventManager,
+    isReadOnly: isAuditor,
+  }), [isMaster, isSocietyLead, isEventManager, isRegistrar, isAuditor]);
+
+  const handleUpdateProfile = (e) => {
+    e?.preventDefault();
+    const updated = {
+      ...adminProfile,
+      username: profileForm.username.trim() || "Admin Manager",
+      role: profileForm.role,
+      avatar: profileForm.avatar.trim() || adminProfile.avatar,
+    };
+    setAdminProfile(updated);
+    sessionStorage.setItem("admin_username", updated.username);
+    sessionStorage.setItem("admin_role", updated.role);
+    sessionStorage.setItem("admin_avatar", updated.avatar);
+    localStorage.setItem("admin_username", updated.username);
+    localStorage.setItem("admin_role", updated.role);
+    localStorage.setItem("admin_avatar", updated.avatar);
+    setShowProfileModal(false);
+    alert(`Security clearance updated to: ${updated.role}`);
+  };
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [cmsSubTab, setCmsSubTab] = useState("landing");
+  const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleRefreshAll = async () => {
     setIsRefreshing(true);
@@ -673,19 +742,99 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       }
     };
     checkAuth();
-    fetchActivities();
-    fetchOfficeBearers();
-    fetchMembers();
-    fetchAnnualPlans();
-    fetchFundingRequests();
-    fetchSeniorMembers();
-    fetchSocieties();
-    fetchApplications();
-    fetchStudentMembers();
-    fetchAwards();
-    fetchPageContents();
-    fetchAdmins();
+    handleRefreshAll();
   }, [navigate]);
+
+  // Dynamic live fetch whenever active tab changes
+  useEffect(() => {
+    switch (activeTab) {
+      case "student_roster":
+        fetchStudentMembers();
+        break;
+      case "activities":
+        fetchActivities();
+        break;
+      case "office":
+        fetchOfficeBearers();
+        break;
+      case "plans":
+        fetchAnnualPlans();
+        break;
+      case "funding":
+        fetchFundingRequests();
+        break;
+      case "societies":
+        fetchSocieties();
+        break;
+      case "applications":
+        fetchApplications();
+        break;
+      case "awards":
+        fetchAwards();
+        break;
+      case "senior":
+        fetchSeniorMembers();
+        break;
+      case "members":
+        fetchMembers();
+        break;
+      case "cms":
+      case "cms_landing":
+      case "cms_about":
+      case "cms_contact":
+      case "cms_advanced":
+        fetchPageContents();
+        break;
+      case "admin_users":
+        fetchAdmins();
+        break;
+      case "overview":
+      default:
+        handleRefreshAll();
+        break;
+    }
+  }, [activeTab]);
+
+  // Real-time Database Subscriptions for Live Sync across all tables
+  useEffect(() => {
+    const liveChannel = supabase
+      .channel("admin_live_data_feed")
+      .on("postgres_changes", { event: "*", schema: "public", table: "student_members" }, () => {
+        fetchStudentMembers();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "activities" }, () => {
+        fetchActivities();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "applications" }, () => {
+        fetchApplications();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "awards" }, () => {
+        fetchAwards();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "office_bearers" }, () => {
+        fetchOfficeBearers();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "event_reports" }, () => {
+        // Event reports sub-component automatically listens or updates
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "annual_plan" }, () => {
+        fetchAnnualPlans();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "funding_submissions" }, () => {
+        fetchFundingRequests();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "societies" }, () => {
+        fetchSocieties();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "page_content" }, () => {
+        fetchPageContents();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(liveChannel);
+    };
+  }, []);
   // Auto Logout due to inactivity (30 minutes)
   useEffect(() => {
     let timeoutId;
@@ -1323,18 +1472,35 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
   };
   const addAdminUser = async (e) => {
     e.preventDefault();
+    if (!permissions.canManageAdmins) {
+      alert("Permission Denied: Only Master Administrators can provision new admin accounts.");
+      return;
+    }
     if (!adminForm.username || !adminForm.password) {
       alert("Please fill in both fields.");
       return;
     }
-    const { error } = await supabase.from("admins").insert([adminForm]);
+    const payload = {
+      username: adminForm.username.trim(),
+      password: adminForm.password.trim(),
+      role: adminForm.role || "Master Administrator",
+    };
+    let { error } = await supabase.from("admins").insert([payload]);
+    if (error && error.message && (error.message.includes("role") || error.message.includes("column"))) {
+      // If table doesn't have role column, fallback without role column
+      const fallback = await supabase.from("admins").insert([{
+        username: payload.username,
+        password: payload.password,
+      }]);
+      error = fallback.error;
+    }
     if (error) {
       alert("Error adding admin: " + error.message);
     }
     else {
-      setAdminForm({ username: "", password: "" });
+      setAdminForm({ username: "", password: "", role: "Master Administrator" });
       fetchAdmins();
-      alert("Admin user added successfully!");
+      alert(`Admin account '${payload.username}' registered successfully with clearance: ${payload.role}!`);
     }
   };
   const deleteAdminUser = async (id) => {
@@ -1368,28 +1534,25 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
   const tabs = [
     { id: "overview", label: "Dashboard Overview", icon: <LayoutDashboard size={18} /> },
     { id: "launch_control", label: "Launch Mode & Remote", icon: <Rocket size={18} /> },
-    { id: "student_roster", label: "Student Members Directory", icon: <Users size={18} /> },
-    { id: "activities", label: "Activities", icon: <Activity size={18} /> },
-    { id: "event_reports", label: "Event Reports (DB)", icon: <FileText size={18} /> },
+    { id: "student_roster", label: "Student Roster", icon: <Users size={18} /> },
     { id: "office", label: "Main SB Bearers", icon: <Briefcase size={18} /> },
     { id: "society_leaders", label: "Society Leaders", icon: <Crown size={18} /> },
     { id: "office_cards", label: "Officer ID Cards", icon: <CreditCard size={18} /> },
+    { id: "senior", label: "Senior Members", icon: <ShieldCheck size={18} /> },
     { id: "members", label: "Members Track", icon: <Users size={18} /> },
+    { id: "activities", label: "Activities", icon: <Activity size={18} /> },
+    { id: "event_reports", label: "Event Reports (DB)", icon: <FileText size={18} /> },
     { id: "plans", label: "Annual Plans", icon: <FileText size={18} /> },
     { id: "funding", label: "Funding Requests", icon: <Banknote size={18} /> },
-    { id: "senior", label: "Senior Members", icon: <ShieldCheck size={18} /> },
     { id: "societies", label: "Societies & Chapters", icon: <Layers size={18} /> },
     { id: "applications", label: "Join Submissions", icon: <FileText size={18} /> },
     { id: "awards", label: "Awards & Honors", icon: <Award size={18} /> },
+    { id: "cms", label: "Website Content CMS", icon: <FileText size={18} /> },
     { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={18} /> },
-    { id: "cms_landing", label: "Landing CMS", icon: <FileText size={18} /> },
-    { id: "cms_about", label: "About CMS", icon: <FileText size={18} /> },
-    { id: "cms_contact", label: "Contact CMS", icon: <FileText size={18} /> },
-    { id: "cms_advanced", label: "Advanced CMS", icon: <Settings size={18} /> },
     { id: "admin_users", label: "Admin Accounts", icon: <ShieldCheck size={18} /> },
   ];
   return (
-    <div className="flex min-h-screen bg-[#050507] font-sans text-zinc-100 selection:bg-amber-400 selection:text-black">
+    <div className="flex min-h-screen bg-[#f4f7fb] font-sans text-slate-800 selection:bg-blue-600 selection:text-white">
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -1400,34 +1563,34 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
         }
       `}</style>
 
-    {/* MOBILE FULL-SCREEN / SLIDE-OVER GOLD & BLACK DRAWER */}
+    {/* MOBILE FULL-SCREEN / SLIDE-OVER MILK WHITE DRAWER */}
     {isDrawerOpen && (
       <div className="fixed inset-0 z-50 lg:hidden flex">
         {/* Backdrop */}
         <div
-          className="fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
           onClick={() => setIsDrawerOpen(false)} />
 
         {/* Drawer Sidebar */}
-        <div className="relative flex flex-col w-[85%] max-w-xs bg-[#0b0b0f] border-r border-amber-500/20 h-full z-10 overflow-y-auto custom-scrollbar shadow-2xl shadow-amber-500/10">
+        <div className="relative flex flex-col w-[85%] max-w-xs bg-white border-r border-slate-200 h-full z-10 overflow-y-auto custom-scrollbar shadow-2xl">
           {/* Drawer Header */}
-          <div className="px-5 py-4 flex items-center justify-between border-b border-amber-500/20 bg-[#07070a]">
+          <div className="px-5 py-4 flex items-center justify-between border-b border-slate-200 bg-slate-50">
             <div className="flex items-center gap-2.5">
-              <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 text-black shadow-md shadow-amber-500/30">
+              <div className="grid h-8 w-8 place-items-center rounded-lg bg-blue-600 text-white shadow-md shadow-blue-500/30">
                 <Crown className="h-4 w-4 stroke-[2.5]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+                <h3 className="text-sm font-black text-slate-900">
                   IEEE SREC ADMIN
                 </h3>
-                <p className="text-[9px] font-bold text-amber-400/90 uppercase tracking-widest">
+                <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">
                   Executive Suite
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsDrawerOpen(false)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center bg-zinc-900 border border-amber-500/20 text-amber-400 hover:text-white"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900"
             >
               <X size={16} />
             </button>
@@ -1435,17 +1598,17 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
           {/* Drawer Menu Items */}
           <div className="flex-1 px-3 py-4 space-y-6">
-            {/* Menu */}
+            {/* Mission Control */}
             <div className="space-y-1.5">
-              <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">MENU</p>
+              <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">MISSION CONTROL</p>
               <button
                 onClick={() => {
                   setActiveTab("overview");
                   setIsDrawerOpen(false);
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "overview"
-                  ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-                  : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}
+                  ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
               >
                 <div className="flex items-center gap-2">
                   <LayoutDashboard size={16} />
@@ -1459,37 +1622,30 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   setIsDrawerOpen(false);
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "launch_control"
-                  ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/30 border border-yellow-300"
-                  : "bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30"}`}
+                  ? "bg-blue-600 text-white font-black shadow-md border border-blue-600"
+                  : "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"}`}
               >
                 <div className="flex items-center gap-2">
-                  <Rocket size={16} className={activeTab === "launch_control" ? "text-black" : "text-amber-400 animate-pulse"} />
+                  <Rocket size={16} className={activeTab === "launch_control" ? "text-white" : "text-blue-600 animate-pulse"} />
                   <span>Launch Mode &amp; Remote</span>
                 </div>
-                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-amber-400 text-black uppercase">
-                  Remote
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-blue-600 text-white uppercase">
+                  Live
                 </span>
               </button>
             </div>
 
-            {/* Content */}
+            {/* Members & Leaders */}
             <div className="space-y-1.5">
-              <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">LIVE CONTENT</p>
+              <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">MEMBERS &amp; LEADERS</p>
               <div className="space-y-1">
                 {[
                   { id: "student_roster", label: `Student Roster (${studentMembers.length})`, icon: <Users size={16} />, count: studentMembers.length, highlight: true },
-                  { id: "activities", label: "Activities", icon: <Activity size={16} />, count: activities.length },
-                  { id: "event_reports", label: "Event Reports (DB)", icon: <FileText size={16} /> },
                   { id: "office", label: "Main SB Bearers", icon: <Briefcase size={16} />, count: officeRows.length },
                   { id: "society_leaders", label: "Society Leaders", icon: <Crown size={16} /> },
-                  { id: "office_cards", label: "Officer ID Cards (DB)", icon: <CreditCard size={16} /> },
-                  { id: "members", label: "Members Track", icon: <Users size={16} /> },
-                  { id: "plans", label: "Annual Plans", icon: <FileText size={16} /> },
-                  { id: "funding", label: "Funding Requests", icon: <Banknote size={16} /> },
+                  { id: "office_cards", label: "Officer ID Cards", icon: <CreditCard size={16} /> },
                   { id: "senior", label: "Senior Members", icon: <ShieldCheck size={16} /> },
-                  { id: "societies", label: "Societies", icon: <Layers size={16} />, count: societies.length },
-                  { id: "applications", label: "Join Submissions", icon: <FileText size={16} />, count: applications.length },
-                  { id: "awards", label: "Awards & Recognitions", icon: <Award size={16} />, count: awards.length },
+                  { id: "members", label: "Members Track", icon: <Users size={16} /> },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -1498,15 +1654,15 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       setIsDrawerOpen(false);
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === item.id
-                      ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-                      : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}
+                      ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
                   >
                     <div className="flex items-center gap-2">
                       {item.icon}
                       <span>{item.label}</span>
                     </div>
                     {item.count !== undefined && (
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === item.id ? "bg-black/20 text-black font-black" : "bg-amber-500/15 text-amber-300 border border-amber-500/20"}`}>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === item.id ? "bg-white/20 text-white font-black" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
                         {item.count}
                       </span>
                     )}
@@ -1515,16 +1671,18 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
               </div>
             </div>
 
-            {/* CMS */}
+            {/* Activities & Programs */}
             <div className="space-y-1.5">
-              <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">PAGE VISIBILITY &amp; CMS</p>
+              <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">ACTIVITIES &amp; PROGRAMMES</p>
               <div className="space-y-1">
                 {[
-                  { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={16} /> },
-                  { id: "cms_landing", label: "Landing CMS", icon: <FileText size={16} /> },
-                  { id: "cms_about", label: "About CMS", icon: <FileText size={16} /> },
-                  { id: "cms_contact", label: "Contact CMS", icon: <FileText size={16} /> },
-                  { id: "cms_advanced", label: "Advanced CMS", icon: <Settings size={16} /> },
+                  { id: "activities", label: "Activities", icon: <Activity size={16} />, count: activities.length },
+                  { id: "event_reports", label: "Event Reports (DB)", icon: <FileText size={16} /> },
+                  { id: "plans", label: "Annual Plans", icon: <FileText size={16} /> },
+                  { id: "funding", label: "Funding Requests", icon: <Banknote size={16} /> },
+                  { id: "societies", label: "Societies & Chapters", icon: <Layers size={16} />, count: societies.length },
+                  { id: "applications", label: "Join Submissions", icon: <FileText size={16} />, count: applications.length },
+                  { id: "awards", label: "Awards & Honors", icon: <Award size={16} />, count: awards.length },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -1533,8 +1691,41 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       setIsDrawerOpen(false);
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === item.id
-                      ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-                      : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}
+                      ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </div>
+                    {item.count !== undefined && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === item.id ? "bg-white/20 text-white font-black" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
+                        {item.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* CMS & Settings */}
+            <div className="space-y-1.5">
+              <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">CMS &amp; CONFIG</p>
+              <div className="space-y-1">
+                {[
+                  { id: "cms", label: "Website Content CMS", icon: <FileText size={16} /> },
+                  { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={16} /> },
+                  { id: "admin_users", label: "Admin Accounts", icon: <ShieldCheck size={16} /> },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setIsDrawerOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${(activeTab === item.id || (item.id === "cms" && (activeTab === "cms_landing" || activeTab === "cms_about" || activeTab === "cms_contact" || activeTab === "cms_advanced")))
+                      ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
                   >
                     <div className="flex items-center gap-2">
                       {item.icon}
@@ -1544,37 +1735,13 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 ))}
               </div>
             </div>
-
-            {/* System */}
-            <div className="space-y-1.5">
-              <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">SYSTEM</p>
-              <button
-                onClick={() => {
-                  setActiveTab("admin_users");
-                  setIsDrawerOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === "admin_users"
-                  ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-                  : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}
-              >
-                <div className="flex items-center gap-2">
-                  <ShieldCheck size={16} />
-                  <span>Admin Accounts</span>
-                </div>
-                {adminsList.length > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    {adminsList.length}
-                  </span>
-                )}
-              </button>
-            </div>
           </div>
 
           {/* Drawer Footer */}
-          <div className="p-4 border-t border-amber-500/20 bg-[#07070a] flex flex-col gap-2">
+          <div className="p-4 border-t border-slate-200 bg-slate-50 flex flex-col gap-2">
             <button
               onClick={handleLogout}
-              className="w-full py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer"
             >
               <LogOut size={14} /> Exit Admin Portal
             </button>
@@ -1583,16 +1750,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       </div>
     )}
 
-    {/* LEFT SIDEBAR (Desktop Executive Black & Gold Style) */}
-    <aside className="hidden lg:flex flex-col w-[285px] bg-[#09090d] border-r border-amber-500/20 shrink-0 h-screen sticky top-0 overflow-y-auto custom-scrollbar shadow-2xl">
+    {/* LEFT SIDEBAR (Desktop Milk White Theme Style) */}
+    <aside className="hidden lg:flex flex-col w-[285px] bg-white border-r border-slate-200/90 shrink-0 h-screen sticky top-0 overflow-y-auto custom-scrollbar shadow-xs">
       {/* Brand Logo & Name */}
-      <div className="px-6 py-5 flex items-center gap-3 border-b border-amber-500/20 bg-[#060608]">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 text-black shadow-lg shadow-amber-500/30">
+      <div className="px-6 py-5 flex items-center gap-3 border-b border-slate-200 bg-slate-50/80">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/30">
           <Crown className="h-5 w-5 stroke-[2.5]" />
         </div>
         <div>
-          <h1 className="text-base font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">IEEE SREC ADMIN</h1>
-          <p className="text-[10px] font-extrabold text-amber-400/90 uppercase tracking-widest">Imperial Gold Suite</p>
+          <h1 className="text-base font-black tracking-tight text-slate-900">IEEE SREC ADMIN</h1>
+          <p className="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Enterprise Suite</p>
         </div>
       </div>
 
@@ -1600,11 +1767,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       <div className="flex-1 px-4 py-6 space-y-6">
         {/* Group 1: MISSION CONTROL */}
         <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">MISSION CONTROL</p>
+          <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">MISSION CONTROL</p>
           <div className="space-y-1.5">
             <button onClick={() => setActiveTab("overview")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "overview"
-              ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-              : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}>
+              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
               <div className="flex items-center gap-2.5">
                 <LayoutDashboard size={18} />
                 <span>Dashboard Overview</span>
@@ -1612,48 +1779,41 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </button>
 
             <button onClick={() => setActiveTab("launch_control")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "launch_control"
-              ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/30 border border-yellow-300"
-              : "bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 hover:text-white border border-amber-500/30"}`}>
+              ? "bg-blue-600 text-white font-black shadow-md border border-blue-600"
+              : "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"}`}>
               <div className="flex items-center gap-2.5">
-                <Rocket size={18} className={activeTab === "launch_control" ? "text-black" : "text-amber-400 animate-pulse"} />
+                <Rocket size={18} className={activeTab === "launch_control" ? "text-white" : "text-blue-600 animate-pulse"} />
                 <span>Launch Mode &amp; Remote</span>
               </div>
-              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${activeTab === "launch_control" ? "bg-black text-amber-300" : "bg-amber-400 text-black animate-pulse"}`}>
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${activeTab === "launch_control" ? "bg-white/20 text-white" : "bg-blue-600 text-white"}`}>
                 Live
               </span>
             </button>
           </div>
         </div>
 
-        {/* Group 2: WEBSITE CONTENT */}
+        {/* Group 2: MEMBERS & LEADERSHIP */}
         <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">CONTENT &amp; ROSTER</p>
+          <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">MEMBERS &amp; LEADERSHIP</p>
           <div className="space-y-1">
             {[
               { id: "student_roster", label: `Student Roster (${studentMembers.length})`, icon: <Users size={18} />, count: studentMembers.length, highlight: true },
-              { id: "activities", label: "Activities", icon: <Activity size={18} />, count: activities.length },
-              { id: "event_reports", label: "Event Reports (DB)", icon: <FileText size={18} /> },
               { id: "office", label: "Main SB Bearers", icon: <Briefcase size={18} />, count: officeRows.length },
               { id: "society_leaders", label: "Society Leaders", icon: <Crown size={18} /> },
-              { id: "office_cards", label: "Officer ID Cards (DB)", icon: <CreditCard size={18} /> },
-              { id: "members", label: "Members Track", icon: <Users size={18} /> },
-              { id: "plans", label: "Annual Plans", icon: <FileText size={18} /> },
-              { id: "funding", label: "Funding Requests", icon: <Banknote size={18} /> },
+              { id: "office_cards", label: "Officer ID Cards", icon: <CreditCard size={18} /> },
               { id: "senior", label: "Senior Members", icon: <ShieldCheck size={18} /> },
-              { id: "societies", label: "Societies", icon: <Layers size={18} />, count: societies.length },
-              { id: "applications", label: "Join Submissions", icon: <FileText size={18} />, count: applications.length },
-              { id: "awards", label: "Awards & Recognitions", icon: <Award size={18} />, count: awards.length }
+              { id: "members", label: "Members Track", icon: <Users size={18} /> },
             ].map((item) => (<button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === item.id
-              ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
+              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
               : item.highlight
-                ? "text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20"
-                : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}>
+                ? "text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
               <div className="flex items-center gap-2.5">
                 {item.icon}
                 <span>{item.label}</span>
               </div>
               {item.count !== undefined && (
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-black/20 text-black" : "bg-amber-500/15 text-amber-300 border border-amber-500/20"}`}>
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
                   {item.count}
                 </span>
               )}
@@ -1661,19 +1821,45 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           </div>
         </div>
 
-        {/* Group 3: CMS CHANNELS */}
+        {/* Group 3: ACTIVITIES & PROGRAMMES */}
         <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">PAGE VISIBILITY &amp; CMS</p>
+          <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">ACTIVITIES &amp; PROGRAMMES</p>
           <div className="space-y-1">
             {[
-              { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={18} /> },
-              { id: "cms_landing", label: "Landing CMS", icon: <FileText size={18} /> },
-              { id: "cms_about", label: "About CMS", icon: <FileText size={18} /> },
-              { id: "cms_contact", label: "Contact CMS", icon: <FileText size={18} /> },
-              { id: "cms_advanced", label: "Advanced CMS", icon: <Settings size={18} /> }
+              { id: "activities", label: "Activities", icon: <Activity size={18} />, count: activities.length },
+              { id: "event_reports", label: "Event Reports (DB)", icon: <FileText size={18} /> },
+              { id: "plans", label: "Annual Plans", icon: <FileText size={18} /> },
+              { id: "funding", label: "Funding Requests", icon: <Banknote size={18} /> },
+              { id: "societies", label: "Societies & Chapters", icon: <Layers size={18} />, count: societies.length },
+              { id: "applications", label: "Join Submissions", icon: <FileText size={18} />, count: applications.length },
+              { id: "awards", label: "Awards & Honors", icon: <Award size={18} />, count: awards.length }
             ].map((item) => (<button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === item.id
-              ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-              : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}>
+              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
+              <div className="flex items-center gap-2.5">
+                {item.icon}
+                <span>{item.label}</span>
+              </div>
+              {item.count !== undefined && (
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
+                  {item.count}
+                </span>
+              )}
+            </button>))}
+          </div>
+        </div>
+
+        {/* Group 4: CMS & CONFIG */}
+        <div className="space-y-2">
+          <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">CMS &amp; CONFIG</p>
+          <div className="space-y-1">
+            {[
+              { id: "cms", label: "Website Content CMS", icon: <FileText size={18} /> },
+              { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={18} /> },
+              { id: "admin_users", label: "Admin Accounts", icon: <ShieldCheck size={18} /> },
+            ].map((item) => (<button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${(activeTab === item.id || (item.id === "cms" && (activeTab === "cms_landing" || activeTab === "cms_about" || activeTab === "cms_contact" || activeTab === "cms_advanced")))
+              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
               <div className="flex items-center gap-2.5">
                 {item.icon}
                 <span>{item.label}</span>
@@ -1682,33 +1868,13 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           </div>
         </div>
 
-        {/* Group 4: SYSTEM */}
-        <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">SYSTEM</p>
-          <div className="space-y-1">
-            <button onClick={() => setActiveTab("admin_users")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "admin_users"
-              ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black font-black shadow-lg shadow-amber-500/25 border border-yellow-300"
-              : "text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300"}`}>
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck size={18} />
-                <span>Admin Accounts</span>
-              </div>
-              {adminsList.length > 0 && (
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === "admin_users" ? "bg-black/20 text-black" : "bg-amber-500/15 text-amber-300 border border-amber-500/30"}`}>
-                  {adminsList.length}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
         {/* Group 5: DEVELOPER */}
         <div className="space-y-2">
-          <p className="px-3 text-[10px] font-black text-amber-400/80 uppercase tracking-widest">DEVELOPER</p>
+          <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">DEVELOPER</p>
           <div className="space-y-1">
-            <a href="https://surya-ruddy.vercel.app/" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all text-zinc-400 hover:bg-zinc-900/80 hover:text-amber-300">
+            <a href="https://surya-ruddy.vercel.app/" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-600 hover:bg-slate-100 hover:text-slate-900">
               <div className="flex items-center gap-2.5">
-                <Globe size={18} className="text-amber-400" />
+                <Globe size={18} className="text-blue-600" />
                 <span>My Portfolio</span>
               </div>
             </a>
@@ -1716,343 +1882,491 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
         </div>
       </div>
 
+      {/* Admin User Profile Card in Sidebar */}
+      <div
+        onClick={() => {
+          setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
+          setShowProfileModal(true);
+        }}
+        className="mx-4 my-2 p-3 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl flex items-center gap-3 shadow-xs hover:border-blue-500/80 transition-all cursor-pointer group"
+        title="Click to view & change Admin Role Clearance"
+      >
+        <div className="relative shrink-0">
+          <img
+            src={adminProfile.avatar}
+            alt={adminProfile.username}
+            className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-xs group-hover:scale-105 transition-transform"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+            }}
+          />
+          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-xs" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-black text-slate-900 truncate group-hover:text-blue-600 transition-colors">{adminProfile.username || "Admin Manager"}</p>
+          <p className="text-[10px] font-black text-blue-600 uppercase tracking-wider truncate mt-0.5">{adminProfile.role || "MASTER ADMINISTRATOR"}</p>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleLogout();
+          }}
+          className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer shrink-0"
+          title="Exit Portal"
+        >
+          <LogOut size={13} />
+        </button>
+      </div>
+
       {/* Promo Card at bottom of sidebar */}
-      <div className="mx-4 my-6 p-4 bg-gradient-to-br from-[#121218] to-[#0a0a0e] border border-amber-500/25 rounded-2xl text-center flex flex-col gap-2 shadow-lg shadow-amber-500/5">
-        <h4 className="text-xs font-black text-amber-300 flex items-center justify-center gap-1.5">
-          <Sparkles size={13} className="text-amber-400" />
+      <div className="mx-4 my-4 p-4 bg-gradient-to-br from-blue-50/80 to-indigo-50/60 border border-blue-100 rounded-2xl text-center flex flex-col gap-2 shadow-xs">
+        <h4 className="text-xs font-black text-blue-900 flex items-center justify-center gap-1.5">
+          <Sparkles size={13} className="text-blue-600" />
           <span>IEEE SREC Admin Suite</span>
         </h4>
-        <p className="text-[10px] text-zinc-400 font-medium">Total registered database members: <strong className="text-amber-300">{studentMembers.length} Students</strong></p>
-        <a href="https://ieee.org" target="_blank" rel="noreferrer" className="rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 py-2 text-[11px] font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition">
+        <p className="text-[10px] text-slate-600 font-medium">Total registered database members: <strong className="text-blue-700">{studentMembers.length} Students</strong></p>
+        <a href="https://ieee.org" target="_blank" rel="noreferrer" className="rounded-xl bg-blue-600 py-2 text-[11px] font-black text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition">
           Visit IEEE Global
         </a>
       </div>
     </aside>
 
     {/* RIGHT CONTENT CONTAINER */}
-    <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-      {/* DESKTOP TOP BAR */}
-      <header className="hidden lg:flex bg-[#09090d]/90 border-b border-amber-500/20 h-16 items-center justify-between px-6 sticky top-0 z-35 backdrop-blur-xl">
+    <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f4f7fb]">
+      {/* DESKTOP TOP BAR (Milk White) */}
+      <header className="hidden lg:flex bg-white/90 border-b border-slate-200/90 h-16 items-center justify-between px-6 sticky top-0 z-35 backdrop-blur-xl shadow-xs">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-xs font-bold text-zinc-400">
-            <span className="text-zinc-500">Dashboard</span>
-            <ChevronRight size={13} className="text-amber-500/50" />
-            <span className="text-amber-300 font-extrabold">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+            <span className="text-slate-400">Dashboard</span>
+            <ChevronRight size={13} className="text-slate-400" />
+            <span className="text-slate-900 font-extrabold flex items-center gap-1.5">
               {tabs.find(t => t.id === activeTab)?.label || "Overview"}
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5 w-80 bg-[#050507] border border-amber-500/20 rounded-xl px-3.5 py-1.5 focus-within:border-amber-400 transition-colors">
-            <Search size={15} className="text-amber-400 shrink-0" />
-            <input type="text" placeholder="Search database or type command..." className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-0 text-white placeholder-zinc-500" />
-            <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-amber-500/20 bg-zinc-900 px-1.5 font-mono text-[9px] font-medium text-amber-300">
+          <div className="flex items-center gap-2.5 w-72 bg-slate-100 border border-slate-200/90 rounded-xl px-3.5 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+            <Search size={15} className="text-slate-400 shrink-0" />
+            <input type="text" placeholder="Search database or type command..." className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-900 placeholder-slate-400 font-medium" />
+            <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-slate-200 bg-white px-1.5 font-mono text-[9px] font-medium text-slate-500 shadow-2xs">
               <span className="text-[10px]">⌘</span>K
             </kbd>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3.5">
+          {/* Live System Time Widget */}
+          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-mono font-bold shadow-2xs">
+            <span className="text-[10px] font-sans font-bold text-slate-400 uppercase">IST</span>
+            <span className="text-slate-900 font-extrabold">{currentTime}</span>
+          </div>
+
           {/* Total Students Counter in Header */}
           <button
             onClick={() => setActiveTab("student_roster")}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm shadow-amber-500/10"
+            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-2xs"
             title="View Student Roster Directory"
           >
-            <Users size={13} className="text-amber-400" />
+            <Users size={13} className="text-blue-600 animate-admin-float" />
             <span>{studentMembers.length} Students</span>
           </button>
 
           {/* Quick Launch Mode Link */}
           <button
             onClick={() => setActiveTab("launch_control")}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm shadow-amber-500/10"
+            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-2xs"
           >
-            <Rocket size={13} className="text-amber-400 animate-pulse" />
+            <Rocket size={13} className="text-blue-600 animate-pulse" />
             <span>Launch Remote</span>
           </button>
 
-          {/* Live Indicator */}
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>LIVE DB</span>
+          {/* Live Indicator with Radar Ring */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-admin-radar"></span>
+            <span className="text-[11px] font-black tracking-wider">LIVE DB</span>
           </div>
 
           {/* Refresh DB Button */}
           <button
             onClick={handleRefreshAll}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-amber-500/15 border border-amber-500/20 hover:border-amber-500/40 text-xs font-bold text-zinc-200 hover:text-amber-300 transition-all active:scale-95 cursor-pointer shadow-sm"
+            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 hover:text-slate-900 transition-all active:scale-95 cursor-pointer shadow-2xs"
             title="Refresh all database collections"
           >
-            <RefreshCw size={13} className={isRefreshing ? "animate-spin text-amber-400" : "text-amber-400"} />
+            <RefreshCw size={13} className={isRefreshing ? "animate-spin text-blue-600" : "text-slate-500"} />
             <span>{isRefreshing ? "Syncing..." : "Refresh DB"}</span>
           </button>
 
-          {/* Profile Dropdown */}
-          <div className="flex items-center gap-3 border-l border-amber-500/20 pl-5">
-            <div className="text-right hidden sm:block">
-              <p className="text-xs font-black text-white">Admin Manager</p>
-              <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Master Gold</p>
+          {/* Profile Capsule */}
+          <div className="flex items-center gap-3 border-l border-slate-200 pl-3.5">
+            <div
+              onClick={() => {
+                setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
+                setShowProfileModal(true);
+              }}
+              className="admin-btn-tactile flex items-center gap-3 bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-2xl shadow-2xs hover:border-blue-400 transition-all cursor-pointer group"
+              title="Click to view Admin Profile & Security Clearance"
+            >
+              <div className="relative shrink-0">
+                <img
+                  src={adminProfile.avatar}
+                  alt={adminProfile.username}
+                  className="w-9 h-9 rounded-xl object-cover border border-slate-200 shadow-2xs group-hover:scale-105 transition-transform"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+                  }}
+                />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-xs" />
+              </div>
+
+              <div className="text-left hidden sm:block">
+                <p className="text-xs font-black text-slate-900 leading-tight group-hover:text-blue-700 transition-colors">
+                  {adminProfile.username || "Admin Manager"}
+                </p>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider">
+                    {adminProfile.role || "MASTER ADMINISTRATOR"}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 flex items-center justify-center text-black font-black text-sm shadow-md border border-yellow-300">
-              A
-            </div>
-            <button onClick={handleLogout} className="text-xs text-rose-400 hover:text-rose-300 font-extrabold uppercase tracking-wider flex items-center gap-1 pl-2 border-l border-amber-500/20 transition-colors cursor-pointer">
-              <LogOut size={14} /> Exit
+
+            <button
+              onClick={handleLogout}
+              className="admin-btn-tactile p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all cursor-pointer shadow-2xs"
+              title="Exit / Logout from Admin Portal"
+            >
+              <LogOut size={15} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* MOBILE TOP BAR (Sticky) */}
-      <div className="lg:hidden bg-[#09090d]/95 border-b border-amber-500/20 px-4 py-3 sticky top-0 z-40 backdrop-blur-xl flex items-center justify-between">
+      {/* MOBILE TOP BAR (Milk White Sticky) */}
+      <div className="lg:hidden bg-white/95 border-b border-slate-200 px-4 py-3 sticky top-0 z-40 backdrop-blur-xl flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="w-9 h-9 rounded-xl flex items-center justify-center bg-zinc-900 text-amber-400 border border-amber-500/20 active:scale-95 shadow-md cursor-pointer"
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 text-slate-700 border border-slate-200 active:scale-95 shadow-xs cursor-pointer"
             title="Open Navigation Menu"
           >
             <Menu size={18} />
           </button>
-          <div>
-            <h2 className="text-xs font-black text-white flex items-center gap-1.5">
-              <span className="text-amber-400">IEEE SREC</span>
-              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded-md bg-amber-500/20 border border-amber-500/40 text-amber-300 uppercase">
-                {tabs.find(t => t.id === activeTab)?.label || "Dashboard"}
+          <div
+            onClick={() => {
+              setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
+              setShowProfileModal(true);
+            }}
+            className="flex items-center gap-2 cursor-pointer bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-xl"
+          >
+            <div className="relative">
+              <img
+                src={adminProfile.avatar}
+                alt={adminProfile.username}
+                className="w-7 h-7 rounded-lg object-cover border border-slate-300"
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-500 border border-white rounded-full" />
+            </div>
+            <div>
+              <p className="text-xs font-black text-slate-900 leading-tight">
+                {adminProfile.username || "Admin Manager"}
+              </p>
+              <span className="text-[8px] font-black text-blue-600 uppercase">
+                {adminProfile.role || "MASTER"}
               </span>
-            </h2>
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab("student_roster")}
-            className="px-2 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-black"
+            className="px-2 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-black"
           >
             {studentMembers.length} Students
           </button>
           <button
             onClick={handleRefreshAll}
             disabled={isRefreshing}
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-zinc-900 text-amber-400 border border-amber-500/20 active:scale-95 cursor-pointer"
+            className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-100 text-slate-700 border border-slate-200 active:scale-95 cursor-pointer"
             title="Refresh Database"
           >
-            <RefreshCw size={14} className={isRefreshing ? "animate-spin text-amber-300" : ""} />
+            <RefreshCw size={14} className={isRefreshing ? "animate-spin text-blue-600" : ""} />
           </button>
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 flex items-center justify-center text-black font-black text-xs shadow-md border border-yellow-300">
-            A
-          </div>
+          <button
+            onClick={handleLogout}
+            className="p-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200"
+            title="Logout"
+          >
+            <LogOut size={13} />
+          </button>
         </div>
       </div>
 
       {/* MAIN PANEL */}
-      <div className="flex-1 w-full min-w-0 flex flex-col relative bg-[#050507]">
+      <div className="flex-1 w-full min-w-0 flex flex-col relative bg-[#f4f7fb]">
         <main className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1600px] w-full mx-auto pb-20">
           {activeTab === "overview" && (
-            <div className="space-y-6">
-              {/* Quick Launch Ceremony Banner */}
-              <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-[#14120a] via-[#0d0c07] to-[#07070a] p-6 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="animate-admin-fade-in space-y-6">
+              {/* Quick Launch Ceremony Banner (Milk White Modern) */}
+              <div className="admin-card-elevated p-6 md:p-7 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-500 p-[2px] shadow-lg shadow-amber-500/20 shrink-0">
-                    <div className="w-full h-full bg-[#0d0d11] rounded-[14px] flex items-center justify-center">
-                      <Rocket size={24} className="text-amber-400 animate-pulse" />
-                    </div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/25 animate-admin-float">
+                    <Rocket size={26} className="text-white" />
                   </div>
                   <div>
-                    <h3 className="text-base font-black text-white flex items-center gap-2">
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Grand Launch Ceremony &amp; Stage Remote</span>
-                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">
-                        Auditorium Ready
+                    <h3 className="text-base font-black text-slate-900 flex items-center gap-2 flex-wrap">
+                      <span>Grand Launch Ceremony &amp; Stage Remote</span>
+                      <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span> Auditorium Ready
                       </span>
                     </h3>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      Broadcast synchronized countdowns, control the background video, and fire the official website launch remote.
+                    <p className="text-xs text-slate-500 mt-1 font-medium max-w-xl">
+                      Broadcast synchronized countdowns, control the background video, and fire the official website launch remote in real-time.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
                   <button
                     onClick={() => setActiveTab("launch_control")}
-                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-black font-black text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/25 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="admin-btn-tactile flex-1 sm:flex-none px-5 py-3 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Radio size={14} /> Open Remote Controller
+                    <Radio size={15} /> Open Remote Controller
                   </button>
                   <a
                     href="/launch"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                    className="admin-btn-tactile px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
                   >
-                    <Tv size={14} className="text-amber-400" /> Stage View
+                    <Tv size={15} className="text-slate-600" /> Stage View
                   </a>
                 </div>
               </div>
 
-              <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {/* KPI STAT CARDS WITH HOVER DEPTH & MICRO-INTERACTIONS */}
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {/* Hero Stat: Total Student Members */}
-                <div onClick={() => setActiveTab("student_roster")} className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-[#1a1708] to-[#0c0b05] p-5 shadow-xl hover:border-amber-400 hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("student_roster")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/20 border border-amber-500/40 p-2.5 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)] group-hover:scale-110 transition-transform"><Users size={20} /></div>
-                    <span className="text-xs font-extrabold text-amber-300 bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
-                      <Crown size={11} className="text-amber-400" /> Master Roster
+                    <div className="kpi-icon-box rounded-2xl bg-blue-50 border border-blue-100 p-3 text-blue-600 shadow-2xs">
+                      <Users size={22} />
+                    </div>
+                    <span className="text-xs font-black text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
+                      <Crown size={12} className="text-blue-600" /> Master Roster
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 tracking-tight">{studentMembers.length} Students</h3>
-                    <p className="text-xs font-bold text-amber-400/90 uppercase tracking-wider mt-1">Total Registered Members</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{studentMembers.length} Students</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Total Registered Members</p>
                   </div>
                 </div>
 
                 {/* Card 1: Activities */}
-                <div onClick={() => setActiveTab("activities")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("activities")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Activity size={20} /></div>
-                    <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
-                      <TrendingUp size={10} /> {activitiesGrowthPercent}
+                    <div className="kpi-icon-box rounded-2xl bg-emerald-50 border border-emerald-100 p-3 text-emerald-600 shadow-2xs">
+                      <Activity size={22} />
+                    </div>
+                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
+                      <TrendingUp size={12} /> {activitiesGrowthPercent}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{activities.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Activities</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{activities.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Activities Conducted</p>
                   </div>
                 </div>
+
                 {/* Card 2: Office Bearers */}
-                <div onClick={() => setActiveTab("office")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("office")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Briefcase size={20} /></div>
-                    <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
-                      <TrendingUp size={10} /> +8%
+                    <div className="kpi-icon-box rounded-2xl bg-purple-50 border border-purple-100 p-3 text-purple-600 shadow-2xs">
+                      <Briefcase size={22} />
+                    </div>
+                    <span className="text-xs font-black text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
+                      <Crown size={12} className="text-purple-600" /> Active Team
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{officeRows.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Bearers</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{officeRows.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Office Bearers</p>
                   </div>
                 </div>
 
                 {/* Card 3: Technical Societies */}
-                <div onClick={() => setActiveTab("societies")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("societies")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Layers size={20} /></div>
-                    <span className="text-xs font-extrabold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
-                      Active
+                    <div className="kpi-icon-box rounded-2xl bg-amber-50 border border-amber-100 p-3 text-amber-600 shadow-2xs">
+                      <Layers size={22} />
+                    </div>
+                    <span className="text-xs font-black text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full shadow-2xs">
+                      Chapters
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{societies.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">IEEE Societies</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{societies.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">IEEE Societies</p>
                   </div>
                 </div>
 
                 {/* Card 4: Student Join Submissions */}
-                <div onClick={() => setActiveTab("applications")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("applications")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Users size={20} /></div>
-                    <span className="text-xs font-extrabold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
-                      New
+                    <div className="kpi-icon-box rounded-2xl bg-blue-50 border border-blue-100 p-3 text-blue-600 shadow-2xs">
+                      <FileText size={22} />
+                    </div>
+                    <span className="text-xs font-black text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full shadow-2xs">
+                      Submissions
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{applications.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Join Requests</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{applications.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Join Requests</p>
                   </div>
                 </div>
 
                 {/* Card 5: Awards */}
-                <div onClick={() => setActiveTab("awards")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("awards")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Award size={20} /></div>
-                    <span className="text-xs font-extrabold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                    <div className="kpi-icon-box rounded-2xl bg-amber-50 border border-amber-100 p-3 text-amber-600 shadow-2xs">
+                      <Award size={22} />
+                    </div>
+                    <span className="text-xs font-black text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full shadow-2xs">
                       Honors
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{awards.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Awards</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{awards.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Awards &amp; Grants</p>
                   </div>
                 </div>
 
                 {/* Card 6: Senior Members */}
-                <div onClick={() => setActiveTab("senior")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("senior")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><ShieldCheck size={20} /></div>
-                    <span className="text-xs font-extrabold text-zinc-400 bg-zinc-900 border border-zinc-800 px-2.5 py-0.5 rounded-full">
-                      Stable
+                    <div className="kpi-icon-box rounded-2xl bg-emerald-50 border border-emerald-100 p-3 text-emerald-600 shadow-2xs">
+                      <ShieldCheck size={22} />
+                    </div>
+                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shadow-2xs">
+                      Alumni &amp; Seniors
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{seniorMembers.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Seniors</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{seniorMembers.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Senior Members</p>
                   </div>
                 </div>
 
                 {/* Card 7: Member Track Records */}
-                <div onClick={() => setActiveTab("members")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
+                <div onClick={() => setActiveTab("members")} className="admin-kpi-card flex flex-col justify-between h-40 group">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Users size={20} /></div>
-                    <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-0.5">
-                      <TrendingUp size={10} /> {memberGrowthPercent}
+                    <div className="kpi-icon-box rounded-2xl bg-indigo-50 border border-indigo-100 p-3 text-indigo-600 shadow-2xs">
+                      <Users size={22} />
+                    </div>
+                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
+                      <TrendingUp size={12} /> {memberGrowthPercent}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{memberRows.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Years Tracked</p>
-                  </div>
-                </div>
-
-                {/* Card 8: Funding Requests */}
-                <div onClick={() => setActiveTab("funding")} className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-5 shadow-xl hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between h-36 group cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div className="rounded-xl bg-amber-500/15 border border-amber-500/30 p-2.5 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] group-hover:scale-110 transition-transform"><Banknote size={20} /></div>
-                    <span className="text-xs font-extrabold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
-                      Pending
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-white tracking-tight">{fundingRequests.length}</h3>
-                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">Funding Req</p>
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{memberRows.length}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Years Tracked</p>
                   </div>
                 </div>
               </div>
 
-              {/* Welcome Command Banner in Royal Gold & Black */}
-              <div className="mt-8 rounded-2xl bg-gradient-to-r from-[#18150a] via-[#100f07] to-[#0a0a0e] border border-amber-500/30 p-6 md:p-8 text-white shadow-2xl relative overflow-hidden">
+              {/* QUICK OPERATIONS COMMAND CENTER */}
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 pt-2">
+                <div onClick={() => setActiveTab("student_roster")} className="admin-quick-tile group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                      <Users size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900">Student Roster</p>
+                      <p className="text-[10px] text-slate-500 font-semibold">{studentMembers.length} registered</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
+                </div>
+
+                <div onClick={() => setActiveTab("office_cards")} className="admin-quick-tile group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                      <CreditCard size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900">Officer ID Cards</p>
+                      <p className="text-[10px] text-slate-500 font-semibold">Generate &amp; Download</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
+                </div>
+
+                <div onClick={() => setActiveTab("event_reports")} className="admin-quick-tile group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                      <FileText size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900">Event Reports (DB)</p>
+                      <p className="text-[10px] text-slate-500 font-semibold">Upload &amp; Archive</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
+                </div>
+
+                <div onClick={() => setActiveTab("cms")} className="admin-quick-tile group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                      <Globe size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900">Website CMS</p>
+                      <p className="text-[10px] text-slate-500 font-semibold">Live text &amp; images</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
+                </div>
+              </div>
+
+              {/* Welcome Executive Card */}
+              <div className="mt-8 rounded-3xl bg-white border border-slate-200 p-6 md:p-8 text-slate-900 shadow-xs relative overflow-hidden">
                 <div className="relative z-10">
-                  <h2 className="text-2xl font-black mb-2 flex items-center gap-2">
-                    <Crown size={24} className="text-amber-400" />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
-                      Welcome to IEEE SREC Executive Portal
-                    </span>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Executive Console Live</span>
+                  </div>
+                  <h2 className="text-2xl font-black tracking-tight text-slate-900 mb-2">
+                    IEEE SREC Executive Portal
                   </h2>
-                  <p className="text-zinc-300 max-w-2xl text-sm leading-relaxed">
-                    Live system overseeing <strong className="text-amber-300 font-black">{studentMembers.length} Student Members</strong>, active activities, office bearer records, annual plans, and website CMS updates in real-time.
+                  <p className="text-slate-600 max-w-2xl text-sm leading-relaxed font-medium">
+                    Live system overseeing <strong className="text-slate-900 font-black">{studentMembers.length} Student Members</strong>, active activities, office bearer records, annual plans, and website CMS updates in real-time.
                   </p>
-                  <div className="mt-8 flex flex-wrap gap-4">
-                    <button onClick={() => setActiveTab("student_roster")} className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black px-6 py-2.5 rounded-xl font-black shadow-lg shadow-amber-500/25 hover:brightness-110 transition flex items-center gap-2 cursor-pointer">
-                      <Users size={18} /> View Student Directory ({studentMembers.length})
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <button onClick={() => setActiveTab("student_roster")} className="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-sm transition flex items-center gap-2 cursor-pointer">
+                      <Users size={16} /> View Student Directory ({studentMembers.length})
                     </button>
-                    <button onClick={() => setActiveTab("activities")} className="bg-zinc-900 border border-amber-500/30 hover:bg-zinc-800 text-amber-300 px-6 py-2.5 rounded-xl font-bold shadow-md transition flex items-center gap-2 cursor-pointer">
-                      <Activity size={18} /> Post New Activity
+                    <button onClick={() => setActiveTab("activities")} className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition flex items-center gap-2 cursor-pointer">
+                      <Activity size={16} /> Post New Activity
                     </button>
                   </div>
                 </div>
-                <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4 text-amber-400">
-                  <Crown size={250} />
-                </div>
               </div>
 
-              {/* Visual Analytics Graphs Grid */}
+              {/* Visual Analytics Graphs Grid (Milk White) */}
               <div className="grid gap-6 md:grid-cols-3 mt-8">
                 {/* Monthly Event Engagement Bar Chart */}
-                <div className="md:col-span-2 rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-6 shadow-xl flex flex-col justify-between">
+                <div className="md:col-span-2 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xs flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h4 className="text-sm font-black text-white uppercase tracking-wider">Event Engagement</h4>
-                        <p className="text-xs text-zinc-400 font-semibold mt-0.5">Real monthly event count from database</p>
+                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider">Event Engagement</h4>
+                        <p className="text-xs text-slate-500 font-semibold mt-0.5">Real monthly event count from database</p>
                       </div>
-                      <span className="text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
+                      <span className="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full">
                         Total Events: {activities.length}
                       </span>
                     </div>
@@ -2062,14 +2376,14 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       {(() => {
                         const maxEventsVal = Math.max(...monthlyEventData.map(d => d.val), 1);
                         return monthlyEventData.map((item, idx) => (<div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                          <div className="w-full bg-zinc-900/80 rounded-t-lg relative h-48 flex items-end overflow-hidden border-t border-zinc-800">
-                            <div style={{ height: `${(item.val / maxEventsVal) * 100}%` }} className="w-full bg-gradient-to-t from-amber-600 via-amber-400 to-yellow-300 rounded-t-lg group-hover:brightness-125 transition-all duration-300 relative shadow-[0_0_12px_rgba(245,158,11,0.3)]">
-                              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-zinc-900 text-amber-300 border border-amber-500/30 text-[10px] font-bold rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap shadow-lg">
+                          <div className="w-full bg-slate-100 rounded-t-xl relative h-48 flex items-end overflow-hidden border-t border-slate-200">
+                            <div style={{ height: `${(item.val / maxEventsVal) * 100}%` }} className="w-full bg-gradient-to-t from-blue-600 via-blue-500 to-indigo-400 rounded-t-xl group-hover:brightness-110 transition-all duration-300 relative shadow-xs">
+                              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap shadow-md">
                                 {item.val} Events
                               </span>
                             </div>
                           </div>
-                          <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">{item.month}</span>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{item.month}</span>
                         </div>));
                       })()}
                     </div>
@@ -2077,35 +2391,34 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 </div>
 
                 {/* Member Distribution Donut */}
-                <div className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-[#121218] to-[#08080c] p-6 shadow-xl flex flex-col justify-between">
+                <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xs flex flex-col justify-between">
                   <div>
-                    <h4 className="text-sm font-black text-white uppercase tracking-wider mb-1">Members Distribution</h4>
-                    <p className="text-xs text-zinc-400 font-semibold mb-6">Real breakdown (latest tracked year)</p>
+                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-1">Members Distribution</h4>
+                    <p className="text-xs text-slate-500 font-semibold mb-6">Real breakdown (latest tracked year)</p>
 
                     <div className="flex justify-center items-center py-6 relative">
-                      {/* Circular progress SVG */}
                       <svg className="w-40 h-40 transform -rotate-90">
-                        <circle cx="80" cy="80" r="65" stroke="#1c1917" strokeWidth="14" fill="transparent" />
-                        <circle cx="80" cy="80" r="65" stroke="#f59e0b" strokeWidth="14" fill="transparent" strokeDasharray="408" strokeDashoffset={Math.round(408 - (408 * memberDistribution.studentPercent) / 100)} strokeLinecap="round" className="transition-all duration-500 shadow-[0_0_15px_#f59e0b]" />
+                        <circle cx="80" cy="80" r="65" stroke="#f1f5f9" strokeWidth="14" fill="transparent" />
+                        <circle cx="80" cy="80" r="65" stroke="#2563eb" strokeWidth="14" fill="transparent" strokeDasharray="408" strokeDashoffset={Math.round(408 - (408 * memberDistribution.studentPercent) / 100)} strokeLinecap="round" className="transition-all duration-500" />
                       </svg>
                       <div className="absolute flex flex-col items-center">
-                        <span className="text-3xl font-black text-white">{memberDistribution.studentPercent}%</span>
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mt-0.5">Students</span>
+                        <span className="text-3xl font-black text-slate-900">{memberDistribution.studentPercent}%</span>
+                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mt-0.5">Students</span>
                       </div>
                     </div>
 
-                    <div className="space-y-3 pt-6 border-t border-zinc-800">
+                    <div className="space-y-3 pt-6 border-t border-slate-100">
                       <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="flex items-center gap-2 text-zinc-300">
-                          <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></span> Student Members ({memberDistribution.studentCount})
+                        <span className="flex items-center gap-2 text-slate-700">
+                          <span className="w-3 h-3 rounded-full bg-blue-600"></span> Student Members ({memberDistribution.studentCount})
                         </span>
-                        <span className="text-white font-bold">{memberDistribution.studentPercent}%</span>
+                        <span className="text-slate-900 font-bold">{memberDistribution.studentPercent}%</span>
                       </div>
                       <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="flex items-center gap-2 text-zinc-300">
-                          <span className="w-3 h-3 rounded-full bg-zinc-700"></span> Professional ({memberDistribution.profCount})
+                        <span className="flex items-center gap-2 text-slate-700">
+                          <span className="w-3 h-3 rounded-full bg-slate-300"></span> Professional ({memberDistribution.profCount})
                         </span>
-                        <span className="text-white font-bold">{memberDistribution.profPercent}%</span>
+                        <span className="text-slate-900 font-bold">{memberDistribution.profPercent}%</span>
                       </div>
                     </div>
                   </div>
@@ -2115,58 +2428,58 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           )}
 
           {activeTab === "activities" && (<div className="space-y-8">
-            <form onSubmit={submitActivity} className="rounded-2xl bg-[#0b0b0f] p-6 md:p-8 shadow-xl border border-amber-500/20">
-              <h3 className="mb-6 text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+            <form onSubmit={submitActivity} className="rounded-3xl bg-white p-6 md:p-8 shadow-xs border border-slate-200">
+              <h3 className="mb-6 text-xl font-black text-slate-900">
                 {editingActivityId ? "Edit Activity Record" : "Post New Activity Record"}
               </h3>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 text-xs">
-                <input type="number" placeholder="S.No" value={activityForm.s_no} onChange={(e) => setActivityForm({ ...activityForm, s_no: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+                <input type="number" placeholder="S.No" value={activityForm.s_no} onChange={(e) => setActivityForm({ ...activityForm, s_no: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
 
-                <input type="text" placeholder="Event Name" value={activityForm.event} onChange={(e) => setActivityForm({ ...activityForm, event: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+                <input type="text" placeholder="Event Name" value={activityForm.event} onChange={(e) => setActivityForm({ ...activityForm, event: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
 
-                <input type="text" placeholder="Date (e.g. 15 Aug 2025)" value={activityForm.date} onChange={(e) => setActivityForm({ ...activityForm, date: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                <input type="text" placeholder="Date (e.g. 15 Aug 2025)" value={activityForm.date} onChange={(e) => setActivityForm({ ...activityForm, date: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
 
-                <input type="text" placeholder="Chief Guest / Organizer" value={activityForm.chief_guest} onChange={(e) => setActivityForm({ ...activityForm, chief_guest: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                <input type="text" placeholder="Chief Guest / Organizer" value={activityForm.chief_guest} onChange={(e) => setActivityForm({ ...activityForm, chief_guest: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
 
-                <input type="text" placeholder="Participants Count (e.g. 120)" value={activityForm.participants} onChange={(e) => setActivityForm({ ...activityForm, participants: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                <input type="text" placeholder="Participants Count (e.g. 120)" value={activityForm.participants} onChange={(e) => setActivityForm({ ...activityForm, participants: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
 
-                <input type="text" placeholder="Image URL (Optional)" value={activityForm.image_url} onChange={(e) => setActivityForm({ ...activityForm, image_url: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                <input type="text" placeholder="Image URL (Optional)" value={activityForm.image_url} onChange={(e) => setActivityForm({ ...activityForm, image_url: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
               </div>
 
               <div className="mt-6 flex gap-4">
-                <button className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition cursor-pointer">
+                <button className="rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer">
                   {editingActivityId ? "Update Activity" : "Save Activity"}
                 </button>
 
-                {editingActivityId && (<button type="button" onClick={resetActivityForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-3 font-bold text-zinc-200 transition cursor-pointer">
+                {editingActivityId && (<button type="button" onClick={resetActivityForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-6 py-3 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
                   Cancel
                 </button>)}
               </div>
             </form>
 
-            <div className="rounded-2xl bg-[#0b0b0f] p-6 md:p-8 shadow-xl border border-amber-500/20">
+            <div className="rounded-3xl bg-white p-6 md:p-8 shadow-xs border border-slate-200">
               <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <h3 className="text-xl font-black text-white flex items-center gap-2">
-                    <Activity size={20} className="text-amber-400" />
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <Activity size={18} className="text-blue-600" />
                     <span>Activity Records ({activities.length})</span>
                   </h3>
                 </div>
 
                 <div className="relative w-full md:w-80">
-                  <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
-                  <input type="text" placeholder="Search activities..." value={activitySearch} onChange={(e) => setActivitySearch(e.target.value)} className="w-full rounded-xl border border-zinc-800 bg-[#121218] pl-9 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                  <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="text" placeholder="Search activities..." value={activitySearch} onChange={(e) => setActivitySearch(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
                 </div>
               </div>
 
-              {activitiesLoading && <p className="text-zinc-400">Loading activities from database...</p>}
-              {!activitiesLoading && activitiesError && (<p className="text-rose-400">Error: {activitiesError}</p>)}
-              {!activitiesLoading && !activitiesError && filteredActivities.length === 0 && (<p className="text-zinc-400">No activities found.</p>)}
+              {activitiesLoading && <p className="text-slate-500 text-xs">Loading activities from database...</p>}
+              {!activitiesLoading && activitiesError && (<p className="text-rose-500 text-xs">Error: {activitiesError}</p>)}
+              {!activitiesLoading && !activitiesError && filteredActivities.length === 0 && (<p className="text-slate-500 text-xs">No activities found.</p>)}
 
-              {!activitiesLoading && !activitiesError && filteredActivities.length > 0 && (<div className="overflow-x-auto rounded-xl bg-[#08080c] border border-amber-500/20 shadow-md">
+              {!activitiesLoading && !activitiesError && filteredActivities.length > 0 && (<div className="overflow-x-auto rounded-2xl bg-white border border-slate-200 shadow-xs">
                 <table className="w-full border-collapse text-xs">
-                  <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
+                  <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                     <tr>
                       <th className="px-4 py-3.5 text-left">S.No</th>
                       <th className="px-4 py-3.5 text-left">Event</th>
@@ -2176,13 +2489,13 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       <th className="px-4 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60">
-                    {filteredActivities.map((row) => (<tr key={row.id} className="hover:bg-zinc-900/60 transition-colors">
-                      <td className="px-4 py-3.5 font-bold text-amber-400">{row.s_no}</td>
-                      <td className="px-4 py-3.5 font-bold text-white">{row.event}</td>
-                      <td className="px-4 py-3.5 text-zinc-300">{row.date || "-"}</td>
-                      <td className="px-4 py-3.5 text-zinc-300">{row.chief_guest || "-"}</td>
-                      <td className="px-4 py-3.5 text-zinc-300">{row.participants || "-"}</td>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredActivities.map((row) => (<tr key={row.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                      <td className="px-4 py-3.5 font-bold text-blue-600">{row.s_no}</td>
+                      <td className="px-4 py-3.5 font-bold text-slate-900">{row.event}</td>
+                      <td className="px-4 py-3.5 text-slate-600">{row.date || "-"}</td>
+                      <td className="px-4 py-3.5 text-slate-600">{row.chief_guest || "-"}</td>
+                      <td className="px-4 py-3.5 text-slate-600">{row.participants || "-"}</td>
                       <td className="px-4 py-3.5 text-right space-x-2">
                         <button onClick={() => {
                           setEditingActivityId(row.id);
@@ -2195,10 +2508,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                             image_url: row.image_url || "",
                           });
                           window.scrollTo({ top: 0, behavior: "smooth" });
-                        }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                        }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">
                           Edit
                         </button>
-                        <button onClick={() => deleteActivity(row.id)} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                        <button onClick={() => deleteActivity(row.id)} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">
                           Delete
                         </button>
                       </td>
@@ -2222,31 +2535,31 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           {activeTab === "office_cards" && (<OfficeBearerCardsAdmin />)}
 
           {activeTab === "members" && (<div className="space-y-8">
-            <form onSubmit={submitMember} className="rounded-2xl bg-[#0b0b0f] p-6 md:p-8 shadow-xl border border-amber-500/20">
-              <h3 className="mb-6 text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+            <form onSubmit={submitMember} className="rounded-3xl bg-white p-6 md:p-8 shadow-xs border border-slate-200">
+              <h3 className="mb-6 text-xl font-black text-slate-900">
                 {editingMemberId ? "Edit Member Count Record" : "Add Year Membership Track"}
               </h3>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 text-xs">
-                <input type="number" placeholder="Year (e.g. 2025)" value={memberForm.year} onChange={(e) => setMemberForm({ ...memberForm, year: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="number" placeholder="Professional Members" value={memberForm.professional_members} onChange={(e) => setMemberForm({ ...memberForm, professional_members: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="number" placeholder="Student Members" value={memberForm.student_members} onChange={(e) => setMemberForm({ ...memberForm, student_members: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="number" placeholder="Total Members" value={memberForm.total_members} onChange={(e) => setMemberForm({ ...memberForm, total_members: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+                <input type="number" placeholder="Year (e.g. 2025)" value={memberForm.year} onChange={(e) => setMemberForm({ ...memberForm, year: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="number" placeholder="Professional Members" value={memberForm.professional_members} onChange={(e) => setMemberForm({ ...memberForm, professional_members: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="number" placeholder="Student Members" value={memberForm.student_members} onChange={(e) => setMemberForm({ ...memberForm, student_members: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="number" placeholder="Total Members" value={memberForm.total_members} onChange={(e) => setMemberForm({ ...memberForm, total_members: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
               </div>
 
               <div className="mt-6 flex gap-4">
-                <button className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition cursor-pointer">
+                <button className="rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer">
                   {editingMemberId ? "Update Record" : "Save Record"}
                 </button>
-                {editingMemberId && (<button type="button" onClick={resetMemberForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-3 font-bold text-zinc-200 transition cursor-pointer">
+                {editingMemberId && (<button type="button" onClick={resetMemberForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-6 py-3 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
                   Cancel
                 </button>)}
               </div>
             </form>
 
-            <div className="overflow-x-auto rounded-2xl bg-[#0b0b0f] border border-amber-500/20 shadow-xl p-0">
+            <div className="overflow-x-auto rounded-3xl bg-white border border-slate-200 shadow-xs p-0">
               <table className="w-full border-collapse text-xs">
-                <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
+                <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4 text-left">Year</th>
                     <th className="px-5 py-4 text-left">Professional</th>
@@ -2255,12 +2568,12 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                     <th className="px-5 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {memberRows.map((row) => (<tr key={row.id} className="hover:bg-zinc-900/60 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-amber-400">{row.year}</td>
-                    <td className="px-5 py-3.5 text-zinc-300">{row.professional_members}</td>
-                    <td className="px-5 py-3.5 text-amber-300 font-bold">{row.student_members}</td>
-                    <td className="px-5 py-3.5 text-white font-black">{row.total_members}</td>
+                <tbody className="divide-y divide-slate-100">
+                  {memberRows.map((row) => (<tr key={row.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                    <td className="px-5 py-3.5 font-bold text-blue-600">{row.year}</td>
+                    <td className="px-5 py-3.5 text-slate-600">{row.professional_members}</td>
+                    <td className="px-5 py-3.5 text-blue-600 font-bold">{row.student_members}</td>
+                    <td className="px-5 py-3.5 text-slate-900 font-black">{row.total_members}</td>
                     <td className="px-5 py-3.5 text-right space-x-2">
                       <button onClick={() => {
                         setEditingMemberId(row.id);
@@ -2270,10 +2583,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                           student_members: String(row.student_members),
                           total_members: String(row.total_members),
                         });
-                      }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                      }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">
                         Edit
                       </button>
-                      <button onClick={() => deleteMember(row.id)} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                      <button onClick={() => deleteMember(row.id)} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">
                         Delete
                       </button>
                     </td>
@@ -2283,29 +2596,29 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </div>
           </div>)}
           {activeTab === "plans" && (<div className="space-y-8">
-            <form onSubmit={submitPlan} className="rounded-2xl bg-[#0b0b0f] p-6 md:p-8 shadow-xl border border-amber-500/20">
-              <h3 className="mb-6 text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+            <form onSubmit={submitPlan} className="rounded-3xl bg-white p-6 md:p-8 shadow-xs border border-slate-200">
+              <h3 className="mb-6 text-xl font-black text-slate-900">
                 {editingPlanId ? "Edit Annual Plan" : "Add Annual Plan"}
               </h3>
               <div className="grid gap-4 md:grid-cols-2 text-xs">
-                <input type="number" placeholder="S.No" value={planForm.s_no} onChange={(e) => setPlanForm({ ...planForm, s_no: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="text" placeholder="Event Name" value={planForm.event} onChange={(e) => setPlanForm({ ...planForm, event: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="text" placeholder="Sub Event (Optional)" value={planForm.sub_event} onChange={(e) => setPlanForm({ ...planForm, sub_event: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
-                <input type="text" placeholder="Schedule (e.g. Q1 / March 2026)" value={planForm.schedule} onChange={(e) => setPlanForm({ ...planForm, schedule: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+                <input type="number" placeholder="S.No" value={planForm.s_no} onChange={(e) => setPlanForm({ ...planForm, s_no: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="text" placeholder="Event Name" value={planForm.event} onChange={(e) => setPlanForm({ ...planForm, event: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="text" placeholder="Sub Event (Optional)" value={planForm.sub_event} onChange={(e) => setPlanForm({ ...planForm, sub_event: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
+                <input type="text" placeholder="Schedule (e.g. Q1 / March 2026)" value={planForm.schedule} onChange={(e) => setPlanForm({ ...planForm, schedule: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
               </div>
               <div className="mt-6 flex gap-4">
-                <button className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition cursor-pointer">
+                <button className="rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer">
                   {editingPlanId ? "Update Plan" : "Save Plan"}
                 </button>
-                {editingPlanId && (<button type="button" onClick={resetPlanForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-3 font-bold text-zinc-200 transition cursor-pointer">
+                {editingPlanId && (<button type="button" onClick={resetPlanForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-6 py-3 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
                   Cancel
                 </button>)}
               </div>
             </form>
 
-            <div className="overflow-x-auto rounded-2xl bg-[#0b0b0f] border border-amber-500/20 shadow-xl p-0">
+            <div className="overflow-x-auto rounded-3xl bg-white border border-slate-200 shadow-xs p-0">
               <table className="w-full border-collapse text-xs">
-                <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
+                <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4 text-left">S.No</th>
                     <th className="px-5 py-4 text-left">Event</th>
@@ -2314,18 +2627,18 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                     <th className="px-5 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {annualPlans.map((row) => (<tr key={row.id} className="hover:bg-zinc-900/60 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-amber-400">{row.s_no}</td>
-                    <td className="px-5 py-3.5 font-bold text-white">{row.event}</td>
-                    <td className="px-5 py-3.5 text-zinc-400">{row.sub_event || "-"}</td>
-                    <td className="px-5 py-3.5 text-zinc-300">{row.schedule}</td>
+                <tbody className="divide-y divide-slate-100">
+                  {annualPlans.map((row) => (<tr key={row.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                    <td className="px-5 py-3.5 font-bold text-blue-600">{row.s_no}</td>
+                    <td className="px-5 py-3.5 font-bold text-slate-900">{row.event}</td>
+                    <td className="px-5 py-3.5 text-slate-500">{row.sub_event || "-"}</td>
+                    <td className="px-5 py-3.5 text-slate-700">{row.schedule}</td>
                     <td className="px-5 py-3.5 text-right space-x-2">
                       <button onClick={() => {
                         setEditingPlanId(row.id);
                         setPlanForm({ s_no: String(row.s_no), event: row.event, sub_event: row.sub_event || "", schedule: row.schedule });
-                      }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">Edit</button>
-                      <button onClick={() => deletePlan(row.id)} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">Delete</button>
+                      }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">Edit</button>
+                      <button onClick={() => deletePlan(row.id)} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">Delete</button>
                     </td>
                   </tr>))}
                 </tbody>
@@ -2334,34 +2647,34 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           </div>)}
 
           {activeTab === "funding" && (<div className="space-y-8">
-            <form onSubmit={submitFunding} className="rounded-2xl bg-[#0b0b0f] p-6 md:p-8 shadow-xl border border-amber-500/20">
-              <h3 className="mb-6 text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+            <form onSubmit={submitFunding} className="rounded-3xl bg-white p-6 md:p-8 shadow-xs border border-slate-200">
+              <h3 className="mb-6 text-xl font-black text-slate-900">
                 {editingFundingId ? "Edit Funding Request" : "Add Funding Request"}
               </h3>
               <div className="grid gap-4 md:grid-cols-2 text-xs">
-                <input type="text" placeholder="Title" value={fundingForm.title} onChange={(e) => setFundingForm({ ...fundingForm, title: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <select aria-label="Submission Type" value={fundingForm.submission_type} onChange={(e) => setFundingForm({ ...fundingForm, submission_type: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 focus:border-amber-400 focus:outline-none">
+                <input type="text" placeholder="Title" value={fundingForm.title} onChange={(e) => setFundingForm({ ...fundingForm, title: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <select aria-label="Submission Type" value={fundingForm.submission_type} onChange={(e) => setFundingForm({ ...fundingForm, submission_type: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                   <option value="Annual Plan">Annual Plan</option>
                   <option value="Event Funding">Event Funding</option>
                   <option value="Special Project">Special Project</option>
                 </select>
-                <input type="number" placeholder="Budget Amount (Rs)" value={fundingForm.budget_amount} onChange={(e) => setFundingForm({ ...fundingForm, budget_amount: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="email" placeholder="Contact Email" value={fundingForm.contact_email} onChange={(e) => setFundingForm({ ...fundingForm, contact_email: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <textarea placeholder="Description..." value={fundingForm.description} onChange={(e) => setFundingForm({ ...fundingForm, description: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none md:col-span-2" rows={3} required />
+                <input type="number" placeholder="Budget Amount (Rs)" value={fundingForm.budget_amount} onChange={(e) => setFundingForm({ ...fundingForm, budget_amount: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="email" placeholder="Contact Email" value={fundingForm.contact_email} onChange={(e) => setFundingForm({ ...fundingForm, contact_email: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <textarea placeholder="Description..." value={fundingForm.description} onChange={(e) => setFundingForm({ ...fundingForm, description: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none md:col-span-2" rows={3} required />
               </div>
               <div className="mt-6 flex gap-4">
-                <button className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition cursor-pointer">
+                <button className="rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer">
                   {editingFundingId ? "Update Request" : "Save Request"}
                 </button>
-                {editingFundingId && (<button type="button" onClick={resetFundingForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-3 font-bold text-zinc-200 transition cursor-pointer">
+                {editingFundingId && (<button type="button" onClick={resetFundingForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-6 py-3 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
                   Cancel
                 </button>)}
               </div>
             </form>
 
-            <div className="overflow-x-auto rounded-2xl bg-[#0b0b0f] border border-amber-500/20 shadow-xl p-0">
+            <div className="overflow-x-auto rounded-3xl bg-white border border-slate-200 shadow-xs p-0">
               <table className="w-full border-collapse text-xs">
-                <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
+                <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4 text-left">Title</th>
                     <th className="px-5 py-4 text-left">Type</th>
@@ -2370,12 +2683,12 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                     <th className="px-5 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {fundingRequests.map((row) => (<tr key={row.id} className="hover:bg-zinc-900/60 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-white">{row.title}</td>
-                    <td className="px-5 py-3.5 text-zinc-400">{row.submission_type}</td>
-                    <td className="px-5 py-3.5 text-amber-300 font-bold">Rs. {row.budget_amount}</td>
-                    <td className="px-5 py-3.5 text-zinc-300 font-mono">{row.contact_email}</td>
+                <tbody className="divide-y divide-slate-100">
+                  {fundingRequests.map((row) => (<tr key={row.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                    <td className="px-5 py-3.5 font-bold text-slate-900">{row.title}</td>
+                    <td className="px-5 py-3.5 text-slate-500">{row.submission_type}</td>
+                    <td className="px-5 py-3.5 text-blue-600 font-bold">Rs. {row.budget_amount}</td>
+                    <td className="px-5 py-3.5 text-slate-600 font-mono">{row.contact_email}</td>
                     <td className="px-5 py-3.5 text-right space-x-2">
                       <button onClick={() => {
                         setEditingFundingId(row.id);
@@ -2386,8 +2699,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                           budget_amount: String(row.budget_amount || ""),
                           contact_email: row.contact_email || ""
                         });
-                      }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">Edit</button>
-                      <button onClick={() => deleteFunding(row.id)} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">Delete</button>
+                      }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">Edit</button>
+                      <button onClick={() => deleteFunding(row.id)} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">Delete</button>
                     </td>
                   </tr>))}
                 </tbody>
@@ -2396,33 +2709,33 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           </div>)}
 
           {activeTab === "senior" && (<div className="space-y-8">
-            <form onSubmit={submitSenior} className="rounded-2xl bg-[#0b0b0f] p-6 md:p-8 shadow-xl border border-amber-500/20">
-              <h3 className="mb-6 text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+            <form onSubmit={submitSenior} className="rounded-3xl bg-white p-6 md:p-8 shadow-xs border border-slate-200">
+              <h3 className="mb-6 text-xl font-black text-slate-900">
                 {editingSeniorId ? "Edit Senior Member" : "Add Senior Member"}
               </h3>
 
               <div className="grid gap-4 md:grid-cols-2 text-xs">
-                <input type="text" placeholder="Name" value={seniorForm.name} onChange={(e) => setSeniorForm({ ...seniorForm, name: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="number" placeholder="S.No" value={seniorForm.s_no} onChange={(e) => setSeniorForm({ ...seniorForm, s_no: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                <input type="text" placeholder="Current Role (e.g. Software Engineer)" value={seniorForm.current_role} onChange={(e) => setSeniorForm({ ...seniorForm, current_role: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
-                <input type="text" placeholder="College" value={seniorForm.college} onChange={(e) => setSeniorForm({ ...seniorForm, college: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
-                <input type="url" placeholder="LinkedIn URL" value={seniorForm.linkedin_url} onChange={(e) => setSeniorForm({ ...seniorForm, linkedin_url: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none md:col-span-2" />
-                <input type="url" placeholder="Image URL" value={seniorForm.image_url} onChange={(e) => setSeniorForm({ ...seniorForm, image_url: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-amber-400 focus:outline-none md:col-span-2" />
+                <input type="text" placeholder="Name" value={seniorForm.name} onChange={(e) => setSeniorForm({ ...seniorForm, name: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="number" placeholder="S.No" value={seniorForm.s_no} onChange={(e) => setSeniorForm({ ...seniorForm, s_no: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                <input type="text" placeholder="Current Role (e.g. Software Engineer)" value={seniorForm.current_role} onChange={(e) => setSeniorForm({ ...seniorForm, current_role: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
+                <input type="text" placeholder="College" value={seniorForm.college} onChange={(e) => setSeniorForm({ ...seniorForm, college: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
+                <input type="url" placeholder="LinkedIn URL" value={seniorForm.linkedin_url} onChange={(e) => setSeniorForm({ ...seniorForm, linkedin_url: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none md:col-span-2" />
+                <input type="url" placeholder="Image URL" value={seniorForm.image_url} onChange={(e) => setSeniorForm({ ...seniorForm, image_url: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none md:col-span-2" />
               </div>
 
               <div className="mt-6 flex gap-4">
-                <button className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition cursor-pointer">
+                <button className="rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer">
                   {editingSeniorId ? "Update Member" : "Save Member"}
                 </button>
-                {editingSeniorId && (<button type="button" onClick={resetSeniorForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-3 font-bold text-zinc-200 transition cursor-pointer">
+                {editingSeniorId && (<button type="button" onClick={resetSeniorForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-6 py-3 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
                   Cancel
                 </button>)}
               </div>
             </form>
 
-            <div className="overflow-x-auto rounded-2xl bg-[#0b0b0f] border border-amber-500/20 shadow-xl p-0">
+            <div className="overflow-x-auto rounded-3xl bg-white border border-slate-200 shadow-xs p-0">
               <table className="w-full border-collapse text-xs">
-                <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
+                <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4 text-left">S.No</th>
                     <th className="px-5 py-4 text-left">Name</th>
@@ -2431,12 +2744,12 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                     <th className="px-5 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {seniorMembers.map((row) => (<tr key={row.id} className="hover:bg-zinc-900/60 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-amber-400">{row.s_no}</td>
-                    <td className="px-5 py-3.5 font-bold text-white">{row.name}</td>
-                    <td className="px-5 py-3.5 text-zinc-300">{row.current_role || "-"}</td>
-                    <td className="px-5 py-3.5 text-zinc-400">{row.college || "-"}</td>
+                <tbody className="divide-y divide-slate-100">
+                  {seniorMembers.map((row) => (<tr key={row.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                    <td className="px-5 py-3.5 font-bold text-blue-600">{row.s_no}</td>
+                    <td className="px-5 py-3.5 font-bold text-slate-900">{row.name}</td>
+                    <td className="px-5 py-3.5 text-slate-600">{row.current_role || "-"}</td>
+                    <td className="px-5 py-3.5 text-slate-500">{row.college || "-"}</td>
                     <td className="px-5 py-3.5 text-right space-x-2">
                       <button onClick={() => {
                         setEditingSeniorId(row.id);
@@ -2449,13 +2762,13 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                           image_url: row.image_url || "",
                         });
                         window.scrollTo({ top: 0, behavior: "smooth" });
-                      }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                      }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">
                         Edit
                       </button>
                       <button onClick={() => {
                         if (window.confirm("Delete this senior member?"))
                           deleteSenior(row.id);
-                      }} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                      }} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">
                         Delete
                       </button>
                     </td>
@@ -2466,165 +2779,198 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           </div>)}
 
 
-          {activeTab === "cms_landing" && (<div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Landing Page CMS</h2>
-              <p className="text-sm text-zinc-400 mt-1">Edit the main hero header and subdescription on the homepage.</p>
-            </div>
-            <LandingCMSForm pageContents={pageContents} onSave={upsertContent} />
-          </div>)}
-
-          {activeTab === "cms_about" && (<div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">About Page CMS</h2>
-              <p className="text-sm text-zinc-400 mt-1">Edit the SREC intro description, Principal message and Counselor message quotes.</p>
-            </div>
-            <AboutCMSForm pageContents={pageContents} onSave={upsertContent} />
-          </div>)}
-
-          {activeTab === "cms_contact" && (<div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Contact Page CMS</h2>
-              <p className="text-sm text-zinc-400 mt-1">Edit the contact page address, email, phone and subtitle info.</p>
-            </div>
-            <ContactCMSForm pageContents={pageContents} onSave={upsertContent} />
-          </div>)}
-
-          {activeTab === "cms_advanced" && (<div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Advanced CMS (Raw Keys)</h2>
-              <p className="text-sm text-zinc-400 mt-1">Manage and edit raw page keys and content keys in the database.</p>
-            </div>
-
-            <form onSubmit={submitContent} className="rounded-2xl border border-amber-500/20 bg-[#0b0b0f] p-6 shadow-xl space-y-4">
-              <h3 className="text-lg font-bold text-amber-300">{editingContentId ? "Edit Content Key" : "Add New Content Key"}</h3>
-              <div className="grid gap-4 md:grid-cols-2 text-xs">
-                <div className="flex flex-col gap-1.5">
-                  <label className="font-bold uppercase tracking-wider text-amber-400/80">Page Key (e.g. "about")</label>
-                  <input type="text" placeholder="e.g. about" value={contentForm.page_key} onChange={(e) => setContentForm({ ...contentForm, page_key: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+          {(activeTab === "cms" || activeTab === "cms_landing" || activeTab === "cms_about" || activeTab === "cms_contact" || activeTab === "cms_advanced") && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900">
+                    Website Content CMS
+                  </h2>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Manage dynamic text, announcements, quotes, and content across public website pages.
+                  </p>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="font-bold uppercase tracking-wider text-amber-400/80">Content Key (e.g. "intro_text")</label>
-                  <input type="text" placeholder="e.g. intro_text" value={contentForm.content_key} onChange={(e) => setContentForm({ ...contentForm, content_key: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
-                </div>
-                <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <label className="font-bold uppercase tracking-wider text-amber-400/80">Content Text (HTML / Plain Text)</label>
-                  <textarea rows={4} placeholder="Type the page content here..." value={contentForm.content_text} onChange={(e) => setContentForm({ ...contentForm, content_text: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-3 text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+
+                {/* Sub-tab Pill Navigation */}
+                <div className="inline-flex p-1 bg-slate-100 border border-slate-200 rounded-2xl">
+                  {[
+                    { id: "landing", label: "Landing Page" },
+                    { id: "about", label: "About Page" },
+                    { id: "contact", label: "Contact Info" },
+                    { id: "advanced", label: "Raw Keys" },
+                  ].map((sub) => {
+                    const isSelected = (activeTab === "cms" && cmsSubTab === sub.id) || (activeTab === `cms_${sub.id}`);
+                    return (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveTab("cms");
+                          setCmsSubTab(sub.id);
+                        }}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-white text-slate-900 font-extrabold shadow-sm"
+                            : "text-slate-500 hover:text-slate-900"
+                        }`}
+                      >
+                        {sub.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div className="mt-6 flex gap-4">
-                <button className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 px-6 py-3 font-black text-black shadow-md shadow-amber-500/20 hover:brightness-110 transition cursor-pointer">
-                  {editingContentId ? "Update Content" : "Save Content"}
-                </button>
-                {editingContentId && (<button type="button" onClick={resetContentForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-6 py-3 font-bold text-zinc-200 transition cursor-pointer">
-                  Cancel
-                </button>)}
-              </div>
-            </form>
+              {/* Sub-tab 1: Landing Page CMS */}
+              {((activeTab === "cms" && cmsSubTab === "landing") || activeTab === "cms_landing") && (
+                <LandingCMSForm pageContents={pageContents} onSave={upsertContent} />
+              )}
 
-            <div className="overflow-x-auto rounded-2xl bg-[#0b0b0f] border border-amber-500/20 shadow-xl p-0">
-              <table className="w-full border-collapse text-xs">
-                <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
-                  <tr>
-                    <th className="px-5 py-4 text-left">Page</th>
-                    <th className="px-5 py-4 text-left">Content Key</th>
-                    <th className="px-5 py-4 text-left">Text Sneak Peek</th>
-                    <th className="px-5 py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {pageContents.map((row) => (<tr key={row.id} className="hover:bg-zinc-900/60 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-amber-400">{row.page_key}</td>
-                    <td className="px-5 py-3.5 font-bold text-white">{row.content_key}</td>
-                    <td className="px-5 py-3.5 text-zinc-400 truncate max-w-[200px]">{row.content_text}</td>
-                    <td className="px-5 py-3.5 text-right space-x-2">
-                      <button onClick={() => {
-                        setEditingContentId(row.id);
-                        setContentForm({
-                          page_key: row.page_key,
-                          content_key: row.content_key,
-                          content_text: row.content_text,
-                        });
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
-                        Edit
+              {/* Sub-tab 2: About Page CMS */}
+              {((activeTab === "cms" && cmsSubTab === "about") || activeTab === "cms_about") && (
+                <AboutCMSForm pageContents={pageContents} onSave={upsertContent} />
+              )}
+
+              {/* Sub-tab 3: Contact Page CMS */}
+              {((activeTab === "cms" && cmsSubTab === "contact") || activeTab === "cms_contact") && (
+                <ContactCMSForm pageContents={pageContents} onSave={upsertContent} />
+              )}
+
+              {/* Sub-tab 4: Raw Keys Editor */}
+              {((activeTab === "cms" && cmsSubTab === "advanced") || activeTab === "cms_advanced") && (
+                <div className="space-y-6">
+                  <form onSubmit={submitContent} className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-xs space-y-4">
+                    <h3 className="text-lg font-black text-slate-900">{editingContentId ? "Edit Content Key" : "Add New Content Key"}</h3>
+                    <div className="grid gap-4 md:grid-cols-2 text-xs">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-bold uppercase tracking-wider text-slate-600">Page Key (e.g. "about")</label>
+                        <input type="text" placeholder="e.g. about" value={contentForm.page_key} onChange={(e) => setContentForm({ ...contentForm, page_key: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-bold uppercase tracking-wider text-slate-600">Content Key (e.g. "intro_text")</label>
+                        <input type="text" placeholder="e.g. intro_text" value={contentForm.content_key} onChange={(e) => setContentForm({ ...contentForm, content_key: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                      </div>
+                      <div className="flex flex-col gap-1.5 md:col-span-2">
+                        <label className="font-bold uppercase tracking-wider text-slate-600">Content Text (HTML / Plain Text)</label>
+                        <textarea rows={4} placeholder="Type the page content here..." value={contentForm.content_text} onChange={(e) => setContentForm({ ...contentForm, content_text: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex gap-4">
+                      <button className="rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 font-bold text-xs uppercase tracking-wider shadow-sm transition cursor-pointer">
+                        {editingContentId ? "Update Content" : "Save Content"}
                       </button>
-                      <button onClick={() => deleteContent(row.id)} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>))}
-                  {pageContents.length === 0 && (<tr>
-                    <td colSpan={4} className="px-5 py-8 text-center text-xs text-zinc-500 font-medium">
-                      No page content keys added yet. Use the form above to add your dynamic content string.
-                    </td>
-                  </tr>)}
-                </tbody>
-              </table>
+                      {editingContentId && (<button type="button" onClick={resetContentForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-6 py-3 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
+                        Cancel
+                      </button>)}
+                    </div>
+                  </form>
+
+                  <div className="overflow-x-auto rounded-3xl bg-white border border-slate-200 shadow-xs p-0">
+                    <table className="w-full border-collapse text-xs">
+                      <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
+                        <tr>
+                          <th className="px-5 py-4 text-left">Page</th>
+                          <th className="px-5 py-4 text-left">Content Key</th>
+                          <th className="px-5 py-4 text-left">Text Sneak Peek</th>
+                          <th className="px-5 py-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {pageContents.map((row) => (<tr key={row.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                          <td className="px-5 py-3.5 font-bold text-blue-600">{row.page_key}</td>
+                          <td className="px-5 py-3.5 font-bold text-slate-900">{row.content_key}</td>
+                          <td className="px-5 py-3.5 text-slate-500 truncate max-w-[200px]">{row.content_text}</td>
+                          <td className="px-5 py-3.5 text-right space-x-2">
+                            <button onClick={() => {
+                              setEditingContentId(row.id);
+                              setContentForm({
+                                page_key: row.page_key,
+                                content_key: row.content_key,
+                                content_text: row.content_text,
+                              });
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">
+                              Edit
+                            </button>
+                            <button onClick={() => deleteContent(row.id)} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">
+                              Delete
+                            </button>
+                          </td>
+                        </tr>))}
+                        {pageContents.length === 0 && (<tr>
+                          <td colSpan={4} className="px-5 py-8 text-center text-xs text-slate-400 font-medium">
+                            No page content keys added yet. Use the form above to add your dynamic content string.
+                          </td>
+                        </tr>)}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>)}
+          )}
 
 
           {activeTab === "societies" && (<div className="space-y-12">
             <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Societies Management</h2>
-              <p className="text-sm text-zinc-400 mt-1">Manage IEEE Technical Societies, edit chapter descriptions, and update Office Bearers & Executive Members.</p>
+              <h2 className="text-2xl font-black text-slate-900">Societies Management</h2>
+              <p className="text-sm text-slate-500 mt-1">Manage IEEE Technical Societies, edit chapter descriptions, and update Office Bearers &amp; Executive Members.</p>
             </div>
 
             {/* Section 1: Society Info Editor */}
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Form */}
-              <form onSubmit={submitSociety} className="lg:col-span-1 rounded-2xl border border-amber-500/20 bg-[#0b0b0f] p-6 shadow-xl flex flex-col gap-4 self-start">
-                <h3 className="text-lg font-bold text-amber-300">{editingSocietyId ? "Edit Society Info" : "Add New Society"}</h3>
+              <form onSubmit={submitSociety} className="lg:col-span-1 rounded-3xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col gap-4 self-start">
+                <h3 className="text-lg font-black text-slate-900">{editingSocietyId ? "Edit Society Info" : "Add New Society"}</h3>
 
                 <div className="flex flex-col gap-1.5 text-xs">
-                  <label className="font-bold uppercase tracking-wider text-amber-400/80">Society Name</label>
-                  <input type="text" placeholder="e.g. IEEE Computer Society" value={societyForm.name} onChange={(e) => setSocietyForm({ ...societyForm, name: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-2.5 text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" required />
+                  <label className="font-bold uppercase tracking-wider text-slate-600">Society Name</label>
+                  <input type="text" placeholder="e.g. IEEE Computer Society" value={societyForm.name} onChange={(e) => setSocietyForm({ ...societyForm, name: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" required />
                 </div>
 
                 <div className="flex flex-col gap-1.5 text-xs">
-                  <label className="font-bold uppercase tracking-wider text-amber-400/80">Short Code</label>
-                  <input type="text" placeholder="e.g. CS" value={societyForm.short_code} onChange={(e) => setSocietyForm({ ...societyForm, short_code: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-2.5 text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                  <label className="font-bold uppercase tracking-wider text-slate-600">Short Code</label>
+                  <input type="text" placeholder="e.g. CS" value={societyForm.short_code} onChange={(e) => setSocietyForm({ ...societyForm, short_code: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
                 </div>
 
                 <div className="flex flex-col gap-1.5 text-xs">
-                  <label className="font-bold uppercase tracking-wider text-amber-400/80">Description</label>
-                  <textarea rows={3} placeholder="Brief overview of the society's mission..." value={societyForm.description} onChange={(e) => setSocietyForm({ ...societyForm, description: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-2.5 text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none" />
+                  <label className="font-bold uppercase tracking-wider text-slate-600">Description</label>
+                  <textarea rows={3} placeholder="Brief overview of the society's mission..." value={societyForm.description} onChange={(e) => setSocietyForm({ ...societyForm, description: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-blue-600 outline-none" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-bold uppercase tracking-wider text-amber-400/80">Est. Year</label>
-                    <input type="number" value={societyForm.established_year} onChange={(e) => setSocietyForm({ ...societyForm, established_year: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-2.5 text-white focus:border-amber-400 focus:outline-none" />
+                    <label className="font-bold uppercase tracking-wider text-slate-600">Est. Year</label>
+                    <input type="number" value={societyForm.established_year} onChange={(e) => setSocietyForm({ ...societyForm, established_year: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-bold uppercase tracking-wider text-amber-400/80">Member Count</label>
-                    <input type="number" value={societyForm.member_count} onChange={(e) => setSocietyForm({ ...societyForm, member_count: e.target.value })} className="rounded-xl border border-zinc-800 bg-[#121218] px-4 py-2.5 text-white focus:border-amber-400 focus:outline-none" />
+                    <label className="font-bold uppercase tracking-wider text-slate-600">Member Count</label>
+                    <input type="number" value={societyForm.member_count} onChange={(e) => setSocietyForm({ ...societyForm, member_count: e.target.value })} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                   </div>
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <button type="submit" className="flex-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-2.5 font-black text-black text-xs hover:brightness-110 transition cursor-pointer shadow-md shadow-amber-500/20">
+                  <button type="submit" className="flex-1 rounded-xl bg-slate-900 hover:bg-black py-2.5 font-bold text-white text-xs uppercase tracking-wider transition cursor-pointer shadow-sm">
                     {editingSocietyId ? "Update Society" : "Add Society"}
                   </button>
-                  {editingSocietyId && (<button type="button" onClick={resetSocietyForm} className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-4 py-2.5 font-bold text-zinc-300 text-xs transition cursor-pointer">
+                  {editingSocietyId && (<button type="button" onClick={resetSocietyForm} className="rounded-xl bg-slate-100 hover:bg-slate-200 px-4 py-2.5 font-bold text-slate-700 text-xs transition cursor-pointer border border-slate-200">
                     Cancel
                   </button>)}
                 </div>
               </form>
 
               {/* List Table */}
-              <div className="lg:col-span-2 rounded-2xl border border-amber-500/20 bg-[#0b0b0f] shadow-xl overflow-hidden flex flex-col">
-                <div className="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-[#0e0e14]">
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Layers size={18} className="text-amber-400" />
+              <div className="lg:col-span-2 rounded-3xl border border-slate-200 bg-white shadow-xs overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/70">
+                  <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                    <Layers size={18} className="text-blue-600" />
                     <span>IEEE Technical Chapters ({societies.length})</span>
                   </h3>
                 </div>
                 <div className="overflow-x-auto flex-1">
                   <table className="w-full border-collapse text-xs">
-                    <thead className="bg-[#0f0f14] text-amber-300/90 uppercase tracking-wider font-bold border-b border-zinc-800">
+                    <thead className="bg-slate-50 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
                       <tr>
                         <th className="px-6 py-3.5 text-left">Code</th>
                         <th className="px-6 py-3.5 text-left">Society Name</th>
@@ -2632,16 +2978,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         <th className="px-6 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800/60">
-                      {societies.map((soc) => (<tr key={soc.id} className="hover:bg-zinc-900/60 transition-colors">
+                    <tbody className="divide-y divide-slate-100">
+                      {societies.map((soc) => (<tr key={soc.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
                         <td className="px-6 py-4">
-                          <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono font-bold text-xs">{soc.short_code || "GEN"}</span>
+                          <span className="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono font-bold text-xs">{soc.short_code || "GEN"}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="text-sm font-bold text-white">{soc.name}</p>
-                          {soc.description && <p className="text-xs text-zinc-400 truncate max-w-xs">{soc.description}</p>}
+                          <p className="text-sm font-bold text-slate-900">{soc.name}</p>
+                          {soc.description && <p className="text-xs text-slate-500 truncate max-w-xs">{soc.description}</p>}
                         </td>
-                        <td className="px-6 py-4 text-xs font-semibold text-zinc-300">
+                        <td className="px-6 py-4 text-xs font-semibold text-slate-600">
                           {soc.member_count || 0} Members
                         </td>
                         <td className="px-6 py-4 text-xs text-right space-x-2">
@@ -2655,16 +3001,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                               member_count: soc.member_count?.toString() || "50",
                             });
                             window.scrollTo({ top: 0, behavior: "smooth" });
-                          }} className="rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                          }} className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 font-bold transition cursor-pointer">
                             Edit
                           </button>
-                          <button type="button" onClick={() => deleteSociety(soc.id)} className="rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 font-bold transition cursor-pointer">
+                          <button type="button" onClick={() => deleteSociety(soc.id)} className="rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 font-bold transition cursor-pointer">
                             Delete
                           </button>
                         </td>
                       </tr>))}
                       {societies.length === 0 && (<tr>
-                        <td colSpan={4} className="px-6 py-8 text-center text-sm text-zinc-500 font-medium">
+                        <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400 font-medium">
                           No technical societies found.
                         </td>
                       </tr>)}
@@ -2687,18 +3033,18 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           {activeTab === "applications" && (<div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Student Join Submissions</h2>
-                <p className="text-sm text-zinc-400 mt-1">Review student applications submitted from the /join portal.</p>
+                <h2 className="text-2xl font-black text-slate-900">Student Join Submissions</h2>
+                <p className="text-sm text-slate-500 mt-1">Review student applications submitted from the /join portal.</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                 <div className="relative w-full sm:w-72">
-                  <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
-                  <input type="text" placeholder="Filter by name, email, society..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full rounded-xl border border-zinc-800 bg-[#0b0b0f] pl-9 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 font-bold focus:outline-none focus:border-amber-400 shadow-sm" />
+                  <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="text" placeholder="Filter by name, email, society..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 font-bold focus:outline-none focus:border-blue-600 shadow-xs" />
                 </div>
 
-                <div className="flex items-center gap-3 bg-[#0b0b0f] px-4 py-2 rounded-xl border border-amber-500/20 shadow-sm">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-xs">
                   <div className="flex flex-col">
-                    <span className="text-xs font-bold text-zinc-200">Registration Status</span>
+                    <span className="text-xs font-bold text-slate-700">Registration Status</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" className="sr-only peer" checked={pageContents.find(c => c.page_key === "system" && c.content_key === "registration_open")?.content_text !== "false"} onChange={async (e) => {
@@ -2718,14 +3064,14 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         }
                       });
                     }} />
-                    <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-amber-400 after:border-amber-400 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* Batch Actions Toolbar */}
-            <div className="p-4 bg-[#0b0b0f] border border-amber-500/20 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-4">
+            <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button type="button" onClick={() => {
                   const filtered = applications.filter(app => {
@@ -2744,28 +3090,28 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   else {
                     setSelectedAppIds(filtered.map(a => a.id));
                   }
-                }} className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-amber-300 font-extrabold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-2 border border-amber-500/20 cursor-pointer">
-                  <input type="checkbox" checked={applications.length > 0 && selectedAppIds.length === applications.length} readOnly className="rounded accent-amber-500 cursor-pointer" />
+                }} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-2 border border-slate-200 cursor-pointer">
+                  <input type="checkbox" checked={applications.length > 0 && selectedAppIds.length === applications.length} readOnly className="rounded accent-blue-600 cursor-pointer" />
                   <span>Select All ({selectedAppIds.length}/{applications.length})</span>
                 </button>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={exportApplicationsToExcel} className="px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm flex items-center gap-2 cursor-pointer active:scale-95" title="Download all applications or selected applications as Excel CSV">
+                <button type="button" onClick={exportApplicationsToExcel} className="px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs flex items-center gap-2 cursor-pointer active:scale-95" title="Download all applications or selected applications as Excel CSV">
                   <FileSpreadsheet size={15} />
                   <span>Export Excel ({selectedAppIds.length > 0 ? selectedAppIds.length : applications.length})</span>
                 </button>
 
-                <button type="button" onClick={downloadSelectedReceipts} disabled={selectedAppIds.length === 0} className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-sm flex items-center gap-2 ${selectedAppIds.length > 0
-                  ? "bg-amber-500 hover:bg-amber-600 text-black cursor-pointer font-black"
-                  : "bg-zinc-800 text-zinc-500 cursor-not-allowed"}`}>
+                <button type="button" onClick={downloadSelectedReceipts} disabled={selectedAppIds.length === 0} className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-xs flex items-center gap-2 ${selectedAppIds.length > 0
+                  ? "bg-slate-900 hover:bg-black text-white cursor-pointer font-bold"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"}`}>
                   <Download size={14} />
                   <span>Receipts ({selectedAppIds.length})</span>
                 </button>
 
-                <button type="button" onClick={deleteSelectedApplications} disabled={selectedAppIds.length === 0} className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-sm flex items-center gap-2 ${selectedAppIds.length > 0
+                <button type="button" onClick={deleteSelectedApplications} disabled={selectedAppIds.length === 0} className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-xs flex items-center gap-2 ${selectedAppIds.length > 0
                   ? "bg-rose-600 hover:bg-rose-700 text-white cursor-pointer"
-                  : "bg-zinc-800 text-zinc-500 cursor-not-allowed"}`}>
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"}`}>
                   <Trash2 size={14} />
                   <span>Delete Selected ({selectedAppIds.length})</span>
                 </button>
@@ -2786,31 +3132,31 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 })
                 .map((app) => {
                   const isSelected = selectedAppIds.includes(app.id);
-                  return (<div key={app.id} className={`rounded-2xl border ${isSelected ? "border-amber-400 ring-2 ring-amber-400/20 bg-amber-500/10" : "border-amber-500/20 bg-[#0b0b0f]"} p-6 shadow-md flex flex-col justify-between hover:shadow-xl hover:border-amber-400/40 transition relative group`}>
+                  return (<div key={app.id} className={`rounded-3xl border ${isSelected ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/20" : "border-slate-200 bg-white"} p-6 shadow-xs flex flex-col justify-between hover:shadow-md transition-all relative group`}>
                     <div className="space-y-4">
                       <div className="flex justify-between items-start">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input type="checkbox" checked={isSelected} onChange={() => {
                             setSelectedAppIds(prev => prev.includes(app.id) ? prev.filter(id => id !== app.id) : [...prev, app.id]);
-                          }} className="w-4 h-4 rounded accent-amber-500 cursor-pointer" />
-                          <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-full">
+                          }} className="w-4 h-4 rounded accent-blue-600 cursor-pointer" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full">
                             {app.target_society || "IEEE SB"}
                           </span>
                         </label>
 
-                        <span className="text-[10px] font-bold text-zinc-400">
+                        <span className="text-[10px] font-bold text-slate-400">
                           {app.created_at ? new Date(app.created_at).toLocaleDateString() : "Recent"}
                         </span>
                       </div>
 
                       <div>
-                        <h3 className="text-base font-bold text-white">{app.first_name} {app.last_name}</h3>
-                        <p className="text-xs text-zinc-300 font-mono mt-0.5">{app.email}</p>
-                        <p className="text-xs text-zinc-400 font-semibold mt-1">Dept: <strong className="text-amber-300">{app.department}</strong> • Year: <strong className="text-amber-300">{app.year_of_study}</strong></p>
+                        <h3 className="text-base font-bold text-slate-900">{app.first_name} {app.last_name}</h3>
+                        <p className="text-xs text-slate-500 font-mono mt-0.5">{app.email}</p>
+                        <p className="text-xs text-slate-600 font-semibold mt-1">Dept: <strong className="text-slate-900">{app.department}</strong> • Year: <strong className="text-slate-900">{app.year_of_study}</strong></p>
                       </div>
 
                       {app.skills && app.skills.length > 0 && (<div className="flex flex-wrap gap-1 pt-1">
-                        {app.skills.map((skill, idx) => (<span key={idx} className="text-[9px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded">
+                        {app.skills.map((skill, idx) => (<span key={idx} className="text-[9px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
                           {skill}
                         </span>))}
                       </div>)}
@@ -2830,33 +3176,33 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         if (!cleanText || cleanText.toLowerCase() === 'n/a') {
                           cleanText = "Enrolled via IEEE SREC Web Portal to access events, workshops, technical societies & professional networking.";
                         }
-                        return (<div className="p-3.5 bg-[#121218] border border-zinc-800 rounded-xl space-y-2">
+                        return (<div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-black text-amber-300 uppercase tracking-wider flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                               Statement of Purpose
                             </span>
-                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                               Verified
                             </span>
                           </div>
 
                           {tags.length > 0 && (<div className="flex flex-wrap gap-1">
-                            {tags.map((tag, idx) => (<span key={idx} className="text-[9.5px] font-mono font-bold text-zinc-300 bg-zinc-900 border border-zinc-700 px-2 py-0.5 rounded-md">
+                            {tags.map((tag, idx) => (<span key={idx} className="text-[9.5px] font-mono font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
                               {tag}
                             </span>))}
                           </div>)}
 
-                          <p className="text-xs text-zinc-200 font-medium leading-relaxed italic bg-zinc-900/90 p-2.5 rounded-lg border border-zinc-800">
+                          <p className="text-xs text-slate-700 font-medium leading-relaxed italic bg-white p-2.5 rounded-xl border border-slate-200">
                             &ldquo;{cleanText}&rdquo;
                           </p>
                         </div>);
                       })()}
                     </div>
 
-                    <div className="pt-4 mt-4 border-t border-zinc-800 flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-zinc-400">ID: {app.id.slice(0, 8)}...</span>
-                      <button type="button" onClick={() => deleteApplication(app.id)} className="text-xs text-rose-400 hover:text-rose-300 font-bold uppercase tracking-wider transition cursor-pointer">
+                    <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-slate-400">ID: {app.id.slice(0, 8)}...</span>
+                      <button type="button" onClick={() => deleteApplication(app.id)} className="text-xs text-rose-600 hover:text-rose-700 font-bold uppercase tracking-wider transition cursor-pointer">
                         Delete Application
                       </button>
                     </div>
@@ -2864,8 +3210,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 })}
 
               {applications.length === 0 && (
-                <div className="col-span-full py-16 text-center bg-[#0b0b0f] border border-amber-500/20 rounded-2xl">
-                  <p className="text-zinc-400 font-bold text-sm">No student applications received yet.</p>
+                <div className="col-span-full py-16 text-center bg-white border border-slate-200 rounded-3xl">
+                  <p className="text-slate-500 font-bold text-sm">No student applications received yet.</p>
                 </div>
               )}
             </div>
@@ -2873,122 +3219,121 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
           {/* TAB: STUDENT ROSTER (DATABASE TABLE `public.student_members`) */}
           {activeTab === "student_roster" && (
-            <div className="space-y-6 w-full max-w-full min-w-0 animate-fadeIn font-sans">
-              {/* ─── 1. EXECUTIVE KPI SUMMARY RIBBON (METALLIC GOLD & OBSIDIAN) ─── */}
+            <div className="space-y-6 w-full max-w-full min-w-0 animate-admin-fade-in font-sans">
+              {/* ─── 1. EXECUTIVE KPI SUMMARY RIBBON (MILK WHITE) ─── */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                 {/* Master Total Registered Students Card */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-[#14141c] via-[#0d0d12] to-[#07070a] p-5 rounded-2xl border-2 border-amber-500/40 shadow-xl shadow-amber-500/10 flex items-center justify-between group hover:border-amber-400 hover-gold-lift transition-all animate-gold-pulse">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
+                <div className="admin-kpi-card flex items-center justify-between group">
                   <div>
-                    <p className="text-[10px] uppercase font-black tracking-widest text-amber-400">Total Registered Students</p>
-                    <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 mt-1 gold-text-glow">
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500">Total Registered Students</p>
+                    <p className="text-3xl font-black text-slate-900 mt-1">
                       {studentMembers.length}
                     </p>
-                    <p className="text-[11px] text-zinc-400 font-semibold mt-0.5 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <p className="text-[11px] text-emerald-600 font-semibold mt-0.5 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       <span>Live Database Verified</span>
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0 group-hover:scale-110 transition-transform">
+                  <div className="kpi-icon-box w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                     <Users size={22} />
                   </div>
                 </div>
 
                 {/* Pending IEEE IDs */}
-                <div className="glass-obsidian-gold p-5 rounded-2xl shadow-md flex items-center justify-between hover-gold-lift transition-all">
+                <div className="admin-kpi-card flex items-center justify-between group">
                   <div>
-                    <p className="text-[10px] uppercase font-black tracking-widest text-amber-400/80">Pending IEEE IDs</p>
-                    <p className="text-2xl font-black text-amber-300 mt-1">
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500">Pending IEEE IDs</p>
+                    <p className="text-2xl font-black text-amber-600 mt-1">
                       {studentMembers.filter(m => m.ieee_id === "PENDING" || !m.ieee_id).length} Students
                     </p>
-                    <button type="button" onClick={() => setIeeeStatusFilter("PENDING")} className="text-[11px] text-amber-400 hover:text-amber-300 hover:underline font-bold mt-0.5 inline-flex items-center gap-1 cursor-pointer">
+                    <button type="button" onClick={() => setIeeeStatusFilter("PENDING")} className="text-[11px] text-amber-700 hover:text-amber-800 hover:underline font-bold mt-0.5 inline-flex items-center gap-1 cursor-pointer">
                       <span>Filter pending</span>
                       <ArrowRight size={11} />
                     </button>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                  <div className="kpi-icon-box w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
                     <span className="text-xl">⏳</span>
                   </div>
                 </div>
 
                 {/* Assigned & Verified IEEE IDs */}
-                <div className="glass-obsidian-gold p-5 rounded-2xl shadow-md flex items-center justify-between hover-gold-lift transition-all">
+                <div className="admin-kpi-card flex items-center justify-between group">
                   <div>
-                    <p className="text-[10px] uppercase font-black tracking-widest text-amber-400/80">Assigned IEEE IDs</p>
-                    <p className="text-2xl font-black text-amber-300 mt-1">
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500">Assigned IEEE IDs</p>
+                    <p className="text-2xl font-black text-emerald-600 mt-1">
                       {studentMembers.filter(m => m.ieee_id !== "PENDING" && Boolean(m.ieee_id)).length} Verified
                     </p>
-                    <p className="text-[11px] text-emerald-400 font-semibold mt-0.5">Official Members</p>
+                    <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">Official Members</p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                  <div className="kpi-icon-box w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                     <ShieldCheck size={22} />
                   </div>
                 </div>
 
                 {/* Diversity / Representation */}
-                <div className="bg-[#0b0b0f] p-5 rounded-2xl border border-amber-500/20 shadow-md flex items-center justify-between hover:border-amber-500/40 transition-colors">
+                <div className="admin-kpi-card flex items-center justify-between group">
                   <div>
-                    <p className="text-[10px] uppercase font-black tracking-widest text-amber-400/80">Diversity (Female)</p>
-                    <p className="text-2xl font-black text-amber-300 mt-1">
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500">Diversity (Female)</p>
+                    <p className="text-2xl font-black text-purple-600 mt-1">
                       {studentMembers.filter(m => m.gender?.toLowerCase() === "female").length} Students
                     </p>
-                    <p className="text-[11px] text-amber-400 font-semibold mt-0.5">
+                    <p className="text-[11px] text-purple-600 font-semibold mt-0.5">
                       {studentMembers.length > 0
                         ? Math.round((studentMembers.filter(m => m.gender?.toLowerCase() === "female").length / studentMembers.length) * 100)
                         : 0}% Representation
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
+                  <div className="kpi-icon-box w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
                     <Crown size={20} />
                   </div>
                 </div>
               </div>
 
-              {/* ─── 2. HEADER & ACTION TOOLBAR (Badge removed as requested, auto-adjusting) ─── */}
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-[#0d0d12] to-[#07070a] p-6 rounded-3xl border border-amber-500/25 shadow-xl w-full">
+              {/* ─── 2. HEADER & ACTION TOOLBAR (MILK WHITE) ─── */}
+              <div className="admin-card-elevated flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 w-full">
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
                     Student Members Master Directory
                   </h2>
-                  <p className="text-xs text-zinc-400 font-medium mt-1">
+                  <p className="text-xs text-slate-500 font-medium mt-1">
                     Live database of verified student registrations, assigned IEEE IDs, chapter affiliations &amp; credentials ({studentMembers.length} total enrolled).
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <button type="button" onClick={exportStudentMembersToExcel} className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-md shadow-emerald-900/20 transition flex items-center gap-2 cursor-pointer active:scale-95" title="Download filtered student members database directory as Excel CSV">
+                  <button type="button" onClick={exportStudentMembersToExcel} className="admin-btn-tactile px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider shadow-xs transition flex items-center gap-2 cursor-pointer active:scale-95" title="Download filtered student members database directory as Excel CSV">
                     <FileSpreadsheet size={16} />
                     <span>Export Excel ({studentMembers.length})</span>
                   </button>
-                  <button type="button" onClick={() => setIsAddMemberOpen(true)} className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition flex items-center gap-2 cursor-pointer active:scale-95">
+                  <button type="button" onClick={() => setIsAddMemberOpen(true)} className="admin-btn-tactile px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider shadow-xs transition flex items-center gap-2 cursor-pointer active:scale-95">
                     <Plus size={16} />
                     <span>Add Student</span>
                   </button>
-                  <button type="button" onClick={fetchStudentMembers} className="px-3.5 py-2.5 rounded-xl bg-[#14141c] hover:bg-[#1a1a24] text-amber-300 font-bold text-xs uppercase tracking-wider transition flex items-center gap-2 border border-amber-500/30 cursor-pointer" title="Refresh from Supabase">
-                    <RefreshCw size={14} className={studentMembersLoading ? "animate-spin text-amber-400" : ""} />
+                  <button type="button" onClick={fetchStudentMembers} className="admin-btn-tactile px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition flex items-center gap-2 border border-slate-200 cursor-pointer" title="Refresh from Supabase">
+                    <RefreshCw size={14} className={studentMembersLoading ? "animate-spin text-blue-600" : ""} />
                     <span>Refresh</span>
                   </button>
                 </div>
               </div>
 
-              {/* ─── 3. COMMAND SEARCH & FILTER BAR WITH PROMINENT LIVE STUDENT COUNTER ─── */}
-              <div className="p-5 rounded-3xl bg-[#0b0b0f] border border-amber-500/20 shadow-xl space-y-4 w-full">
+              {/* ─── 3. COMMAND SEARCH & FILTER BAR ─── */}
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4 w-full">
                 {/* Active Live Student Counter Banner */}
-                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#12121a] border border-amber-500/30">
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
                       <Users size={16} />
                     </div>
                     <div>
-                      <span className="text-[11px] font-black uppercase tracking-wider text-amber-400/90 block">Database Status</span>
-                      <span className="text-xs text-zinc-300 font-semibold">
-                        Showing <strong className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-400 font-black text-sm">{filteredStudentList.length}</strong> of <strong className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-400 font-black text-sm">{studentMembers.length}</strong> Total Registered Students
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Database Status</span>
+                      <span className="text-xs text-slate-700 font-semibold">
+                        Showing <strong className="text-slate-900 font-black text-sm">{filteredStudentList.length}</strong> of <strong className="text-slate-900 font-black text-sm">{studentMembers.length}</strong> Total Registered Students
                       </span>
                     </div>
                   </div>
 
                   {filteredStudentList.length !== studentMembers.length && (
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                       Filtered View Active
                     </span>
                   )}
@@ -2996,9 +3341,9 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                 <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400" size={16} />
-                    <input type="text" placeholder="Search by Name, Roll Number, IEEE ID, Email, Dept..." value={memberSearch} onChange={(e) => setMemberSearch(e.target.value)} className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-amber-500/20 bg-[#050507] text-xs font-bold text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-amber-400 shadow-inner" />
-                    {memberSearch && (<button type="button" onClick={() => setMemberSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-amber-300">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input type="text" placeholder="Search by Name, Roll Number, IEEE ID, Email, Dept..." value={memberSearch} onChange={(e) => setMemberSearch(e.target.value)} className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600" />
+                    {memberSearch && (<button type="button" onClick={() => setMemberSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                       <X size={14} />
                     </button>)}
                   </div>
@@ -3006,8 +3351,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   <div className="flex flex-wrap items-center gap-2.5">
                     {/* Department Filter */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-black text-amber-400/80 uppercase tracking-wider">Dept:</span>
-                      <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-amber-500/20 bg-[#050507] text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-400">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Dept:</span>
+                      <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-600">
                         <option value="ALL">All Depts</option>
                         <option value="CSE">CSE</option>
                         <option value="ECE">ECE</option>
@@ -3027,8 +3372,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                     {/* IEEE ID Status Filter */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-black text-amber-400/80 uppercase tracking-wider">IEEE ID:</span>
-                      <select value={ieeeStatusFilter} onChange={(e) => setIeeeStatusFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-amber-500/20 bg-[#050507] text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-400">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">IEEE ID:</span>
+                      <select value={ieeeStatusFilter} onChange={(e) => setIeeeStatusFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-600">
                         <option value="ALL">All Status</option>
                         <option value="PENDING">Pending Only</option>
                         <option value="ASSIGNED">Assigned Only</option>
@@ -3037,8 +3382,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                     {/* Society Filter */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-black text-amber-400/80 uppercase tracking-wider">Society:</span>
-                      <select value={societyFilter} onChange={(e) => setSocietyFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-amber-500/20 bg-[#050507] text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-400">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Society:</span>
+                      <select value={societyFilter} onChange={(e) => setSocietyFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-600">
                         <option value="ALL">All Chapters</option>
                         <option value="IEEE Student Branch SREC">Parent SB</option>
                         <option value="IEEE Women in Engineering (WIE)">WIE</option>
@@ -3058,19 +3403,19 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       setIeeeStatusFilter("ALL");
                       setSocietyFilter("ALL");
                       setMemberSearch("");
-                    }} className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold text-xs transition cursor-pointer">
+                    }} className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold text-xs transition cursor-pointer">
                       Reset Filters
                     </button>)}
                   </div>
                 </div>
               </div>
 
-              {/* ─── 4. ULTRA-MODERN STUDENT ROSTER TABLE (AUTO ADJUST TO SCREEN SIZE) ─── */}
-              <div className="rounded-3xl border border-amber-500/20 bg-[#0b0b0f] shadow-2xl overflow-hidden w-full max-w-full">
+              {/* ─── 4. ULTRA-MODERN STUDENT ROSTER TABLE (MILK WHITE) ─── */}
+              <div className="rounded-3xl border border-slate-200 bg-white shadow-xs overflow-hidden w-full max-w-full">
                 <div className="overflow-x-auto w-full custom-scrollbar">
                   <table className="w-full min-w-[850px] text-left border-collapse text-xs">
                     <thead>
-                      <tr className="bg-[#050507] text-amber-400 font-black uppercase text-[11px] tracking-wider border-b border-amber-500/20">
+                      <tr className="bg-slate-50 text-slate-600 font-black uppercase text-[11px] tracking-wider border-b border-slate-200">
                         <th className="py-4 px-5">Student Member</th>
                         <th className="py-4 px-4 font-mono">Roll Number</th>
                         <th className="py-4 px-4 font-mono">IEEE Member ID</th>
@@ -3082,21 +3427,21 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         <th className="py-4 px-4 text-center">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800/60">
+                    <tbody className="divide-y divide-slate-100">
                       {filteredStudentList.map((m, idx) => {
                         const isPending = m.ieee_id === "PENDING" || !m.ieee_id;
-                        return (<tr key={m.id || idx} onClick={() => setInspectingStudentMember(m)} className="hover:bg-amber-500/5 transition-colors cursor-pointer group">
+                        return (<tr key={m.id || idx} onClick={() => setInspectingStudentMember(m)} className="admin-table-row-milk cursor-pointer group text-slate-800">
                           {/* Member Portrait & Contact */}
                           <td className="py-4 px-5">
                             <div className="flex items-center gap-3.5">
-                              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#1c1c28] to-[#0d0d14] text-amber-300 border-2 border-amber-500/30 shadow-md overflow-hidden shrink-0 flex items-center justify-center font-black text-base group-hover:scale-105 group-hover:border-amber-400 transition-all">
+                              <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 border border-slate-200 shadow-xs overflow-hidden shrink-0 flex items-center justify-center font-black text-sm group-hover:scale-105 transition-all">
                                 {m.avatar_url ? (<img src={m.avatar_url} alt={m.first_name} className="w-full h-full object-cover object-top" />) : (`${m.first_name?.[0] || ''}${m.last_name?.[0] || ''}`)}
                               </div>
                               <div className="min-w-0">
-                                <span className="font-black text-zinc-100 block text-xs sm:text-sm group-hover:text-amber-300 transition-colors truncate">
+                                <span className="font-bold text-slate-900 block text-xs sm:text-sm group-hover:text-blue-600 transition-colors truncate">
                                   {m.first_name} {m.last_name}
                                 </span>
-                                <span className="font-mono text-[11px] text-zinc-400 block truncate max-w-[200px] mt-0.5">
+                                <span className="font-mono text-[11px] text-slate-400 block truncate max-w-[200px] mt-0.5">
                                   {m.email}
                                 </span>
                               </div>
@@ -3104,22 +3449,22 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                           </td>
 
                           {/* Roll Number */}
-                          <td className="py-4 px-4 font-mono font-black text-amber-300 text-xs">
-                            <span className="px-2.5 py-1 rounded-lg bg-[#12121a] border border-amber-500/20 text-amber-300">
+                          <td className="py-4 px-4 font-mono font-bold text-slate-800 text-xs">
+                            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-800">
                               {m.roll_number}
                             </span>
                           </td>
 
                           {/* IEEE ID with glowing status */}
                           <td className="py-4 px-4">
-                            <span className={`inline-flex items-center gap-1.5 font-mono text-xs font-black px-3 py-1 rounded-xl border shadow-xs ${isPending
-                              ? "bg-amber-500/15 text-amber-300 border-amber-500/40"
-                              : "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"}`}>
+                            <span className={`inline-flex items-center gap-1.5 font-mono text-xs font-bold px-3 py-1 rounded-xl border shadow-xs ${isPending
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}>
                               {isPending ? (<>
-                                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                                 <span>PENDING</span>
                               </>) : (<>
-                                <ShieldCheck size={13} className="text-emerald-400" />
+                                <ShieldCheck size={13} className="text-emerald-600" />
                                 <span>{m.ieee_id}</span>
                               </>)}
                             </span>
@@ -3127,7 +3472,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                           {/* Department */}
                           <td className="py-4 px-4">
-                            <span className="inline-block px-2.5 py-1 rounded-lg bg-[#12121a] text-zinc-300 font-bold text-xs border border-amber-500/20">
+                            <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-200">
                               {m.department}
                             </span>
                           </td>
@@ -3149,16 +3494,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                                     .replace("Instrumentation and Measurement", "IM")
                                     .replace("Power Electronics Society", "PELS")
                                     .replace("Circuits and Systems Society", "CAS");
-                                  let badgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+                                  let badgeColor = "bg-blue-50 text-blue-700 border-blue-200";
                                   if (tag.includes("WIE"))
-                                    badgeColor = "bg-purple-500/15 text-purple-300 border-purple-500/30";
+                                    badgeColor = "bg-purple-50 text-purple-700 border-purple-200";
                                   if (tag.includes("PELS"))
-                                    badgeColor = "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
+                                    badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
                                   if (tag.includes("CS"))
-                                    badgeColor = "bg-cyan-500/15 text-cyan-300 border-cyan-500/30";
+                                    badgeColor = "bg-cyan-50 text-cyan-700 border-cyan-200";
                                   if (tag.includes("CAS"))
-                                    badgeColor = "bg-indigo-500/15 text-indigo-300 border-indigo-500/30";
-                                  return (<span key={sIdx} className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md border shrink-0 whitespace-nowrap ${badgeColor}`} title={soc}>
+                                    badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
+                                  return (<span key={sIdx} className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-md border shrink-0 whitespace-nowrap ${badgeColor}`} title={soc}>
                                     {tag}
                                   </span>);
                                 })}
@@ -3166,18 +3511,18 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                           </td>
 
                           {/* Year of Study */}
-                          <td className="py-4 px-3 font-semibold text-zinc-300 whitespace-nowrap">
+                          <td className="py-4 px-3 font-semibold text-slate-600 whitespace-nowrap">
                             {m.year_of_study}
                           </td>
 
                           {/* Gender */}
-                          <td className="py-4 px-3 font-semibold text-zinc-300">
+                          <td className="py-4 px-3 font-semibold text-slate-600">
                             {m.gender || "—"}
                           </td>
 
                           {/* T-Shirt Size */}
                           <td className="py-4 px-3">
-                            <span className="font-mono font-black text-amber-300 bg-[#12121a] border border-amber-500/20 px-2 py-0.5 rounded-md text-[11px]">
+                            <span className="font-mono font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md text-[11px]">
                               {m.tshirt_size || "L"}
                             </span>
                           </td>
@@ -3185,17 +3530,17 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                           {/* Action Buttons */}
                           <td className="py-4 px-4 text-center" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-center gap-1.5">
-                              <button type="button" onClick={() => window.open(getPrimaryMemberCardPdfUrl(m), "_blank")} className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-bold text-[11px] uppercase transition border border-amber-500/30 shadow-2xs cursor-pointer flex items-center gap-1" title="Open Official IEEE Card PDF in new tab">
-                                <FileText size={12} className="text-amber-400" />
+                              <button type="button" onClick={() => window.open(getPrimaryMemberCardPdfUrl(m), "_blank")} className="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] uppercase transition border border-blue-200 shadow-xs cursor-pointer flex items-center gap-1" title="Open Official IEEE Card PDF in new tab">
+                                <FileText size={12} className="text-blue-600" />
                                 <span>PDF</span>
                               </button>
-                              <button type="button" onClick={() => setInspectingStudentMember(m)} className="px-2.5 py-1.5 rounded-lg bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 hover:text-amber-300 font-bold text-[11px] uppercase transition border border-zinc-700 cursor-pointer" title="Inspect Profile Details">
+                              <button type="button" onClick={() => setInspectingStudentMember(m)} className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] uppercase transition border border-slate-200 cursor-pointer" title="Inspect Profile Details">
                                 View
                               </button>
-                              <button type="button" onClick={() => setEditingStudentMember(m)} className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-400 hover:brightness-110 text-black font-black text-[11px] uppercase tracking-wider transition shadow-2xs cursor-pointer">
+                              <button type="button" onClick={() => setEditingStudentMember(m)} className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-black text-white font-bold text-[11px] uppercase tracking-wider transition shadow-xs cursor-pointer">
                                 Edit
                               </button>
-                              <button type="button" onClick={() => handleDeleteStudentMember(m.id, m.roll_number)} className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 font-bold text-[11px] uppercase tracking-wider transition border border-rose-500/30 cursor-pointer">
+                              <button type="button" onClick={() => handleDeleteStudentMember(m.id, m.roll_number)} className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px] uppercase tracking-wider transition border border-rose-200 cursor-pointer">
                                 Delete
                               </button>
                             </div>
@@ -3204,9 +3549,9 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       })}
 
                       {filteredStudentList.length === 0 && (<tr>
-                        <td colSpan={9} className="py-16 text-center text-zinc-400 font-bold">
+                        <td colSpan={9} className="py-16 text-center text-slate-400 font-bold">
                           {studentMembersLoading ? (<div className="flex items-center justify-center gap-2">
-                            <Loader2 className="animate-spin text-amber-400" size={20} />
+                            <Loader2 className="animate-spin text-blue-600" size={20} />
                             <span>Loading student members from Supabase...</span>
                           </div>) : ("No student members found matching the criteria.")}
                         </td>
@@ -3216,22 +3561,22 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 </div>
               </div>
 
-              {/* ─── 5. FULL STUDENT PROFILE INSPECTION MODAL (OBSIDIAN & GOLD) ─── */}
-              {inspectingStudentMember && (<div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-                <div className="w-full max-w-xl bg-[#09090d] rounded-3xl shadow-2xl border border-amber-500/30 overflow-hidden my-8 animate-fadeIn text-zinc-100">
+              {/* ─── 5. FULL STUDENT PROFILE INSPECTION MODAL (MILK WHITE) ─── */}
+              {inspectingStudentMember && (<div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-fadeIn text-slate-800">
                   {/* Modal Hero Header */}
-                  <div className="bg-gradient-to-r from-[#14141c] via-[#0f0f14] to-[#08080c] border-b border-amber-500/20 text-white p-6 flex items-start justify-between">
+                  <div className="bg-slate-50 border-b border-slate-200 text-slate-900 p-6 flex items-start justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#14141c] border-2 border-amber-500/40 flex items-center justify-center text-3xl font-black text-amber-300 shadow-xl overflow-hidden shrink-0">
+                      <div className="w-20 h-20 min-w-[5rem] min-h-[5rem] max-w-[5rem] max-h-[5rem] rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-2xl font-black text-slate-700 shadow-xs overflow-hidden shrink-0">
                         {inspectingStudentMember.avatar_url ? (<img src={inspectingStudentMember.avatar_url} alt={inspectingStudentMember.first_name} className="w-full h-full object-cover object-top" />) : (`${inspectingStudentMember.first_name?.[0] || ''}${inspectingStudentMember.last_name?.[0] || ''}`)}
                       </div>
                       <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Verified Student Profile</span>
-                        <h3 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">{inspectingStudentMember.first_name} {inspectingStudentMember.last_name}</h3>
-                        <p className="text-xs text-zinc-400 font-mono mt-0.5">{inspectingStudentMember.email}</p>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">Verified Student Profile</span>
+                        <h3 className="text-2xl font-black text-slate-900">{inspectingStudentMember.first_name} {inspectingStudentMember.last_name}</h3>
+                        <p className="text-xs text-slate-500 font-mono mt-0.5">{inspectingStudentMember.email}</p>
                       </div>
                     </div>
-                    <button type="button" onClick={() => setInspectingStudentMember(null)} className="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <button type="button" onClick={() => setInspectingStudentMember(null)} className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
                       <X size={18} />
                     </button>
                   </div>
@@ -3239,80 +3584,80 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   {/* Modal Profile Details Matrix */}
                   <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                        <p className="text-[10px] uppercase font-bold text-amber-400/80">Roll Number</p>
-                        <p className="text-sm font-mono font-black text-zinc-100 mt-0.5">{inspectingStudentMember.roll_number}</p>
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500">Roll Number</p>
+                        <p className="text-sm font-mono font-bold text-slate-900 mt-0.5">{inspectingStudentMember.roll_number}</p>
                       </div>
 
-                      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                        <p className="text-[10px] uppercase font-bold text-amber-400/80">IEEE Member ID</p>
-                        <p className="text-sm font-mono font-black text-amber-300 mt-0.5">{inspectingStudentMember.ieee_id || "PENDING"}</p>
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500">IEEE Member ID</p>
+                        <p className="text-sm font-mono font-bold text-blue-600 mt-0.5">{inspectingStudentMember.ieee_id || "PENDING"}</p>
                       </div>
 
-                      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                        <p className="text-[10px] uppercase font-bold text-amber-400/80">Security PIN</p>
-                        <p className="text-sm font-mono font-black text-emerald-400 mt-0.5">{inspectingStudentMember.security_pin || "••••"}</p>
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500">Security PIN</p>
+                        <p className="text-sm font-mono font-bold text-emerald-600 mt-0.5">{inspectingStudentMember.security_pin || "••••"}</p>
                       </div>
 
-                      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                        <p className="text-[10px] uppercase font-bold text-amber-400/80">Department</p>
-                        <p className="text-xs font-bold text-zinc-100 mt-0.5">{inspectingStudentMember.department}</p>
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500">Department</p>
+                        <p className="text-xs font-bold text-slate-900 mt-0.5">{inspectingStudentMember.department}</p>
                       </div>
 
-                      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                        <p className="text-[10px] uppercase font-bold text-amber-400/80">Year of Study</p>
-                        <p className="text-xs font-bold text-zinc-100 mt-0.5">{inspectingStudentMember.year_of_study}</p>
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500">Year of Study</p>
+                        <p className="text-xs font-bold text-slate-900 mt-0.5">{inspectingStudentMember.year_of_study}</p>
                       </div>
 
-                      <div className="p-3.5 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                        <p className="text-[10px] uppercase font-bold text-amber-400/80">Phone</p>
-                        <p className="text-xs font-bold text-zinc-100 mt-0.5">{inspectingStudentMember.phone || "Not Provided"}</p>
+                      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500">Phone</p>
+                        <p className="text-xs font-bold text-slate-900 mt-0.5">{inspectingStudentMember.phone || "Not Provided"}</p>
                       </div>
                     </div>
 
                     {/* Official IEEE PDF Card Block */}
-                    <div className="p-4 rounded-2xl bg-[#12121a] border border-amber-500/25 flex items-center justify-between gap-3">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[11px] font-black uppercase text-amber-300 tracking-wider flex items-center gap-1.5">
-                          <FileText size={14} className="text-amber-400" />
+                        <p className="text-[11px] font-bold uppercase text-slate-700 tracking-wider flex items-center gap-1.5">
+                          <FileText size={14} className="text-blue-600" />
                           <span>Official IEEE Card (PDF)</span>
                         </p>
-                        <p className="text-xs font-mono text-zinc-400 mt-0.5 truncate max-w-[280px]">
+                        <p className="text-xs font-mono text-slate-500 mt-0.5 truncate max-w-[280px]">
                           {inspectingStudentMember.card_pdf_url || `/cards/${inspectingStudentMember.ieee_id && inspectingStudentMember.ieee_id !== 'PENDING' ? inspectingStudentMember.ieee_id : inspectingStudentMember.roll_number}.pdf`}
                         </p>
                       </div>
-                      <button type="button" onClick={() => window.open(getPrimaryMemberCardPdfUrl(inspectingStudentMember), "_blank")} className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer">
+                      <button type="button" onClick={() => window.open(getPrimaryMemberCardPdfUrl(inspectingStudentMember), "_blank")} className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 shrink-0 cursor-pointer">
                         <ExternalLink size={13} />
                         <span>Open PDF</span>
                       </button>
                     </div>
 
                     {/* Selected Societies */}
-                    <div className="p-4 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                      <p className="text-[11px] font-black uppercase text-amber-300 tracking-wider mb-2">Registered Society Chapters</p>
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                      <p className="text-[11px] font-bold uppercase text-slate-700 tracking-wider mb-2">Registered Society Chapters</p>
                       <div className="flex flex-wrap gap-2">
-                        {(inspectingStudentMember.target_societies || ["IEEE Student Branch SREC"]).map((soc, idx) => (<span key={idx} className="px-3 py-1 rounded-xl bg-[#14141c] border border-amber-500/30 text-amber-300 text-xs font-bold shadow-2xs">
+                        {(inspectingStudentMember.target_societies || ["IEEE Student Branch SREC"]).map((soc, idx) => (<span key={idx} className="px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs">
                           {soc}
                         </span>))}
                       </div>
                     </div>
 
                     {/* Bio & SOP */}
-                    {inspectingStudentMember.bio_sop && (<div className="p-4 rounded-2xl bg-[#0f0f14] border border-amber-500/15">
-                      <p className="text-[11px] font-black uppercase text-amber-400/80 tracking-wider mb-1.5">Statement of Purpose / Bio</p>
-                      <p className="text-xs text-zinc-300 leading-relaxed">{inspectingStudentMember.bio_sop}</p>
+                    {inspectingStudentMember.bio_sop && (<div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                      <p className="text-[11px] font-bold uppercase text-slate-700 tracking-wider mb-1.5">Statement of Purpose / Bio</p>
+                      <p className="text-xs text-slate-600 leading-relaxed">{inspectingStudentMember.bio_sop}</p>
                     </div>)}
 
                     {/* Action footer */}
-                    <div className="pt-4 border-t border-zinc-800 flex items-center justify-between gap-3">
+                    <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
                       <button type="button" onClick={() => {
                         const m = inspectingStudentMember;
                         setInspectingStudentMember(null);
                         setEditingStudentMember(m);
-                      }} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition shadow-md text-center cursor-pointer">
+                      }} className="flex-1 py-3 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition shadow-sm text-center cursor-pointer">
                         Edit Student Record
                       </button>
-                      <button type="button" onClick={() => setInspectingStudentMember(null)} className="py-3 px-6 rounded-xl bg-[#14141c] hover:bg-[#1a1a24] text-zinc-300 font-bold text-xs uppercase tracking-wider transition border border-zinc-700 cursor-pointer">
+                      <button type="button" onClick={() => setInspectingStudentMember(null)} className="py-3 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition border border-slate-200 cursor-pointer">
                         Close
                       </button>
                     </div>
@@ -3322,16 +3667,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </div>
           )}
 
-          {/* ADD NEW STUDENT MEMBER MODAL OVERLAY (OBSIDIAN & GOLD) */}
-          {isAddMemberOpen && (<div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-            <div className="w-full max-w-2xl bg-[#09090d] rounded-3xl shadow-2xl border border-amber-500/30 overflow-hidden my-8 animate-fadeIn text-zinc-100">
-              <div className="bg-gradient-to-r from-[#14141c] via-[#0f0f14] to-[#08080c] border-b border-amber-500/20 p-6 flex items-center justify-between">
+          {/* ADD NEW STUDENT MEMBER MODAL OVERLAY (MILK WHITE) */}
+          {isAddMemberOpen && (<div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-fadeIn text-slate-800">
+              <div className="bg-slate-50 border-b border-slate-200 p-6 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Database Entry Creation</span>
-                  <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Add New Student Member Record</h3>
-                  <p className="text-xs text-zinc-400">Creates a new member profile in `public.student_members` table</p>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">Database Entry Creation</span>
+                  <h3 className="text-xl font-black text-slate-900">Add New Student Member Record</h3>
+                  <p className="text-xs text-slate-500">Creates a new member profile in `public.student_members` table</p>
                 </div>
-                <button type="button" onClick={() => setIsAddMemberOpen(false)} className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center justify-center transition cursor-pointer">
+                <button type="button" onClick={() => setIsAddMemberOpen(false)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
                   <X size={18} />
                 </button>
               </div>
@@ -3340,38 +3685,38 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Roll Number */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Roll / Register Number <span className="text-rose-400">*</span></label>
-                    <input type="text" value={newMemberForm.roll_number} onChange={(e) => setNewMemberForm({ ...newMemberForm, roll_number: e.target.value })} placeholder="e.g. 21CS045" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Roll / Register Number <span className="text-rose-500">*</span></label>
+                    <input type="text" value={newMemberForm.roll_number} onChange={(e) => setNewMemberForm({ ...newMemberForm, roll_number: e.target.value })} placeholder="e.g. 21CS045" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" required />
                   </div>
 
                   {/* Email */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Official Email <span className="text-rose-400">*</span></label>
-                    <input type="email" value={newMemberForm.email} onChange={(e) => setNewMemberForm({ ...newMemberForm, email: e.target.value })} placeholder="student@srec.ac.in" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Official Email <span className="text-rose-500">*</span></label>
+                    <input type="email" value={newMemberForm.email} onChange={(e) => setNewMemberForm({ ...newMemberForm, email: e.target.value })} placeholder="student@srec.ac.in" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" required />
                   </div>
 
                   {/* First Name */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">First Name <span className="text-rose-400">*</span></label>
-                    <input type="text" value={newMemberForm.first_name} onChange={(e) => setNewMemberForm({ ...newMemberForm, first_name: e.target.value })} placeholder="e.g. Surya" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">First Name <span className="text-rose-500">*</span></label>
+                    <input type="text" value={newMemberForm.first_name} onChange={(e) => setNewMemberForm({ ...newMemberForm, first_name: e.target.value })} placeholder="e.g. Surya" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" required />
                   </div>
 
                   {/* Last Name */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Last Name <span className="text-rose-400">*</span></label>
-                    <input type="text" value={newMemberForm.last_name} onChange={(e) => setNewMemberForm({ ...newMemberForm, last_name: e.target.value })} placeholder="e.g. Narayanan" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Last Name <span className="text-rose-500">*</span></label>
+                    <input type="text" value={newMemberForm.last_name} onChange={(e) => setNewMemberForm({ ...newMemberForm, last_name: e.target.value })} placeholder="e.g. Narayanan" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" required />
                   </div>
 
                   {/* IEEE Member ID */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">IEEE Member ID</label>
-                    <input type="text" value={newMemberForm.ieee_id} onChange={(e) => setNewMemberForm({ ...newMemberForm, ieee_id: e.target.value })} placeholder="e.g. 102075943 or PENDING" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">IEEE Member ID</label>
+                    <input type="text" value={newMemberForm.ieee_id} onChange={(e) => setNewMemberForm({ ...newMemberForm, ieee_id: e.target.value })} placeholder="e.g. 102075943 or PENDING" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                   </div>
 
                   {/* Department */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Department</label>
-                    <select value={newMemberForm.department} onChange={(e) => setNewMemberForm({ ...newMemberForm, department: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Department</label>
+                    <select value={newMemberForm.department} onChange={(e) => setNewMemberForm({ ...newMemberForm, department: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                       <option value="CSE">CSE</option>
                       <option value="ECE">ECE</option>
                       <option value="EEE">EEE</option>
@@ -3390,8 +3735,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Year of Study */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Year of Study</label>
-                    <select value={newMemberForm.year_of_study} onChange={(e) => setNewMemberForm({ ...newMemberForm, year_of_study: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Year of Study</label>
+                    <select value={newMemberForm.year_of_study} onChange={(e) => setNewMemberForm({ ...newMemberForm, year_of_study: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                       <option value="1st Year">1st Year</option>
                       <option value="2nd Year">2nd Year</option>
                       <option value="3rd Year">3rd Year</option>
@@ -3403,8 +3748,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Gender */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Gender</label>
-                    <select value={newMemberForm.gender} onChange={(e) => setNewMemberForm({ ...newMemberForm, gender: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Gender</label>
+                    <select value={newMemberForm.gender} onChange={(e) => setNewMemberForm({ ...newMemberForm, gender: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Other">Other</option>
@@ -3413,8 +3758,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* T-Shirt Size */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">T-Shirt Size</label>
-                    <select value={newMemberForm.tshirt_size} onChange={(e) => setNewMemberForm({ ...newMemberForm, tshirt_size: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">T-Shirt Size</label>
+                    <select value={newMemberForm.tshirt_size} onChange={(e) => setNewMemberForm({ ...newMemberForm, tshirt_size: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                       <option value="XXS">XXS</option>
                       <option value="XS">XS</option>
                       <option value="S">S</option>
@@ -3428,8 +3773,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Applicant Category */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Applicant Category</label>
-                    <select value={newMemberForm.applicant_type} onChange={(e) => setNewMemberForm({ ...newMemberForm, applicant_type: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Applicant Category</label>
+                    <select value={newMemberForm.applicant_type} onChange={(e) => setNewMemberForm({ ...newMemberForm, applicant_type: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                       <option value="undergraduate">Undergraduate (BE/B.Tech)</option>
                       <option value="postgraduate">Postgraduate (ME/M.Tech/MBA)</option>
                       <option value="professional">Professional / Faculty</option>
@@ -3438,14 +3783,14 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Phone */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Phone Number</label>
-                    <input type="text" value={newMemberForm.phone} onChange={(e) => setNewMemberForm({ ...newMemberForm, phone: e.target.value })} placeholder="+91 9876543210" className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Phone Number</label>
+                    <input type="text" value={newMemberForm.phone} onChange={(e) => setNewMemberForm({ ...newMemberForm, phone: e.target.value })} placeholder="+91 9876543210" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                   </div>
 
                   {/* Membership Status */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Status</label>
-                    <select value={newMemberForm.membership_status} onChange={(e) => setNewMemberForm({ ...newMemberForm, membership_status: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Status</label>
+                    <select value={newMemberForm.membership_status} onChange={(e) => setNewMemberForm({ ...newMemberForm, membership_status: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none">
                       <option value="ACTIVE">ACTIVE</option>
                       <option value="INACTIVE">INACTIVE</option>
                       <option value="EXPIRED">EXPIRED</option>
@@ -3453,10 +3798,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   </div>
 
                   {/* Selected Societies Checklist */}
-                  <div className="space-y-2 col-span-full pt-2 border-t border-zinc-800">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90 flex items-center justify-between">
+                  <div className="space-y-2 col-span-full pt-2 border-t border-slate-100">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center justify-between">
                       <span>Selected Societies / Affiliated Chapters</span>
-                      <span className="text-[10px] text-amber-400 font-bold">({newMemberForm.target_societies.length} Selected)</span>
+                      <span className="text-[10px] text-blue-600 font-bold">({newMemberForm.target_societies.length} Selected)</span>
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {ALL_TECHNICAL_SOCIETIES.map((socName) => {
@@ -3468,10 +3813,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                             : [...current, socName];
                           setNewMemberForm({ ...newMemberForm, target_societies: next });
                         }} className={`p-2 rounded-xl text-left text-[11px] font-bold border transition flex items-center justify-between cursor-pointer ${isSelected
-                          ? "bg-amber-500/20 border-amber-500 text-amber-300"
-                          : "bg-[#050507] border-amber-500/20 text-zinc-400 hover:text-white"}`}>
+                          ? "bg-blue-50 border-blue-400 text-blue-700"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"}`}>
                           <span className="truncate">{socName.replace("IEEE ", "")}</span>
-                          <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${isSelected ? "bg-amber-400 border-amber-400 text-black" : "border-zinc-700 bg-transparent"}`}>
+                          <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white"}`}>
                             {isSelected && <Check size={10} className="stroke-[3]" />}
                           </div>
                         </button>);
@@ -3480,15 +3825,15 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   </div>
 
                   {/* Original IEEE PDF Card Upload */}
-                  <div className="col-span-full space-y-1.5 p-4 rounded-2xl bg-[#12121a] border border-amber-500/20">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center justify-between">
+                  <div className="col-span-full space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                       <span>Original IEEE Membership Card (PDF)</span>
-                      <span className="text-[10px] text-zinc-400 font-normal">Drop file or enter direct URL</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Drop file or enter direct URL</span>
                     </label>
                     <div className="flex flex-col sm:flex-row items-center gap-2.5">
-                      <input type="text" value={newMemberForm.card_pdf_url} onChange={(e) => setNewMemberForm({ ...newMemberForm, card_pdf_url: e.target.value })} placeholder="e.g. /cards/102298938.pdf or Supabase URL" className="flex-1 w-full px-3.5 py-2 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none" />
-                      <label className={`px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs ${isUploadingAdminPdf ? 'opacity-50 pointer-events-none' : ''}`}>
-                        {isUploadingAdminPdf ? <Loader2 size={13} className="animate-spin text-black" /> : <Upload size={13} />}
+                      <input type="text" value={newMemberForm.card_pdf_url} onChange={(e) => setNewMemberForm({ ...newMemberForm, card_pdf_url: e.target.value })} placeholder="e.g. /cards/102298938.pdf or Supabase URL" className="flex-1 w-full px-3.5 py-2 rounded-xl border border-slate-200 font-mono text-xs bg-white text-slate-900 focus:border-blue-600 outline-none" />
+                      <label className={`px-4 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs ${isUploadingAdminPdf ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isUploadingAdminPdf ? <Loader2 size={13} className="animate-spin text-white" /> : <Upload size={13} />}
                         <span>{isUploadingAdminPdf ? "Uploading..." : "Upload PDF"}</span>
                         <input type="file" accept="application/pdf" onChange={(e) => {
                           const f = e.target.files?.[0];
@@ -3500,11 +3845,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-zinc-800 flex items-center justify-end gap-3">
-                  <button type="button" onClick={() => setIsAddMemberOpen(false)} className="px-5 py-2.5 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 font-bold text-xs uppercase tracking-wider transition border border-zinc-700 cursor-pointer">
+                <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+                  <button type="button" onClick={() => setIsAddMemberOpen(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition border border-slate-200 cursor-pointer">
                     Cancel
                   </button>
-                  <button type="submit" disabled={isAddingMember} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider shadow-md shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer">
+                  <button type="submit" disabled={isAddingMember} className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider shadow-sm transition disabled:opacity-50 cursor-pointer">
                     {isAddingMember ? "Creating Member..." : "Create Student Member Record"}
                   </button>
                 </div>
@@ -3512,16 +3857,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </div>
           </div>)}
 
-          {/* EDIT STUDENT MEMBER MODAL OVERLAY (OBSIDIAN & GOLD) */}
-          {editingStudentMember && (<div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 overflow-y-auto">
-            <div className="w-full max-w-2xl bg-[#09090d] rounded-3xl shadow-2xl border-2 border-amber-500/40 gold-glow-intense overflow-hidden my-8 animate-fadeIn text-zinc-100">
-              <div className="bg-gradient-to-r from-[#14141c] via-[#0f0f14] to-[#08080c] border-b border-amber-500/30 p-6 flex items-center justify-between">
+          {/* EDIT STUDENT MEMBER MODAL OVERLAY (MILK WHITE) */}
+          {editingStudentMember && (<div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-fadeIn text-slate-800">
+              <div className="bg-slate-50 border-b border-slate-200 p-6 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Edit Member Record</span>
-                  <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 gold-text-glow">{editingStudentMember.first_name} {editingStudentMember.last_name}</h3>
-                  <p className="text-xs text-zinc-400 font-mono">Roll: {editingStudentMember.roll_number} · Email: {editingStudentMember.email}</p>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">Edit Member Record</span>
+                  <h3 className="text-xl font-black text-slate-900">{editingStudentMember.first_name} {editingStudentMember.last_name}</h3>
+                  <p className="text-xs text-slate-500 font-mono">Roll: {editingStudentMember.roll_number} · Email: {editingStudentMember.email}</p>
                 </div>
-                <button type="button" onClick={() => setEditingStudentMember(null)} className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center justify-center transition cursor-pointer">
+                <button type="button" onClick={() => setEditingStudentMember(null)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
                   <X size={18} />
                 </button>
               </div>
@@ -3530,83 +3875,83 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Roll / Register Number (Editable) */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
-                      Roll / Register Number <span className="text-rose-400">*</span>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                      Roll / Register Number <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={editingStudentMember.roll_number || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, roll_number: e.target.value })}
                       placeholder="e.g. 71812507044 or 21CS045"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                       required
                     />
                   </div>
 
                   {/* Official Email (Editable) */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
-                      Official Email <span className="text-rose-400">*</span>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                      Official Email <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="email"
                       value={editingStudentMember.email || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, email: e.target.value })}
                       placeholder="student@srec.ac.in"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                       required
                     />
                   </div>
 
                   {/* First Name (Editable) */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
-                      First Name <span className="text-rose-400">*</span>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                      First Name <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={editingStudentMember.first_name || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, first_name: e.target.value })}
                       placeholder="e.g. Priyanka"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                       required
                     />
                   </div>
 
                   {/* Last Name (Editable) */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">
-                      Last Name <span className="text-rose-400">*</span>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                      Last Name <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={editingStudentMember.last_name || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, last_name: e.target.value })}
                       placeholder="e.g. S"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                       required
                     />
                   </div>
 
                   {/* IEEE Member ID */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">IEEE Member ID</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">IEEE Member ID</label>
                     <input
                       type="text"
                       value={editingStudentMember.ieee_id || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, ieee_id: e.target.value })}
                       placeholder="e.g. 102075943 or PENDING"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                     />
                   </div>
 
                   {/* Department */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Department</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Department</label>
                     <select
                       value={editingStudentMember.department || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, department: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                       required
                     >
                       <option value="CSE">CSE</option>
@@ -3627,11 +3972,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Year of Study */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Year of Study</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Year of Study</label>
                     <select
                       value={editingStudentMember.year_of_study || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, year_of_study: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                       required
                     >
                       <option value="1st Year">1st Year</option>
@@ -3645,11 +3990,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Gender */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Gender</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Gender</label>
                     <select
                       value={editingStudentMember.gender || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, gender: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                     >
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
@@ -3659,11 +4004,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* T-Shirt Size */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">T-Shirt Size</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">T-Shirt Size</label>
                     <select
                       value={editingStudentMember.tshirt_size || "L"}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, tshirt_size: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                     >
                       <option value="XXS">XXS</option>
                       <option value="XS">XS</option>
@@ -3678,11 +4023,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Applicant Type */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Applicant Category</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Applicant Category</label>
                     <select
                       value={editingStudentMember.applicant_type || "undergraduate"}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, applicant_type: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                     >
                       <option value="undergraduate">Undergraduate (BE/B.Tech)</option>
                       <option value="postgraduate">Postgraduate (ME/M.Tech/MBA)</option>
@@ -3692,23 +4037,23 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
                   {/* Mobile Phone */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Phone Number</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Phone Number</label>
                     <input
                       type="text"
                       value={editingStudentMember.phone || ""}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, phone: e.target.value })}
                       placeholder="+91 9876543210"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                     />
                   </div>
 
                   {/* Membership Status */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Membership Status</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Membership Status</label>
                     <select
                       value={editingStudentMember.membership_status || "ACTIVE"}
                       onChange={(e) => setEditingStudentMember({ ...editingStudentMember, membership_status: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-amber-500/20 font-bold text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-xs bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none"
                     >
                       <option value="ACTIVE">ACTIVE</option>
                       <option value="INACTIVE">INACTIVE</option>
@@ -3717,10 +4062,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   </div>
 
                   {/* Selected Societies Checklist */}
-                  <div className="space-y-2 col-span-full pt-2 border-t border-zinc-800">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90 flex items-center justify-between">
+                  <div className="space-y-2 col-span-full pt-2 border-t border-slate-100">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center justify-between">
                       <span>Affiliated Chapters / Societies</span>
-                      <span className="text-[10px] text-amber-400 font-bold">
+                      <span className="text-[10px] text-blue-600 font-bold">
                         ({(Array.isArray(editingStudentMember.target_societies) ? editingStudentMember.target_societies : []).length} Selected)
                       </span>
                     </label>
@@ -3742,14 +4087,14 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                             }}
                             className={`p-2 rounded-xl text-left text-[11px] font-bold border transition flex items-center justify-between cursor-pointer ${
                               isSelected
-                                ? "bg-amber-500/20 border-amber-500 text-amber-300"
-                                : "bg-[#050507] border-amber-500/20 text-zinc-400 hover:text-white"
+                                ? "bg-blue-50 border-blue-400 text-blue-700"
+                                : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                             }`}
                           >
                             <span className="truncate">{socName.replace("IEEE ", "")}</span>
                             <div
                               className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
-                                isSelected ? "bg-amber-400 border-amber-400 text-black" : "border-zinc-700 bg-transparent"
+                                isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white"
                               }`}
                             >
                               {isSelected && <Check size={10} className="stroke-[3]" />}
@@ -3761,10 +4106,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   </div>
 
                   {/* Original IEEE PDF Card Upload */}
-                  <div className="col-span-full space-y-1.5 p-4 rounded-2xl bg-[#12121a] border border-amber-500/20">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center justify-between">
+                  <div className="col-span-full space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                       <span>Original IEEE Membership Card (PDF)</span>
-                      <span className="text-[10px] text-zinc-400 font-normal">Drop file or enter direct URL</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Drop file or enter direct URL</span>
                     </label>
                     <div className="flex flex-col sm:flex-row items-center gap-2.5">
                       <input
@@ -3772,10 +4117,10 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         value={editingStudentMember.card_pdf_url || ""}
                         onChange={(e) => setEditingStudentMember({ ...editingStudentMember, card_pdf_url: e.target.value })}
                         placeholder="e.g. /cards/102298938.pdf or Supabase URL"
-                        className="flex-1 w-full px-3.5 py-2 rounded-xl border border-amber-500/20 font-mono text-xs bg-[#050507] text-white focus:border-amber-400 outline-none"
+                        className="flex-1 w-full px-3.5 py-2 rounded-xl border border-slate-200 font-mono text-xs bg-white text-slate-900 focus:border-blue-600 outline-none"
                       />
-                      <label className={`px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs ${isUploadingAdminPdf ? 'opacity-50 pointer-events-none' : ''}`}>
-                        {isUploadingAdminPdf ? <Loader2 size={13} className="animate-spin text-black" /> : <Upload size={13} />}
+                      <label className={`px-4 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs ${isUploadingAdminPdf ? 'opacity-50 pointer-events-none' : ''}`}>
+                        {isUploadingAdminPdf ? <Loader2 size={13} className="animate-spin text-white" /> : <Upload size={13} />}
                         <span>{isUploadingAdminPdf ? "Uploading..." : "Upload PDF"}</span>
                         <input
                           type="file"
@@ -3792,7 +4137,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         <button
                           type="button"
                           onClick={() => window.open(getPrimaryMemberCardPdfUrl(editingStudentMember), "_blank")}
-                          className="px-3 py-2 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 font-bold text-xs uppercase tracking-wider transition flex items-center gap-1 shrink-0 cursor-pointer border border-zinc-700"
+                          className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition flex items-center gap-1 shrink-0 cursor-pointer border border-slate-200"
                           title="Preview current PDF in new tab"
                         >
                           <Eye size={13} />
@@ -3803,11 +4148,11 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-zinc-800 flex items-center justify-end gap-3">
-                  <button type="button" onClick={() => setEditingStudentMember(null)} className="px-5 py-2.5 rounded-xl bg-[#14141c] hover:bg-[#1f1f2a] text-zinc-300 font-bold text-xs uppercase tracking-wider transition border border-zinc-700 cursor-pointer">
+                <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+                  <button type="button" onClick={() => setEditingStudentMember(null)} className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition border border-slate-200 cursor-pointer">
                     Cancel
                   </button>
-                  <button type="submit" disabled={isSavingStudentMember} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider shadow-md shadow-amber-500/20 transition disabled:opacity-50 cursor-pointer">
+                  <button type="submit" disabled={isSavingStudentMember} className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider shadow-sm transition disabled:opacity-50 cursor-pointer">
                     {isSavingStudentMember ? "Saving Changes..." : "Save Member Record"}
                   </button>
                 </div>
@@ -3815,67 +4160,67 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </div>
           </div>)}
 
-          {/* TAB: AWARDS & RECOGNITIONS (OBSIDIAN & GOLD) */}
+          {/* TAB: AWARDS & RECOGNITIONS (MILK WHITE) */}
           {activeTab === "awards" && (<div className="space-y-6 w-full max-w-full min-w-0">
             <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Awards &amp; Recognitions</h2>
-              <p className="text-sm text-zinc-400 mt-1">Manage accolades, grants, and honors received by SREC Student Branch.</p>
+              <h2 className="text-2xl font-black text-slate-900">Awards &amp; Recognitions</h2>
+              <p className="text-sm text-slate-500 mt-1">Manage accolades, grants, and honors received by SREC Student Branch.</p>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3 w-full">
               {/* Form */}
-              <form onSubmit={submitAward} className="lg:col-span-1 rounded-3xl border border-amber-500/20 bg-[#0b0b0f] p-6 shadow-xl flex flex-col gap-4 self-start">
-                <h3 className="text-lg font-bold text-amber-300">{editingAwardId ? "Edit Award" : "Add New Award"}</h3>
+              <form onSubmit={submitAward} className="lg:col-span-1 rounded-3xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col gap-4 self-start">
+                <h3 className="text-lg font-black text-slate-900">{editingAwardId ? "Edit Award" : "Add New Award"}</h3>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Award Title</label>
-                  <input type="text" placeholder="e.g. IEEE Appreciation Award" value={awardForm.title} onChange={(e) => setAwardForm({ ...awardForm, title: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Award Title</label>
+                  <input type="text" placeholder="e.g. IEEE Appreciation Award" value={awardForm.title} onChange={(e) => setAwardForm({ ...awardForm, title: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" required />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Year</label>
-                    <input type="number" value={awardForm.year} onChange={(e) => setAwardForm({ ...awardForm, year: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white focus:border-amber-400 outline-none" required />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Year</label>
+                    <input type="number" value={awardForm.year} onChange={(e) => setAwardForm({ ...awardForm, year: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" required />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Grant / Amount</label>
-                    <input type="text" placeholder="e.g. Rs.4000 / USD 1000" value={awardForm.amount} onChange={(e) => setAwardForm({ ...awardForm, amount: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Grant / Amount</label>
+                    <input type="text" placeholder="e.g. Rs.4000 / USD 1000" value={awardForm.amount} onChange={(e) => setAwardForm({ ...awardForm, amount: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Category / Awarder</label>
-                  <input type="text" placeholder="e.g. IEEE Madras Section / IEEE HQ" value={awardForm.category} onChange={(e) => setAwardForm({ ...awardForm, category: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Category / Awarder</label>
+                  <input type="text" placeholder="e.g. IEEE Madras Section / IEEE HQ" value={awardForm.category} onChange={(e) => setAwardForm({ ...awardForm, category: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Description</label>
-                  <textarea rows={3} placeholder="Award citation or description..." value={awardForm.description} onChange={(e) => setAwardForm({ ...awardForm, description: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Description</label>
+                  <textarea rows={3} placeholder="Award citation or description..." value={awardForm.description} onChange={(e) => setAwardForm({ ...awardForm, description: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Image URL</label>
-                  <input type="text" placeholder="Optional image filename or public link..." value={awardForm.image_url} onChange={(e) => setAwardForm({ ...awardForm, image_url: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white focus:border-amber-400 outline-none" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Image URL</label>
+                  <input type="text" placeholder="Optional image filename or public link..." value={awardForm.image_url} onChange={(e) => setAwardForm({ ...awardForm, image_url: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 focus:bg-white focus:border-blue-600 outline-none" />
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <button type="submit" className="flex-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-2.5 font-black text-black text-sm hover:brightness-110 transition shadow-md shadow-amber-500/20 cursor-pointer">
+                  <button type="submit" className="flex-1 rounded-xl bg-slate-900 hover:bg-black py-2.5 font-bold text-white text-sm transition shadow-sm cursor-pointer">
                     {editingAwardId ? "Update Award" : "Add Award"}
                   </button>
-                  {editingAwardId && (<button type="button" onClick={resetAwardForm} className="rounded-xl bg-[#14141c] px-4 py-2.5 font-semibold text-zinc-300 text-sm hover:bg-[#1f1f2a] transition border border-zinc-700 cursor-pointer">
+                  {editingAwardId && (<button type="button" onClick={resetAwardForm} className="rounded-xl bg-slate-100 px-4 py-2.5 font-semibold text-slate-700 text-sm hover:bg-slate-200 transition border border-slate-200 cursor-pointer">
                     Cancel
                   </button>)}
                 </div>
               </form>
 
               {/* List Table */}
-              <div className="lg:col-span-2 rounded-3xl border border-amber-500/20 bg-[#0b0b0f] shadow-xl overflow-hidden flex flex-col">
-                <div className="px-6 py-4 border-b border-amber-500/20 bg-[#050507]">
-                  <h3 className="text-lg font-bold text-amber-300">Award Records ({awards.length})</h3>
+              <div className="lg:col-span-2 rounded-3xl border border-slate-200 bg-white shadow-xs overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70">
+                  <h3 className="text-lg font-black text-slate-900">Award Records ({awards.length})</h3>
                 </div>
                 <div className="overflow-x-auto flex-1 custom-scrollbar">
                   <table className="w-full min-w-[500px] border-collapse">
-                    <thead className="bg-[#050507] text-amber-400 text-xs uppercase tracking-wider font-black border-b border-amber-500/20">
+                    <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider font-black border-b border-slate-200">
                       <tr>
                         <th className="px-6 py-3.5 text-left">Year</th>
                         <th className="px-6 py-3.5 text-left">Award Title</th>
@@ -3883,16 +4228,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                         <th className="px-6 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800">
-                      {awards.map((award) => (<tr key={award.id} className="hover:bg-amber-500/5 transition-colors">
-                        <td className="px-6 py-4 text-xs font-mono font-black text-amber-300">{award.year}</td>
+                    <tbody className="divide-y divide-slate-100">
+                      {awards.map((award) => (<tr key={award.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                        <td className="px-6 py-4 text-xs font-mono font-bold text-blue-600">{award.year}</td>
                         <td className="px-6 py-4">
-                          <p className="text-sm font-bold text-zinc-100">{award.title}</p>
-                          {award.description && <p className="text-xs text-zinc-400 truncate max-w-xs">{award.description}</p>}
+                          <p className="text-sm font-bold text-slate-900">{award.title}</p>
+                          {award.description && <p className="text-xs text-slate-500 truncate max-w-xs">{award.description}</p>}
                         </td>
                         <td className="px-6 py-4 text-xs">
-                          <p className="font-semibold text-zinc-300">{award.category || "General"}</p>
-                          {award.amount && <span className="font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-[10px] inline-block mt-0.5">{award.amount}</span>}
+                          <p className="font-semibold text-slate-700">{award.category || "General"}</p>
+                          {award.amount && <span className="font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px] inline-block mt-0.5">{award.amount}</span>}
                         </td>
                         <td className="px-6 py-4 text-sm text-right space-x-2">
                           <button type="button" onClick={() => {
@@ -3906,16 +4251,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                               image_url: award.image_url || "",
                             });
                             window.scrollTo({ top: 0, behavior: "smooth" });
-                          }} className="text-amber-400 hover:text-amber-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                          }} className="text-blue-600 hover:text-blue-700 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
                             Edit
                           </button>
-                          <button type="button" onClick={() => deleteAward(award.id)} className="text-rose-400 hover:text-rose-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                          <button type="button" onClick={() => deleteAward(award.id)} className="text-rose-600 hover:text-rose-700 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
                             Delete
                           </button>
                         </td>
                       </tr>))}
                       {awards.length === 0 && (<tr>
-                        <td colSpan={4} className="px-6 py-8 text-center text-sm text-zinc-400 font-medium">
+                        <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400 font-medium">
                           No awards found in the database.
                         </td>
                       </tr>)}
@@ -3926,83 +4271,314 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </div>
           </div>)}
 
-          {/* TAB: ADMIN ACCOUNTS (OBSIDIAN & GOLD) */}
+          {/* TAB: ADMIN ACCOUNTS (MILK WHITE) */}
           {activeTab === "admin_users" && (<div className="space-y-6 w-full max-w-full min-w-0">
-            <div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300">Admin Accounts</h2>
-              <p className="text-sm text-zinc-400 mt-1">Add, review, or revoke login credentials for the admin portal.</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-slate-900">Admin Accounts &amp; Security Roles</h2>
+                <p className="text-sm text-slate-500 mt-1">Assign role-based access control, manage credentials, and configure admin permissions.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
+                  setShowProfileModal(true);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-blue-700 text-xs font-bold shadow-xs transition cursor-pointer self-start md:self-auto"
+              >
+                <ShieldCheck size={16} className="text-blue-600" />
+                <span>My Active Clearance: <strong>{adminProfile.role}</strong></span>
+              </button>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3 w-full">
-              {/* Form Card */}
-              <form onSubmit={addAdminUser} className="lg:col-span-1 rounded-3xl border border-amber-500/20 bg-[#0b0b0f] p-6 shadow-xl flex flex-col gap-4 self-start">
-                <h3 className="text-lg font-bold text-amber-300">Create Admin Account</h3>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Username</label>
-                  <input type="text" placeholder="Enter username" value={adminForm.username} onChange={(e) => setAdminForm({ ...adminForm, username: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white font-bold focus:border-amber-400 outline-none" required />
+            {!permissions.canManageAdmins ? (
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xs text-center flex flex-col items-center justify-center max-w-xl mx-auto py-12">
+                <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mb-4 shadow-xs">
+                  <Lock size={28} />
                 </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400/80">Password</label>
-                  <input type="password" placeholder="Enter password" value={adminForm.password} onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })} className="rounded-xl border border-amber-500/20 px-4 py-2.5 text-sm bg-[#050507] text-white font-bold focus:border-amber-400 outline-none" required />
-                </div>
-
-                <button className="mt-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-2.5 font-black text-black text-sm hover:brightness-110 transition cursor-pointer shadow-md shadow-amber-500/20">
-                  Create Account
-                </button>
-              </form>
-
-              {/* List Card */}
-              <div className="lg:col-span-2 rounded-3xl border border-amber-500/20 bg-[#0b0b0f] shadow-xl overflow-hidden flex flex-col">
-                <div className="px-6 py-4 border-b border-amber-500/20 bg-[#050507] flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-amber-300">Existing Admins ({adminsList.length})</h3>
-                </div>
-                <div className="overflow-x-auto flex-1 custom-scrollbar">
-                  <table className="w-full min-w-[450px] border-collapse">
-                    <thead className="bg-[#050507] text-amber-400 text-xs uppercase tracking-wider font-black border-b border-amber-500/20">
-                      <tr>
-                        <th className="px-6 py-3.5 text-left">Username</th>
-                        <th className="px-6 py-3.5 text-left">Created At</th>
-                        <th className="px-6 py-3.5 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-800">
-                      {adminsList.map((admin) => {
-                        const displayName = admin.username || admin.name || admin.email || admin.user_name || "admin";
-                        return (
-                          <tr key={admin.id} className="hover:bg-amber-500/5 transition-colors">
-                            <td className="px-6 py-4 text-sm font-bold text-zinc-100">{displayName}</td>
-                            <td className="px-6 py-4 text-sm font-semibold text-zinc-400">
-                              {admin.created_at ? new Date(admin.created_at).toLocaleDateString() : "Active"}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right">
-                              <button type="button" onClick={() => deleteAdminUser(admin.id)} className="text-rose-400 hover:text-rose-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                      {adminsList.length === 0 && (<tr>
-                        <td colSpan={3} className="px-6 py-8 text-center text-sm text-zinc-400 font-bold">
-                          No admin accounts found in the database.
-                        </td>
-                      </tr>)}
-                    </tbody>
-                  </table>
+                <h3 className="text-lg font-black text-slate-900">Master Clearance Required</h3>
+                <p className="text-sm text-slate-500 mt-2 max-w-md">
+                  You are currently authenticated as <span className="font-bold text-slate-800">{adminProfile.username}</span> with clearance level <span className="font-bold text-blue-600">{adminProfile.role}</span>. Managing system administrative accounts requires <strong>Master Administrator</strong> clearance.
+                </p>
+                <div className="mt-6 flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
+                      setShowProfileModal(true);
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition cursor-pointer"
+                  >
+                    Open Clearance Manager
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("overview")}
+                    className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer"
+                  >
+                    Return to Overview
+                  </button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid gap-6 lg:grid-cols-3 w-full">
+                {/* Form Card */}
+                <form onSubmit={addAdminUser} className="lg:col-span-1 rounded-3xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col gap-4 self-start">
+                  <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <ShieldCheck className="text-blue-600" size={20} />
+                    <h3 className="text-lg font-black text-slate-900">Provision Admin</h3>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Username / ID</label>
+                    <input type="text" placeholder="e.g. john_doe" value={adminForm.username} onChange={(e) => setAdminForm({ ...adminForm, username: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 font-bold focus:bg-white focus:border-blue-600 outline-none" required />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+                    <input type="password" placeholder="Create strong password" value={adminForm.password} onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 font-bold focus:bg-white focus:border-blue-600 outline-none" required />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Assigned Role &amp; Permissions</label>
+                    <select
+                      value={adminForm.role}
+                      onChange={(e) => setAdminForm({ ...adminForm, role: e.target.value })}
+                      className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 text-slate-900 font-bold focus:bg-white focus:border-blue-600 outline-none"
+                    >
+                      <option value="Master Administrator">👑 Master Administrator (Full Access)</option>
+                      <option value="Student Registrar & Admissions">👥 Student Registrar (Rosters &amp; Applications)</option>
+                      <option value="Activities & Event Coordinator">📅 Activities Coordinator (Events &amp; Launch)</option>
+                      <option value="Chapter & Society Lead">🏛️ Chapter &amp; Society Lead (Societies &amp; Bearers)</option>
+                      <option value="Auditor & Viewer (Read-Only)">🔍 Auditor &amp; Viewer (Read-Only Access)</option>
+                    </select>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-1">
+                    <p className="font-bold text-slate-800">Clearance Summary:</p>
+                    <p>• {adminForm.role === "Master Administrator" ? "Unrestricted CRUD access across all database tables and settings." : adminForm.role === "Student Registrar & Admissions" ? "Can approve, verify, add and export student member records." : adminForm.role === "Activities & Event Coordinator" ? "Can manage activities, launch remote, annual plans and event reports." : adminForm.role === "Chapter & Society Lead" ? "Can manage chapter leadership, officer cards and society events." : "Read-only inspection access without mutation privileges."}</p>
+                  </div>
+
+                  <button className="mt-2 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 font-bold text-white text-sm transition cursor-pointer shadow-md shadow-blue-500/20">
+                    Provision Account
+                  </button>
+                </form>
+
+                {/* List Card */}
+                <div className="lg:col-span-2 rounded-3xl border border-slate-200 bg-white shadow-xs overflow-hidden flex flex-col">
+                  <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
+                    <h3 className="text-lg font-black text-slate-900">Registered Admins ({adminsList.length})</h3>
+                    <span className="text-xs font-bold text-slate-500">Live Database</span>
+                  </div>
+                  <div className="overflow-x-auto flex-1 custom-scrollbar">
+                    <table className="w-full min-w-[500px] border-collapse">
+                      <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider font-black border-b border-slate-200">
+                        <tr>
+                          <th className="px-6 py-3.5 text-left">Admin User</th>
+                          <th className="px-6 py-3.5 text-left">Assigned Role</th>
+                          <th className="px-6 py-3.5 text-left">Provisioned</th>
+                          <th className="px-6 py-3.5 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {adminsList.map((admin) => {
+                          const displayName = admin.username || admin.name || admin.email || admin.user_name || "admin";
+                          const roleName = admin.role || (displayName.toLowerCase().includes("admin") ? "Master Administrator" : "Society Officer");
+                          return (
+                            <tr key={admin.id} className="hover:bg-slate-50/70 transition-colors text-slate-800">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center border border-blue-200">
+                                    {displayName.charAt(0).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-bold text-slate-900">{displayName}</p>
+                                    <p className="text-[10px] text-slate-400">{displayName.toLowerCase()}@ieeesrec.org</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-xs">
+                                <span className={`inline-flex items-center gap-1 font-bold px-2.5 py-1 rounded-full text-[11px] border ${
+                                  roleName.includes("Master")
+                                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                                    : roleName.includes("Registrar") || roleName.includes("Admission")
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    : roleName.includes("Activities") || roleName.includes("Event")
+                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                    : roleName.includes("Society") || roleName.includes("Chapter")
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : "bg-slate-100 text-slate-700 border-slate-200"
+                                }`}>
+                                  {roleName}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-xs font-semibold text-slate-500">
+                                {admin.created_at ? new Date(admin.created_at).toLocaleDateString() : "Active"}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => deleteAdminUser(admin.id)}
+                                  className="text-rose-600 hover:text-rose-700 font-bold text-xs uppercase tracking-wider transition cursor-pointer"
+                                >
+                                  Revoke
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {adminsList.length === 0 && (<tr>
+                          <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-400 font-bold">
+                            No admin accounts found in the database.
+                          </td>
+                        </tr>)}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>)}
+
+          {/* ADMIN SECURITY CLEARANCE & ROLE PROFILE MODAL */}
+          {showProfileModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+              <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                {/* Modal Header */}
+                <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
+                      <ShieldCheck size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-black text-slate-900">Admin Security Clearance</h3>
+                      <p className="text-xs text-slate-500 font-medium">Configure active role constraints &amp; identity</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowProfileModal(false)}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-slate-700 transition"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <form onSubmit={handleUpdateProfile} className="p-6 space-y-5">
+                  {/* Current Identity Preview */}
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                    <div className="relative shrink-0">
+                      <img
+                        src={profileForm.avatar}
+                        alt={profileForm.username}
+                        className="w-14 h-14 rounded-2xl object-cover border-2 border-white shadow-md"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+                        }}
+                      />
+                      <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-black text-slate-900">{profileForm.username || "Admin Manager"}</p>
+                      <span className="inline-block px-2.5 py-0.5 mt-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-600 text-white shadow-xs">
+                        {profileForm.role}
+                      </span>
+                      <p className="text-[11px] text-slate-400 mt-1 truncate">{adminProfile.email}</p>
+                    </div>
+                  </div>
+
+                  {/* Form Inputs */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Admin Display Name</label>
+                      <input
+                        type="text"
+                        value={profileForm.username}
+                        onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
+                        className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-bold bg-white text-slate-900 focus:border-blue-600 outline-none"
+                        placeholder="e.g. Admin Manager / Dr. Counselor"
+                        required
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Security Clearance / Role Switcher</label>
+                      <select
+                        value={profileForm.role}
+                        onChange={(e) => setProfileForm({ ...profileForm, role: e.target.value })}
+                        className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-bold bg-white text-slate-900 focus:border-blue-600 outline-none"
+                      >
+                        <option value="Master Administrator">👑 Master Administrator (Full Access)</option>
+                        <option value="Student Registrar & Admissions">👥 Student Registrar &amp; Admissions (Rosters &amp; ID Cards)</option>
+                        <option value="Activities & Event Coordinator">📅 Activities &amp; Event Coordinator (Events &amp; Launch)</option>
+                        <option value="Chapter & Society Lead">🏛️ Chapter &amp; Society Lead (Societies &amp; Leaders)</option>
+                        <option value="Auditor & Viewer (Read-Only)">🔍 Auditor &amp; Viewer (Read-Only Mode)</option>
+                      </select>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Switch role to simulate different admin actions &amp; security boundaries.</p>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Avatar Image URL</label>
+                      <input
+                        type="url"
+                        value={profileForm.avatar}
+                        onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
+                        className="rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-medium bg-white text-slate-900 focus:border-blue-600 outline-none"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Permissions Capabilities Matrix */}
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                    <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">Granted Clearance Capabilities</p>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="flex items-center gap-1.5">
+                        <Check size={14} className={profileForm.role.includes("Master") ? "text-emerald-600" : "text-slate-300"} />
+                        <span className={profileForm.role.includes("Master") ? "font-bold text-slate-800" : "text-slate-400 line-through"}>Manage Admin Users</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Check size={14} className={profileForm.role.includes("Master") ? "text-emerald-600" : "text-slate-300"} />
+                        <span className={profileForm.role.includes("Master") ? "font-bold text-slate-800" : "text-slate-400 line-through"}>Edit Live Site CMS</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Check size={14} className={profileForm.role.includes("Master") || profileForm.role.includes("Registrar") ? "text-emerald-600" : "text-slate-300"} />
+                        <span className={profileForm.role.includes("Master") || profileForm.role.includes("Registrar") ? "font-bold text-slate-800" : "text-slate-400 line-through"}>Manage Students &amp; Cards</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Check size={14} className={profileForm.role.includes("Master") || profileForm.role.includes("Activities") || profileForm.role.includes("Chapter") ? "text-emerald-600" : "text-slate-300"} />
+                        <span className={profileForm.role.includes("Master") || profileForm.role.includes("Activities") || profileForm.role.includes("Chapter") ? "font-bold text-slate-800" : "text-slate-400 line-through"}>Edit Activities &amp; Events</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileModal(false)}
+                      className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition cursor-pointer"
+                    >
+                      Save &amp; Apply Clearance
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
             </main>
 
-            {/* MOBILE BOTTOM NAVIGATION DOCK (Obsidian Black & Imperial Gold) */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#07070a]/95 border-t border-amber-500/20 backdrop-blur-xl px-2 py-2 flex items-center justify-around shadow-2xl">
+            {/* MOBILE BOTTOM NAVIGATION DOCK (Milk White) */}
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur-xl px-2 py-2 flex items-center justify-around shadow-lg">
               {[
                 { id: "overview", label: "Overview", icon: <LayoutDashboard size={18} /> },
-                { id: "launch_control", label: "Remote", icon: <Rocket size={18} className="text-amber-400" /> },
+                { id: "launch_control", label: "Remote", icon: <Rocket size={18} className="text-blue-600" /> },
                 { id: "activities", label: "Events", icon: <Activity size={18} /> },
                 { id: "student_roster", label: `Members (${studentMembers.length})`, icon: <Users size={18} /> },
               ].map((tab) => (
@@ -4012,8 +4588,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition active:scale-95 ${
                     activeTab === tab.id
-                      ? "text-amber-300 font-extrabold bg-amber-500/20 border border-amber-500/40"
-                      : "text-zinc-400 hover:text-amber-300"
+                      ? "text-slate-900 font-extrabold bg-slate-100 border border-slate-200"
+                      : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
                   {tab.icon}
@@ -4023,7 +4599,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
               <button
                 type="button"
                 onClick={() => setIsDrawerOpen(true)}
-                className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-zinc-400 hover:text-amber-300 transition active:scale-95 cursor-pointer"
+                className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 hover:text-slate-900 transition active:scale-95 cursor-pointer"
               >
                 <Menu size={18} />
                 <span className="text-[10px] mt-0.5 font-bold">More</span>

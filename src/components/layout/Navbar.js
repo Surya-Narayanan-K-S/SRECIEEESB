@@ -18,12 +18,12 @@ const coreNavLinks = [
   { label: "Office Bearers", href: "/office-bearers" },
   { label: "Gallery", href: "/gallery" },
   { label: "Reports", href: "/reports", icon: FileText },
+  { label: "INNOQUEST", href: "/document", icon: BookOpen },
   { label: "Register", href: "/membership-registration", icon: UserPlus, desc: "Become a member today" },
 ];
 
 // Clean "More" Dropdown Links (NO DUPLICATIONS with top bar)
 const moreLinks = [
-  { label: "INNOQUEST Handbook", href: "/document", icon: BookOpen, desc: "Official Branch Handbook & documentation" },
   { label: "Society Leaders", href: "/societies/office-bearers", icon: Crown, desc: "CS, WIE, PELS & chapter leadership" },
   { label: "Executive Team", href: "/team", icon: Compass, desc: "Full executive committee roster" },
   { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leadership records" },
@@ -76,20 +76,22 @@ const Navbar = () => {
         onScroll();
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
-    // Lock scroll when mobile drawer is open
+    // Lock scroll when drawer or sidebar is open
     useEffect(() => {
-        document.body.style.overflow = open ? "hidden" : "unset";
+        document.body.style.overflow = (open || moreOpen) ? "hidden" : "unset";
         return () => { document.body.style.overflow = "unset"; };
-    }, [open]);
-    // Close "More" dropdown when clicking outside
+    }, [open, moreOpen]);
+
+    // Handle Escape key to close open sidebar / drawer
     useEffect(() => {
-        const handler = (e) => {
-            if (moreRef.current && !moreRef.current.contains(e.target)) {
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
                 setMoreOpen(false);
+                setOpen(false);
             }
         };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
     // Close menus on route change
     useEffect(() => {
@@ -183,74 +185,23 @@ const Navbar = () => {
                 );
               })}
 
-              {/* ── MORE DROPDOWN (Zero Duplications) ── */}
+              {/* ── MORE SIDEBAR TRIGGER ── */}
               {visibleMoreLinks.length > 0 && (
-                <div className="relative shrink-0 z-[100]" ref={moreRef}>
+                <div className="relative shrink-0">
                   <button
                     type="button"
                     onClick={() => setMoreOpen((p) => !p)}
-                    className={`relative flex items-center gap-1 px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl cursor-pointer ${
+                    className={`relative flex items-center gap-1.5 px-2.5 2xl:px-3.5 py-1.5 2xl:py-2 rounded-full text-[11px] 2xl:text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border backdrop-blur-xl cursor-pointer ${
                       isMoreActive || moreOpen
                         ? "text-cyan-200 bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border-cyan-400/60 shadow-[0_0_20px_rgba(0,210,255,0.35)] scale-[1.02]"
                         : "text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.09] border-white/10 hover:border-white/20 shadow-xs"
                     }`}
                   >
                     <span>More</span>
-                    <motion.span animate={{ rotate: moreOpen ? 180 : 0 }} transition={{ duration: 0.25 }}>
-                      <ChevronDown size={12} />
+                    <motion.span animate={{ rotate: moreOpen ? 90 : 0 }} transition={{ duration: 0.25 }}>
+                      <ChevronRight size={12} />
                     </motion.span>
                   </button>
-
-                  {/* Dropdown panel */}
-                  <AnimatePresence>
-                    {moreOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-80 max-h-[75vh] overflow-y-auto rounded-2xl z-[100] bg-[#000814]/98 backdrop-blur-2xl border-2 border-cyan-500/40 shadow-[0_25px_80px_rgba(0,0,0,0.95),0_0_40px_rgba(0,210,255,0.25)]"
-                      >
-                        <div className="px-5 py-3.5 bg-[#001026] border-b border-white/10 flex items-center justify-between sticky top-0 z-10">
-                          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">
-                            More Navigation
-                          </p>
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">IEEE SREC</span>
-                        </div>
-                        <div className="p-2.5 space-y-1.5 bg-[#000814]">
-                          {visibleMoreLinks.map((l) => {
-                            const ItemIcon = l.icon;
-                            const isActive = location.pathname === l.href || location.pathname.startsWith(l.href);
-                            return (
-                              <Link
-                                key={l.label}
-                                to={l.href}
-                                onClick={() => setMoreOpen(false)}
-                                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all group ${
-                                  isActive
-                                    ? "bg-gradient-to-r from-cyan-500/25 to-blue-600/30 border border-cyan-400/50 text-cyan-200 shadow-md"
-                                    : "bg-[#001026] hover:bg-[#001838] border border-white/10 hover:border-cyan-400/40 text-white"
-                                }`}
-                              >
-                                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${isActive ? "bg-cyan-500/30 text-cyan-300 border border-cyan-400/40" : "bg-white/10 text-cyan-400 group-hover:bg-cyan-500/20 group-hover:text-cyan-300"}`}>
-                                  <ItemIcon size={15} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-black uppercase tracking-wider text-white group-hover:text-cyan-200 transition-colors leading-none mb-1">
-                                    {l.label}
-                                  </p>
-                                  <p className="text-[10px] text-slate-300 font-medium leading-none truncate group-hover:text-slate-200">
-                                    {l.desc}
-                                  </p>
-                                </div>
-                                <ChevronRight size={13} className={`flex-shrink-0 transition-transform text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 ${isActive ? "text-cyan-400" : ""}`} />
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               )}
 
@@ -275,16 +226,6 @@ const Navbar = () => {
                 <Shield size={13} className="text-cyan-400" />
                 <span>Admin</span>
               </Link>
-
-              <button
-                type="button"
-                onClick={() => setDownloadModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 2xl:px-4 py-1.5 2xl:py-2.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 hover:text-white font-black text-[11px] 2xl:text-xs uppercase tracking-wider transition-all active:scale-95 whitespace-nowrap shrink-0 cursor-pointer"
-                title="Scan QR & Install Mobile App"
-              >
-                <Smartphone size={13} className="text-cyan-400" />
-                <span>Mobile App</span>
-              </button>
             </nav>
 
           </div>
@@ -490,56 +431,8 @@ const Navbar = () => {
                   <ExternalLink size={16} className="text-slate-950" />
                 </motion.a>
 
-                {/* Student Member Login & Digital ID */}
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                  <Link
-                    to="/student-login"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#001c3d]/90 to-[#002b5c]/90 backdrop-blur-2xl border border-cyan-400/40 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-300 shadow-md"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
-                        <IdCard size={18} />
-                      </div>
-                      <div>
-                        <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
-                          Student Member Portal
-                        </p>
-                        <p className="text-[9px] text-cyan-300/80 font-medium tracking-wide mt-1">
-                          Member login, ID card &amp; full details
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} className="text-cyan-400" />
-                  </Link>
-                </motion.div>
-
-                {/* Membership Registration */}
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
-                  <Link
-                    to="/membership-registration"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-2xl bg-[#001026]/90 backdrop-blur-2xl border border-cyan-500/35 text-white font-bold active:scale-[0.98] transition-all hover:border-cyan-400 shadow-md"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
-                        <UserPlus size={18} />
-                      </div>
-                      <div>
-                        <p className="text-xs uppercase tracking-wider font-extrabold text-white leading-none">
-                          Join IEEE SB Membership
-                        </p>
-                        <p className="text-[9px] text-cyan-300/80 font-medium tracking-wide mt-1">
-                          Unlock global opportunities &amp; events
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} className="text-cyan-400" />
-                  </Link>
-                </motion.div>
-
                 {/* Admin Login */}
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                   <Link
                     to="/admin-login"
                     onClick={() => setOpen(false)}
@@ -567,6 +460,225 @@ const Navbar = () => {
 
             </div>
           </motion.div>)}
+      </AnimatePresence>
+
+      {/* ── MORE NAVIGATION SIDEBAR (EXECUTIVE WHITE & ROYAL BLUE IEEE THEME) ── */}
+      <AnimatePresence>
+        {moreOpen && (
+          <div className="fixed inset-0 z-[100] flex justify-end">
+            {/* Backdrop Blur Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setMoreOpen(false)}
+              className="fixed inset-0 bg-[#000a1a]/80 backdrop-blur-md cursor-pointer"
+              aria-hidden="true"
+            />
+
+            {/* Slide-out Sidebar Panel */}
+            <motion.aside
+              initial={{ x: "100%", opacity: 0.7 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 26, stiffness: 260 }}
+              className="relative z-10 w-full max-w-[420px] sm:max-w-[460px] h-screen bg-gradient-to-b from-[#001738] via-[#001026] to-[#000814] backdrop-blur-3xl border-l border-blue-400/30 shadow-[-25px_0_90px_rgba(0,20,55,0.95),0_0_60px_rgba(0,102,255,0.25)] flex flex-col overflow-hidden text-white"
+              aria-label="More Navigation Sidebar"
+            >
+              {/* Background Ambient Glows */}
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-blue-500/25 blur-[100px]" />
+                <div className="absolute top-1/3 -left-24 w-72 h-72 rounded-full bg-cyan-400/20 blur-[110px]" />
+                <div className="absolute bottom-10 right-0 w-80 h-80 rounded-full bg-indigo-600/20 blur-[110px]" />
+              </div>
+
+              {/* Sidebar Header (Crisp White & Blue Institutional Top Bar) */}
+              <div className="relative z-10 px-5 sm:px-6 py-4 sm:py-5 bg-[#001b3d]/95 backdrop-blur-2xl border-b border-blue-400/25 flex items-center justify-between shrink-0 shadow-lg">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="p-1.5 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.35)] border border-white/90 shrink-0">
+                    <img src={ieeeCustomCardLogo} alt="IEEE SREC" className="h-8 sm:h-9 w-auto object-contain" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-sm sm:text-base font-black tracking-tight text-white uppercase">
+                        Navigation Hub
+                      </h2>
+                      <span className="px-2 py-0.5 rounded-full bg-blue-500/30 border border-blue-400/50 text-[9px] font-extrabold text-blue-200 tracking-wider uppercase shrink-0">
+                        IEEE SREC
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-blue-200/80 font-medium truncate mt-0.5">
+                      Branch archives, leadership &amp; services
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen(false)}
+                  className="p-2.5 rounded-2xl bg-white/10 hover:bg-white text-blue-200 hover:text-blue-950 border border-white/20 hover:border-white transition-all active:scale-90 cursor-pointer shadow-md shrink-0 ml-2"
+                  aria-label="Close navigation sidebar"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Highlights Micro-Bar */}
+              <div className="relative z-10 px-5 sm:px-6 py-2 bg-[#001229]/90 border-b border-blue-500/15 flex items-center justify-between text-[10px] font-bold text-blue-300/90 tracking-wider uppercase shrink-0">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  Official IEEE Directory
+                </span>
+                <span className="text-white/80 bg-blue-600/40 px-2 py-0.5 rounded-md border border-blue-400/30">
+                  {visibleMoreLinks.length} Portals Available
+                </span>
+              </div>
+
+              {/* Scrollable Navigation Items */}
+              <div className="relative z-10 flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2.5 scrollbar-thin scrollbar-thumb-blue-500/30">
+                
+                {/* Section Header */}
+                <div className="flex items-center justify-between px-1 mb-1">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                    Branch Portals &amp; Records
+                  </span>
+                  <span className="text-[9px] text-blue-300/70 font-semibold uppercase">Explore</span>
+                </div>
+
+                {/* Primary Navigation Cards */}
+                {visibleMoreLinks.map((l, idx) => {
+                  const ItemIcon = l.icon;
+                  const isActive = location.pathname === l.href || (l.href !== "/" && location.pathname.startsWith(l.href));
+                  return (
+                    <motion.div
+                      key={l.label}
+                      initial={{ opacity: 0, x: 25 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.025, duration: 0.2 }}
+                    >
+                      <Link
+                        to={l.href}
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-3.5 p-3 sm:p-3.5 rounded-2xl transition-all duration-200 group border ${
+                          isActive
+                            ? "bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 border-white/80 text-white shadow-[0_0_30px_rgba(0,102,255,0.5)] scale-[1.01]"
+                            : "bg-[#001c40]/75 hover:bg-[#002758]/95 border-blue-400/20 hover:border-blue-300/60 text-white shadow-[0_4px_15px_rgba(0,15,35,0.4)] hover:shadow-[0_8px_25px_rgba(0,102,255,0.25)] hover:-translate-y-0.5"
+                        }`}
+                      >
+                        {/* Icon Badge */}
+                        <div
+                          className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                            isActive
+                              ? "bg-white text-blue-700 shadow-[0_4px_16px_rgba(0,0,0,0.3)]"
+                              : "bg-gradient-to-br from-blue-500 to-cyan-500 text-white group-hover:from-blue-400 group-hover:to-cyan-300 shadow-[0_4px_16px_rgba(0,102,255,0.4)] border border-white/30 group-hover:scale-105"
+                          }`}
+                        >
+                          <ItemIcon size={18} />
+                        </div>
+
+                        {/* Title & Description */}
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-xs sm:text-[13px] font-black uppercase tracking-wider transition-colors leading-tight mb-0.5 ${
+                            isActive ? "text-white" : "text-white group-hover:text-cyan-200"
+                          }`}>
+                            {l.label}
+                          </p>
+                          <p className={`text-[11px] font-medium leading-tight truncate transition-colors ${
+                            isActive ? "text-blue-100" : "text-blue-200/75 group-hover:text-white"
+                          }`}>
+                            {l.desc}
+                          </p>
+                        </div>
+
+                        {/* Trailing Arrow */}
+                        <div className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+                          isActive 
+                            ? "bg-white/20 text-white" 
+                            : "bg-white/5 group-hover:bg-white text-blue-300 group-hover:text-blue-950 group-hover:translate-x-0.5 shadow-sm"
+                        }`}>
+                          <ChevronRight size={15} />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+
+                {/* Additional Flagship & Portals Section */}
+                <div className="pt-4 mt-4 border-t border-blue-400/25 space-y-2.5">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                      Direct Portals &amp; Events
+                    </span>
+                    <span className="text-[9px] text-blue-300/70 font-semibold uppercase">Flagship</span>
+                  </div>
+
+                  {/* AECTSD 2027 International Conference Card */}
+                  <a
+                    href="http://aectsd2027.srecieee.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMoreOpen(false)}
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider transition-all duration-200 shadow-[0_6px_25px_rgba(251,191,36,0.35)] hover:-translate-y-0.5 border border-white/80"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-slate-950/15 text-slate-950">
+                        <Sparkles size={16} className="animate-pulse" />
+                      </div>
+                      <div>
+                        <p className="leading-tight">AECTSD 2027 Conference</p>
+                        <p className="text-[9px] font-bold text-slate-900/80 lowercase tracking-normal">aectsd2027.srecieee.org</p>
+                      </div>
+                    </div>
+                    <ExternalLink size={16} />
+                  </a>
+
+                  {/* Dual Action Buttons (White & Blue style) */}
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
+                    <Link
+                      to="/admin-login"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white hover:bg-blue-50 text-blue-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.25)] border border-white active:scale-95"
+                    >
+                      <Shield size={15} className="text-blue-600" />
+                      <span>Admin Login</span>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMoreOpen(false);
+                        setDownloadModalOpen(true);
+                      }}
+                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(0,180,255,0.35)] hover:shadow-[0_6px_25px_rgba(0,180,255,0.45)] border border-white/40 active:scale-95 cursor-pointer"
+                    >
+                      <Smartphone size={15} className="text-white" />
+                      <span>Mobile App</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Sidebar Footer (Institutional Seal & Chapter Code) */}
+              <div className="relative z-10 px-5 py-3.5 bg-[#00132b]/95 border-t border-blue-400/25 flex items-center justify-between shrink-0">
+                <div>
+                  <p className="text-[11px] font-black text-white tracking-wider uppercase">
+                    Sri Ramakrishna Engg College
+                  </p>
+                  <p className="text-[9px] text-cyan-300 font-bold uppercase tracking-widest mt-0.5">
+                    IEEE Student Branch · Code 64581
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-lg bg-blue-500/20 border border-blue-400/40 text-[9px] font-extrabold text-blue-200 uppercase">
+                  Madras Sec
+                </span>
+              </div>
+            </motion.aside>
+          </div>
+        )}
       </AnimatePresence>
 
       {/* ── MOBILE PHONE BOTTOM NAVIGATION BAR (DARK GLASS DOCK) ── */}
