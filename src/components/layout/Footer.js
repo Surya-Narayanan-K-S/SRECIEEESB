@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import ieeeSrecLogo from "@/assets/ieees.png";
+import ieee25Logo from "@/assets/ieee-25-years-logo.png";
 import srecLogo from "@/assets/srec-logo.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 import { Mail, MapPin, Phone, ChevronRight, Network, Sparkles } from "lucide-react";

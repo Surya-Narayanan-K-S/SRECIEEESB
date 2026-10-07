@@ -4,6 +4,7 @@ import ieeeStamp from "@/assets/ieees.png";
 import srecLogo from "@/assets/srec-logo.png";
 import snrLogo from "@/assets/snr-trust-logo.png";
 import ieeeCustomCardLogo from "@/assets/ieee-custom-card-logo.png";
+import ieee25Logo from "@/assets/ieee-25-years-logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DownloadAppModal from "@/components/modals/DownloadAppModal";

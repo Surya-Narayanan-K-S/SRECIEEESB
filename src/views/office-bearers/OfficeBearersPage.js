@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import srecCampus from "@/assets/srec-campus.png";
 import ieeeDayGroupPhoto from "@/assets/ieee-day-2026-office-bearers.png";
+import ieee25Logo from "@/assets/ieee-25-years-logo.png";
 
 // ─── FONTS & STYLES ──────────────────────────────────────────────────
 const GFONTS =
@@ -574,103 +575,60 @@ const ImageLightboxModal = ({ src, title, subtitle, date, venue, onClose }) => {
 // ════════════════════════════════════════════════════════════════════
 const CouncilCommemorativeSpotlight = ({ onOpenLightbox }) => {
   return (
-    <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 mb-16">
-      <div
-        className="relative rounded-3xl overflow-hidden border border-white/15 p-1 sm:p-2 backdrop-blur-2xl transition-all duration-500 shadow-2xl"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(9,13,28,0.92) 50%, rgba(17,24,39,0.85) 100%)",
-          boxShadow:
-            "0 25px 60px -15px rgba(0,0,0,0.8), 0 0 40px rgba(34,211,238,0.12)",
-        }}
-      >
-        {/* Top Decorative Header */}
-        <div className="px-5 py-4 sm:px-8 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10">
-          <div>
-            <div className="flex items-center gap-2.5 flex-wrap mb-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md">
-                <Crown size={12} /> Milestone Commemoration
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">
-                <CalendarDays size={12} /> 06.10.2026 • IEEE Day 2026
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-purple-500/10 border border-purple-500/30 text-purple-300">
-                <ShieldCheck size={12} /> STB32131
-              </span>
-            </div>
-            <h2
-              className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight"
-              style={{ fontFamily: "'Syne', sans-serif" }}
-            >
-              The Executive Council{" "}
-              <span
-                style={{
-                  background:
-                    "linear-gradient(135deg, #22d3ee 0%, #818cf8 50%, #c084fc 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                In Action
-              </span>
-            </h2>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">
-              Student Branch Counsellor Dr. K. Balamurugan alongside the elected Office Bearers
-              and Executive Committee at Sri Ramakrishna Engineering College on IEEE Day 2026.
-            </p>
+    <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 mb-16">
+      <div className="relative rounded-3xl overflow-hidden border border-white/15 p-2 sm:p-3 bg-gradient-to-b from-slate-900/90 via-slate-900/75 to-slate-950/95 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)]">
+        {/* Top Header Bar */}
+        <div className="px-5 py-4 sm:px-6 sm:py-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/10">
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/15 border border-amber-400/40 text-amber-300">
+              <Crown size={13} /> Milestone Assembly
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-cyan-500/15 border border-cyan-400/30 text-cyan-300">
+              <CalendarDays size={13} /> 06.10.2026 • IEEE Day 2026
+            </span>
+            <span className="text-xs text-slate-400 hidden sm:inline">•</span>
+            <span className="text-xs text-slate-300 font-semibold">
+              Student Branch Counsellor & 2026–2027 Executive Council
+            </span>
           </div>
 
           <button
             onClick={onOpenLightbox}
-            className="self-start md:self-center inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold uppercase tracking-wider bg-white/10 hover:bg-cyan-500 hover:text-slate-950 border border-white/20 text-white transition-all duration-300 shadow-lg group shrink-0"
+            className="self-start md:self-center inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-cyan-500 hover:text-slate-950 border border-white/20 text-white transition-all shadow-md group"
           >
-            <Maximize2
-              size={15}
-              className="group-hover:scale-110 transition-transform text-cyan-400 group-hover:text-slate-950"
-            />
-            <span>View Full Portrait</span>
+            <Maximize2 size={13} className="group-hover:scale-110 transition-transform text-cyan-400 group-hover:text-slate-950" />
+            <span>Inspect Portrait</span>
           </button>
         </div>
 
         {/* Featured Image Area */}
         <div
           onClick={onOpenLightbox}
-          className="relative group cursor-pointer overflow-hidden rounded-2xl m-2 sm:m-3 border border-white/10 bg-slate-950"
+          className="relative group cursor-pointer overflow-hidden rounded-2xl m-2 border border-white/10 bg-slate-950"
         >
           <img
             src={ieeeDayGroupPhoto}
             alt="IEEE Day 2026 Office Bearers & Student Council - Sri Ramakrishna Engineering College"
-            className="w-full h-auto max-h-[560px] object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+            className="w-full h-auto max-h-[540px] object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.015]"
           />
 
-          {/* Top/Bottom Gradient Shadows for Depth */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/25 pointer-events-none" />
 
-          {/* Hover Hint Overlay */}
+          {/* Hover Overlay */}
           <div className="absolute inset-0 bg-cyan-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-950/90 text-white border border-cyan-400/40 text-xs font-bold uppercase tracking-widest shadow-2xl backdrop-blur-md">
-              <Maximize2 size={14} className="text-cyan-400" /> Click to Expand Full View
+            <span className="px-5 py-2.5 rounded-2xl bg-black/75 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider shadow-2xl flex items-center gap-2">
+              <Maximize2 size={14} className="text-cyan-400" /> Click to View High-Resolution Photo
             </span>
           </div>
 
-          {/* Photo Bottom Caption Bar */}
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-950/80 border border-white/10 backdrop-blur-md">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 shrink-0">
-                <Users size={20} />
-              </div>
-              <div>
-                <p className="text-white font-bold text-xs sm:text-sm">
-                  IEEE Student Branch STB32131 • 2026 - 2027 Executive Assembly
-                </p>
-                <p className="text-slate-400 text-[11px]">
-                  Sri Ramakrishna Engineering College, Coimbatore • 25 Years of Student Excellence
-                </p>
-              </div>
+          {/* Bottom Caption Pill */}
+          <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 rounded-xl bg-slate-950/85 backdrop-blur-xl border border-white/15 text-xs">
+            <div className="flex items-center gap-2 text-slate-200">
+              <Users size={15} className="text-cyan-400 shrink-0" />
+              <span className="font-bold">Official Council Inauguration & Executive Assembly 2026–2027</span>
             </div>
-
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-300 self-end sm:self-center">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <div className="flex items-center gap-2 text-slate-400 text-[11px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Full Leadership Delegation</span>
             </div>
           </div>
@@ -806,113 +764,105 @@ const ModernExecutiveCard = ({ person, onSelect, isProminent = false }) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      whileHover={{ y: -6, scale: 1.02 }}
+      whileHover={{ y: -6 }}
       transition={{ duration: 0.25 }}
       onClick={() => onSelect(person)}
-      className="group relative w-full rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-end border transition-all duration-300 shadow-xl"
-      style={{
-        height: isProminent ? "520px" : "480px",
-        borderColor: "rgba(255,255,255,0.12)",
-        background: "rgba(15,22,41,0.85)",
-        boxShadow: `0 15px 35px rgba(0,0,0,0.5), 0 0 20px ${meta.glow ? meta.color + "15" : "transparent"}`,
-      }}
+      className="group relative w-full rounded-3xl p-3.5 sm:p-4 cursor-pointer flex flex-col justify-between border transition-all duration-500 bg-gradient-to-b from-[#0c1427]/90 via-[#080d1d]/90 to-[#040711]/95 backdrop-blur-2xl border-white/10 hover:border-cyan-400/40 hover:shadow-[0_20px_45px_rgba(0,0,0,0.8),0_0_25px_rgba(34,211,238,0.15)] shadow-xl"
     >
-      {/* Background Portrait */}
-      {!showFallback ? (
-        <img
-          src={imgSrc}
-          alt={person.name || "Member"}
-          className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-          onError={() => setErr(true)}
-        />
-      ) : (
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-transform duration-700 group-hover:scale-105"
-          style={{
-            background: `radial-gradient(circle at 50% 30%, ${meta.color}25 0%, rgba(15,22,41,0.95) 75%)`,
-          }}
-        >
+      {/* ── Top: Portrait Media Stage (Uncropped, Fully Visible) ── */}
+      <div className="relative w-full aspect-[4/4.9] rounded-2xl overflow-hidden bg-slate-950 border border-white/10 shadow-inner">
+        {!showFallback ? (
+          <img
+            src={imgSrc}
+            alt={person.name || "Member"}
+            className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+            onError={() => setErr(true)}
+          />
+        ) : (
           <div
-            className="w-20 h-20 rounded-3xl flex items-center justify-center mb-4 border shadow-2xl"
-            style={{ background: meta.bg, borderColor: `${meta.color}50`, color: meta.color }}
-          >
-            <Icon size={38} />
-          </div>
-          <p
-            className="text-2xl font-black tracking-tight"
-            style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif", color: meta.color }}
-          >
-            {(person.name || "M")
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 3)}
-          </p>
-        </div>
-      )}
-
-      {/* Layered Gradient Overlays for High-Contrast Text - gently faded so entire portrait/poster is visible */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050814] via-[#050814]/35 to-transparent pointer-events-none" />
-
-      {/* Active Glowing Border on Hover */}
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl"
-        style={{ border: `2px solid ${meta.color}` }}
-      />
-
-      {/* Role Pill Badge (Top Left) */}
-      <div className="absolute top-4 left-4 z-10">
-        <span
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md border shadow-lg"
-          style={{ background: meta.bg, borderColor: `${meta.color}70`, color: meta.color }}
-        >
-          <Icon size={12} /> {person.role || "Executive"}
-        </span>
-      </div>
-
-      {/* Academic Year Tag (Top Right) */}
-      <div className="absolute top-4 right-4 z-10">
-        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-slate-200 bg-slate-950/80 border border-white/15 backdrop-blur-md">
-          {academicYear}
-        </span>
-      </div>
-
-      {/* Card Info Details (Bottom) - Center Aligned */}
-      <div className="relative z-10 p-5 sm:p-6 flex flex-col items-center text-center">
-        <h3
-          className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-snug mb-1 text-center"
-          style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif" }}
-        >
-          {person.name || "—"}
-        </h3>
-
-        {person.department && (
-          <p className="text-xs font-semibold text-slate-300 flex items-center justify-center gap-1.5 mb-3.5 text-center">
-            <MapPin size={13} className="text-cyan-400 shrink-0" />
-            {person.department}
-          </p>
-        )}
-
-        <div className="w-full flex items-center justify-center gap-2 pt-2 border-t border-white/10">
-          <button
-            className="flex-1 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 group-hover:shadow-lg"
+            className="w-full h-full flex flex-col items-center justify-center p-6 text-center"
             style={{
-              background: meta.color,
-              color: "#000",
+              background: `radial-gradient(circle at 50% 35%, ${meta.color}25 0%, rgba(15,22,41,0.98) 80%)`,
             }}
           >
-            Profile <ExternalLink size={12} />
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 border shadow-xl"
+              style={{ background: meta.bg, borderColor: `${meta.color}50`, color: meta.color }}
+            >
+              <Icon size={30} />
+            </div>
+            <p
+              className="text-xl font-black tracking-tight"
+              style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif", color: meta.color }}
+            >
+              {(person.name || "M")
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 3)}
+            </p>
+          </div>
+        )}
+
+        {/* Subtle lighting edge vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25 pointer-events-none" />
+
+        {/* Floating Role Chip (Top Left) */}
+        <div className="absolute top-2.5 left-2.5 z-10">
+          <span
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider backdrop-blur-md border shadow-lg"
+            style={{ background: meta.bg, borderColor: `${meta.color}80`, color: meta.color }}
+          >
+            <Icon size={11} /> {person.role || "Executive"}
+          </span>
+        </div>
+
+        {/* Academic Year Tag (Top Right) */}
+        <div className="absolute top-2.5 right-2.5 z-10">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-slate-200 bg-slate-950/85 border border-white/15 backdrop-blur-md shadow-md">
+            {academicYear}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Bottom: Information & Action Dock ── */}
+      <div className="pt-4 pb-1 px-1 flex flex-col items-center text-center flex-1 justify-between">
+        <div className="w-full">
+          <h3
+            className="text-lg sm:text-xl font-black text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-snug mb-1 truncate"
+            style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif" }}
+          >
+            {person.name || "—"}
+          </h3>
+
+          {person.department && (
+            <p className="text-xs font-semibold text-slate-400 flex items-center justify-center gap-1.5 mb-3.5 truncate">
+              <MapPin size={12} className="text-cyan-400 shrink-0" />
+              {person.department}
+            </p>
+          )}
+        </div>
+
+        {/* Action Row */}
+        <div className="w-full flex items-center gap-2 pt-3 border-t border-white/10 mt-auto">
+          <button
+            type="button"
+            className="flex-1 py-2 px-3 rounded-xl text-xs font-bold text-slate-200 bg-white/5 hover:bg-cyan-500 hover:text-slate-950 border border-white/10 hover:border-cyan-400 flex items-center justify-center gap-1.5 transition-all duration-300 group/btn"
+          >
+            <span>Executive Dossier</span>
+            <ExternalLink size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
           </button>
+
           {person.linkedin_url && (
             <a
               href={person.linkedin_url}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="p-2 rounded-xl bg-white/10 hover:bg-[#0077b5] text-white border border-white/15 transition-all"
+              className="w-8 h-8 rounded-xl bg-white/5 hover:bg-[#0077b5] text-slate-400 hover:text-white border border-white/10 hover:border-transparent flex items-center justify-center transition-all shrink-0"
               title="Connect on LinkedIn"
             >
-              <Linkedin size={15} />
+              <Linkedin size={14} />
             </a>
           )}
         </div>
@@ -1573,127 +1523,148 @@ export const OfficeBearersPage = () => {
       <Navbar />
 
       {/* ══════════════════════════ HERO SECTION ══════════════════════════ */}
-      <section className="relative z-10 pt-10 pb-8 text-center px-4">
+      <section className="relative z-10 pt-32 sm:pt-36 pb-12 text-center px-4 max-w-6xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="max-w-4xl mx-auto"
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center"
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 mb-4 shadow-lg backdrop-blur-md">
-            <Sparkles size={13} className="text-cyan-400" />
-            <span className="text-xs font-black text-cyan-300 uppercase tracking-widest">
-              IEEE Student Branch STB32131 • Sri Ramakrishna Engineering College
-            </span>
+          {/* Official 25 Years of Excellence Silver Jubilee Emblem Badge */}
+          <div className="inline-flex items-center gap-3.5 px-5 py-2.5 rounded-full bg-slate-900/80 border border-amber-400/30 shadow-[0_0_25px_rgba(245,158,11,0.15)] backdrop-blur-2xl mb-6 hover:scale-105 transition-transform cursor-pointer">
+            <img
+              src={ieee25Logo}
+              alt="IEEE SREC 25 Years of Excellence"
+              className="w-8 h-8 object-contain drop-shadow-md"
+            />
+            <div className="flex flex-col text-left">
+              <span className="text-[11px] font-black uppercase tracking-wider text-amber-300">
+                25 Years of Student Excellence • Silver Jubilee
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium">
+                IEEE Student Branch STB32131 • Sri Ramakrishna Engineering College
+              </span>
+            </div>
           </div>
 
+          {/* Clean Prestige Heading - No Cutoffs */}
           <h1
-            className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-none mb-4 tracking-tight"
-            style={{ fontFamily: "'Syne', sans-serif" }}
+            className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight tracking-tight mb-4"
+            style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif" }}
           >
-            Council &{" "}
+            Executive Council &{" "}
             <span
               style={{
-                background:
-                  "linear-gradient(135deg, #22d3ee 0%, #818cf8 50%, #c084fc 100%)",
+                background: "linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
             >
-              Office Bearers
+              Leadership Roster
             </span>
           </h1>
 
-          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-6 font-normal">
-            Meet the visionary faculty mentor, student officers, and executive committee members
-            empowering engineering excellence and driving high-impact initiatives across IEEE SREC.
+          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8 font-normal">
+            Governing Council for Academic Term <strong className="text-white font-semibold">2026–2027</strong>. 
+            Spearheading technical innovation, publications, community leadership, and global IEEE standards.
           </p>
 
-          {/* Quick Metrics Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-8 text-xs font-semibold text-slate-300">
-            <span className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-              👑 <strong className="text-white">1</strong> Branch Counsellor
-            </span>
-            <span className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-              ⚡ <strong className="text-white">10</strong> Core Executive Officers
-            </span>
-            <span className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-              🛡️ <strong className="text-white">7</strong> Committee Executives
-            </span>
-            <span className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-              🌐 <strong className="text-white">8</strong> Specialized Societies
-            </span>
+          {/* Luxury Unified Metrics Strip - Cohesive Silver Jubilee Navy */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 w-full max-w-3xl mx-auto mb-8">
+            <div className="p-4 rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/10 backdrop-blur-xl flex flex-col items-center hover:border-cyan-400/40 transition-all shadow-lg">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1">Faculty Patron</span>
+              <span className="text-xl sm:text-2xl font-black text-white">1 Counsellor</span>
+              <span className="text-[10px] text-cyan-400 font-semibold mt-0.5">AsP / EEE</span>
+            </div>
+            <div className="p-4 rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/10 backdrop-blur-xl flex flex-col items-center hover:border-amber-400/40 transition-all shadow-lg">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1">Presidency</span>
+              <span className="text-xl sm:text-2xl font-black text-white">2 Chairs</span>
+              <span className="text-[10px] text-amber-400 font-semibold mt-0.5">Apex Leaders</span>
+            </div>
+            <div className="p-4 rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/10 backdrop-blur-xl flex flex-col items-center hover:border-blue-400/40 transition-all shadow-lg">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1">Secretariat</span>
+              <span className="text-xl sm:text-2xl font-black text-white">2 Officers</span>
+              <span className="text-[10px] text-blue-400 font-semibold mt-0.5">Secretary & Treasurer</span>
+            </div>
+            <div className="p-4 rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/10 backdrop-blur-xl flex flex-col items-center hover:border-purple-400/40 transition-all shadow-lg">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1">Council Leads</span>
+              <span className="text-xl sm:text-2xl font-black text-white">14 Delegates</span>
+              <span className="text-[10px] text-purple-400 font-semibold mt-0.5">Executive Team</span>
+            </div>
           </div>
 
-          {/* Quick Route Switches (Branch vs Society vs Past) */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-            <div className="inline-flex p-1 rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-xl">
-              <span className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md">
-                Student Branch (SB)
-              </span>
-              <Link
-                to="/societies/office-bearers"
-                className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
+          {/* Unified Executive Segmented Control Deck */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="inline-flex p-1.5 rounded-2xl border border-white/15 bg-slate-950/80 backdrop-blur-2xl shadow-xl">
+              <button
+                onClick={() => setViewMode("hierarchy")}
+                className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300"
+                style={{
+                  background:
+                    viewMode === "hierarchy"
+                      ? "linear-gradient(135deg, #0284c7, #38bdf8)"
+                      : "transparent",
+                  color: viewMode === "hierarchy" ? "#ffffff" : "rgba(255,255,255,0.75)",
+                  boxShadow:
+                    viewMode === "hierarchy"
+                      ? "0 4px 15px rgba(2,132,199,0.35)"
+                      : "none",
+                }}
               >
-                <span>Society Chapters</span>
-                <ExternalLink size={12} className="text-cyan-400" />
-              </Link>
+                <Layers size={15} /> Hierarchy View
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300"
+                style={{
+                  background:
+                    viewMode === "grid"
+                      ? "linear-gradient(135deg, #0284c7, #38bdf8)"
+                      : "transparent",
+                  color: viewMode === "grid" ? "#ffffff" : "rgba(255,255,255,0.75)",
+                  boxShadow:
+                    viewMode === "grid"
+                      ? "0 4px 15px rgba(2,132,199,0.35)"
+                      : "none",
+                }}
+              >
+                <LayoutGrid size={15} /> Roster Grid
+              </button>
+              <button
+                onClick={() => setViewMode("carousel")}
+                className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300"
+                style={{
+                  background:
+                    viewMode === "carousel"
+                      ? "linear-gradient(135deg, #0284c7, #38bdf8)"
+                      : "transparent",
+                  color: viewMode === "carousel" ? "#ffffff" : "rgba(255,255,255,0.75)",
+                  boxShadow:
+                    viewMode === "carousel"
+                      ? "0 4px 15px rgba(2,132,199,0.35)"
+                      : "none",
+                }}
+              >
+                <Sparkles size={15} /> 3D Showcase
+              </button>
             </div>
 
-            <Link
-              to="/past-bearers"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold uppercase tracking-wider text-slate-300 transition-all hover:text-white"
-            >
-              <History size={13} />
-              <span>Past Bearers</span>
-            </Link>
-          </div>
-
-          {/* View Mode Switcher Buttons */}
-          <div
-            className="inline-flex p-1.5 rounded-2xl border border-white/15"
-            style={{ background: "rgba(15,22,41,0.85)", backdropFilter: "blur(20px)" }}
-          >
-            <button
-              onClick={() => setViewMode("hierarchy")}
-              className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 shadow-md"
-              style={{
-                background:
-                  viewMode === "hierarchy"
-                    ? "linear-gradient(135deg,#22d3ee,#818cf8)"
-                    : "transparent",
-                color: viewMode === "hierarchy" ? "#000" : "rgba(255,255,255,0.7)",
-              }}
-            >
-              <Layers size={15} /> Executive Hierarchy
-            </button>
-            <button
-              onClick={() => setViewMode("grid")}
-              className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 shadow-md"
-              style={{
-                background:
-                  viewMode === "grid"
-                    ? "linear-gradient(135deg,#22d3ee,#818cf8)"
-                    : "transparent",
-                color: viewMode === "grid" ? "#000" : "rgba(255,255,255,0.7)",
-              }}
-            >
-              <LayoutGrid size={15} /> Roster Grid
-            </button>
-            <button
-              onClick={() => setViewMode("carousel")}
-              className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 shadow-md"
-              style={{
-                background:
-                  viewMode === "carousel"
-                    ? "linear-gradient(135deg,#22d3ee,#818cf8)"
-                    : "transparent",
-                color: viewMode === "carousel" ? "#000" : "rgba(255,255,255,0.7)",
-              }}
-            >
-              <Sparkles size={15} /> 3D Stage
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/societies/office-bearers"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-bold text-cyan-300 transition-all hover:border-cyan-400 shadow-md"
+              >
+                <span>Society Chapters</span>
+                <ExternalLink size={12} />
+              </Link>
+              <Link
+                to="/past-bearers"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-bold text-slate-300 transition-all hover:text-white shadow-md"
+              >
+                <History size={13} />
+                <span>Past Archives</span>
+              </Link>
+            </div>
           </div>
         </motion.div>
       </section>
