@@ -19,7 +19,7 @@ const coreNavLinks = [
   { label: "Office Bearers", href: "/office-bearers" },
   { label: "Gallery", href: "/gallery" },
   { label: "Reports", href: "/reports", icon: FileText },
-  { label: "INNOQUEST", href: "/document", icon: BookOpen },
+  { label: "VANGUARD", href: "/document", icon: BookOpen },
   { label: "Register", href: "/membership-registration", icon: UserPlus, desc: "Become a member today" },
 ];
 
@@ -44,7 +44,7 @@ const mobileGridLinks = [
   { label: "Activities", href: "/activities", icon: Calendar, desc: "Events & workshops" },
   { label: "Gallery", href: "/gallery", icon: Image, desc: "Event photo archives" },
   { label: "Reports", href: "/reports", icon: FileText, desc: "Official event reports" },
-  { label: "INNOQUEST Handbook", href: "/document", icon: BookOpen, desc: "Official SB Handbook" },
+  { label: "VANGUARD Handbook", href: "/document", icon: BookOpen, desc: "Official SB Handbook" },
   { label: "Office Bearers", href: "/office-bearers", icon: Shield, desc: "Branch leadership" },
   { label: "Past Bearers", href: "/past-bearers", icon: Shield, desc: "Alumni leaders" },
   { label: "Executive Team", href: "/team", icon: Compass, desc: "Executive committee" },
@@ -248,7 +248,7 @@ const Navbar = () => {
                 </Link>
                 <div className="w-[1.5px] h-8 md:h-10 bg-slate-300 shrink-0" />
                 <Link to="/" className="hover:scale-105 transition-transform flex items-center shrink-0">
-                  <img src={ieeeStamp} alt="IEEE SREC Logo" className="h-10 md:h-12 w-auto object-contain" />
+                  <img src={ieee25Logo} alt="IEEE 25 Years Silver Jubilee Logo" className="h-10 md:h-12 w-auto object-contain" />
                 </Link>
                 <div className="w-[1.5px] h-8 md:h-10 bg-slate-300 shrink-0" />
                 <div className="hover:scale-105 transition-transform flex items-center shrink-0">
@@ -266,7 +266,7 @@ const Navbar = () => {
               <Link to="/" className="px-2.5 py-1.5 rounded-xl bg-white backdrop-blur border border-white/40 flex items-center gap-2 shadow-sm">
                 <img src={srecLogo} alt="SREC Logo" className="h-6 sm:h-7 w-auto object-contain" />
                 <div className="w-[1px] h-4 bg-slate-300" />
-                <img src={ieeeStamp} alt="IEEE SREC Logo" className="h-6 sm:h-7 w-auto object-contain" />
+                <img src={ieee25Logo} alt="IEEE 25 Years Silver Jubilee Logo" className="h-6 sm:h-7 w-auto object-contain" />
                 <div className="w-[1px] h-4 bg-slate-300" />
                 <img src={snrLogo} alt="SNR Trust Logo" className="h-6 sm:h-7 w-auto object-contain" />
               </Link>

@@ -730,6 +730,24 @@ export const OfficeBearersPage = () => {
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(2,132,199,0.25); border-radius: 999px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        @keyframes floatGlow {
+          0%, 100% { opacity: 0.35; transform: scale(1) translateY(0); }
+          50% { opacity: 0.65; transform: scale(1.06) translateY(-10px); }
+        }
+        @keyframes shimmerGlow {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .animated-orb-1 { animation: floatGlow 10s ease-in-out infinite; }
+        .animated-orb-2 { animation: floatGlow 12s ease-in-out infinite 2s; }
+        .animated-orb-3 { animation: floatGlow 14s ease-in-out infinite 4s; }
+        .glass-card-hover {
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.18), 0 0 25px rgba(56, 189, 248, 0.15);
+        }
         @media print {
           header, nav, footer, .no-print { display: none !important; }
           body { background: white !important; }
@@ -988,32 +1006,13 @@ export const OfficeBearersPage = () => {
               )}
             </div>
 
-            {/* Division Filter Chips */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full md:w-auto">
-              {[
-                { id: "all", label: "All Council" },
-                { id: "presidency", label: "Chairs" },
-                { id: "core", label: "Secretariat" },
-                { id: "tech", label: "Webmaster" },
-                { id: "editorial", label: "Editorial" },
-                { id: "events", label: "Activities" },
-                { id: "committee", label: "Committee" },
-              ].map((cat) => {
-                const isActive = activeCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveCategory(cat.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
-                      isActive
-                        ? "bg-slate-900 border-slate-900 text-white shadow-xs"
-                        : "bg-white/90 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
+            {/* Live Verified Officer Badge */}
+            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/95 border border-slate-200/90 shadow-2xs text-xs font-bold text-slate-600">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
+              <span>Showing <strong className="text-slate-900 font-black">{filteredMembers.length}</strong> Verified Officers</span>
             </div>
           </div>
 
