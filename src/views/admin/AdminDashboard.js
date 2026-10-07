@@ -7,8 +7,9 @@ import OfficeBearerCardsAdmin from "./OfficeBearerCardsAdmin";
 import EventReportsAdmin from "./EventReportsAdmin";
 import LaunchControlRoom from "@/components/admin/LaunchControlRoom";
 import PageVisibilityAdmin from "@/components/admin/PageVisibilityAdmin";
+import AiAutopilotTab from "./AiAutopilotTab";
 import { getPrimaryMemberCardPdfUrl, uploadMemberCardPdf } from "@/utils/cardPdfHelper";
-import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv, Lock } from "lucide-react";
+import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv, Lock, Bot } from "lucide-react";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1533,6 +1534,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
   }, [activities, activitySearch]);
   const tabs = [
     { id: "overview", label: "Dashboard Overview", icon: <LayoutDashboard size={18} /> },
+    { id: "ai_autopilot", label: "⚡ AI Autopilot", icon: <Bot size={18} /> },
     { id: "launch_control", label: "Launch Mode & Remote", icon: <Rocket size={18} /> },
     { id: "student_roster", label: "Student Roster", icon: <Users size={18} /> },
     { id: "office", label: "Main SB Bearers", icon: <Briefcase size={18} /> },
@@ -1614,6 +1616,24 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                   <LayoutDashboard size={16} />
                   <span>Dashboard</span>
                 </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveTab("ai_autopilot");
+                  setIsDrawerOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "ai_autopilot"
+                  ? "bg-indigo-950 text-cyan-300 font-black shadow-md border border-indigo-500/50"
+                  : "bg-indigo-50/70 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"}`}
+              >
+                <div className="flex items-center gap-2">
+                  <Bot size={16} className={activeTab === "ai_autopilot" ? "text-cyan-400" : "text-indigo-600 animate-pulse"} />
+                  <span>⚡ AI Autopilot</span>
+                </div>
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-indigo-600 text-white uppercase">
+                  Auto
+                </span>
               </button>
 
               <button
@@ -1776,6 +1796,18 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 <LayoutDashboard size={18} />
                 <span>Dashboard Overview</span>
               </div>
+            </button>
+
+            <button onClick={() => setActiveTab("ai_autopilot")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "ai_autopilot"
+              ? "bg-indigo-950 text-cyan-300 font-black shadow-md border border-indigo-500/50"
+              : "bg-indigo-50/70 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"}`}>
+              <div className="flex items-center gap-2.5">
+                <Bot size={18} className={activeTab === "ai_autopilot" ? "text-cyan-400" : "text-indigo-600 animate-pulse"} />
+                <span>⚡ AI Autopilot Engine</span>
+              </div>
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${activeTab === "ai_autopilot" ? "bg-cyan-500/20 text-cyan-300" : "bg-indigo-600 text-white"}`}>
+                Auto
+              </span>
             </button>
 
             <button onClick={() => setActiveTab("launch_control")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "launch_control"
@@ -2107,6 +2139,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       {/* MAIN PANEL */}
       <div className="flex-1 w-full min-w-0 flex flex-col relative bg-[#f4f7fb]">
         <main className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1600px] w-full mx-auto pb-20">
+          {activeTab === "ai_autopilot" && <AiAutopilotTab />}
+
           {activeTab === "overview" && (
             <div className="animate-admin-fade-in space-y-6">
               {/* Quick Launch Ceremony Banner (Milk White Modern) */}

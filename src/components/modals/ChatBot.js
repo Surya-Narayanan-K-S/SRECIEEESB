@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, Send } from "lucide-react";
 import robotGif from "@/assets/robot.gif";
+import { aiBackendService } from "@/services/aiBackendService";
 const qaDatabase = [
     {
         keywords: ["who", "join", "eligibility", "eligible", "member", "student", "freshman", "sophomore", "junior", "senior"],
@@ -40,10 +41,6 @@ const qaDatabase = [
     }
 ];
 const callGeminiAPI = async (userPrompt) => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) {
-        return "That sounds interesting! While I don't have specific details on that in my memory bank, I can guide you on joining IEEE SREC, our technical chapters, or upcoming events.";
-    }
     const systemInstruction = "You are Nexus, the AI assistant for SREC IEEE Student Branch at Sri Ramakrishna Engineering College, Coimbatore. " +
         "Use the following SREC IEEE facts to answer questions: " +
         "- Established: June 11th, 2001 under the IEEE Madras Section. " +
@@ -57,6 +54,19 @@ const callGeminiAPI = async (userPrompt) => {
         "1. Keep responses very brief, friendly, professional, and under 2-3 sentences.\n" +
         `2. Today's date is: ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}. If the user asks about the date or today, state this date clearly.\n` +
         "3. If the user asks general questions, math calculations, or general knowledge queries, answer them directly and accurately.";
+
+    // 1. Try secure backend AI endpoint first
+    try {
+        const backendReply = await aiBackendService.chatWithNexus(userPrompt, systemInstruction);
+        if (backendReply) return backendReply;
+    } catch (_) {}
+
+    // 2. Client-side fallback if backend server is not running
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+        return "That sounds interesting! While I don't have specific details on that in my memory bank, I can guide you on joining IEEE SREC, our technical chapters, or upcoming events.";
+    }
+
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: "POST",

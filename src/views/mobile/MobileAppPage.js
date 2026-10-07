@@ -750,7 +750,7 @@ export const MobileAppPage = ({
         }
         return parsed;
       }
-    } catch {}
+    } catch { }
     return null;
   });
   const [isGuestMode, setIsGuestMode] = useState(!forceLogin);
@@ -1057,7 +1057,7 @@ export const MobileAppPage = ({
                   }));
                   break;
                 }
-              } catch {}
+              } catch { }
             }
 
             // 2. Fetch Chapter Executive Members
@@ -1076,7 +1076,7 @@ export const MobileAppPage = ({
                   }));
                   break;
                 }
-              } catch {}
+              } catch { }
             }
           })
         );
@@ -2070,8 +2070,8 @@ export const MobileAppPage = ({
           const matchesCat = eventCategoryFilter === "All"
             ? true
             : (eventCategoryFilter === "Upcoming"
-                ? e.status === "Upcoming"
-                : ((e.category || "").toLowerCase().includes(eventCategoryFilter.toLowerCase()) || (e.title || "").toLowerCase().includes(eventCategoryFilter.toLowerCase())));
+              ? e.status === "Upcoming"
+              : ((e.category || "").toLowerCase().includes(eventCategoryFilter.toLowerCase()) || (e.title || "").toLowerCase().includes(eventCategoryFilter.toLowerCase())));
           const q = eventSearchQuery.toLowerCase().trim();
           const matchesSearch = !q || (
             (e.title || "").toLowerCase().includes(q) ||
@@ -2130,11 +2130,10 @@ export const MobileAppPage = ({
                   <button
                     key={cat}
                     onClick={() => setEventCategoryFilter(cat)}
-                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase whitespace-nowrap transition-all ${
-                      eventCategoryFilter === cat
+                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase whitespace-nowrap transition-all ${eventCategoryFilter === cat
                         ? "bg-[#002855] text-white shadow-sm"
                         : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900"
-                    }`}
+                      }`}
                   >
                     {cat === "All" ? "All Events" : cat}
                   </button>
@@ -2169,11 +2168,10 @@ export const MobileAppPage = ({
                           {event.badge || event.category}
                         </span>
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md ${
-                            event.status === "Upcoming"
+                          className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md ${event.status === "Upcoming"
                               ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
                               : "bg-emerald-500/90 text-white"
-                          }`}
+                            }`}
                         >
                           {event.status}
                         </span>
@@ -2361,950 +2359,1004 @@ export const MobileAppPage = ({
             </div>
           </div>
         ) : (
-        <div className="space-y-4 pb-16">
+          <div className="space-y-4 pb-16">
 
-          {/* ── TOP ACTIONS TOOLBAR: Status, View PDF, Flip, Save PNG & RENEW ── */}
-          <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-1.5">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-black uppercase text-[#002855] tracking-wider flex items-center gap-1">
-                <IdCard size={14} className="text-[#002855]" />
-                <span>Official IEEE ID</span>
-              </span>
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status)
+            {/* ── TOP ACTIONS TOOLBAR: Status, View PDF, Flip, Save PNG & RENEW ── */}
+            <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-black uppercase text-[#002855] tracking-wider flex items-center gap-1">
+                  <IdCard size={14} className="text-[#002855]" />
+                  <span>Official IEEE ID</span>
+                </span>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status)
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-300"
                   : "bg-rose-50 text-rose-800 border border-rose-300"
-                }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status)
+                  }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status)
                     ? "bg-emerald-500 animate-pulse"
                     : "bg-rose-500"
-                  }`} />
-                <span>{(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status) ? "Active" : "Inactive"}</span>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1 shrink-0 flex-wrap">
-              {/* View Original PDF Button */}
-              <button
-                type="button"
-                onClick={handleOpenPdfModal}
-                className="px-2.5 py-1 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-xs active:scale-95 transition-all cursor-pointer"
-                title="View Official IEEE Headquarters PDF Card"
-              >
-                <FileText size={12} className="text-cyan-300" />
-                <span>View PDF</span>
-              </button>
-
-              {/* Save PNG Button */}
-              <button
-                type="button"
-                onClick={handleDownloadDigitalCardPng}
-                disabled={isDownloadingCardImg}
-                className="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#002855] border border-blue-200 font-bold text-[10px] uppercase flex items-center gap-1 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-                title="Save High-Res Card Image"
-              >
-                {isDownloadingCardImg ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                <span className="hidden xs:inline">Save PNG</span>
-              </button>
-
-              {/* Renew Button */}
-              <button
-                type="button"
-                onClick={() => setIsRenewModalOpen(true)}
-                className="px-2.5 py-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] uppercase flex items-center gap-1 active:scale-95 shadow-xs transition-all cursor-pointer"
-                title="Renew IEEE Membership"
-              >
-                <Sparkles size={12} className="text-slate-950" />
-                <span>Renew</span>
-              </button>
-
-              {/* Flip 3D Button */}
-              <button
-                type="button"
-                onClick={() => setIsFlipped(!isFlipped)}
-                className="px-2 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-                title="Flip 3D Card"
-              >
-                <RotateCw size={12} className={isFlipped ? "rotate-180 transition-transform" : "transition-transform"} />
-                <span>Flip</span>
-              </button>
-            </div>
-          </div>
-
-          {/* ── 3D FLIPPABLE DIGITAL ID CARD CONTAINER (HOLOGRAPHIC SMART CARD) ── */}
-          <div className="relative w-full aspect-[1.586] select-none cursor-pointer group" style={{ perspective: 1400 }} onClick={() => setIsFlipped(!isFlipped)}>
-            <div ref={idCardRef} className="w-full h-full relative transition-transform duration-700 [transform-style:preserve-3d]" style={{
-              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)"
-            }}>
-              {/* ═══════════════════════════════════════════════════════════════
-                    CARD FRONT: ULTRA-LUXURY HOLOGRAPHIC SMART PVC ID
-                ═══════════════════════════════════════════════════════════════ */}
-              <div ref={cardFrontRef} className="absolute inset-0 rounded-[22px] sm:rounded-[28px] p-3.5 sm:p-5 bg-gradient-to-br from-[#000a17] via-[#001c3d] to-[#003870] border-[1.5px] border-amber-300/60 shadow-[0_20px_50px_rgba(0,10,25,0.65),0_0_30px_rgba(0,114,206,0.2)] flex flex-col justify-between overflow-hidden text-white select-none" style={{ backfaceVisibility: "hidden" }}>
-                {/* Holographic Security Shimmer Layer */}
-                <div className="absolute inset-0 opacity-25 pointer-events-none" style={{
-                  backgroundImage: `radial-gradient(circle at 80% 20%, rgba(255,215,0,0.4) 0%, transparent 45%), linear-gradient(135deg, transparent 35%, rgba(0,210,255,0.3) 48%, rgba(255,255,255,0.4) 50%, transparent 65%)`
-                }} />
-
-                {/* Micro-Circuit Security Mesh Background */}
-                <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
-                  backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
-                  backgroundSize: "16px 16px"
-                }} />
-
-                {/* Watermark IEEE Diamond Crest */}
-                <img src={ieeeStamp} alt="Watermark" className="absolute -right-6 -bottom-6 w-44 h-44 opacity-[0.08] object-contain pointer-events-none brightness-200" />
-
-                {/* Laser Holographic Security Ribbon */}
-                <div className="absolute top-0 right-14 w-8 h-full bg-gradient-to-b from-amber-300/10 via-cyan-300/15 to-transparent pointer-events-none opacity-40 blur-[1px]" />
-
-                {/* ── TOP HEADER BAR: SREC Emblem + IEEE Diamond + Status ── */}
-                <div className="flex items-center justify-between relative z-10">
-                  <div className="flex items-center gap-1.5">
-                    <div className="px-2 py-0.5 rounded-lg bg-white/95 border border-white/80 shadow-xs flex items-center gap-1.5 backdrop-blur-sm h-6 overflow-hidden">
-                      <img src={srecLogo} alt="SREC" className="h-4 sm:h-5 w-auto max-h-5 object-contain" />
-                      <div className="w-[1px] h-3 bg-slate-300" />
-                      <img src={ieeeLogo} alt="IEEE" className="h-3.5 sm:h-4 w-auto max-h-4 object-contain" />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <div className="card-active-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 font-black text-[9px] uppercase tracking-wider shadow-xs backdrop-blur-sm whitespace-nowrap leading-none">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 inline-block align-middle" />
-                      <span>ACTIVE</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── MIDDLE ROW: Portrait + Smart Chip + Member Details ── */}
-                <div className="flex items-center gap-2.5 sm:gap-3.5 relative z-10 my-auto py-0.5">
-                  {/* Portrait Photo Frame */}
-                  <div className="relative shrink-0">
-                    <div className="w-[52px] h-[52px] sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl sm:rounded-2xl p-[2px] bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_12px_rgba(251,191,36,0.35)] overflow-hidden">
-                      <img src={activeMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((activeMember.first_name || "Student") + " " + (activeMember.last_name || ""))}&background=002855&color=fff&size=512`} alt={activeMember.first_name || "Student"} className="w-full h-full rounded-[10px] sm:rounded-[14px] object-cover bg-slate-900" />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#000a17] flex items-center justify-center text-white shadow">
-                      <Check size={8} className="stroke-[3]" />
-                    </div>
-                  </div>
-
-                  {/* Member Credentials Info */}
-                  <div className="leading-tight min-w-0 flex-1">
-                    <h2 className="text-xs sm:text-base font-black text-white uppercase truncate font-sans leading-snug">
-                      {activeMember.first_name} {activeMember.last_name}
-                    </h2>
-
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <div className="card-roll-badge inline-flex items-center px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-300/40 text-amber-300 font-mono text-[9px] font-black tracking-wider leading-none">
-                        ROLL: {activeMember.roll_number}
-                      </div>
-                    </div>
-
-                    {/* Department and SREC IEEE Member in ONE SINGLE LINE */}
-                    <p className="text-[9px] sm:text-[10px] text-sky-200 uppercase font-black tracking-wide mt-1 truncate font-sans">
-                      {activeMember.department} · SREC IEEE {activeMember.member_type || "STUDENT MEMBER"}{activeMember.year_of_study ? ` · ${activeMember.year_of_study}` : ""}
-                    </p>
-                  </div>
-
-                  {/* Authentic Gold EMV Smart Chip */}
-                  <div className="hidden xs:flex flex-col shrink-0 w-9 h-7 sm:w-10 sm:h-8 rounded-md bg-gradient-to-br from-[#ffe082] via-[#ffca28] to-[#ff8f00] p-[1.5px] shadow-[0_2px_8px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-[#8d4004] overflow-hidden relative select-none">
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-black/20 pointer-events-none" />
-                    <div className="w-full h-full relative border border-[#6d3000]/70 rounded-[3px] bg-gradient-to-b from-[#ffd54f] to-[#ffb300] flex items-center justify-between px-0.5">
-                      <div className="w-[30%] h-full flex flex-col justify-between py-1">
-                        <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
-                        <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
-                      </div>
-                      <div className="w-[34%] h-[90%] rounded-full border border-[#6d3000]/80 bg-gradient-to-b from-[#fff59d] via-[#ffd54f] to-[#ffa000] shadow-[inset_0_1px_2px_rgba(255,255,255,0.7)]" />
-                      <div className="w-[30%] h-full flex flex-col justify-between py-1">
-                        <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
-                        <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── BOTTOM ROW: Embossed Member ID & Security QR ── */}
-                <div className="flex items-end justify-between relative z-10 pt-1.5 border-t border-white/15">
-                  <div>
-                    <span className="text-[7px] uppercase tracking-[0.18em] text-amber-300/90 font-black block leading-none">
-                      OFFICIAL IEEE MEMBERSHIP ID
-                    </span>
-                    <span className="text-xs sm:text-base font-black font-mono tracking-widest text-white drop-shadow-md block mt-0.5">
-                      {!activeMember.ieee_id || activeMember.ieee_id === "PENDING" ? "ALLOCATING..." : activeMember.ieee_id}
-                    </span>
-                    <span className="text-[7.5px] sm:text-[9px] font-sans font-bold text-amber-200/90 block mt-0.5 tracking-wider">
-                      VALID THRU: {activeMember.valid_thru || "DEC 31, 2026"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <div className="text-right leading-none">
-                      <span className="text-[7.5px] font-mono text-sky-200 block font-bold">STB32131</span>
-                      <span className="text-[6.5px] text-slate-300 font-mono">SB 64581</span>
-                    </div>
-                    <div className="p-0.5 bg-white rounded-md text-slate-950 shadow-xs">
-                      <QrCode size={18} className="text-slate-950" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ═══════════════════════════════════════════════════════════════
-                    CARD BACK: OFFICIAL PASS AUTHORIZATION & SOCIETIES
-                ═══════════════════════════════════════════════════════════════ */}
-              <div className="absolute inset-0 rounded-[22px] sm:rounded-[28px] p-3.5 sm:p-5 bg-gradient-to-br from-[#000a17] via-[#001c3d] to-[#003870] border-[1.5px] border-amber-300/60 shadow-[0_20px_50px_rgba(0,10,25,0.65)] flex flex-col justify-between overflow-hidden text-white select-none" style={{
-                backfaceVisibility: "hidden",
-                transform: "rotateY(180deg)"
-              }}>
-                {/* Top Magnetic Security Stripe */}
-                <div className="w-[calc(100%+2rem)] -mx-4 -mt-2 h-6 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-y border-amber-400/30 flex items-center justify-between px-3">
-                  <span className="text-[6.5px] font-mono text-amber-300 tracking-widest font-black uppercase">
-                    ★ IEEE MADRAS SECTION · SREC STUDENT BRANCH ★
-                  </span>
-                  <span className="text-[6.5px] font-mono text-slate-400">REGION 10 APAC</span>
-                </div>
-
-                {/* Middle: Institution & Enrolled Societies */}
-                <div className="space-y-1 text-[9px] text-slate-200 my-auto">
-                  <div className="flex items-center justify-between">
-                    <span className="text-amber-300 font-bold">Institution:</span>
-                    <span className="text-white font-medium">Sri Ramakrishna Engineering College</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-amber-300 font-bold">College Email:</span>
-                    <span className="font-mono text-sky-200 truncate max-w-[160px]">{activeMember.email}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-amber-300 font-bold">Enrolled Chapters:</span>
-                    <span className="text-white font-bold tracking-wide truncate max-w-[200px]">
-                      {formatShortSocieties(activeMember.target_societies)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Counselor & Authorization Footer */}
-                <div className="pt-1.5 border-t border-white/15 flex items-center justify-between text-[7.5px] text-slate-300">
-                  <div>
-                    <span className="font-mono font-black text-amber-300 block">AUTH: {activeMember.ieee_id || "PENDING"}-SB64581</span>
-                    <span className="text-[6.5px] text-slate-400">Valid for IEEE &amp; Collegiate Events</span>
-                  </div>
-                  <div className="text-right flex flex-col items-end">
-                    <img src={counselorSign} alt="Counselor Signature" className="h-3.5 w-auto object-contain brightness-0 invert opacity-90 drop-shadow-xs" />
-                    <span className="font-serif italic text-amber-200 text-[9px] block leading-none">Dr. K. Balamurugan</span>
-                    <span className="text-[6.5px] text-sky-200 uppercase font-bold tracking-wider">Branch Counselor</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── BENTO MODULE 1: QUICK CREDENTIALS COPY CHIPS ── */}
-          <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2.5">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <KeyRound size={14} className="text-[#002855]" />
-                <span>Credentials &amp; Quick Copy</span>
-              </h4>
-              <span className="text-[9px] font-bold text-slate-400 uppercase">1-Tap Copy</span>
-            </div>
-
-            {/* Original IEEE PDF Card Quick Row */}
-            <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 border border-blue-200 flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <span className="text-[8.5px] text-[#002855] uppercase font-bold block">Official IEEE Card</span>
-                <span className="font-mono text-xs font-black text-[#002855] flex items-center gap-1 truncate">
-                  <FileText size={12} className="text-blue-600 shrink-0" />
-                  <span className="truncate">{activeMember.ieee_id && activeMember.ieee_id !== 'PENDING' ? `${activeMember.ieee_id}.pdf` : 'IEEE_Card.pdf'}</span>
+                    }`} />
+                  <span>{(activeMember.membership_status === "ACTIVE" || !activeMember.membership_status) ? "Active" : "Inactive"}</span>
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={handleOpenPdfModal}
-                className="px-3 py-1.5 rounded-xl bg-[#002855] text-white hover:bg-[#001c3d] text-[10px] font-bold uppercase tracking-wider transition-all shadow-xs flex items-center gap-1 shrink-0 cursor-pointer active:scale-95"
-              >
-                <Eye size={12} />
-                <span>View PDF</span>
-              </button>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              {/* IEEE Member ID */}
-              <div className="p-2.5 rounded-xl bg-blue-50/50 border border-blue-200 flex items-center justify-between">
-                <div>
-                  <span className="text-[8.5px] text-[#002855] uppercase font-bold block">IEEE ID</span>
-                  <span className="font-mono text-sm font-black text-[#002855]">#{activeMember.ieee_id || "PENDING"}</span>
-                </div>
+              <div className="flex items-center gap-1 shrink-0 flex-wrap">
+                {/* View Original PDF Button */}
                 <button
                   type="button"
-                  onClick={() => handleCopy(activeMember.ieee_id, "id")}
-                  className="p-1.5 rounded-lg bg-[#002855] text-white hover:bg-[#001c3d] transition-all shadow-xs cursor-pointer"
-                  title="Copy IEEE ID"
+                  onClick={handleOpenPdfModal}
+                  className="px-2.5 py-1 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-xs active:scale-95 transition-all cursor-pointer"
+                  title="View Official IEEE Headquarters PDF Card"
                 >
-                  {copiedText === "id" ? <Check size={13} className="text-emerald-300" /> : <Copy size={13} />}
+                  <FileText size={12} className="text-cyan-300" />
+                  <span>View PDF</span>
                 </button>
-              </div>
 
-              {/* Roll Number */}
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                <div>
-                  <span className="text-[8.5px] text-slate-400 uppercase font-bold block">Roll Number</span>
-                  <span className="font-mono text-xs font-bold text-slate-900">{activeMember.roll_number}</span>
-                </div>
+                {/* Save PNG Button */}
                 <button
                   type="button"
-                  onClick={() => handleCopy(activeMember.roll_number, "roll")}
-                  className="p-1.5 rounded-lg bg-slate-200 hover:bg-[#002855] hover:text-white transition-all text-slate-700 cursor-pointer"
-                  title="Copy Roll Number"
+                  onClick={handleDownloadDigitalCardPng}
+                  disabled={isDownloadingCardImg}
+                  className="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#002855] border border-blue-200 font-bold text-[10px] uppercase flex items-center gap-1 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                  title="Save High-Res Card Image"
                 >
-                  {copiedText === "roll" ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                  {isDownloadingCardImg ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
+                  <span className="hidden xs:inline">Save PNG</span>
                 </button>
-              </div>
 
-              {/* Official College Email */}
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between sm:col-span-2">
-                <div className="min-w-0 pr-2">
-                  <span className="text-[8.5px] text-slate-400 uppercase font-bold block">Official Email</span>
-                  <span className="font-mono text-xs font-medium text-slate-700 truncate block">{activeMember.email}</span>
-                </div>
+                {/* Renew Button */}
                 <button
                   type="button"
-                  onClick={() => handleCopy(activeMember.email, "email")}
-                  className="p-1.5 rounded-lg bg-slate-200 hover:bg-[#002855] hover:text-white transition-all text-slate-700 shrink-0 cursor-pointer"
-                  title="Copy Email"
+                  onClick={() => setIsRenewModalOpen(true)}
+                  className="px-2.5 py-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] uppercase flex items-center gap-1 active:scale-95 shadow-xs transition-all cursor-pointer"
+                  title="Renew IEEE Membership"
                 >
-                  {copiedText === "email" ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                  <Sparkles size={12} className="text-slate-950" />
+                  <span>Renew</span>
+                </button>
+
+                {/* Flip 3D Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsFlipped(!isFlipped)}
+                  className="px-2 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+                  title="Flip 3D Card"
+                >
+                  <RotateCw size={12} className={isFlipped ? "rotate-180 transition-transform" : "transition-transform"} />
+                  <span>Flip</span>
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* ── BENTO MODULE 2: PRIMARY MEMBER PROFILE & AVATAR UPLOADER ── */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3.5">
-            <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[9px] font-black uppercase tracking-wider">
-                ● Verified Student Record
-              </span>
+            {/* ── 3D FLIPPABLE DIGITAL ID CARD CONTAINER (HOLOGRAPHIC SMART CARD) ── */}
+            <div className="relative w-full aspect-[1.586] select-none cursor-pointer group" style={{ perspective: 1400 }} onClick={() => setIsFlipped(!isFlipped)}>
+              <div ref={idCardRef} className="w-full h-full relative transition-transform duration-700 [transform-style:preserve-3d]" style={{
+                transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)"
+              }}>
+                {/* ═══════════════════════════════════════════════════════════════
+                    CARD FRONT: ULTRA-LUXURY HOLOGRAPHIC SMART PVC ID
+                ═══════════════════════════════════════════════════════════════ */}
+                <div ref={cardFrontRef} className="absolute inset-0 rounded-[22px] sm:rounded-[28px] p-3.5 sm:p-5 bg-gradient-to-br from-[#000a17] via-[#001c3d] to-[#003870] border-[1.5px] border-amber-300/60 shadow-[0_20px_50px_rgba(0,10,25,0.65),0_0_30px_rgba(0,114,206,0.2)] flex flex-col justify-between overflow-hidden text-white select-none" style={{ backfaceVisibility: "hidden" }}>
+                  {/* Holographic Security Shimmer Layer */}
+                  <div className="absolute inset-0 opacity-25 pointer-events-none" style={{
+                    backgroundImage: `radial-gradient(circle at 80% 20%, rgba(255,215,0,0.4) 0%, transparent 45%), linear-gradient(135deg, transparent 35%, rgba(0,210,255,0.3) 48%, rgba(255,255,255,0.4) 50%, transparent 65%)`
+                  }} />
 
-              {currentUser ? (
+                  {/* Micro-Circuit Security Mesh Background */}
+                  <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
+                    backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
+                    backgroundSize: "16px 16px"
+                  }} />
+
+                  {/* Watermark IEEE Diamond Crest */}
+                  <img src={ieeeStamp} alt="Watermark" className="absolute -right-6 -bottom-6 w-44 h-44 opacity-[0.08] object-contain pointer-events-none brightness-200" />
+
+                  {/* Laser Holographic Security Ribbon */}
+                  <div className="absolute top-0 right-14 w-8 h-full bg-gradient-to-b from-amber-300/10 via-cyan-300/15 to-transparent pointer-events-none opacity-40 blur-[1px]" />
+
+                  {/* ── TOP HEADER BAR: SREC Emblem + IEEE Diamond + Status ── */}
+                  <div className="flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-1.5">
+                      <div className="px-2 py-0.5 rounded-lg bg-white/95 border border-white/80 shadow-xs flex items-center gap-1.5 backdrop-blur-sm h-6 overflow-hidden">
+                        <img src={srecLogo} alt="SREC" className="h-4 sm:h-5 w-auto max-h-5 object-contain" />
+                        <div className="w-[1px] h-3 bg-slate-300" />
+                        <img src={ieeeLogo} alt="IEEE" className="h-3.5 sm:h-4 w-auto max-h-4 object-contain" />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center">
+                      <div className="card-active-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 font-black text-[9px] uppercase tracking-wider shadow-xs backdrop-blur-sm whitespace-nowrap leading-none">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 inline-block align-middle" />
+                        <span>ACTIVE</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── MIDDLE ROW: Portrait + Smart Chip + Member Details ── */}
+                  <div className="flex items-center gap-2.5 sm:gap-3.5 relative z-10 my-auto py-0.5">
+                    {/* Portrait Photo Frame */}
+                    <div className="relative shrink-0">
+                      <div className="w-[52px] h-[52px] sm:w-[68px] sm:h-[68px] shrink-0 rounded-xl sm:rounded-2xl p-[2px] bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 shadow-[0_0_12px_rgba(251,191,36,0.35)] overflow-hidden">
+                        <img src={activeMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((activeMember.first_name || "Student") + " " + (activeMember.last_name || ""))}&background=002855&color=fff&size=512`} alt={activeMember.first_name || "Student"} className="w-full h-full rounded-[10px] sm:rounded-[14px] object-cover bg-slate-900" />
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#000a17] flex items-center justify-center text-white shadow">
+                        <Check size={8} className="stroke-[3]" />
+                      </div>
+                    </div>
+
+                    {/* Member Credentials Info */}
+                    <div className="leading-tight min-w-0 flex-1">
+                      <h2 className="text-xs sm:text-base font-black text-white uppercase truncate font-sans leading-snug">
+                        {activeMember.first_name} {activeMember.last_name}
+                      </h2>
+
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="card-roll-badge inline-flex items-center px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-300/40 text-amber-300 font-mono text-[9px] font-black tracking-wider leading-none">
+                          ROLL: {activeMember.roll_number}
+                        </div>
+                      </div>
+
+                      {/* Department and SREC IEEE Member in ONE SINGLE LINE */}
+                      <p className="text-[9px] sm:text-[10px] text-sky-200 uppercase font-black tracking-wide mt-1 truncate font-sans">
+                        {activeMember.department} · SREC IEEE {activeMember.member_type || "STUDENT MEMBER"}{activeMember.year_of_study ? ` · ${activeMember.year_of_study}` : ""}
+                      </p>
+                    </div>
+
+                    {/* Authentic Gold EMV Smart Chip */}
+                    <div className="hidden xs:flex flex-col shrink-0 w-9 h-7 sm:w-10 sm:h-8 rounded-md bg-gradient-to-br from-[#ffe082] via-[#ffca28] to-[#ff8f00] p-[1.5px] shadow-[0_2px_8px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-[#8d4004] overflow-hidden relative select-none">
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-black/20 pointer-events-none" />
+                      <div className="w-full h-full relative border border-[#6d3000]/70 rounded-[3px] bg-gradient-to-b from-[#ffd54f] to-[#ffb300] flex items-center justify-between px-0.5">
+                        <div className="w-[30%] h-full flex flex-col justify-between py-1">
+                          <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
+                          <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
+                        </div>
+                        <div className="w-[34%] h-[90%] rounded-full border border-[#6d3000]/80 bg-gradient-to-b from-[#fff59d] via-[#ffd54f] to-[#ffa000] shadow-[inset_0_1px_2px_rgba(255,255,255,0.7)]" />
+                        <div className="w-[30%] h-full flex flex-col justify-between py-1">
+                          <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
+                          <div className="w-full h-[1px] bg-[#6d3000]/80 shadow-[0_0.5px_0_rgba(255,255,255,0.4)]" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── BOTTOM ROW: Embossed Member ID & Security QR ── */}
+                  <div className="flex items-end justify-between relative z-10 pt-1.5 border-t border-white/15">
+                    <div>
+                      <span className="text-[7px] uppercase tracking-[0.18em] text-amber-300/90 font-black block leading-none">
+                        OFFICIAL IEEE MEMBERSHIP ID
+                      </span>
+                      <span className="text-xs sm:text-base font-black font-mono tracking-widest text-white drop-shadow-md block mt-0.5">
+                        {!activeMember.ieee_id || activeMember.ieee_id === "PENDING" ? "ALLOCATING..." : activeMember.ieee_id}
+                      </span>
+                      <span className="text-[7.5px] sm:text-[9px] font-sans font-bold text-amber-200/90 block mt-0.5 tracking-wider">
+                        VALID THRU: {activeMember.valid_thru || "DEC 31, 2026"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <div className="text-right leading-none">
+                        <span className="text-[7.5px] font-mono text-sky-200 block font-bold">STB32131</span>
+                        <span className="text-[6.5px] text-slate-300 font-mono">SB 64581</span>
+                      </div>
+                      <div className="p-0.5 bg-white rounded-md text-slate-950 shadow-xs">
+                        <QrCode size={18} className="text-slate-950" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ═══════════════════════════════════════════════════════════════
+                    CARD BACK: OFFICIAL PASS AUTHORIZATION & SOCIETIES
+                ═══════════════════════════════════════════════════════════════ */}
+                <div className="absolute inset-0 rounded-[22px] sm:rounded-[28px] p-3.5 sm:p-5 bg-gradient-to-br from-[#000a17] via-[#001c3d] to-[#003870] border-[1.5px] border-amber-300/60 shadow-[0_20px_50px_rgba(0,10,25,0.65)] flex flex-col justify-between overflow-hidden text-white select-none" style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)"
+                }}>
+                  {/* Top Magnetic Security Stripe */}
+                  <div className="w-[calc(100%+2rem)] -mx-4 -mt-2 h-6 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-y border-amber-400/30 flex items-center justify-between px-3">
+                    <span className="text-[6.5px] font-mono text-amber-300 tracking-widest font-black uppercase">
+                      ★ IEEE MADRAS SECTION · SREC STUDENT BRANCH ★
+                    </span>
+                    <span className="text-[6.5px] font-mono text-slate-400">REGION 10 APAC</span>
+                  </div>
+
+                  {/* Middle: Institution & Enrolled Societies */}
+                  <div className="space-y-1 text-[9px] text-slate-200 my-auto">
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-300 font-bold">Institution:</span>
+                      <span className="text-white font-medium">Sri Ramakrishna Engineering College</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-300 font-bold">College Email:</span>
+                      <span className="font-mono text-sky-200 truncate max-w-[160px]">{activeMember.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-300 font-bold">Enrolled Chapters:</span>
+                      <span className="text-white font-bold tracking-wide truncate max-w-[200px]">
+                        {formatShortSocieties(activeMember.target_societies)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Counselor & Authorization Footer */}
+                  <div className="pt-1.5 border-t border-white/15 flex items-center justify-between text-[7.5px] text-slate-300">
+                    <div>
+                      <span className="font-mono font-black text-amber-300 block">AUTH: {activeMember.ieee_id || "PENDING"}-SB64581</span>
+                      <span className="text-[6.5px] text-slate-400">Valid for IEEE &amp; Collegiate Events</span>
+                    </div>
+                    <div className="text-right flex flex-col items-end">
+                      <img src={counselorSign} alt="Counselor Signature" className="h-3.5 w-auto object-contain brightness-0 invert opacity-90 drop-shadow-xs" />
+                      <span className="font-serif italic text-amber-200 text-[9px] block leading-none">Dr. K. Balamurugan</span>
+                      <span className="text-[6.5px] text-sky-200 uppercase font-bold tracking-wider">Branch Counselor</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BENTO MODULE 1: QUICK CREDENTIALS COPY CHIPS ── */}
+            <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <KeyRound size={14} className="text-[#002855]" />
+                  <span>Credentials &amp; Quick Copy</span>
+                </h4>
+                <span className="text-[9px] font-bold text-slate-400 uppercase">1-Tap Copy</span>
+              </div>
+
+              {/* Original IEEE PDF Card Quick Row */}
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 border border-blue-200 flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <span className="text-[8.5px] text-[#002855] uppercase font-bold block">Official IEEE Card</span>
+                  <span className="font-mono text-xs font-black text-[#002855] flex items-center gap-1 truncate">
+                    <FileText size={12} className="text-blue-600 shrink-0" />
+                    <span className="truncate">{activeMember.ieee_id && activeMember.ieee_id !== 'PENDING' ? `${activeMember.ieee_id}.pdf` : 'IEEE_Card.pdf'}</span>
+                  </span>
+                </div>
                 <button
                   type="button"
-                  onClick={handleLogout}
-                  className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                  onClick={handleOpenPdfModal}
+                  className="px-3 py-1.5 rounded-xl bg-[#002855] text-white hover:bg-[#001c3d] text-[10px] font-bold uppercase tracking-wider transition-all shadow-xs flex items-center gap-1 shrink-0 cursor-pointer active:scale-95"
                 >
-                  <LogOut size={12} />
-                  <span>Sign Out</span>
+                  <Eye size={12} />
+                  <span>View PDF</span>
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsGuestMode(false)}
-                  className="px-2.5 py-1 rounded-lg bg-[#002855] hover:bg-[#001c3d] text-white text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
-                >
-                  <User size={12} />
-                  <span>Member Login</span>
-                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {/* IEEE Member ID */}
+                <div className="p-2.5 rounded-xl bg-blue-50/50 border border-blue-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[8.5px] text-[#002855] uppercase font-bold block">IEEE ID</span>
+                    <span className="font-mono text-sm font-black text-[#002855]">#{activeMember.ieee_id || "PENDING"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(activeMember.ieee_id, "id")}
+                    className="p-1.5 rounded-lg bg-[#002855] text-white hover:bg-[#001c3d] transition-all shadow-xs cursor-pointer"
+                    title="Copy IEEE ID"
+                  >
+                    {copiedText === "id" ? <Check size={13} className="text-emerald-300" /> : <Copy size={13} />}
+                  </button>
+                </div>
+
+                {/* Roll Number */}
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[8.5px] text-slate-400 uppercase font-bold block">Roll Number</span>
+                    <span className="font-mono text-xs font-bold text-slate-900">{activeMember.roll_number}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(activeMember.roll_number, "roll")}
+                    className="p-1.5 rounded-lg bg-slate-200 hover:bg-[#002855] hover:text-white transition-all text-slate-700 cursor-pointer"
+                    title="Copy Roll Number"
+                  >
+                    {copiedText === "roll" ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                  </button>
+                </div>
+
+                {/* Official College Email */}
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between sm:col-span-2">
+                  <div className="min-w-0 pr-2">
+                    <span className="text-[8.5px] text-slate-400 uppercase font-bold block">Official Email</span>
+                    <span className="font-mono text-xs font-medium text-slate-700 truncate block">{activeMember.email}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(activeMember.email, "email")}
+                    className="p-1.5 rounded-lg bg-slate-200 hover:bg-[#002855] hover:text-white transition-all text-slate-700 shrink-0 cursor-pointer"
+                    title="Copy Email"
+                  >
+                    {copiedText === "email" ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BENTO MODULE 2: PRIMARY MEMBER PROFILE & AVATAR UPLOADER ── */}
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3.5">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[9px] font-black uppercase tracking-wider">
+                  ● Verified Student Record
+                </span>
+
+                {currentUser ? (
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                  >
+                    <LogOut size={12} />
+                    <span>Sign Out</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsGuestMode(false)}
+                    className="px-2.5 py-1 rounded-lg bg-[#002855] hover:bg-[#001c3d] text-white text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                  >
+                    <User size={12} />
+                    <span>Member Login</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-start gap-3.5">
+                {/* Avatar with Camera Uploader */}
+                <div className="relative shrink-0 group">
+                  <img
+                    src={activeMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((activeMember.first_name || "Student") + " " + (activeMember.last_name || ""))}&background=002855&color=fff&size=512`}
+                    alt={activeMember.first_name || "Student"}
+                    className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover object-top border-2 border-slate-200 shadow-sm bg-slate-900"
+                  />
+                  <label
+                    className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white cursor-pointer transition-opacity text-[8px] font-bold"
+                    title="Update Profile Avatar"
+                  >
+                    {isUploadingAvatar ? (
+                      <Loader2 size={16} className="animate-spin text-white" />
+                    ) : (
+                      <>
+                        <Camera size={16} />
+                        <span>Photo</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={isUploadingAvatar}
+                      className="hidden"
+                    />
+                  </label>
+                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white shadow-sm">
+                    <Check size={10} className="stroke-[3]" />
+                  </span>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-black text-slate-900 uppercase truncate">
+                    {activeMember.first_name} {activeMember.last_name}
+                  </h2>
+                  <p className="text-xs text-[#002855] font-bold truncate mt-0.5">
+                    {activeMember.member_type || "Student Member"}
+                  </p>
+                  <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                    {activeMember.department}
+                  </p>
+                  <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-[#002855] font-mono text-[9.5px] font-black">
+                    <span>IEEE ID:</span>
+                    <span>#{activeMember.ieee_id}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-[8.5px] text-slate-400 font-bold uppercase block">College Roll</span>
+                  <span className="font-mono font-bold text-slate-900">{activeMember.roll_number}</span>
+                </div>
+                <div>
+                  <span className="text-[8.5px] text-slate-400 font-bold uppercase block">Phone Contact</span>
+                  <span className="font-medium text-slate-700 truncate block">{activeMember.phone}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BENTO MODULE 3: ACADEMIC AFFILIATION & DEPARTMENT STANDING ── */}
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center gap-2 text-[#002855] text-xs font-black uppercase tracking-wider">
+                <GraduationCap size={16} />
+                <span>Academic Affiliation &amp; Standing</span>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-black text-slate-900 leading-snug">
+                  {activeMember.department}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {activeMember.year_of_study || "IV Year (2022-2026)"} · Sri Ramakrishna Engineering College
+                </p>
+              </div>
+
+              <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-[8.5px] text-slate-400 font-bold uppercase block">Registered On</span>
+                  <span className="font-bold text-slate-800">{activeMember.join_date || "16 Aug 2025"}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[8.5px] text-slate-400 font-bold uppercase block">1 Year Validity</span>
+                  <span className="font-black text-emerald-600">{activeMember.valid_thru || "DEC 31, 2026"}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BENTO MODULE 4: TECHNICAL SPECIALIZATIONS & SKILLS TAG CLOUD ── */}
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <Cpu size={15} className="text-[#002855]" />
+                  <span>Technical Specializations &amp; Domains</span>
+                </h4>
+                <span className="text-[9px] font-bold text-slate-400 uppercase">
+                  {(Array.isArray(activeMember.skills) ? activeMember.skills : []).length} Verified
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {(Array.isArray(activeMember.skills) ? activeMember.skills : ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions"]).map((skill, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-[11px] font-bold transition-all shadow-2xs"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              {activeMember.bio_sop && (
+                <div className="p-3 rounded-2xl bg-blue-50/50 border border-blue-100 text-[11px] text-slate-700 italic">
+                  "{activeMember.bio_sop}"
+                </div>
               )}
             </div>
 
-            <div className="flex items-start gap-3.5">
-              {/* Avatar with Camera Uploader */}
-              <div className="relative shrink-0 group">
-                <img
-                  src={activeMember.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((activeMember.first_name || "Student") + " " + (activeMember.last_name || ""))}&background=002855&color=fff&size=512`}
-                  alt={activeMember.first_name || "Student"}
-                  className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover object-top border-2 border-slate-200 shadow-sm bg-slate-900"
-                />
-                <label
-                  className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white cursor-pointer transition-opacity text-[8px] font-bold"
-                  title="Update Profile Avatar"
+            {/* ── BENTO MODULE 5: ENROLLED TECHNICAL CHAPTERS MULTI-GRID ── */}
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <Award size={15} className="text-[#002855]" />
+                  <span>Enrolled Technical Chapters</span>
+                </h4>
+                <button
+                  onClick={() => handleTabChange("societies")}
+                  className="text-[10px] font-bold text-[#002855] hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
-                  {isUploadingAvatar ? (
-                    <Loader2 size={16} className="animate-spin text-white" />
-                  ) : (
-                    <>
-                      <Camera size={16} />
-                      <span>Photo</span>
-                    </>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    disabled={isUploadingAvatar}
-                    className="hidden"
-                  />
-                </label>
-                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white shadow-sm">
-                  <Check size={10} className="stroke-[3]" />
+                  <span>Explore 8</span>
+                  <ChevronRight size={12} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {(Array.isArray(activeMember.target_societies) ? activeMember.target_societies : ["IEEE Student Branch SREC"]).map((socName, idx) => {
+                  const logo = getSocietyLogo(socName);
+                  return (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#002855]/40 hover:bg-white transition-all flex items-center justify-between gap-2.5 group"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-slate-200 shadow-2xs shrink-0">
+                          <img src={logo} alt={socName} className="max-h-full max-w-full object-contain" />
+                        </div>
+                        <div className="min-w-0">
+                          <h5 className="text-xs font-black text-slate-900 uppercase truncate group-hover:text-[#002855] transition-colors">
+                            {socName}
+                          </h5>
+                          <p className="text-[9px] text-slate-500">IEEE SREC Chapter</p>
+                        </div>
+                      </div>
+
+                      <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[8px] font-black uppercase tracking-wider shrink-0">
+                        Active
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── BENTO MODULE 6: VERIFIED EVENT PARTICIPATION & CERTIFICATION LOGS ── */}
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <Calendar size={15} className="text-[#002855]" />
+                  <span>Verified Event Participations &amp; Logs</span>
+                </h4>
+                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                  {(Array.isArray(activeMember.events_attended) ? activeMember.events_attended : []).length || 4} Logs
                 </span>
               </div>
 
-              <div className="min-w-0 flex-1">
-                <h2 className="text-base font-black text-slate-900 uppercase truncate">
-                  {activeMember.first_name} {activeMember.last_name}
-                </h2>
-                <p className="text-xs text-[#002855] font-bold truncate mt-0.5">
-                  {activeMember.member_type || "Student Member"}
-                </p>
-                <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                  {activeMember.department}
-                </p>
-                <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-[#002855] font-mono text-[9.5px] font-black">
-                  <span>IEEE ID:</span>
-                  <span>#{activeMember.ieee_id}</span>
-                </div>
+              <div className="space-y-2">
+                {(Array.isArray(activeMember.events_attended) ? activeMember.events_attended : [
+                  { title: "VisionX 2025 – AI & Edge Computing Expo", date: "Aug 2025", category: "National Symposium" },
+                  { title: "IEEE Madras Section Leadership Conclave", date: "May 2025", category: "Leadership Summit" },
+                  { title: "IEEE International Renewable Energy Workshop", date: "Jan 2025", category: "Technical Workshop" },
+                  { title: "IEEE Student Branch Induction & Oath Ceremony", date: "Sep 2024", category: "Collegiate Event" }
+                ]).map((event, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2.5 hover:bg-white transition-all"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-100/70 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0">
+                        <CheckCircle2 size={16} />
+                      </div>
+                      <div className="min-w-0">
+                        <h5 className="text-xs font-black text-slate-900 uppercase truncate">
+                          {event.title}
+                        </h5>
+                        <p className="text-[9.5px] text-slate-500 mt-0.5">
+                          <span className="text-[#002855] font-bold">{event.category}</span> · {event.date}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8.5px] font-black uppercase tracking-wider shrink-0">
+                      Verified
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-[8.5px] text-slate-400 font-bold uppercase block">College Roll</span>
-                <span className="font-mono font-bold text-slate-900">{activeMember.roll_number}</span>
-              </div>
-              <div>
-                <span className="text-[8.5px] text-slate-400 font-bold uppercase block">Phone Contact</span>
-                <span className="font-medium text-slate-700 truncate block">{activeMember.phone}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ── BENTO MODULE 3: ACADEMIC AFFILIATION & DEPARTMENT STANDING ── */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 text-[#002855] text-xs font-black uppercase tracking-wider">
-              <GraduationCap size={16} />
-              <span>Academic Affiliation &amp; Standing</span>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-black text-slate-900 leading-snug">
-                {activeMember.department}
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {activeMember.year_of_study || "IV Year (2022-2026)"} · Sri Ramakrishna Engineering College
-              </p>
-            </div>
-
-            <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
-              <div>
-                <span className="text-[8.5px] text-slate-400 font-bold uppercase block">Registered On</span>
-                <span className="font-bold text-slate-800">{activeMember.join_date || "16 Aug 2025"}</span>
-              </div>
-              <div className="text-right">
-                <span className="text-[8.5px] text-slate-400 font-bold uppercase block">1 Year Validity</span>
-                <span className="font-black text-emerald-600">{activeMember.valid_thru || "DEC 31, 2026"}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ── BENTO MODULE 4: TECHNICAL SPECIALIZATIONS & SKILLS TAG CLOUD ── */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <Cpu size={15} className="text-[#002855]" />
-                <span>Technical Specializations &amp; Domains</span>
-              </h4>
-              <span className="text-[9px] font-bold text-slate-400 uppercase">
-                {(Array.isArray(activeMember.skills) ? activeMember.skills : []).length} Verified
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-1.5">
-              {(Array.isArray(activeMember.skills) ? activeMember.skills : ["Power Systems", "Embedded Systems", "Technical Leadership", "Project Management", "IoT Solutions"]).map((skill, i) => (
-                <span
-                  key={i}
-                  className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-[11px] font-bold transition-all shadow-2xs"
-                >
-                  {skill}
+            {/* ── BENTO MODULE 7: OFFICIAL MEMBERSHIP DIRECTORY TABLE ── */}
+            <div className="rounded-3xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#002855] flex items-center gap-1.5">
+                  <TableIcon size={13} />
+                  <span>Structured Membership Dossier</span>
+                </h3>
+                <span className="text-[10px] font-mono font-bold text-[#002855]">
+                  {activeMember.roll_number}
                 </span>
-              ))}
+              </div>
+
+              <div className="p-2 sm:p-3">
+                <table className="w-full text-xs text-left border-collapse">
+                  <tbody className="divide-y divide-slate-100">
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px] w-1/3">Full Name</td>
+                      <td className="py-2 px-2 font-extrabold text-slate-900">{activeMember.first_name} {activeMember.last_name}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">IEEE Member ID</td>
+                      <td className="py-2 px-2 font-mono font-bold text-[#002855]">
+                        <div className="flex items-center justify-between">
+                          <span>{!activeMember.ieee_id || activeMember.ieee_id === "PENDING" ? "Pending Allocation" : `#${activeMember.ieee_id}`}</span>
+                          {activeMember.ieee_id && activeMember.ieee_id !== "PENDING" && (
+                            <button onClick={() => handleCopy(activeMember.ieee_id, "id")} className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer">
+                              {copiedText === "id" ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">College Roll No</td>
+                      <td className="py-2 px-2 font-mono font-bold text-slate-900">{activeMember.roll_number}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Department</td>
+                      <td className="py-2 px-2 text-slate-800 font-semibold">{activeMember.department}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Year &amp; Batch</td>
+                      <td className="py-2 px-2 text-slate-800 font-semibold">{activeMember.year_of_study || activeMember.join_date || "IV Year (2022-2026)"}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Branch Role</td>
+                      <td className="py-2 px-2 font-extrabold text-[#002855]">{activeMember.member_type || "Student Member"}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Status &amp; Validity</td>
+                      <td className="py-2 px-2">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[8.5px] font-black border border-emerald-200">
+                            ACTIVE ({activeMember.valid_thru || "DEC 31, 2026"})
+                          </span>
+                          <button onClick={() => setIsRenewModalOpen(true)} className="px-2 py-0.5 rounded-md bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-black text-[8.5px] uppercase transition-colors cursor-pointer">
+                            ⚡ Renew
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Societies</td>
+                      <td className="py-2 px-2">
+                        <div className="flex flex-wrap gap-1">
+                          {(Array.isArray(activeMember.target_societies) ? activeMember.target_societies : (typeof activeMember.target_societies === "string" ? activeMember.target_societies.split(",") : [])).map((s, idx) => (
+                            <span key={idx} className="px-1.5 py-0.5 rounded-lg bg-blue-50/90 border border-blue-200 text-[8.5px] text-[#002855] font-semibold">
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Email</td>
+                      <td className="py-2 px-2 text-[#002855] font-mono text-[10px] truncate max-w-[180px]">
+                        <a href={`mailto:${activeMember.email}`}>{activeMember.email}</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Phone</td>
+                      <td className="py-2 px-2 text-slate-800 font-mono text-[10px]">{activeMember.phone}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Phone</td>
+                      <td className="py-2 px-2 text-slate-800 font-mono text-[10px]">{selectedMember.phone}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            {activeMember.bio_sop && (
-              <div className="p-3 rounded-2xl bg-blue-50/50 border border-blue-100 text-[11px] text-slate-700 italic">
-                "{activeMember.bio_sop}"
-              </div>
-            )}
-          </div>
-
-          {/* ── BENTO MODULE 5: ENROLLED TECHNICAL CHAPTERS MULTI-GRID ── */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <Award size={15} className="text-[#002855]" />
-                <span>Enrolled Technical Chapters</span>
-              </h4>
-              <button
-                onClick={() => handleTabChange("societies")}
-                className="text-[10px] font-bold text-[#002855] hover:underline flex items-center gap-0.5 cursor-pointer"
+            {/* ── BENTO MODULE 8: QUICK IEEE MEMBER RESOURCES DOCK ── */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <a
+                href="https://ieeexplore.ieee.org"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95"
               >
-                <span>Explore 8</span>
-                <ChevronRight size={12} />
+                <Globe size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
+                <span className="text-[10.5px] font-black text-slate-800 block">IEEE Xplore</span>
+                <span className="text-[8.5px] text-slate-400 block">Digital Library</span>
+              </a>
+
+              <a
+                href="https://spectrum.ieee.org"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95"
+              >
+                <BookOpen size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
+                <span className="text-[10.5px] font-black text-slate-800 block">Spectrum</span>
+                <span className="text-[8.5px] text-slate-400 block">Tech Magazine</span>
+              </a>
+
+              <a
+                href="https://ieee-collabratec.ieee.org"
+                target="_blank"
+                rel="noreferrer"
+                className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95"
+              >
+                <Users size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
+                <span className="text-[10.5px] font-black text-slate-800 block">Collabratec</span>
+                <span className="text-[8.5px] text-slate-400 block">Member Network</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => handleTabChange("events")}
+                className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95 cursor-pointer"
+              >
+                <Sparkles size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
+                <span className="text-[10.5px] font-black text-slate-800 block">Activities</span>
+                <span className="text-[8.5px] text-slate-400 block">Branch Calendar</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {(Array.isArray(activeMember.target_societies) ? activeMember.target_societies : ["IEEE Student Branch SREC"]).map((socName, idx) => {
-                const logo = getSocietyLogo(socName);
-                return (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#002855]/40 hover:bg-white transition-all flex items-center justify-between gap-2.5 group"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-slate-200 shadow-2xs shrink-0">
-                        <img src={logo} alt={socName} className="max-h-full max-w-full object-contain" />
-                      </div>
-                      <div className="min-w-0">
-                        <h5 className="text-xs font-black text-slate-900 uppercase truncate group-hover:text-[#002855] transition-colors">
-                          {socName}
-                        </h5>
-                        <p className="text-[9px] text-slate-500">IEEE SREC Chapter</p>
-                      </div>
-                    </div>
-
-                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[8px] font-black uppercase tracking-wider shrink-0">
-                      Active
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
           </div>
-
-          {/* ── BENTO MODULE 6: VERIFIED EVENT PARTICIPATION & CERTIFICATION LOGS ── */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <Calendar size={15} className="text-[#002855]" />
-                <span>Verified Event Participations &amp; Logs</span>
-              </h4>
-              <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                {(Array.isArray(activeMember.events_attended) ? activeMember.events_attended : []).length || 4} Logs
-              </span>
-            </div>
-
-            <div className="space-y-2">
-              {(Array.isArray(activeMember.events_attended) ? activeMember.events_attended : [
-                { title: "VisionX 2025 – AI & Edge Computing Expo", date: "Aug 2025", category: "National Symposium" },
-                { title: "IEEE Madras Section Leadership Conclave", date: "May 2025", category: "Leadership Summit" },
-                { title: "IEEE International Renewable Energy Workshop", date: "Jan 2025", category: "Technical Workshop" },
-                { title: "IEEE Student Branch Induction & Oath Ceremony", date: "Sep 2024", category: "Collegiate Event" }
-              ]).map((event, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2.5 hover:bg-white transition-all"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-100/70 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0">
-                      <CheckCircle2 size={16} />
-                    </div>
-                    <div className="min-w-0">
-                      <h5 className="text-xs font-black text-slate-900 uppercase truncate">
-                        {event.title}
-                      </h5>
-                      <p className="text-[9.5px] text-slate-500 mt-0.5">
-                        <span className="text-[#002855] font-bold">{event.category}</span> · {event.date}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8.5px] font-black uppercase tracking-wider shrink-0">
-                    Verified
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── BENTO MODULE 7: OFFICIAL MEMBERSHIP DIRECTORY TABLE ── */}
-          <div className="rounded-3xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-xs font-black uppercase tracking-wider text-[#002855] flex items-center gap-1.5">
-                <TableIcon size={13} />
-                <span>Structured Membership Dossier</span>
-              </h3>
-              <span className="text-[10px] font-mono font-bold text-[#002855]">
-                {activeMember.roll_number}
-              </span>
-            </div>
-
-            <div className="p-2 sm:p-3">
-              <table className="w-full text-xs text-left border-collapse">
-                <tbody className="divide-y divide-slate-100">
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px] w-1/3">Full Name</td>
-                    <td className="py-2 px-2 font-extrabold text-slate-900">{activeMember.first_name} {activeMember.last_name}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">IEEE Member ID</td>
-                    <td className="py-2 px-2 font-mono font-bold text-[#002855]">
-                      <div className="flex items-center justify-between">
-                        <span>{!activeMember.ieee_id || activeMember.ieee_id === "PENDING" ? "Pending Allocation" : `#${activeMember.ieee_id}`}</span>
-                        {activeMember.ieee_id && activeMember.ieee_id !== "PENDING" && (
-                          <button onClick={() => handleCopy(activeMember.ieee_id, "id")} className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer">
-                            {copiedText === "id" ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">College Roll No</td>
-                    <td className="py-2 px-2 font-mono font-bold text-slate-900">{activeMember.roll_number}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Department</td>
-                    <td className="py-2 px-2 text-slate-800 font-semibold">{activeMember.department}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Year &amp; Batch</td>
-                    <td className="py-2 px-2 text-slate-800 font-semibold">{activeMember.year_of_study || activeMember.join_date || "IV Year (2022-2026)"}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Branch Role</td>
-                    <td className="py-2 px-2 font-extrabold text-[#002855]">{activeMember.member_type || "Student Member"}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Status &amp; Validity</td>
-                    <td className="py-2 px-2">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[8.5px] font-black border border-emerald-200">
-                          ACTIVE ({activeMember.valid_thru || "DEC 31, 2026"})
-                        </span>
-                        <button onClick={() => setIsRenewModalOpen(true)} className="px-2 py-0.5 rounded-md bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-black text-[8.5px] uppercase transition-colors cursor-pointer">
-                          ⚡ Renew
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Societies</td>
-                    <td className="py-2 px-2">
-                      <div className="flex flex-wrap gap-1">
-                        {(Array.isArray(activeMember.target_societies) ? activeMember.target_societies : (typeof activeMember.target_societies === "string" ? activeMember.target_societies.split(",") : [])).map((s, idx) => (
-                          <span key={idx} className="px-1.5 py-0.5 rounded-lg bg-blue-50/90 border border-blue-200 text-[8.5px] text-[#002855] font-semibold">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Email</td>
-                    <td className="py-2 px-2 text-[#002855] font-mono text-[10px] truncate max-w-[180px]">
-                      <a href={`mailto:${activeMember.email}`}>{activeMember.email}</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Phone</td>
-                    <td className="py-2 px-2 text-slate-800 font-mono text-[10px]">{activeMember.phone}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-2 text-slate-500 font-bold uppercase text-[9px]">Phone</td>
-                    <td className="py-2 px-2 text-slate-800 font-mono text-[10px]">{selectedMember.phone}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* ── BENTO MODULE 8: QUICK IEEE MEMBER RESOURCES DOCK ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <a
-              href="https://ieeexplore.ieee.org"
-              target="_blank"
-              rel="noreferrer"
-              className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95"
-            >
-              <Globe size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
-              <span className="text-[10.5px] font-black text-slate-800 block">IEEE Xplore</span>
-              <span className="text-[8.5px] text-slate-400 block">Digital Library</span>
-            </a>
-
-            <a
-              href="https://spectrum.ieee.org"
-              target="_blank"
-              rel="noreferrer"
-              className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95"
-            >
-              <BookOpen size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
-              <span className="text-[10.5px] font-black text-slate-800 block">Spectrum</span>
-              <span className="text-[8.5px] text-slate-400 block">Tech Magazine</span>
-            </a>
-
-            <a
-              href="https://ieee-collabratec.ieee.org"
-              target="_blank"
-              rel="noreferrer"
-              className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95"
-            >
-              <Users size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
-              <span className="text-[10.5px] font-black text-slate-800 block">Collabratec</span>
-              <span className="text-[8.5px] text-slate-400 block">Member Network</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => handleTabChange("events")}
-              className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] shadow-xs text-center space-y-1 transition-all group active:scale-95 cursor-pointer"
-            >
-              <Sparkles size={18} className="mx-auto text-[#002855] group-hover:scale-110 transition-transform" />
-              <span className="text-[10.5px] font-black text-slate-800 block">Activities</span>
-              <span className="text-[8.5px] text-slate-400 block">Branch Calendar</span>
-            </button>
-          </div>
-
-        </div>
-      ))}
+        ))}
 
       {/* ═══════════════════════════════════════════════════════════════════
           TAB 4: TECHNICAL SOCIETIES (WHITE THEME)
       ════════════════════════════════════════════════════════════════════ */}
-{
-  activeTab === "societies" && (<div className="space-y-3">
-    {selectedSocietyId ? (() => {
-      const rawSoc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
-      const soc = { ...rawSoc };
-      
-      const userSocList = Array.isArray(currentUser?.target_societies)
-        ? currentUser.target_societies
-        : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
-      const isEnrolled = userSocList.some((ts) => {
-        const t = String(ts || "").toLowerCase();
-        const code = (soc.code || "").toLowerCase();
-        const name = (soc.name || "").toLowerCase();
-        return (
-          t.includes(code) ||
-          t.includes(name) ||
-          (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
-          (soc.id === "cs" && t.includes("computer")) ||
-          (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
-          (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
-          (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
-          (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
-          (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
-          (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
-        );
-      });
-      
-      const baseDataset = REAL_SOCIETY_DATASETS[soc.id] || { bearers: [], execs: [] };
-      const dbOfficersList = dynamicSocietyOfficers[soc.id];
-      const dbExecutivesList = dynamicSocietyExecutives[soc.id];
+      {
+        activeTab === "societies" && (<div className="space-y-3">
+          {selectedSocietyId ? (() => {
+            const rawSoc = SOCIETIES_DATA.find((s) => s.id === selectedSocietyId) || SOCIETIES_DATA[0];
+            const soc = { ...rawSoc };
 
-      const socOfficers = (dbOfficersList && dbOfficersList.length > 0)
-        ? dbOfficersList
-        : baseDataset.bearers;
-      const socExecutives = (dbExecutivesList && dbExecutivesList.length > 0)
-        ? dbExecutivesList
-        : baseDataset.execs;
+            const userSocList = Array.isArray(currentUser?.target_societies)
+              ? currentUser.target_societies
+              : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+            const isEnrolled = userSocList.some((ts) => {
+              const t = String(ts || "").toLowerCase();
+              const code = (soc.code || "").toLowerCase();
+              const name = (soc.name || "").toLowerCase();
+              return (
+                t.includes(code) ||
+                t.includes(name) ||
+                (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
+                (soc.id === "cs" && t.includes("computer")) ||
+                (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
+                (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
+                (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
+                (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
+                (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
+                (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+              );
+            });
 
-      return (
-        <div className="space-y-3">
-          <button onClick={() => setSelectedSocietyId(null)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
-            <ArrowLeft size={13} /> Back to All Chapters
-          </button>
+            const baseDataset = REAL_SOCIETY_DATASETS[soc.id] || { bearers: [], execs: [] };
+            const dbOfficersList = dynamicSocietyOfficers[soc.id];
+            const dbExecutivesList = dynamicSocietyExecutives[soc.id];
 
-          {/* Society Detail Header Card */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <img src={soc.logo} alt={soc.code} className="w-12 h-12 rounded-2xl object-contain bg-slate-50 p-1 border border-slate-200 shadow-sm" />
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-extrabold text-[9px] uppercase tracking-wider">
-                      {soc.badge}
-                    </span>
-                    {isEnrolled && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px] flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> ENROLLED
-                      </span>
-                    )}
+            const socOfficers = (dbOfficersList && dbOfficersList.length > 0)
+              ? dbOfficersList
+              : baseDataset.bearers;
+            const socExecutives = (dbExecutivesList && dbExecutivesList.length > 0)
+              ? dbExecutivesList
+              : baseDataset.execs;
+
+            return (
+              <div className="space-y-3">
+                <button onClick={() => setSelectedSocietyId(null)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
+                  <ArrowLeft size={13} /> Back to All Chapters
+                </button>
+
+                {/* Society Detail Header Card */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <img src={soc.logo} alt={soc.code} className="w-12 h-12 rounded-2xl object-contain bg-slate-50 p-1 border border-slate-200 shadow-sm" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-extrabold text-[9px] uppercase tracking-wider">
+                            {soc.badge}
+                          </span>
+                          {isEnrolled && (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px] flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> ENROLLED
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-base font-black text-slate-900 mt-1 leading-tight">{soc.name}</h3>
+                        <p className="text-[10px] text-[#002855] font-bold mt-0.5">{soc.code} · {soc.category}</p>
+                      </div>
+                    </div>
+                    <Link to={soc.href} className="text-[10px] text-[#002855] font-bold hover:underline shrink-0">
+                      Full Web →
+                    </Link>
                   </div>
-                  <h3 className="text-base font-black text-slate-900 mt-1 leading-tight">{soc.name}</h3>
-                  <p className="text-[10px] text-[#002855] font-bold mt-0.5">{soc.code} · {soc.category}</p>
+
+                  <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    {soc.description}
+                  </p>
+
+                  {/* Advisor & Chair (Text only, no pic) */}
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Faculty Advisor</span>
+                      <p className="font-extrabold text-slate-900 text-xs mt-0.5 leading-tight truncate">{soc.advisor}</p>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Student Chair</span>
+                      <p className="font-extrabold text-slate-900 text-xs mt-0.5 leading-tight truncate">{soc.chair}</p>
+                    </div>
+                  </div>
+
+                  {/* Pricing & Join Button */}
+                  <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between text-xs">
+                    <div>
+                      <p className="text-[9px] text-amber-800 font-bold uppercase">Membership Fee</p>
+                      <p className="font-mono font-black text-amber-900 text-xs">{soc.feeUSD}</p>
+                    </div>
+                    <button
+                      onClick={() => setIsRegisterModalOpen(true)}
+                      className="px-3 py-1.5 rounded-xl bg-[#002855] text-white text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all"
+                    >
+                      {isEnrolled ? "Renew Chapter" : "Join Chapter"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <Link to={soc.href} className="text-[10px] text-[#002855] font-bold hover:underline shrink-0">
-                Full Web →
-              </Link>
-            </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-              {soc.description}
-            </p>
-
-            {/* Advisor & Chair (Text only, no pic) */}
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Faculty Advisor</span>
-                <p className="font-extrabold text-slate-900 text-xs mt-0.5 leading-tight truncate">{soc.advisor}</p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Student Chair</span>
-                <p className="font-extrabold text-slate-900 text-xs mt-0.5 leading-tight truncate">{soc.chair}</p>
-              </div>
-            </div>
-
-            {/* Pricing & Join Button */}
-            <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between text-xs">
-              <div>
-                <p className="text-[9px] text-amber-800 font-bold uppercase">Membership Fee</p>
-                <p className="font-mono font-black text-amber-900 text-xs">{soc.feeUSD}</p>
-              </div>
-              <button
-                onClick={() => setIsRegisterModalOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-[#002855] text-white text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all"
-              >
-                {isEnrolled ? "Renew Chapter" : "Join Chapter"}
-              </button>
-            </div>
-          </div>
-
-          {/* 1. SEPARATE SECTION: CHAPTER OFFICE BEARERS (REAL DATA, NO PIC) */}
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <Crown size={14} className="text-amber-600" /> Chapter Office Bearers
-              </h4>
-              <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold">
-                {socOfficers.length} Officers
-              </span>
-            </div>
-            <div className="space-y-1.5">
-              {socOfficers.map((ob, idx) => (
-                <div key={ob.id || idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:bg-slate-100/70 transition-colors">
-                  <div>
-                    <p className="font-extrabold text-slate-900 text-xs leading-tight">{ob.name}</p>
-                    <p className="text-[9.5px] text-[#002855] font-bold mt-0.5">{ob.role}</p>
-                  </div>
-                  {ob.department && (
-                    <span className="text-[9.5px] font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
-                      {ob.department}
+                {/* 1. SEPARATE SECTION: CHAPTER OFFICE BEARERS (REAL DATA, NO PIC) */}
+                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                      <Crown size={14} className="text-amber-600" /> Chapter Office Bearers
+                    </h4>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold">
+                      {socOfficers.length} Officers
                     </span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {socOfficers.map((ob, idx) => (
+                      <div key={ob.id || idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:bg-slate-100/70 transition-colors">
+                        <div>
+                          <p className="font-extrabold text-slate-900 text-xs leading-tight">{ob.name}</p>
+                          <p className="text-[9.5px] text-[#002855] font-bold mt-0.5">{ob.role}</p>
+                        </div>
+                        {ob.department && (
+                          <span className="text-[9.5px] font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                            {ob.department}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. SEPARATE SECTION: CHAPTER EXECUTIVE MEMBERS (REAL DATA, SEPARATE BELOW, NO PIC) */}
+                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                      <Users size={14} className="text-[#002855]" /> Executive Committee Members
+                    </h4>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
+                      {socExecutives.length} Executives
+                    </span>
+                  </div>
+                  {socExecutives.length > 0 ? (
+                    <div className="space-y-1.5">
+                      {socExecutives.map((ex, idx) => (
+                        <div key={ex.id || idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:bg-slate-100/70 transition-colors">
+                          <div>
+                            <p className="font-extrabold text-slate-900 text-xs leading-tight">{ex.name}</p>
+                            <p className="text-[9.5px] text-sky-700 font-bold mt-0.5">{ex.role || "Executive Member"}</p>
+                          </div>
+                          {ex.department && (
+                            <span className="text-[9.5px] font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                              {ex.department}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-slate-500 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-center">
+                      Executive committee roster active. New appointments update during chapter recruitment.
+                    </p>
                   )}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 2. SEPARATE SECTION: CHAPTER EXECUTIVE MEMBERS (REAL DATA, SEPARATE BELOW, NO PIC) */}
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <Users size={14} className="text-[#002855]" /> Executive Committee Members
-              </h4>
-              <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
-                {socExecutives.length} Executives
-              </span>
-            </div>
-            {socExecutives.length > 0 ? (
-              <div className="space-y-1.5">
-                {socExecutives.map((ex, idx) => (
-                  <div key={ex.id || idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:bg-slate-100/70 transition-colors">
-                    <div>
-                      <p className="font-extrabold text-slate-900 text-xs leading-tight">{ex.name}</p>
-                      <p className="text-[9.5px] text-sky-700 font-bold mt-0.5">{ex.role || "Executive Member"}</p>
-                    </div>
-                    {ex.department && (
-                      <span className="text-[9.5px] font-mono text-slate-600 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
-                        {ex.department}
-                      </span>
-                    )}
-                  </div>
-                ))}
               </div>
-            ) : (
-              <p className="text-[11px] text-slate-500 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-center">
-                Executive committee roster active. New appointments update during chapter recruitment.
-              </p>
-            )}
-          </div>
-        </div>
-      );
-    })() : (
-      /* CHAPTERS LIST (CARDS / TABLE) */
-      <>
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                <Cpu size={16} className="text-[#002855]" />
-                {societyScope === "registered" && currentUser
-                  ? `My Enrolled Societies (${studentRegisteredSocieties.length})`
-                  : "8 Technical Society Chapters"}
-              </h2>
-              <p className="text-[10px] text-slate-500">
-                {societyScope === "registered" && currentUser
-                  ? `Active memberships for ${currentUser.first_name} ${currentUser.last_name}`
-                  : "Affiliated technical societies at IEEE SB SREC"}
-              </p>
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
-              {displayedSocieties.length} Chapters
-            </span>
-          </div>
+            );
+          })() : (
+            /* CHAPTERS LIST (CARDS / TABLE) */
+            <>
+              <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <Cpu size={16} className="text-[#002855]" />
+                      {societyScope === "registered" && currentUser
+                        ? `My Enrolled Societies (${studentRegisteredSocieties.length})`
+                        : "8 Technical Society Chapters"}
+                    </h2>
+                    <p className="text-[10px] text-slate-500">
+                      {societyScope === "registered" && currentUser
+                        ? `Active memberships for ${currentUser.first_name} ${currentUser.last_name}`
+                        : "Affiliated technical societies at IEEE SB SREC"}
+                    </p>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[10px] font-bold">
+                    {displayedSocieties.length} Chapters
+                  </span>
+                </div>
 
-          {/* Registered vs All Scope Switcher (when user is logged in) */}
-          {currentUser && (<div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
-            <button onClick={() => setSocietyScope("registered")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "registered"
-              ? "bg-[#002855] text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900"}`}>
-              <CheckCircle2 size={12} className={societyScope === "registered" ? "text-cyan-300" : "text-slate-400"} />
-              <span>My Registered ({studentRegisteredSocieties.length})</span>
-            </button>
-            <button onClick={() => setSocietyScope("all")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "all"
-              ? "bg-[#002855] text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900"}`}>
-              <Globe size={12} className={societyScope === "all" ? "text-cyan-300" : "text-slate-400"} />
-              <span>All 8 Chapters</span>
-            </button>
-          </div>)}
+                {/* Registered vs All Scope Switcher (when user is logged in) */}
+                {currentUser && (<div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+                  <button onClick={() => setSocietyScope("registered")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "registered"
+                    ? "bg-[#002855] text-white shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"}`}>
+                    <CheckCircle2 size={12} className={societyScope === "registered" ? "text-cyan-300" : "text-slate-400"} />
+                    <span>My Registered ({studentRegisteredSocieties.length})</span>
+                  </button>
+                  <button onClick={() => setSocietyScope("all")} className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center gap-1 ${societyScope === "all"
+                    ? "bg-[#002855] text-white shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"}`}>
+                    <Globe size={12} className={societyScope === "all" ? "text-cyan-300" : "text-slate-400"} />
+                    <span>All 8 Chapters</span>
+                  </button>
+                </div>)}
 
-          {/* Search bar for Societies */}
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 text-slate-400" size={13} />
-            <input
-              type="text"
-              placeholder="Search chapters by name, code, or advisor..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs placeholder-slate-400 focus:outline-none focus:border-[#002855] transition-all"
-            />
-          </div>
+                {/* Search bar for Societies */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-2.5 text-slate-400" size={13} />
+                  <input
+                    type="text"
+                    placeholder="Search chapters by name, code, or advisor..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs placeholder-slate-400 focus:outline-none focus:border-[#002855] transition-all"
+                  />
+                </div>
 
-          {/* View Mode Switcher */}
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-[10px] text-slate-500 font-bold uppercase">Display Format</span>
-            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-[10px]">
-              <button
-                onClick={() => setViewMode("cards")}
-                className={`px-2.5 py-1 rounded-lg font-black uppercase transition-all flex items-center gap-1 ${viewMode === "cards" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500"}`}
-              >
-                <LayoutGrid size={11} /> Cards
-              </button>
-              <button
-                onClick={() => setViewMode("table")}
-                className={`px-2.5 py-1 rounded-lg font-black uppercase transition-all flex items-center gap-1 ${viewMode === "table" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500"}`}
-              >
-                <TableIcon size={11} /> Table
-              </button>
-            </div>
-          </div>
-        </div>
+                {/* View Mode Switcher */}
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Display Format</span>
+                  <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-[10px]">
+                    <button
+                      onClick={() => setViewMode("cards")}
+                      className={`px-2.5 py-1 rounded-lg font-black uppercase transition-all flex items-center gap-1 ${viewMode === "cards" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500"}`}
+                    >
+                      <LayoutGrid size={11} /> Cards
+                    </button>
+                    <button
+                      onClick={() => setViewMode("table")}
+                      className={`px-2.5 py-1 rounded-lg font-black uppercase transition-all flex items-center gap-1 ${viewMode === "table" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500"}`}
+                    >
+                      <TableIcon size={11} /> Table
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-        {/* SOCIETIES LISTING: TABLE VIEW vs CARDS VIEW (NO PICS) */}
-        {viewMode === "table" ? (
-          <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[500px]">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
-                    <th className="py-2.5 px-3">Society Chapter</th>
-                    <th className="py-2.5 px-3">Faculty Advisor</th>
-                    <th className="py-2.5 px-3">Student Chair</th>
-                    <th className="py-2.5 px-3 text-center">Status</th>
-                    <th className="py-2.5 px-3 text-right">Fee (USD)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-xs">
+              {/* SOCIETIES LISTING: TABLE VIEW vs CARDS VIEW (NO PICS) */}
+              {viewMode === "table" ? (
+                <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[500px]">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-black uppercase tracking-wider text-slate-600">
+                          <th className="py-2.5 px-3">Society Chapter</th>
+                          <th className="py-2.5 px-3">Faculty Advisor</th>
+                          <th className="py-2.5 px-3">Student Chair</th>
+                          <th className="py-2.5 px-3 text-center">Status</th>
+                          <th className="py-2.5 px-3 text-right">Fee (USD)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs">
+                        {displayedSocieties.map((soc) => {
+                          const userSocList = Array.isArray(currentUser?.target_societies)
+                            ? currentUser.target_societies
+                            : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
+                          const isEnrolled = userSocList.some((ts) => {
+                            const t = String(ts || "").toLowerCase();
+                            const code = (soc.code || "").toLowerCase();
+                            const name = (soc.name || "").toLowerCase();
+                            return (
+                              t.includes(code) ||
+                              t.includes(name) ||
+                              (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
+                              (soc.id === "cs" && t.includes("computer")) ||
+                              (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
+                              (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
+                              (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
+                              (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
+                              (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
+                              (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
+                            );
+                          });
+                          return (
+                            <tr key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="hover:bg-blue-50/50 transition-colors cursor-pointer">
+                              <td className="py-2.5 px-3">
+                                <div className="flex items-center gap-2">
+                                  <img src={soc.logo} alt={soc.code} className="w-7 h-7 rounded-lg object-contain bg-slate-100 p-0.5 border border-slate-200 shrink-0" />
+                                  <div>
+                                    <p className="font-extrabold text-slate-900 leading-tight">{soc.name}</p>
+                                    <p className="text-[9px] text-[#002855] font-bold">{soc.badge}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-3 text-[11px] text-slate-700 font-medium">{soc.advisor}</td>
+                              <td className="py-2.5 px-3 text-[11px] text-slate-900 font-bold">{soc.chair}</td>
+                              <td className="py-2.5 px-3 text-center">
+                                {isEnrolled ? (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px]">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    ENROLLED
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] text-slate-400 font-medium">Available</span>
+                                )}
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-mono font-bold text-amber-800 text-[11px]">{soc.feeUSD.split("+")[0]}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2.5">
                   {displayedSocieties.map((soc) => {
                     const userSocList = Array.isArray(currentUser?.target_societies)
                       ? currentUser.target_societies
@@ -3326,1417 +3378,1361 @@ export const MobileAppPage = ({
                         (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
                       );
                     });
+
                     return (
-                      <tr key={soc.id} onClick={() => setSelectedSocietyId(soc.id)} className="hover:bg-blue-50/50 transition-colors cursor-pointer">
-                        <td className="py-2.5 px-3">
-                          <div className="flex items-center gap-2">
-                            <img src={soc.logo} alt={soc.code} className="w-7 h-7 rounded-lg object-contain bg-slate-100 p-0.5 border border-slate-200 shrink-0" />
+                      <div
+                        key={soc.id}
+                        onClick={() => setSelectedSocietyId(soc.id)}
+                        className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md cursor-pointer transition-all space-y-2.5"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-3">
+                            <img src={soc.logo} alt={soc.code} className="w-11 h-11 rounded-xl object-contain bg-slate-50 p-1 border border-slate-200 shrink-0" />
                             <div>
-                              <p className="font-extrabold text-slate-900 leading-tight">{soc.name}</p>
-                              <p className="text-[9px] text-[#002855] font-bold">{soc.badge}</p>
+                              <div className="flex items-center gap-1.5">
+                                <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-extrabold text-[9px] uppercase tracking-wider">
+                                  {soc.badge}
+                                </span>
+                                {isEnrolled && (
+                                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px] flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> ENROLLED
+                                  </span>
+                                )}
+                              </div>
+                              <h3 className="text-sm font-black text-slate-900 mt-1 leading-tight">{soc.name}</h3>
+                              <p className="text-[10px] text-[#002855] font-bold">{soc.code} · {soc.category}</p>
                             </div>
                           </div>
-                        </td>
-                        <td className="py-2.5 px-3 text-[11px] text-slate-700 font-medium">{soc.advisor}</td>
-                        <td className="py-2.5 px-3 text-[11px] text-slate-900 font-bold">{soc.chair}</td>
-                        <td className="py-2.5 px-3 text-center">
-                          {isEnrolled ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px]">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              ENROLLED
-                            </span>
-                          ) : (
-                            <span className="text-[10px] text-slate-400 font-medium">Available</span>
-                          )}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-amber-800 text-[11px]">{soc.feeUSD.split("+")[0]}</td>
-                      </tr>
+                          <ChevronRight size={16} className="text-slate-400 shrink-0" />
+                        </div>
+
+                        <p className="text-[11px] text-slate-600 leading-relaxed">{soc.description}</p>
+
+                        {/* Advisor & Chair Text Badges (No Pics) */}
+                        <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                          <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                            <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Advisor</span>
+                            <p className="font-extrabold text-slate-900 text-[11px] truncate mt-0.5">{soc.advisor}</p>
+                          </div>
+                          <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                            <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Chair</span>
+                            <p className="font-extrabold text-slate-900 text-[11px] truncate mt-0.5">{soc.chair}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[10px]">
+                          <span className="font-bold text-amber-800 font-mono text-[11px]">{soc.feeUSD}</span>
+                          <span className="font-bold text-[#002855] flex items-center gap-0.5">
+                            View Roster <ChevronRight size={12} />
+                          </span>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-2.5">
-            {displayedSocieties.map((soc) => {
-              const userSocList = Array.isArray(currentUser?.target_societies)
-                ? currentUser.target_societies
-                : (typeof currentUser?.target_societies === "string" ? currentUser.target_societies.split(",") : []);
-              const isEnrolled = userSocList.some((ts) => {
-                const t = String(ts || "").toLowerCase();
-                const code = (soc.code || "").toLowerCase();
-                const name = (soc.name || "").toLowerCase();
-                return (
-                  t.includes(code) ||
-                  t.includes(name) ||
-                  (soc.id === "srec" && (t.includes("srec") || t.includes("student branch"))) ||
-                  (soc.id === "cs" && t.includes("computer")) ||
-                  (soc.id === "cis" && (t.includes("computational") || t.includes("intelligence"))) ||
-                  (soc.id === "comsoc" && (t.includes("communication") || t.includes("comsoc"))) ||
-                  (soc.id === "embs" && (t.includes("medicine") || t.includes("biology") || t.includes("embs"))) ||
-                  (soc.id === "pels" && (t.includes("power") || t.includes("pels"))) ||
-                  (soc.id === "im" && (t.includes("instrumentation") || t.includes("measurement"))) ||
-                  (soc.id === "wie" && (t.includes("women") || t.includes("wie")))
-                );
-              });
-
-              return (
-                <div
-                  key={soc.id}
-                  onClick={() => setSelectedSocietyId(soc.id)}
-                  className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md cursor-pointer transition-all space-y-2.5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <img src={soc.logo} alt={soc.code} className="w-11 h-11 rounded-xl object-contain bg-slate-50 p-1 border border-slate-200 shrink-0" />
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 font-extrabold text-[9px] uppercase tracking-wider">
-                            {soc.badge}
-                          </span>
-                          {isEnrolled && (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[9px] flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> ENROLLED
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-sm font-black text-slate-900 mt-1 leading-tight">{soc.name}</h3>
-                        <p className="text-[10px] text-[#002855] font-bold">{soc.code} · {soc.category}</p>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} className="text-slate-400 shrink-0" />
-                  </div>
-
-                  <p className="text-[11px] text-slate-600 leading-relaxed">{soc.description}</p>
-
-                  {/* Advisor & Chair Text Badges (No Pics) */}
-                  <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Advisor</span>
-                      <p className="font-extrabold text-slate-900 text-[11px] truncate mt-0.5">{soc.advisor}</p>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-[8.5px] text-slate-400 font-bold uppercase block truncate">Chair</span>
-                      <p className="font-extrabold text-slate-900 text-[11px] truncate mt-0.5">{soc.chair}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[10px]">
-                    <span className="font-bold text-amber-800 font-mono text-[11px]">{soc.feeUSD}</span>
-                    <span className="font-bold text-[#002855] flex items-center gap-0.5">
-                      View Roster <ChevronRight size={12} />
-                    </span>
-                  </div>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </>
+          )}
+        </div>
         )}
-      </>
-    )}
-  </div>
-)}
 
-{/* ═══════════════════════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════════════════════
             TAB 5: ALL PAGES DIRECTORY (WHITE THEME & REVAMPED OFFICE BEARERS)
         ════════════════════════════════════════════════════════════════════ */}
-{
-  activeTab === "menu" && (<div className="space-y-3">
-    {["office-bearers", "past-bearers", "awards", "plans", "funding", "contact", "about", "team", "reports", "gallery"].includes(allPagesCategory) ? (<div className="space-y-3">
-      <button onClick={() => setAllPagesCategory("menu")} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
-        <ArrowLeft size={13} /> Back to All Pages Menu
-      </button>
+      {
+        activeTab === "menu" && (<div className="space-y-3">
+          {["office-bearers", "past-bearers", "awards", "plans", "funding", "contact", "about", "team", "reports", "gallery"].includes(allPagesCategory) ? (<div className="space-y-3">
+            <button onClick={() => setAllPagesCategory("menu")} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#002855] hover:bg-slate-50 shadow-sm">
+              <ArrowLeft size={13} /> Back to All Pages Menu
+            </button>
 
-      {/* ── REVAMPED OFFICE BEARERS VIEW (2026-2027) ── */}
-      {allPagesCategory === "office-bearers" && (<div className="space-y-3">
+            {/* ── REVAMPED OFFICE BEARERS VIEW (2026-2027) ── */}
+            {allPagesCategory === "office-bearers" && (<div className="space-y-3">
 
-        {/* Header Card */}
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-extrabold text-[9px] uppercase tracking-wider flex items-center gap-1">
-                <Crown size={11} className="text-amber-600" /> Tenure 2026-2027
-              </span>
-              <h3 className="text-base font-black text-slate-900 mt-1">
-                Office Bearers &amp; Leadership
-              </h3>
-            </div>
-            <Link to="/office-bearers" className="text-[10px] text-[#002855] font-bold hover:underline">
-              Full Page →
-            </Link>
-          </div>
-
-          {/* Category Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-            {[
-              { id: "all", label: "All Officers" },
-              { id: "leadership", label: "Leadership" },
-              { id: "core", label: "Core Secretariat" },
-              { id: "tech_design", label: "Tech & Design" },
-              { id: "exec", label: "Executive Team" }
-            ].map((cat) => (<button key={cat.id} onClick={() => setOfficerCategory(cat.id)} className={`px-3 py-1 rounded-full text-[10px] font-black uppercase whitespace-nowrap transition-all ${officerCategory === cat.id
-              ? "bg-[#002855] text-white shadow-sm"
-              : "bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200"}`}>
-              {cat.label}
-            </button>))}
-          </div>
-        </div>
-
-        {/* DUAL VIEW: CARDS vs TABLE (TEXT & BADGES ONLY, NO PICS) */}
-        {viewMode === "cards" ? (
-          /* ── REVAMPED EXECUTIVE CARDS VIEW ── */
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {filteredOfficers.map((officer) => {
-              const Icon = officer.icon || ShieldCheck;
-              return (
-                <motion.div
-                  key={officer.id}
-                  whileHover={{ y: -2 }}
-                  className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-[#002855]/30 transition-all flex flex-col justify-between"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs" style={{ backgroundColor: officer.bg || "#f0f9ff", color: officer.color || "#002855" }}>
-                        <Icon size={20} />
-                      </div>
-                      <div className="leading-tight">
-                        <h4 className="font-extrabold text-slate-900 text-sm">
-                          {officer.name}
-                        </h4>
-                        <p className="text-xs font-black mt-0.5" style={{ color: officer.color || "#002855" }}>
-                          {officer.role}
-                        </p>
-                        <p className="text-[10px] text-slate-500 mt-0.5">
-                          {officer.department}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                    <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider" style={{ color: officer.color || "#002855", backgroundColor: officer.bg || "#f0f9ff" }}>
-                      {officer.tagline}
-                    </span>
-                    <button onClick={() => setDetailModalMember(officer)} className="text-[10px] text-[#002855] font-extrabold hover:underline flex items-center gap-0.5">
-                      <span>Dossier</span>
-                      <ArrowRight size={10} />
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        ) : (
-          /* ── TABLE VIEW FOR OFFICE BEARERS ── */
-          <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse min-w-[500px]">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                    <th className="py-2.5 px-3">Officer</th>
-                    <th className="py-2.5 px-3">Role</th>
-                    <th className="py-2.5 px-3">Department</th>
-                    <th className="py-2.5 px-3 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredOfficers.map((ob) => (
-                    <tr key={ob.id} className="hover:bg-blue-50/50">
-                      <td className="py-2.5 px-3">
-                        <span className="font-extrabold text-slate-900 text-xs">{ob.name}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-xs font-bold" style={{ color: ob.color || "#002855" }}>{ob.role}</td>
-                      <td className="py-2.5 px-3 text-[11px] text-slate-600">{ob.department}</td>
-                      <td className="py-2.5 px-3 text-right">
-                        <button onClick={() => setDetailModalMember(ob)} className="px-2 py-1 rounded-lg bg-blue-50 text-[#002855] text-[10px] font-black hover:bg-blue-100">
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-      </div>)}
-
-      {/* Sub-view: Past Bearers Table */}
-      {allPagesCategory === "past-bearers" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-        <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-            <GraduationCap size={14} className="text-[#002855]" /> Past Office Bearers Hall of Fame
-          </h3>
-          <Link to="/past-bearers" className="text-[10px] text-[#002855] font-bold hover:underline">
-            Full Page →
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left border-collapse min-w-[450px]">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                <th className="py-2.5 px-3">Tenure Year</th>
-                <th className="py-2.5 px-3">Name</th>
-                <th className="py-2.5 px-3">Role</th>
-                <th className="py-2.5 px-3">Dept</th>
-                <th className="py-2.5 px-3">Key Achievement</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {(dbPastBearers && dbPastBearers.length > 0 ? dbPastBearers : PAST_BEARERS_DATA).map((pb, idx) => (
-                <tr key={idx} className="hover:bg-blue-50/50">
-                  <td className="py-2 px-3 font-mono font-bold text-[#002855]">{pb.year}</td>
-                  <td className="py-2 px-3 font-extrabold text-slate-900">{pb.name}</td>
-                  <td className="py-2 px-3 text-slate-700 font-semibold">{pb.role}</td>
-                  <td className="py-2 px-3 text-slate-500 text-[11px]">{pb.dept}</td>
-                  <td className="py-2 px-3 text-amber-700 text-[10px] font-semibold">{pb.achievement}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>)}
-
-      {/* Sub-view: Dedicated About SREC SB Screen */}
-      {allPagesCategory === "about" && (
-        <div className="space-y-3">
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#002855] via-[#003b7a] to-[#0055a5] text-white shadow-md space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 font-mono font-extrabold text-[9px] uppercase tracking-wider">
-                STB Code 64581
-              </span>
-              <Link to="/about" className="text-[10px] text-sky-200 font-bold hover:underline flex items-center gap-1">
-                Full Web View <ExternalLink size={10} />
-              </Link>
-            </div>
-            <h3 className="text-base font-black leading-tight text-white">
-              IEEE SREC Student Branch
-            </h3>
-            <p className="text-[11px] text-sky-100/90 leading-snug">
-              Established in 2001 at Sri Ramakrishna Engineering College, Coimbatore. Operating under IEEE Madras Section (Region 10).
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
-              <p className="text-xl font-black text-[#002855]">24+ Years</p>
-              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Active Operations</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
-              <p className="text-xl font-black text-amber-600">300+</p>
-              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Active Members</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
-              <p className="text-xl font-black text-emerald-600">8 Chapters</p>
-              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Technical Societies</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
-              <p className="text-xl font-black text-purple-600">50+</p>
-              <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Annual Conclaves</p>
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
-            <div className="flex items-center gap-3">
-              <img src="https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/sign/Senior%20members/allirani.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hOWZhYTNmMS01ZTgyLTQzYTYtYmQ3Yi00ZmU2ZjlkZmNiYmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJTZW5pb3IgbWVtYmVycy9hbGxpcmFuaS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg1MDgzNjQ3LCJleHAiOjIxMDA0NDM2NDd9.phgSEPLcFXxrC3fvJ9yxcser5Jzn5557nMyPNS9WCIU" onError={(e) => { e.currentTarget.src = "https://srec.ac.in/uploads/Faculty/imresizer-1683787612345.jpg"; }} alt="HOD EEE" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
-              <div>
-                <h4 className="font-extrabold text-slate-900 text-xs">Dr. S. Allirani</h4>
-                <p className="text-[10px] text-emerald-700 font-extrabold">Head of the Department</p>
-                <p className="text-[9px] text-slate-500">Professor & HOD / EEE</p>
-              </div>
-            </div>
-            <blockquote className="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-              "Empowering students with strong fundamentals, technological innovation, and practical excellence to lead the future of electrical and electronics engineering."
-            </blockquote>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
-            <div className="flex items-center gap-3">
-              <img src="https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg" alt="Counselor" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
-              <div>
-                <h4 className="font-extrabold text-slate-900 text-xs">Dr. K. Balamurugan</h4>
-                <p className="text-[10px] text-purple-700 font-extrabold">Student Branch Counsellor</p>
-                <p className="text-[9px] text-slate-500">Associate Professor / EEE</p>
-              </div>
-            </div>
-            <blockquote className="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-              "Our goal is to cultivate world-class engineers by providing active hands-on technical projects, global IEEE networking, and student leadership opportunities."
-            </blockquote>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-              <Trophy size={14} className="text-[#002855]" /> Student Branch Milestones
-            </h4>
-            <div className="space-y-2.5">
-              {[
-                { year: "2001", title: "Inception & Chartering", desc: "Inaugurated on June 11, 2001 under Madras Section." },
-                { year: "2008", title: "CS & PELS Society Expansion", desc: "Formed dedicated Technical Society chapters." },
-                { year: "2015", title: "HQ Global Recognition", desc: "Awarded continuous Exemplary Student Branch accolade." },
-                { year: "2020", title: "Digital & Virtual Hackathons", desc: "Hosted IEEE Xtreme & national virtual hackathons." },
-                { year: "2026", title: "AECTSD 2027 Flagship Prep", desc: "Organizing premier IEEE international conference." }
-              ].map((m, idx) => (
-                <div key={idx} className="flex gap-2.5 items-start">
-                  <span className="px-2 py-0.5 rounded-lg bg-blue-50 text-[#002855] border border-blue-200 font-mono text-[9px] font-black shrink-0">
-                    {m.year}
-                  </span>
+              {/* Header Card */}
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-extrabold text-slate-900 leading-tight">{m.title}</p>
-                    <p className="text-[10px] text-slate-500">{m.desc}</p>
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-extrabold text-[9px] uppercase tracking-wider flex items-center gap-1">
+                      <Crown size={11} className="text-amber-600" /> Tenure 2026-2027
+                    </span>
+                    <h3 className="text-base font-black text-slate-900 mt-1">
+                      Office Bearers &amp; Leadership
+                    </h3>
                   </div>
+                  <Link to="/office-bearers" className="text-[10px] text-[#002855] font-bold hover:underline">
+                    Full Page →
+                  </Link>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Sub-view: Dedicated Executive Committee & Team Screen */}
-      {allPagesCategory === "team" && (
-        <div className="space-y-3">
-          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] font-extrabold text-[9px] uppercase tracking-wider">
-                  Directory 2026-2027
-                </span>
-                <h3 className="text-base font-black text-slate-900 mt-1">
-                  Executive Committee &amp; Team
-                </h3>
+                {/* Category Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                  {[
+                    { id: "all", label: "All Officers" },
+                    { id: "leadership", label: "Leadership" },
+                    { id: "core", label: "Core Secretariat" },
+                    { id: "tech_design", label: "Tech & Design" },
+                    { id: "exec", label: "Executive Team" }
+                  ].map((cat) => (<button key={cat.id} onClick={() => setOfficerCategory(cat.id)} className={`px-3 py-1 rounded-full text-[10px] font-black uppercase whitespace-nowrap transition-all ${officerCategory === cat.id
+                    ? "bg-[#002855] text-white shadow-sm"
+                    : "bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200"}`}>
+                    {cat.label}
+                  </button>))}
+                </div>
               </div>
-              <Link to="/team" className="text-[10px] text-[#002855] font-bold hover:underline">
-                Full Page →
-              </Link>
-            </div>
 
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search team by name, role, dept..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#002855]"
-              />
-            </div>
+              {/* DUAL VIEW: CARDS vs TABLE (TEXT & BADGES ONLY, NO PICS) */}
+              {viewMode === "cards" ? (
+                /* ── REVAMPED EXECUTIVE CARDS VIEW ── */
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {filteredOfficers.map((officer) => {
+                    const Icon = officer.icon || ShieldCheck;
+                    return (
+                      <motion.div
+                        key={officer.id}
+                        whileHover={{ y: -2 }}
+                        className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-[#002855]/30 transition-all flex flex-col justify-between"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs" style={{ backgroundColor: officer.bg || "#f0f9ff", color: officer.color || "#002855" }}>
+                              <Icon size={20} />
+                            </div>
+                            <div className="leading-tight">
+                              <h4 className="font-extrabold text-slate-900 text-sm">
+                                {officer.name}
+                              </h4>
+                              <p className="text-xs font-black mt-0.5" style={{ color: officer.color || "#002855" }}>
+                                {officer.role}
+                              </p>
+                              <p className="text-[10px] text-slate-500 mt-0.5">
+                                {officer.department}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
 
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-              {[
-                { id: "all", label: "All Team" },
-                { id: "leadership", label: "Leadership" },
-                { id: "core", label: "Core Secretariat" },
-                { id: "tech_design", label: "Tech & Design" },
-                { id: "exec", label: "Executive Team" }
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setOfficerCategory(cat.id)}
-                  className={`px-3 py-1 rounded-full text-[10px] font-black uppercase whitespace-nowrap transition-all ${
-                    officerCategory === cat.id
-                      ? "bg-[#002855] text-white shadow-sm"
-                      : "bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {filteredOfficers
-              .filter((off) => {
-                if (!searchQuery) return true;
-                const q = searchQuery.toLowerCase();
-                return (
-                  (off.name || "").toLowerCase().includes(q) ||
-                  (off.role || "").toLowerCase().includes(q) ||
-                  (off.department || "").toLowerCase().includes(q)
-                );
-              })
-              .map((officer) => {
-                const Icon = officer.icon || ShieldCheck;
-                return (
-                  <div
-                    key={officer.id}
-                    onClick={() => setDetailModalMember(officer)}
-                    className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
-                  >
-                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: officer.bg || "#f0f9ff", color: officer.color || "#002855" }}>
-                      <Icon size={18} />
-                    </div>
-                    <div className="leading-tight flex-1 min-w-0">
-                      <h4 className="font-extrabold text-slate-900 text-xs truncate">
-                        {officer.name}
-                      </h4>
-                      <p className="text-[10px] font-black mt-0.5 truncate" style={{ color: officer.color || "#002855" }}>
-                        {officer.role}
-                      </p>
-                      <p className="text-[9px] text-slate-500 truncate mt-0.5">
-                        {officer.department}
-                      </p>
-                    </div>
-                    <ChevronRight size={14} className="text-slate-400 shrink-0" />
+                        <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                          <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider" style={{ color: officer.color || "#002855", backgroundColor: officer.bg || "#f0f9ff" }}>
+                            {officer.tagline}
+                          </span>
+                          <button onClick={() => setDetailModalMember(officer)} className="text-[10px] text-[#002855] font-extrabold hover:underline flex items-center gap-0.5">
+                            <span>Dossier</span>
+                            <ArrowRight size={10} />
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* ── TABLE VIEW FOR OFFICE BEARERS ── */
+                <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left border-collapse min-w-[500px]">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
+                          <th className="py-2.5 px-3">Officer</th>
+                          <th className="py-2.5 px-3">Role</th>
+                          <th className="py-2.5 px-3">Department</th>
+                          <th className="py-2.5 px-3 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredOfficers.map((ob) => (
+                          <tr key={ob.id} className="hover:bg-blue-50/50">
+                            <td className="py-2.5 px-3">
+                              <span className="font-extrabold text-slate-900 text-xs">{ob.name}</span>
+                            </td>
+                            <td className="py-2.5 px-3 text-xs font-bold" style={{ color: ob.color || "#002855" }}>{ob.role}</td>
+                            <td className="py-2.5 px-3 text-[11px] text-slate-600">{ob.department}</td>
+                            <td className="py-2.5 px-3 text-right">
+                              <button onClick={() => setDetailModalMember(ob)} className="px-2 py-1 rounded-lg bg-blue-50 text-[#002855] text-[10px] font-black hover:bg-blue-100">
+                                View
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                );
-              })}
-          </div>
-        </div>
-      )}
-
-      {/* Sub-view: Dedicated Event Reports & Activity Hub Screen */}
-      {allPagesCategory === "reports" && (
-        <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm space-y-0">
-          <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <div>
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <FileText size={14} className="text-[#002855]" /> Event Reports &amp; Hub Congress
-              </h3>
-              <p className="text-[10px] text-slate-500">Official documentation of all IEEE SREC activities</p>
-            </div>
-            <Link to="/reports" className="text-[10px] text-[#002855] font-bold hover:underline">
-              Full Page →
-            </Link>
-          </div>
-
-          <div className="p-3 space-y-2.5">
-            {(dbEvents && dbEvents.length > 0 ? dbEvents : EVENTS_DATA).map((evt, idx) => (
-              <div key={idx} className="p-3 rounded-2xl border border-slate-200 bg-white hover:border-[#002855]/40 transition-all space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 text-[8px] font-black uppercase">
-                    {evt.category || "Report"} · {evt.society || "IEEE SREC"}
-                  </span>
-                  <span className="text-[9px] font-mono font-bold text-slate-500">{evt.date}</span>
                 </div>
-                <div>
-                  <h4 className="font-extrabold text-slate-900 text-xs leading-tight">{evt.title}</h4>
-                  <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{evt.description}</p>
+              )}
+
+            </div>)}
+
+            {/* Sub-view: Past Bearers Table */}
+            {allPagesCategory === "past-bearers" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <GraduationCap size={14} className="text-[#002855]" /> Past Office Bearers Hall of Fame
+                </h3>
+                <Link to="/past-bearers" className="text-[10px] text-[#002855] font-bold hover:underline">
+                  Full Page →
+                </Link>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse min-w-[450px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
+                      <th className="py-2.5 px-3">Tenure Year</th>
+                      <th className="py-2.5 px-3">Name</th>
+                      <th className="py-2.5 px-3">Role</th>
+                      <th className="py-2.5 px-3">Dept</th>
+                      <th className="py-2.5 px-3">Key Achievement</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(dbPastBearers && dbPastBearers.length > 0 ? dbPastBearers : PAST_BEARERS_DATA).map((pb, idx) => (
+                      <tr key={idx} className="hover:bg-blue-50/50">
+                        <td className="py-2 px-3 font-mono font-bold text-[#002855]">{pb.year}</td>
+                        <td className="py-2 px-3 font-extrabold text-slate-900">{pb.name}</td>
+                        <td className="py-2 px-3 text-slate-700 font-semibold">{pb.role}</td>
+                        <td className="py-2 px-3 text-slate-500 text-[11px]">{pb.dept}</td>
+                        <td className="py-2 px-3 text-amber-700 text-[10px] font-semibold">{pb.achievement}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>)}
+
+            {/* Sub-view: Dedicated About SREC SB Screen */}
+            {allPagesCategory === "about" && (
+              <div className="space-y-3">
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-[#002855] via-[#003b7a] to-[#0055a5] text-white shadow-md space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 font-mono font-extrabold text-[9px] uppercase tracking-wider">
+                      STB Code 64581
+                    </span>
+                    <Link to="/about" className="text-[10px] text-sky-200 font-bold hover:underline flex items-center gap-1">
+                      Full Web View <ExternalLink size={10} />
+                    </Link>
+                  </div>
+                  <h3 className="text-base font-black leading-tight text-white">
+                    IEEE SREC Student Branch
+                  </h3>
+                  <p className="text-[11px] text-sky-100/90 leading-snug">
+                    Established in 2001 at Sri Ramakrishna Engineering College, Coimbatore. Operating under IEEE Madras Section (Region 10).
+                  </p>
                 </div>
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                  <span className="text-slate-600 font-medium flex items-center gap-1">
-                    <Building2 size={11} className="text-slate-400" /> {evt.venue || "SREC Campus"}
-                  </span>
-                  <button
-                    onClick={() => setSelectedEventModal(evt)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 text-[#002855] font-black text-[9px] hover:bg-slate-200 transition-all"
-                  >
-                    <Eye size={10} /> View Details
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                    <p className="text-xl font-black text-[#002855]">24+ Years</p>
+                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Active Operations</p>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                    <p className="text-xl font-black text-amber-600">300+</p>
+                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Active Members</p>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                    <p className="text-xl font-black text-emerald-600">8 Chapters</p>
+                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Technical Societies</p>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm text-center">
+                    <p className="text-xl font-black text-purple-600">50+</p>
+                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Annual Conclaves</p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+                  <div className="flex items-center gap-3">
+                    <img src="https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/sign/Senior%20members/allirani.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hOWZhYTNmMS01ZTgyLTQzYTYtYmQ3Yi00ZmU2ZjlkZmNiYmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJTZW5pb3IgbWVtYmVycy9hbGxpcmFuaS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg1MDgzNjQ3LCJleHAiOjIxMDA0NDM2NDd9.phgSEPLcFXxrC3fvJ9yxcser5Jzn5557nMyPNS9WCIU" onError={(e) => { e.currentTarget.src = "https://srec.ac.in/uploads/Faculty/imresizer-1683787612345.jpg"; }} alt="HOD EEE" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
+                    <div>
+                      <h4 className="font-extrabold text-slate-900 text-xs">Dr. S. Allirani</h4>
+                      <p className="text-[10px] text-emerald-700 font-extrabold">Head of the Department</p>
+                      <p className="text-[9px] text-slate-500">Professor & HOD / EEE</p>
+                    </div>
+                  </div>
+                  <blockquote className="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    "Empowering students with strong fundamentals, technological innovation, and practical excellence to lead the future of electrical and electronics engineering."
+                  </blockquote>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+                  <div className="flex items-center gap-3">
+                    <img src="https://srec.ac.in/uploads/Faculty/imresizer4drkbalamurugan260715124354.jpg" alt="Counselor" className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm" />
+                    <div>
+                      <h4 className="font-extrabold text-slate-900 text-xs">Dr. K. Balamurugan</h4>
+                      <p className="text-[10px] text-purple-700 font-extrabold">Student Branch Counsellor</p>
+                      <p className="text-[9px] text-slate-500">Associate Professor / EEE</p>
+                    </div>
+                  </div>
+                  <blockquote className="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    "Our goal is to cultivate world-class engineers by providing active hands-on technical projects, global IEEE networking, and student leadership opportunities."
+                  </blockquote>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                    <Trophy size={14} className="text-[#002855]" /> Student Branch Milestones
+                  </h4>
+                  <div className="space-y-2.5">
+                    {[
+                      { year: "2001", title: "Inception & Chartering", desc: "Inaugurated on June 11, 2001 under Madras Section." },
+                      { year: "2008", title: "CS & PELS Society Expansion", desc: "Formed dedicated Technical Society chapters." },
+                      { year: "2015", title: "HQ Global Recognition", desc: "Awarded continuous Exemplary Student Branch accolade." },
+                      { year: "2020", title: "Digital & Virtual Hackathons", desc: "Hosted IEEE Xtreme & national virtual hackathons." },
+                      { year: "2026", title: "AECTSD 2027 Flagship Prep", desc: "Organizing premier IEEE international conference." }
+                    ].map((m, idx) => (
+                      <div key={idx} className="flex gap-2.5 items-start">
+                        <span className="px-2 py-0.5 rounded-lg bg-blue-50 text-[#002855] border border-blue-200 font-mono text-[9px] font-black shrink-0">
+                          {m.year}
+                        </span>
+                        <div>
+                          <p className="text-xs font-extrabold text-slate-900 leading-tight">{m.title}</p>
+                          <p className="text-[10px] text-slate-500">{m.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Sub-view: Dedicated Executive Committee & Team Screen */}
+            {allPagesCategory === "team" && (
+              <div className="space-y-3">
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] font-extrabold text-[9px] uppercase tracking-wider">
+                        Directory 2026-2027
+                      </span>
+                      <h3 className="text-base font-black text-slate-900 mt-1">
+                        Executive Committee &amp; Team
+                      </h3>
+                    </div>
+                    <Link to="/team" className="text-[10px] text-[#002855] font-bold hover:underline">
+                      Full Page →
+                    </Link>
+                  </div>
+
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search team by name, role, dept..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#002855]"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                    {[
+                      { id: "all", label: "All Team" },
+                      { id: "leadership", label: "Leadership" },
+                      { id: "core", label: "Core Secretariat" },
+                      { id: "tech_design", label: "Tech & Design" },
+                      { id: "exec", label: "Executive Team" }
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => setOfficerCategory(cat.id)}
+                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase whitespace-nowrap transition-all ${officerCategory === cat.id
+                            ? "bg-[#002855] text-white shadow-sm"
+                            : "bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200"
+                          }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {filteredOfficers
+                    .filter((off) => {
+                      if (!searchQuery) return true;
+                      const q = searchQuery.toLowerCase();
+                      return (
+                        (off.name || "").toLowerCase().includes(q) ||
+                        (off.role || "").toLowerCase().includes(q) ||
+                        (off.department || "").toLowerCase().includes(q)
+                      );
+                    })
+                    .map((officer) => {
+                      const Icon = officer.icon || ShieldCheck;
+                      return (
+                        <div
+                          key={officer.id}
+                          onClick={() => setDetailModalMember(officer)}
+                          className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
+                        >
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: officer.bg || "#f0f9ff", color: officer.color || "#002855" }}>
+                            <Icon size={18} />
+                          </div>
+                          <div className="leading-tight flex-1 min-w-0">
+                            <h4 className="font-extrabold text-slate-900 text-xs truncate">
+                              {officer.name}
+                            </h4>
+                            <p className="text-[10px] font-black mt-0.5 truncate" style={{ color: officer.color || "#002855" }}>
+                              {officer.role}
+                            </p>
+                            <p className="text-[9px] text-slate-500 truncate mt-0.5">
+                              {officer.department}
+                            </p>
+                          </div>
+                          <ChevronRight size={14} className="text-slate-400 shrink-0" />
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-view: Dedicated Event Reports & Activity Hub Screen */}
+            {allPagesCategory === "reports" && (
+              <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm space-y-0">
+                <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                      <FileText size={14} className="text-[#002855]" /> Event Reports &amp; Hub Congress
+                    </h3>
+                    <p className="text-[10px] text-slate-500">Official documentation of all IEEE SREC activities</p>
+                  </div>
+                  <Link to="/reports" className="text-[10px] text-[#002855] font-bold hover:underline">
+                    Full Page →
+                  </Link>
+                </div>
+
+                <div className="p-3 space-y-2.5">
+                  {(dbEvents && dbEvents.length > 0 ? dbEvents : EVENTS_DATA).map((evt, idx) => (
+                    <div key={idx} className="p-3 rounded-2xl border border-slate-200 bg-white hover:border-[#002855]/40 transition-all space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#002855] border border-blue-200 text-[8px] font-black uppercase">
+                          {evt.category || "Report"} · {evt.society || "IEEE SREC"}
+                        </span>
+                        <span className="text-[9px] font-mono font-bold text-slate-500">{evt.date}</span>
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-slate-900 text-xs leading-tight">{evt.title}</h4>
+                        <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{evt.description}</p>
+                      </div>
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
+                        <span className="text-slate-600 font-medium flex items-center gap-1">
+                          <Building2 size={11} className="text-slate-400" /> {evt.venue || "SREC Campus"}
+                        </span>
+                        <button
+                          onClick={() => setSelectedEventModal(evt)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 text-[#002855] font-black text-[9px] hover:bg-slate-200 transition-all"
+                        >
+                          <Eye size={10} /> View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-view: Dedicated Photo Gallery Screen */}
+            {allPagesCategory === "gallery" && (
+              <div className="space-y-3">
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                      <Camera size={14} className="text-pink-600" /> IEEE SREC Photo Gallery
+                    </h3>
+                    <Link to="/gallery" className="text-[10px] text-[#002855] font-bold hover:underline">
+                      Full Page →
+                    </Link>
+                  </div>
+                  <p className="text-[10px] text-slate-500">Memories, flagship symposia, and awards ceremonies</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { title: "AECTSD Conference Kickoff", date: "2026", src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80", tag: "Conference" },
+                    { title: "VisionX Coding Arena", date: "2025", src: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80", tag: "Symposium" },
+                    { title: "IEEE Xtreme 24H Arena", date: "2025", src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&auto=format&fit=crop&q=80", tag: "Hackathon" },
+                    { title: "IEEE Day Celebration", date: "2025", src: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80", tag: "IEEE Day" },
+                    { title: "Smart Grid EV Lab", date: "2025", src: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&auto=format&fit=crop&q=80", tag: "Workshop" },
+                    { title: "WIE STEM School Drive", date: "2025", src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&auto=format&fit=crop&q=80", tag: "Outreach" }
+                  ].map((item, idx) => (
+                    <div key={idx} className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 shadow-sm aspect-video">
+                      <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent p-2 flex flex-col justify-end">
+                        <span className="px-1.5 py-0.2 w-max rounded bg-pink-500/80 text-white font-black text-[7px] uppercase tracking-wider mb-0.5">
+                          {item.tag}
+                        </span>
+                        <p className="text-[10px] font-extrabold text-white leading-tight line-clamp-1">{item.title}</p>
+                        <p className="text-[8px] text-slate-300 font-mono">{item.date}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-view: Awards Table */}
+            {allPagesCategory === "awards" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <Award size={14} className="text-[#002855]" /> Awards &amp; Honors Table
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
+                  {(dbAwards && dbAwards.length > 0 ? dbAwards : AWARDS_DATA).length} Accolades
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse min-w-[450px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
+                      <th className="py-2.5 px-3">Award Title</th>
+                      <th className="py-2.5 px-3">Year</th>
+                      <th className="py-2.5 px-3">Issuing Body</th>
+                      <th className="py-2.5 px-3">Prize / Grant</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(dbAwards && dbAwards.length > 0 ? dbAwards : AWARDS_DATA).map((aw, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+                      <td className="py-2 px-3 font-extrabold text-slate-900">{aw.title}</td>
+                      <td className="py-2 px-3 font-mono text-[#002855] font-bold">{aw.year}</td>
+                      <td className="py-2 px-3 text-slate-600">{aw.body}</td>
+                      <td className="py-2 px-3 font-bold text-amber-700 font-mono">{aw.prize}</td>
+                    </tr>))}
+                  </tbody>
+                </table>
+              </div>
+            </div>)}
+
+            {/* Sub-view: Annual Plans Table */}
+            {allPagesCategory === "plans" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <Calendar size={14} className="text-[#002855]" /> Annual Plans &amp; Roadmap
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
+                  {(dbAnnualPlans && dbAnnualPlans.length > 0 ? dbAnnualPlans : ANNUAL_PLANS_DATA).length} Initiatives
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse min-w-[450px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
+                      <th className="py-2.5 px-3">Month</th>
+                      <th className="py-2.5 px-3">Event</th>
+                      <th className="py-2.5 px-3">Society</th>
+                      <th className="py-2.5 px-3">Budget</th>
+                      <th className="py-2.5 px-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(dbAnnualPlans && dbAnnualPlans.length > 0 ? dbAnnualPlans : ANNUAL_PLANS_DATA).map((pl, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+                      <td className="py-2 px-3 font-bold text-[#002855]">{pl.month}</td>
+                      <td className="py-2 px-3 font-semibold text-slate-900">{pl.event}</td>
+                      <td className="py-2 px-3 text-slate-600">{pl.society}</td>
+                      <td className="py-2 px-3 font-mono text-slate-800">{pl.budget}</td>
+                      <td className="py-2 px-3">
+                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-bold ${pl.status === "Completed" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+                          {pl.status}
+                        </span>
+                      </td>
+                    </tr>))}
+                  </tbody>
+                </table>
+              </div>
+            </div>)}
+
+            {/* Sub-view: Funding Table */}
+            {allPagesCategory === "funding" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <DollarSign size={14} className="text-[#002855]" /> Funding &amp; Grants Report
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
+                  {(dbFunding && dbFunding.length > 0 ? dbFunding : FUNDING_DATA).length} Grants
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse min-w-[450px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
+                      <th className="py-2.5 px-3">Grant Source</th>
+                      <th className="py-2.5 px-3">Amount</th>
+                      <th className="py-2.5 px-3">Year</th>
+                      <th className="py-2.5 px-3">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(dbFunding && dbFunding.length > 0 ? dbFunding : FUNDING_DATA).map((fn, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+                      <td className="py-2 px-3 font-bold text-slate-900">{fn.grant}</td>
+                      <td className="py-2 px-3 font-mono font-black text-emerald-700">{fn.amount}</td>
+                      <td className="py-2 px-3 font-mono text-[#002855]">{fn.year}</td>
+                      <td className="py-2 px-3 text-slate-600 text-[11px]">{fn.purpose}</td>
+                    </tr>))}
+                  </tbody>
+                </table>
+              </div>
+            </div>)}
+
+            {/* Sub-view: Contact Table */}
+            {allPagesCategory === "contact" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <Phone size={14} className="text-[#002855]" /> Contact &amp; Campus Directory
+                </h3>
+                <Link to="/contact" className="text-[10px] text-[#002855] font-bold hover:underline">
+                  Full Page →
+                </Link>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse">
+                  <tbody className="divide-y divide-slate-100">
+                    {CONTACT_DIRECTORY.map((ct, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
+                      <td className="py-2.5 px-3 font-bold text-[#002855] text-[11px] w-1/3">{ct.title}</td>
+                      <td className="py-2.5 px-3">
+                        <p className="font-extrabold text-slate-900">{ct.contact}</p>
+                        <p className="text-slate-600 font-mono text-[11px]">{ct.detail}</p>
+                        <p className="text-[#002855] underline text-[10px]">{ct.email}</p>
+                      </td>
+                    </tr>))}
+                  </tbody>
+                </table>
+              </div>
+            </div>)}
+          </div>) : (
+            /* CATEGORIZED MENU HUB OF ALL 16+ PAGES (WHITE THEME) */
+            <div className="space-y-3">
+              {/* 🌐 TOP COMPLETE WEBSITE ACCESS CARD */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border border-blue-200/90 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-[#002855] text-white flex items-center justify-center shadow-md shrink-0">
+                    <Globe size={20} />
+                  </div>
+                  <div className="leading-tight">
+                    <h3 className="font-extrabold text-slate-900 text-xs">Switch to Complete Website</h3>
+                    <p className="text-[10px] text-slate-500">Access full desktop layout &amp; all archives</p>
+                  </div>
+                </div>
+                <Link to="/" className="px-3 py-2 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase flex items-center gap-1.5 shadow-md active:scale-95 transition-all whitespace-nowrap">
+                  <span>Open Web</span>
+                  <ExternalLink size={12} />
+                </Link>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+                <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <LayoutGrid size={16} className="text-[#002855]" />
+                  All IEEE SREC Pages Directory
+                </h2>
+                <p className="text-[10px] text-slate-500">
+                  1-tap access to all 16+ modules &amp; structured data tables
+                </p>
+              </div>
+
+              {/* Category 1: Leadership & Team */}
+              <div className="space-y-1.5">
+                <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 px-1">
+                  Leadership &amp; Team
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={() => setAllPagesCategory("office-bearers")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <Crown size={18} className="text-amber-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Office Bearers</p>
+                    <p className="text-[9px] text-slate-500">2026-27 Leadership</p>
+                  </button>
+                  <button onClick={() => setAllPagesCategory("past-bearers")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <GraduationCap size={18} className="text-blue-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Past Bearers</p>
+                    <p className="text-[9px] text-slate-500">2022-2025 Timeline</p>
+                  </button>
+                  <button onClick={() => setAllPagesCategory("team")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <Users size={18} className="text-[#002855] mb-1" />
+                    <p className="text-xs font-black text-slate-900">Executive Team</p>
+                    <p className="text-[9px] text-slate-500">Full Directory</p>
+                  </button>
+                  <button onClick={() => setAllPagesCategory("about")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <Info size={18} className="text-indigo-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">About SREC SB</p>
+                    <p className="text-[9px] text-slate-500">Code 64581 History</p>
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
 
-      {/* Sub-view: Dedicated Photo Gallery Screen */}
-      {allPagesCategory === "gallery" && (
-        <div className="space-y-3">
-          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <Camera size={14} className="text-pink-600" /> IEEE SREC Photo Gallery
-              </h3>
-              <Link to="/gallery" className="text-[10px] text-[#002855] font-bold hover:underline">
-                Full Page →
-              </Link>
-            </div>
-            <p className="text-[10px] text-slate-500">Memories, flagship symposia, and awards ceremonies</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { title: "AECTSD Conference Kickoff", date: "2026", src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80", tag: "Conference" },
-              { title: "VisionX Coding Arena", date: "2025", src: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80", tag: "Symposium" },
-              { title: "IEEE Xtreme 24H Arena", date: "2025", src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&auto=format&fit=crop&q=80", tag: "Hackathon" },
-              { title: "IEEE Day Celebration", date: "2025", src: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80", tag: "IEEE Day" },
-              { title: "Smart Grid EV Lab", date: "2025", src: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=600&auto=format&fit=crop&q=80", tag: "Workshop" },
-              { title: "WIE STEM School Drive", date: "2025", src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&auto=format&fit=crop&q=80", tag: "Outreach" }
-            ].map((item, idx) => (
-              <div key={idx} className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 shadow-sm aspect-video">
-                <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent p-2 flex flex-col justify-end">
-                  <span className="px-1.5 py-0.2 w-max rounded bg-pink-500/80 text-white font-black text-[7px] uppercase tracking-wider mb-0.5">
-                    {item.tag}
-                  </span>
-                  <p className="text-[10px] font-extrabold text-white leading-tight line-clamp-1">{item.title}</p>
-                  <p className="text-[8px] text-slate-300 font-mono">{item.date}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Sub-view: Awards Table */}
-      {allPagesCategory === "awards" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-        <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-            <Award size={14} className="text-[#002855]" /> Awards &amp; Honors Table
-          </h3>
-          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
-            {(dbAwards && dbAwards.length > 0 ? dbAwards : AWARDS_DATA).length} Accolades
-          </span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left border-collapse min-w-[450px]">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                <th className="py-2.5 px-3">Award Title</th>
-                <th className="py-2.5 px-3">Year</th>
-                <th className="py-2.5 px-3">Issuing Body</th>
-                <th className="py-2.5 px-3">Prize / Grant</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {(dbAwards && dbAwards.length > 0 ? dbAwards : AWARDS_DATA).map((aw, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
-                <td className="py-2 px-3 font-extrabold text-slate-900">{aw.title}</td>
-                <td className="py-2 px-3 font-mono text-[#002855] font-bold">{aw.year}</td>
-                <td className="py-2 px-3 text-slate-600">{aw.body}</td>
-                <td className="py-2 px-3 font-bold text-amber-700 font-mono">{aw.prize}</td>
-              </tr>))}
-            </tbody>
-          </table>
-        </div>
-      </div>)}
-
-      {/* Sub-view: Annual Plans Table */}
-      {allPagesCategory === "plans" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-        <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-            <Calendar size={14} className="text-[#002855]" /> Annual Plans &amp; Roadmap
-          </h3>
-          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
-            {(dbAnnualPlans && dbAnnualPlans.length > 0 ? dbAnnualPlans : ANNUAL_PLANS_DATA).length} Initiatives
-          </span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left border-collapse min-w-[450px]">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                <th className="py-2.5 px-3">Month</th>
-                <th className="py-2.5 px-3">Event</th>
-                <th className="py-2.5 px-3">Society</th>
-                <th className="py-2.5 px-3">Budget</th>
-                <th className="py-2.5 px-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {(dbAnnualPlans && dbAnnualPlans.length > 0 ? dbAnnualPlans : ANNUAL_PLANS_DATA).map((pl, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
-                <td className="py-2 px-3 font-bold text-[#002855]">{pl.month}</td>
-                <td className="py-2 px-3 font-semibold text-slate-900">{pl.event}</td>
-                <td className="py-2 px-3 text-slate-600">{pl.society}</td>
-                <td className="py-2 px-3 font-mono text-slate-800">{pl.budget}</td>
-                <td className="py-2 px-3">
-                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-bold ${pl.status === "Completed" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-                    {pl.status}
-                  </span>
-                </td>
-              </tr>))}
-            </tbody>
-          </table>
-        </div>
-      </div>)}
-
-      {/* Sub-view: Funding Table */}
-      {allPagesCategory === "funding" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-        <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-            <DollarSign size={14} className="text-[#002855]" /> Funding &amp; Grants Report
-          </h3>
-          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#002855] text-[9px] font-bold">
-            {(dbFunding && dbFunding.length > 0 ? dbFunding : FUNDING_DATA).length} Grants
-          </span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left border-collapse min-w-[450px]">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[9px] uppercase font-black text-slate-600">
-                <th className="py-2.5 px-3">Grant Source</th>
-                <th className="py-2.5 px-3">Amount</th>
-                <th className="py-2.5 px-3">Year</th>
-                <th className="py-2.5 px-3">Purpose</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {(dbFunding && dbFunding.length > 0 ? dbFunding : FUNDING_DATA).map((fn, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
-                <td className="py-2 px-3 font-bold text-slate-900">{fn.grant}</td>
-                <td className="py-2 px-3 font-mono font-black text-emerald-700">{fn.amount}</td>
-                <td className="py-2 px-3 font-mono text-[#002855]">{fn.year}</td>
-                <td className="py-2 px-3 text-slate-600 text-[11px]">{fn.purpose}</td>
-              </tr>))}
-            </tbody>
-          </table>
-        </div>
-      </div>)}
-
-      {/* Sub-view: Contact Table */}
-      {allPagesCategory === "contact" && (<div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-        <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-            <Phone size={14} className="text-[#002855]" /> Contact &amp; Campus Directory
-          </h3>
-          <Link to="/contact" className="text-[10px] text-[#002855] font-bold hover:underline">
-            Full Page →
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left border-collapse">
-            <tbody className="divide-y divide-slate-100">
-              {CONTACT_DIRECTORY.map((ct, idx) => (<tr key={idx} className="hover:bg-blue-50/50">
-                <td className="py-2.5 px-3 font-bold text-[#002855] text-[11px] w-1/3">{ct.title}</td>
-                <td className="py-2.5 px-3">
-                  <p className="font-extrabold text-slate-900">{ct.contact}</p>
-                  <p className="text-slate-600 font-mono text-[11px]">{ct.detail}</p>
-                  <p className="text-[#002855] underline text-[10px]">{ct.email}</p>
-                </td>
-              </tr>))}
-            </tbody>
-          </table>
-        </div>
-      </div>)}
-    </div>) : (
-      /* CATEGORIZED MENU HUB OF ALL 16+ PAGES (WHITE THEME) */
-      <div className="space-y-3">
-        {/* 🌐 TOP COMPLETE WEBSITE ACCESS CARD */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border border-blue-200/90 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#002855] text-white flex items-center justify-center shadow-md shrink-0">
-              <Globe size={20} />
-            </div>
-            <div className="leading-tight">
-              <h3 className="font-extrabold text-slate-900 text-xs">Switch to Complete Website</h3>
-              <p className="text-[10px] text-slate-500">Access full desktop layout &amp; all archives</p>
-            </div>
-          </div>
-          <Link to="/" className="px-3 py-2 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[10px] uppercase flex items-center gap-1.5 shadow-md active:scale-95 transition-all whitespace-nowrap">
-            <span>Open Web</span>
-            <ExternalLink size={12} />
-          </Link>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-            <LayoutGrid size={16} className="text-[#002855]" />
-            All IEEE SREC Pages Directory
-          </h2>
-          <p className="text-[10px] text-slate-500">
-            1-tap access to all 16+ modules &amp; structured data tables
-          </p>
-        </div>
-
-        {/* Category 1: Leadership & Team */}
-        <div className="space-y-1.5">
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 px-1">
-            Leadership &amp; Team
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setAllPagesCategory("office-bearers")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <Crown size={18} className="text-amber-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Office Bearers</p>
-              <p className="text-[9px] text-slate-500">2026-27 Leadership</p>
-            </button>
-            <button onClick={() => setAllPagesCategory("past-bearers")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <GraduationCap size={18} className="text-blue-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Past Bearers</p>
-              <p className="text-[9px] text-slate-500">2022-2025 Timeline</p>
-            </button>
-            <button onClick={() => setAllPagesCategory("team")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <Users size={18} className="text-[#002855] mb-1" />
-              <p className="text-xs font-black text-slate-900">Executive Team</p>
-              <p className="text-[9px] text-slate-500">Full Directory</p>
-            </button>
-            <button onClick={() => setAllPagesCategory("about")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <Info size={18} className="text-indigo-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">About SREC SB</p>
-              <p className="text-[9px] text-slate-500">Code 64581 History</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Category 2: Activities, Awards & Plans */}
-        <div className="space-y-1.5">
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 px-1">
-            Activities &amp; Honors
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setAllPagesCategory("awards")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <Award size={18} className="text-purple-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Awards &amp; Honors</p>
-              <p className="text-[9px] text-slate-500">Madras Sec Accolades</p>
-            </button>
-            <button onClick={() => setAllPagesCategory("plans")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <Calendar size={18} className="text-blue-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Annual Plans</p>
-              <p className="text-[9px] text-slate-500">Yearly Roadmap</p>
-            </button>
-            <button onClick={() => setAllPagesCategory("reports")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <FileText size={18} className="text-cyan-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Event Reports</p>
-              <p className="text-[9px] text-slate-500">Hub &amp; Conclave Hub</p>
-            </button>
-            <button onClick={() => setAllPagesCategory("gallery")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <ImageIcon size={18} className="text-pink-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Photo Gallery</p>
-              <p className="text-[9px] text-slate-500">Event Memories</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Category 3: Portals & Registration */}
-        <div className="space-y-1.5">
-          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 px-1">
-            Portals &amp; Joining
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setIsRegisterModalOpen(true)} className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-left active:scale-95 transition-all shadow-sm">
-              <UserPlus size={18} className="text-[#002855] mb-1" />
-              <p className="text-xs font-black text-slate-900">Join / Register</p>
-              <p className="text-[9px] text-[#002855] font-semibold">Store in Database</p>
-            </button>
-            <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-left active:scale-95 transition-all shadow-sm">
-              <Sparkles size={18} className="text-amber-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">AECTSD 2027</p>
-              <p className="text-[9px] text-amber-700 font-semibold">Flagship Conference</p>
-            </a>
-            <button onClick={() => setAllPagesCategory("contact")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <Phone size={18} className="text-emerald-600 mb-1" />
-              <p className="text-xs font-black text-slate-900">Contact &amp; Map</p>
-              <p className="text-[9px] text-slate-500">Campus Location</p>
-            </button>
-            <Link to="/admin-login" className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
-              <ShieldCheck size={18} className="text-slate-500 mb-1" />
-              <p className="text-xs font-black text-slate-900">Admin Portal</p>
-              <p className="text-[9px] text-slate-500">Restricted Access</p>
-            </Link>
-          </div>
-        </div>
-      </div>)}
-  </div>)
-}
-
-      </main >
-
-  {/* ── MEMBER DETAIL DOSSIER MODAL (WHITE THEME) ───────────────────── */ }
-  < AnimatePresence >
-  { detailModalMember && (<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 p-5 shadow-2xl space-y-3 text-slate-900">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-        <div className="flex items-center gap-2">
-          <img src={detailModalMember.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"} alt="Avatar" className="w-8 h-8 rounded-full object-cover border border-slate-300" />
-          <div>
-            <h3 className="font-extrabold text-slate-900 text-sm leading-tight">
-              {detailModalMember.first_name} {detailModalMember.last_name}
-            </h3>
-            <p className="text-[10px] text-[#002855] font-mono font-bold">
-              {detailModalMember.roll_number} · IEEE #{detailModalMember.ieee_id}
-            </p>
-          </div>
-        </div>
-        <button onClick={() => setDetailModalMember(null)} className="p-1 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900">
-          <X size={16} />
-        </button>
-      </div>
-
-      <div className="space-y-2 text-xs">
-        <div>
-          <span className="text-[9px] uppercase font-bold text-slate-400">Department</span>
-          <p className="text-slate-900 font-semibold">{detailModalMember.department} ({detailModalMember.year_of_study})</p>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase font-bold text-slate-400">Statement of Purpose / Bio</span>
-          <p className="text-slate-600 text-[11px] italic">"{detailModalMember.bio_sop || "Active IEEE Student Member at SREC."}"</p>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase font-bold text-slate-400">Enrolled Societies</span>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {(Array.isArray(detailModalMember.target_societies) ? detailModalMember.target_societies : (typeof detailModalMember.target_societies === "string" ? detailModalMember.target_societies.split(",") : [])).map((s, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[9px] text-[#002855] font-semibold">
-              {s}
-            </span>))}
-          </div>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase font-bold text-slate-400">Skills &amp; Specialties</span>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {(Array.isArray(detailModalMember.skills) ? detailModalMember.skills : (typeof detailModalMember.skills === "string" ? detailModalMember.skills.split(",") : [])).map((sk, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-slate-100 text-[9px] text-slate-700">
-              {sk}
-            </span>))}
-          </div>
-        </div>
-      </div>
-
-      <div className="pt-2 border-t border-slate-100">
-        <button onClick={() => {
-          setSelectedMember(detailModalMember);
-          setDetailModalMember(null);
-          handleTabChange("id");
-        }} className="w-full py-2.5 rounded-xl bg-[#002855] text-white font-black text-xs uppercase text-center shadow-md flex items-center justify-center gap-1.5">
-          <IdCard size={14} />
-          <span>Open Digital ID Card</span>
-        </button>
-      </div>
-    </motion.div>
-  </div>)}
-      </AnimatePresence >
-
-  {/* ── GLOBAL SEARCH MODAL (WHITE THEME) ────────────────────────────── */ }
-  < AnimatePresence >
-  { isSearchOpen && (<div className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 bg-slate-950/60 backdrop-blur-sm">
-    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 p-4 shadow-2xl space-y-3 text-slate-900">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-        <h3 className="text-xs font-black uppercase tracking-wider text-[#002855] flex items-center gap-1.5">
-          <Search size={14} /> Search App Directory
-        </h3>
-        <button onClick={() => {
-          setIsSearchOpen(false);
-          setGlobalSearchTerm("");
-        }} className="p-1 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900">
-          <X size={15} />
-        </button>
-      </div>
-
-      <input type="text" placeholder="Search members, societies, events..." value={globalSearchTerm} onChange={(e) => setGlobalSearchTerm(e.target.value)} autoFocus className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#002855] focus:bg-white" />
-
-      {globalSearchTerm ? (<div className="max-h-60 overflow-y-auto space-y-1.5 text-xs">
-        {members
-          .filter((m) => `${m.first_name} ${m.last_name} ${m.roll_number} ${m.ieee_id} ${m.department}`
-            .toLowerCase()
-            .includes(globalSearchTerm.toLowerCase()))
-          .map((m) => (<div key={m.id} onClick={() => {
-            setSelectedMember(m);
-            setIsSearchOpen(false);
-            setGlobalSearchTerm("");
-            handleTabChange("id");
-          }} className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 cursor-pointer flex items-center justify-between">
-            <div>
-              <p className="font-bold text-slate-900">{m.first_name} {m.last_name}</p>
-              <p className="text-[10px] text-[#002855] font-mono font-bold">{m.roll_number} · {m.department}</p>
-            </div>
-            <span className="text-[9px] text-slate-400 font-bold uppercase">Member</span>
-          </div>))}
-
-        {displayedSocieties.filter((s) => `${s.name} ${s.code} ${s.advisor} ${s.chair} ${s.category}`
-          .toLowerCase()
-          .includes(globalSearchTerm.toLowerCase())).map((s) => (<div key={s.id} onClick={() => {
-            setIsSearchOpen(false);
-            setGlobalSearchTerm("");
-            navigate(s.href);
-          }} className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 cursor-pointer flex items-center justify-between">
-            <div>
-              <p className="font-bold text-slate-900">{s.name}</p>
-              <p className="text-[10px] text-slate-500">{s.category}</p>
-            </div>
-            <span className="text-[9px] text-[#002855] font-bold uppercase">Society</span>
-          </div>))}
-      </div>) : (<div className="text-center py-4 text-slate-400 text-xs">
-        Type a name, roll number, or society to search instantly.
-      </div>)}
-    </motion.div>
-  </div>)}
-      </AnimatePresence >
-
-  {/* ── MEMBERSHIP RENEWAL MODAL ────────────────────────────────────── */ }
-  < AnimatePresence >
-  { isRenewModalOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
-    <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="w-full max-w-sm rounded-3xl bg-white p-5 border border-slate-200 shadow-2xl space-y-4">
-      <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center shadow-md font-black">
-            <Sparkles size={20} />
-          </div>
-          <div>
-            <h3 className="font-extrabold text-slate-900 text-sm">Renew Membership</h3>
-            <p className="text-[10px] text-slate-500 font-mono">ID #{selectedMember.ieee_id} · {selectedMember.roll_number}</p>
-          </div>
-        </div>
-        <button onClick={() => setIsRenewModalOpen(false)} className="p-1 rounded-full text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200">
-          <X size={16} />
-        </button>
-      </div>
-
-      {/* Member Summary Box */}
-      <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-        <div className="flex justify-between">
-          <span className="text-slate-500">Member:</span>
-          <span className="font-bold text-slate-900">{selectedMember.first_name} {selectedMember.last_name}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-slate-500">Current Validity:</span>
-          <span className="font-bold text-emerald-600">{selectedMember.valid_thru}</span>
-        </div>
-      </div>
-
-      {/* Renewal Options */}
-      <div className="space-y-2">
-        <label className="block text-[10px] font-black uppercase text-slate-500 tracking-wider">
-          Select Renewal Period
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          <button type="button" onClick={() => setRenewalYear("2027")} className={`p-3 rounded-2xl border text-left transition-all ${renewalYear === "2027"
-            ? "border-[#002855] bg-blue-50/80 ring-2 ring-[#002855]/20 shadow-sm"
-            : "border-slate-200 bg-slate-50 hover:bg-slate-100"}`}>
-            <p className="font-black text-xs text-[#002855]">1 Year (2027)</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Valid Thru DEC 2027</p>
-            <p className="text-[9px] font-bold text-emerald-700 mt-1">₹1,150 ($14)</p>
-          </button>
-
-          <button type="button" onClick={() => setRenewalYear("2028")} className={`p-3 rounded-2xl border text-left transition-all ${renewalYear === "2028"
-            ? "border-[#002855] bg-blue-50/80 ring-2 ring-[#002855]/20 shadow-sm"
-            : "border-slate-200 bg-slate-50 hover:bg-slate-100"}`}>
-            <p className="font-black text-xs text-[#002855]">2 Years (2028)</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Valid Thru DEC 2028</p>
-            <p className="text-[9px] font-bold text-emerald-700 mt-1">₹2,300 ($28)</p>
-          </button>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="space-y-2 pt-2 border-t border-slate-100">
-        <button onClick={handlePerformRenewal} className="w-full py-2.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5">
-          <Check size={14} />
-          <span>Confirm Branch Renewal</span>
-        </button>
-
-        <a href="https://www.ieee.org/membership/renew.html" target="_blank" rel="noopener noreferrer" className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-1 transition-all">
-          <span>Official IEEE Portal</span>
-          <ExternalLink size={12} />
-        </a>
-      </div>
-    </motion.div>
-  </div>)}
-      </AnimatePresence >
-
-  {/* ── IN-APP MEMBERSHIP REGISTRATION MODAL ───────────────────────── */ }
-  < AnimatePresence >
-  { isRegisterModalOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto">
-    <motion.div initial={{ opacity: 0, scale: 0.95, y: 15 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 15 }} className="w-full max-w-md my-auto rounded-3xl bg-white p-5 sm:p-6 border border-slate-200 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto font-sans text-slate-900">
-      {/* Header */}
-      <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-[#002855] text-white flex items-center justify-center shadow-md font-black">
-            <UserPlus size={20} />
-          </div>
-          <div>
-            <h3 className="font-extrabold text-slate-900 text-sm">Register Membership</h3>
-            <p className="text-[10px] text-slate-500">Stored directly to IEEE SREC Database</p>
-          </div>
-        </div>
-        <button onClick={() => setIsRegisterModalOpen(false)} className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">
-          <X size={16} />
-        </button>
-      </div>
-
-      {/* Registration Form */}
-      <form onSubmit={handleRegisterMember} className="space-y-3">
-        {/* Names */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              First Name *
-            </label>
-            <input type="text" required placeholder="e.g. Arun" value={regForm.firstName} onChange={(e) => setRegForm({ ...regForm, firstName: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
-          </div>
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              Last Name *
-            </label>
-            <input type="text" required placeholder="e.g. Kumar" value={regForm.lastName} onChange={(e) => setRegForm({ ...regForm, lastName: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
-          </div>
-        </div>
-
-        {/* Roll Number & IEEE ID */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              Roll Number *
-            </label>
-            <input type="text" required placeholder="e.g. 23CS101" value={regForm.rollNumber} onChange={(e) => setRegForm({ ...regForm, rollNumber: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold uppercase focus:bg-white focus:border-[#002855] outline-none" />
-          </div>
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              IEEE Member ID
-            </label>
-            <input type="text" placeholder="Optional / Auto" value={regForm.ieeeId} onChange={(e) => setRegForm({ ...regForm, ieeeId: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
-          </div>
-        </div>
-
-        {/* Email & Phone */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              College Email *
-            </label>
-            <input type="email" required placeholder="name@srec.ac.in" value={regForm.email} onChange={(e) => setRegForm({ ...regForm, email: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
-          </div>
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              Phone Number
-            </label>
-            <input type="tel" placeholder="+91 98400 00000" value={regForm.phone} onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
-          </div>
-        </div>
-
-        {/* Department & Year of Study */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              Department
-            </label>
-            <select value={regForm.department} onChange={(e) => setRegForm({ ...regForm, department: e.target.value })} className="w-full px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none">
-              <option value="Computer Science & Engineering">CSE</option>
-              <option value="Information Technology">IT</option>
-              <option value="Electrical & Electronics Engineering">EEE</option>
-              <option value="Electronics & Communication Engineering">ECE</option>
-              <option value="Biomedical Engineering">BME</option>
-              <option value="Mechanical Engineering">Mech</option>
-              <option value="Artificial Intelligence & Data Science">AI & DS</option>
-              <option value="Robotics and Automation">Robotics</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
-              Year of Study
-            </label>
-            <select value={regForm.yearOfStudy} onChange={(e) => setRegForm({ ...regForm, yearOfStudy: e.target.value })} className="w-full px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none">
-              <option value="I Year (2025-2029)">I Year</option>
-              <option value="II Year (2024-2028)">II Year</option>
-              <option value="III Year (2023-2027)">III Year</option>
-              <option value="IV Year (2022-2026)">IV Year</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Technical Societies Selector with Real Prices & Total Live Calculation */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-[10px] font-black uppercase tracking-wider text-slate-700">
-              Select Societies to Enroll ({regForm.selectedSocieties.length} Selected)
-            </label>
-            <span className="text-[10px] font-mono font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-              Total: ${regForm.selectedSocieties.reduce((acc, name) => {
-                if (name.includes("Student Branch"))
-                  return acc + 7;
-                if (name.includes("Computer Society"))
-                  return acc + 8;
-                if (name.includes("Computational Intelligence"))
-                  return acc + 4;
-                if (name.includes("Communication Society"))
-                  return acc + 1;
-                if (name.includes("Medicine and Biology"))
-                  return acc + 1;
-                if (name.includes("Power Electronics"))
-                  return acc + 5;
-                if (name.includes("Instrumentation"))
-                  return acc + 5;
-                return acc;
-              }, 0)} USD (≈ ₹{regForm.selectedSocieties.reduce((acc, name) => {
-                if (name.includes("Student Branch"))
-                  return acc + 7;
-                if (name.includes("Computer Society"))
-                  return acc + 8;
-                if (name.includes("Computational Intelligence"))
-                  return acc + 4;
-                if (name.includes("Communication Society"))
-                  return acc + 1;
-                if (name.includes("Medicine and Biology"))
-                  return acc + 1;
-                if (name.includes("Power Electronics"))
-                  return acc + 5;
-                if (name.includes("Instrumentation"))
-                  return acc + 5;
-                return acc;
-              }, 0) * 83})
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-2xl bg-slate-50 border border-slate-200">
-            {[
-              { id: "IEEE Student Branch SREC", name: "IEEE Student Branch SREC", fee: "$7 (Base)", mandatory: true },
-              { id: "IEEE Women in Engineering (WIE)", name: "IEEE Women in Engineering (WIE)", fee: "FREE ($0)" },
-              { id: "IEEE Computer Society (CS)", name: "IEEE Computer Society (CS)", fee: "+$8 USD" },
-              { id: "IEEE Computational Intelligence Society (CIS)", name: "IEEE Computational Intelligence (CIS)", fee: "+$4 USD" },
-              { id: "IEEE Communication Society (ComSoc)", name: "IEEE Communication Society (ComSoc)", fee: "+$1 USD" },
-              { id: "IEEE Engineering in Medicine and Biology (EMBS)", name: "IEEE EMBS (MedTech)", fee: "+$1 USD" },
-              { id: "IEEE Power Electronics Society (PELS)", name: "IEEE Power Electronics (PELS)", fee: "+$5 USD" },
-              { id: "IEEE Instrumentation and Measurement (IM)", name: "IEEE Instrumentation (IM)", fee: "+$5 USD" },
-              { id: "IEEE Circuits and Systems Society (CAS)", name: "IEEE Circuits & Systems (CAS)", fee: "+$6 USD" }
-            ].map((soc) => {
-              const isChecked = regForm.selectedSocieties.includes(soc.id);
-              return (<label key={soc.id} className={`flex items-center justify-between p-2 rounded-xl text-xs font-bold cursor-pointer transition-all border ${isChecked ? "bg-blue-50 border-[#002855] text-[#002855] shadow-xs" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"}`}>
-                <div className="flex items-center gap-2 min-w-0">
-                  <input type="checkbox" checked={isChecked} disabled={soc.mandatory} onChange={(e) => {
-                    if (soc.mandatory)
-                      return;
-                    if (e.target.checked) {
-                      setRegForm({
-                        ...regForm,
-                        selectedSocieties: [...regForm.selectedSocieties, soc.id]
-                      });
-                    }
-                    else {
-                      setRegForm({
-                        ...regForm,
-                        selectedSocieties: regForm.selectedSocieties.filter((s) => s !== soc.id)
-                      });
-                    }
-                  }} className="rounded border-slate-300 text-[#002855] focus:ring-0" />
-                  <span className="truncate text-[11px]">{soc.name.replace("IEEE ", "")}</span>
-                </div>
-                <span className="text-[9px] font-mono font-black px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 shrink-0">
-                  {soc.fee}
+              {/* Category 2: Activities, Awards & Plans */}
+              <div className="space-y-1.5">
+                <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 px-1">
+                  Activities &amp; Honors
                 </span>
-              </label>);
-            })}
-          </div>
-        </div>
-
-        {/* Submit Action */}
-        <div className="pt-2">
-          <button type="submit" disabled={isRegSubmitting} className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#002855] to-[#00629B] hover:from-[#001c3d] hover:to-[#004e8a] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-blue-900/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-            {isRegSubmitting ? (<>
-              <RotateCw size={15} className="animate-spin" />
-              <span>Saving to Database...</span>
-            </>) : (<>
-              <ShieldCheck size={15} />
-              <span>Submit &amp; Activate My 3D ID Card</span>
-            </>)}
-          </button>
-        </div>
-      </form>
-    </motion.div>
-  </div>
-)}
-</AnimatePresence>
-
-{/* ── OFFICIAL IEEE PDF MEMBERSHIP CARD VIEWER MODAL (RESPONSIVE MOBILE) ── */}
-<AnimatePresence>
-  {isPdfModalOpen && (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
-        className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] text-slate-900"
-      >
-        {/* Modal Top Header Bar */}
-        <div className="bg-gradient-to-r from-[#001838] via-[#002855] to-[#004899] text-white px-4 py-3.5 flex items-center justify-between gap-2 shrink-0 shadow-md">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/20 shrink-0">
-              <FileText className="text-cyan-300" size={18} />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">
-                IEEE Membership Card (PDF)
-              </h3>
-              <p className="text-[10px] text-sky-200 font-mono truncate">
-                #{selectedMember?.ieee_id || "98421045"} · {selectedMember?.first_name} {selectedMember?.last_name}
-              </p>
-            </div>
-          </div>
-
-          {/* Close Modal */}
-          <button
-            type="button"
-            onClick={() => setIsPdfModalOpen(false)}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shrink-0"
-            title="Close viewer"
-          >
-            <X size={15} />
-          </button>
-        </div>
-
-        {/* PDF Viewer Body */}
-        <div className="p-3 flex-1 overflow-hidden flex flex-col bg-slate-100 gap-2.5">
-          <div className="relative flex-1 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-300 shadow-inner flex flex-col min-h-[48vh]">
-            <iframe
-              src={`${activePdfUrl}#view=FitH&toolbar=1`}
-              title="Official IEEE Membership Card PDF"
-              className="w-full h-full flex-1 rounded-2xl bg-slate-900"
-            />
-          </div>
-
-          {/* Action Toolbar */}
-          <div className="p-2.5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs">
-            <a
-              href={activePdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] uppercase tracking-wider transition-all flex items-center gap-1 border border-slate-200"
-            >
-              <ExternalLink size={12} />
-              <span>Open Tab</span>
-            </a>
-
-            <a
-              href={activePdfUrl}
-              download={`IEEE_Card_${selectedMember?.ieee_id || selectedMember?.roll_number || "member"}.pdf`}
-              className="px-3.5 py-2 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[11px] uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
-            >
-              <Download size={13} />
-              <span>Download PDF</span>
-            </a>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )}
-  </AnimatePresence>
-
-  {/* ── INTERACTIVE EVENT DATABASE DETAIL MODAL ────────────────── */}
-  <AnimatePresence>
-    {selectedEventModal && (
-      <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] text-slate-900"
-        >
-          {/* Modal Header */}
-          <div className="bg-gradient-to-r from-[#001838] via-[#002855] to-[#004899] text-white px-4 py-3.5 flex items-center justify-between gap-2 shrink-0 shadow-md">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/20 shrink-0">
-                <Calendar className="text-cyan-300" size={18} />
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={() => setAllPagesCategory("awards")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <Award size={18} className="text-purple-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Awards &amp; Honors</p>
+                    <p className="text-[9px] text-slate-500">Madras Sec Accolades</p>
+                  </button>
+                  <button onClick={() => setAllPagesCategory("plans")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <Calendar size={18} className="text-blue-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Annual Plans</p>
+                    <p className="text-[9px] text-slate-500">Yearly Roadmap</p>
+                  </button>
+                  <button onClick={() => setAllPagesCategory("reports")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <FileText size={18} className="text-cyan-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Event Reports</p>
+                    <p className="text-[9px] text-slate-500">Hub &amp; Conclave Hub</p>
+                  </button>
+                  <button onClick={() => setAllPagesCategory("gallery")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <ImageIcon size={18} className="text-pink-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Photo Gallery</p>
+                    <p className="text-[9px] text-slate-500">Event Memories</p>
+                  </button>
+                </div>
               </div>
-              <div className="min-w-0">
-                <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">
-                  {selectedEventModal.badge || "Database Activity"}
+
+              {/* Category 3: Portals & Registration */}
+              <div className="space-y-1.5">
+                <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 px-1">
+                  Portals &amp; Joining
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={() => setIsRegisterModalOpen(true)} className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-left active:scale-95 transition-all shadow-sm">
+                    <UserPlus size={18} className="text-[#002855] mb-1" />
+                    <p className="text-xs font-black text-slate-900">Join / Register</p>
+                    <p className="text-[9px] text-[#002855] font-semibold">Store in Database</p>
+                  </button>
+                  <a href="http://aectsd2027.srecieee.org/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-left active:scale-95 transition-all shadow-sm">
+                    <Sparkles size={18} className="text-amber-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">AECTSD 2027</p>
+                    <p className="text-[9px] text-amber-700 font-semibold">Flagship Conference</p>
+                  </a>
+                  <button onClick={() => setAllPagesCategory("contact")} className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <Phone size={18} className="text-emerald-600 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Contact &amp; Map</p>
+                    <p className="text-[9px] text-slate-500">Campus Location</p>
+                  </button>
+                  <Link to="/admin-login" className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#002855] text-left active:scale-95 transition-all shadow-sm">
+                    <ShieldCheck size={18} className="text-slate-500 mb-1" />
+                    <p className="text-xs font-black text-slate-900">Admin Portal</p>
+                    <p className="text-[9px] text-slate-500">Restricted Access</p>
+                  </Link>
+                </div>
+              </div>
+            </div>)}
+        </div>)
+      }
+
+    </main >
+
+    {/* ── MEMBER DETAIL DOSSIER MODAL (WHITE THEME) ───────────────────── */}
+    < AnimatePresence >
+      {detailModalMember && (<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 p-5 shadow-2xl space-y-3 text-slate-900">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+            <div className="flex items-center gap-2">
+              <img src={detailModalMember.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"} alt="Avatar" className="w-8 h-8 rounded-full object-cover border border-slate-300" />
+              <div>
+                <h3 className="font-extrabold text-slate-900 text-sm leading-tight">
+                  {detailModalMember.first_name} {detailModalMember.last_name}
                 </h3>
-                <p className="text-[10px] text-sky-200 truncate">
-                  {selectedEventModal.society || "IEEE SB SREC"} · {selectedEventModal.category}
+                <p className="text-[10px] text-[#002855] font-mono font-bold">
+                  {detailModalMember.roll_number} · IEEE #{detailModalMember.ieee_id}
                 </p>
               </div>
             </div>
+            <button onClick={() => setDetailModalMember(null)} className="p-1 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900">
+              <X size={16} />
+            </button>
+          </div>
 
-            <button
-              type="button"
-              onClick={() => setSelectedEventModal(null)}
-              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shrink-0"
-            >
+          <div className="space-y-2 text-xs">
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">Department</span>
+              <p className="text-slate-900 font-semibold">{detailModalMember.department} ({detailModalMember.year_of_study})</p>
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">Statement of Purpose / Bio</span>
+              <p className="text-slate-600 text-[11px] italic">"{detailModalMember.bio_sop || "Active IEEE Student Member at SREC."}"</p>
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">Enrolled Societies</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {(Array.isArray(detailModalMember.target_societies) ? detailModalMember.target_societies : (typeof detailModalMember.target_societies === "string" ? detailModalMember.target_societies.split(",") : [])).map((s, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-[9px] text-[#002855] font-semibold">
+                  {s}
+                </span>))}
+              </div>
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">Skills &amp; Specialties</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {(Array.isArray(detailModalMember.skills) ? detailModalMember.skills : (typeof detailModalMember.skills === "string" ? detailModalMember.skills.split(",") : [])).map((sk, idx) => (<span key={idx} className="px-2 py-0.5 rounded-lg bg-slate-100 text-[9px] text-slate-700">
+                  {sk}
+                </span>))}
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100">
+            <button onClick={() => {
+              setSelectedMember(detailModalMember);
+              setDetailModalMember(null);
+              handleTabChange("id");
+            }} className="w-full py-2.5 rounded-xl bg-[#002855] text-white font-black text-xs uppercase text-center shadow-md flex items-center justify-center gap-1.5">
+              <IdCard size={14} />
+              <span>Open Digital ID Card</span>
+            </button>
+          </div>
+        </motion.div>
+      </div>)}
+    </AnimatePresence >
+
+    {/* ── GLOBAL SEARCH MODAL (WHITE THEME) ────────────────────────────── */}
+    < AnimatePresence >
+      {isSearchOpen && (<div className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 bg-slate-950/60 backdrop-blur-sm">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 p-4 shadow-2xl space-y-3 text-slate-900">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#002855] flex items-center gap-1.5">
+              <Search size={14} /> Search App Directory
+            </h3>
+            <button onClick={() => {
+              setIsSearchOpen(false);
+              setGlobalSearchTerm("");
+            }} className="p-1 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900">
               <X size={15} />
             </button>
           </div>
 
-          {/* Modal Body */}
-          <div className="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-            {selectedEventModal.image && (
-              <div className="relative h-44 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200">
-                <img
-                  src={selectedEventModal.image}
-                  alt={selectedEventModal.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80";
-                  }}
-                />
-                <div className="absolute top-2.5 left-2.5">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
-                    selectedEventModal.status === "Upcoming"
-                      ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
-                      : "bg-emerald-500 text-white"
-                  }`}>
-                    {selectedEventModal.status}
-                  </span>
+          <input type="text" placeholder="Search members, societies, events..." value={globalSearchTerm} onChange={(e) => setGlobalSearchTerm(e.target.value)} autoFocus className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#002855] focus:bg-white" />
+
+          {globalSearchTerm ? (<div className="max-h-60 overflow-y-auto space-y-1.5 text-xs">
+            {members
+              .filter((m) => `${m.first_name} ${m.last_name} ${m.roll_number} ${m.ieee_id} ${m.department}`
+                .toLowerCase()
+                .includes(globalSearchTerm.toLowerCase()))
+              .map((m) => (<div key={m.id} onClick={() => {
+                setSelectedMember(m);
+                setIsSearchOpen(false);
+                setGlobalSearchTerm("");
+                handleTabChange("id");
+              }} className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 cursor-pointer flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-slate-900">{m.first_name} {m.last_name}</p>
+                  <p className="text-[10px] text-[#002855] font-mono font-bold">{m.roll_number} · {m.department}</p>
                 </div>
+                <span className="text-[9px] text-slate-400 font-bold uppercase">Member</span>
+              </div>))}
+
+            {displayedSocieties.filter((s) => `${s.name} ${s.code} ${s.advisor} ${s.chair} ${s.category}`
+              .toLowerCase()
+              .includes(globalSearchTerm.toLowerCase())).map((s) => (<div key={s.id} onClick={() => {
+                setIsSearchOpen(false);
+                setGlobalSearchTerm("");
+                navigate(s.href);
+              }} className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 cursor-pointer flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-slate-900">{s.name}</p>
+                  <p className="text-[10px] text-slate-500">{s.category}</p>
+                </div>
+                <span className="text-[9px] text-[#002855] font-bold uppercase">Society</span>
+              </div>))}
+          </div>) : (<div className="text-center py-4 text-slate-400 text-xs">
+            Type a name, roll number, or society to search instantly.
+          </div>)}
+        </motion.div>
+      </div>)}
+    </AnimatePresence >
+
+    {/* ── MEMBERSHIP RENEWAL MODAL ────────────────────────────────────── */}
+    < AnimatePresence >
+      {isRenewModalOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+        <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="w-full max-w-sm rounded-3xl bg-white p-5 border border-slate-200 shadow-2xl space-y-4">
+          <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center shadow-md font-black">
+                <Sparkles size={20} />
               </div>
-            )}
-
-            <div>
-              <h3 className="text-base font-black text-slate-900 leading-tight">
-                {selectedEventModal.title}
-              </h3>
-              {selectedEventModal.subtitle && (
-                <p className="text-xs text-slate-500 mt-1 font-medium">
-                  {selectedEventModal.subtitle}
-                </p>
-              )}
-            </div>
-
-            {/* Event Schedule Meta Grid */}
-            <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
               <div>
-                <span className="text-[9px] text-slate-400 font-bold uppercase block">Date &amp; Time</span>
-                <p className="font-extrabold text-slate-900 mt-0.5">{selectedEventModal.date}</p>
-                <p className="text-[10px] text-slate-500">{selectedEventModal.time || "Full Day"}</p>
-              </div>
-              <div>
-                <span className="text-[9px] text-slate-400 font-bold uppercase block">Venue / Location</span>
-                <p className="font-extrabold text-slate-900 mt-0.5">{selectedEventModal.venue || "SREC Campus"}</p>
+                <h3 className="font-extrabold text-slate-900 text-sm">Renew Membership</h3>
+                <p className="text-[10px] text-slate-500 font-mono">ID #{selectedMember.ieee_id} · {selectedMember.roll_number}</p>
               </div>
             </div>
+            <button onClick={() => setIsRenewModalOpen(false)} className="p-1 rounded-full text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200">
+              <X size={16} />
+            </button>
+          </div>
 
-            {/* Chief Guest & Participants (if present) */}
-            {(selectedEventModal.chief_guest || selectedEventModal.participants) && (
-              <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-1">
-                {selectedEventModal.chief_guest && (
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-bold uppercase text-[9px]">Chief Guest / Speaker</span>
-                    <strong className="text-slate-900">{selectedEventModal.chief_guest}</strong>
-                  </div>
-                )}
-                {selectedEventModal.participants && (
-                  <div className="flex items-center justify-between text-xs pt-1 border-t border-blue-100">
-                    <span className="text-slate-500 font-bold uppercase text-[9px]">Participants Logged</span>
-                    <strong className="text-blue-900">{selectedEventModal.participants}</strong>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Description */}
-            <div className="space-y-1">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">About this Activity</span>
-              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                {selectedEventModal.description || "Official IEEE Student Branch event proceedings logged in repository database."}
-              </p>
+          {/* Member Summary Box */}
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Member:</span>
+              <span className="font-bold text-slate-900">{selectedMember.first_name} {selectedMember.last_name}</span>
             </div>
-
-            {/* Action Buttons */}
-            <div className="pt-2 flex items-center gap-2">
-              <button
-                onClick={() => setSelectedEventModal(null)}
-                className="flex-1 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase tracking-wider transition-all"
-              >
-                Close
-              </button>
-              {selectedEventModal.link && selectedEventModal.link.startsWith("http") ? (
-                <a
-                  href={selectedEventModal.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-2.5 rounded-2xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-900/20"
-                >
-                  <span>Portal</span>
-                  <ExternalLink size={12} />
-                </a>
-              ) : (
-                <button
-                  onClick={() => {
-                    const l = selectedEventModal.link || "/activities";
-                    setSelectedEventModal(null);
-                    navigate(l);
-                  }}
-                  className="flex-1 py-2.5 rounded-2xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-900/20"
-                >
-                  <span>Open Details</span>
-                  <ArrowRight size={12} />
-                </button>
-              )}
+            <div className="flex justify-between">
+              <span className="text-slate-500">Current Validity:</span>
+              <span className="font-bold text-emerald-600">{selectedMember.valid_thru}</span>
             </div>
           </div>
+
+          {/* Renewal Options */}
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black uppercase text-slate-500 tracking-wider">
+              Select Renewal Period
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" onClick={() => setRenewalYear("2027")} className={`p-3 rounded-2xl border text-left transition-all ${renewalYear === "2027"
+                ? "border-[#002855] bg-blue-50/80 ring-2 ring-[#002855]/20 shadow-sm"
+                : "border-slate-200 bg-slate-50 hover:bg-slate-100"}`}>
+                <p className="font-black text-xs text-[#002855]">1 Year (2027)</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">Valid Thru DEC 2027</p>
+                <p className="text-[9px] font-bold text-emerald-700 mt-1">₹1,150 ($14)</p>
+              </button>
+
+              <button type="button" onClick={() => setRenewalYear("2028")} className={`p-3 rounded-2xl border text-left transition-all ${renewalYear === "2028"
+                ? "border-[#002855] bg-blue-50/80 ring-2 ring-[#002855]/20 shadow-sm"
+                : "border-slate-200 bg-slate-50 hover:bg-slate-100"}`}>
+                <p className="font-black text-xs text-[#002855]">2 Years (2028)</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">Valid Thru DEC 2028</p>
+                <p className="text-[9px] font-bold text-emerald-700 mt-1">₹2,300 ($28)</p>
+              </button>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-2 pt-2 border-t border-slate-100">
+            <button onClick={handlePerformRenewal} className="w-full py-2.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5">
+              <Check size={14} />
+              <span>Confirm Branch Renewal</span>
+            </button>
+
+            <a href="https://www.ieee.org/membership/renew.html" target="_blank" rel="noopener noreferrer" className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center gap-1 transition-all">
+              <span>Official IEEE Portal</span>
+              <ExternalLink size={12} />
+            </a>
+          </div>
+        </motion.div>
+      </div>)}
+    </AnimatePresence >
+
+    {/* ── IN-APP MEMBERSHIP REGISTRATION MODAL ───────────────────────── */}
+    < AnimatePresence >
+      {isRegisterModalOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto">
+        <motion.div initial={{ opacity: 0, scale: 0.95, y: 15 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 15 }} className="w-full max-w-md my-auto rounded-3xl bg-white p-5 sm:p-6 border border-slate-200 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto font-sans text-slate-900">
+          {/* Header */}
+          <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-[#002855] text-white flex items-center justify-center shadow-md font-black">
+                <UserPlus size={20} />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-900 text-sm">Register Membership</h3>
+                <p className="text-[10px] text-slate-500">Stored directly to IEEE SREC Database</p>
+              </div>
+            </div>
+            <button onClick={() => setIsRegisterModalOpen(false)} className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Registration Form */}
+          <form onSubmit={handleRegisterMember} className="space-y-3">
+            {/* Names */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  First Name *
+                </label>
+                <input type="text" required placeholder="e.g. Arun" value={regForm.firstName} onChange={(e) => setRegForm({ ...regForm, firstName: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  Last Name *
+                </label>
+                <input type="text" required placeholder="e.g. Kumar" value={regForm.lastName} onChange={(e) => setRegForm({ ...regForm, lastName: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
+              </div>
+            </div>
+
+            {/* Roll Number & IEEE ID */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  Roll Number *
+                </label>
+                <input type="text" required placeholder="e.g. 23CS101" value={regForm.rollNumber} onChange={(e) => setRegForm({ ...regForm, rollNumber: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold uppercase focus:bg-white focus:border-[#002855] outline-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  IEEE Member ID
+                </label>
+                <input type="text" placeholder="Optional / Auto" value={regForm.ieeeId} onChange={(e) => setRegForm({ ...regForm, ieeeId: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
+              </div>
+            </div>
+
+            {/* Email & Phone */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  College Email *
+                </label>
+                <input type="email" required placeholder="name@srec.ac.in" value={regForm.email} onChange={(e) => setRegForm({ ...regForm, email: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  Phone Number
+                </label>
+                <input type="tel" placeholder="+91 98400 00000" value={regForm.phone} onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none" />
+              </div>
+            </div>
+
+            {/* Department & Year of Study */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  Department
+                </label>
+                <select value={regForm.department} onChange={(e) => setRegForm({ ...regForm, department: e.target.value })} className="w-full px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none">
+                  <option value="Computer Science & Engineering">CSE</option>
+                  <option value="Information Technology">IT</option>
+                  <option value="Electrical & Electronics Engineering">EEE</option>
+                  <option value="Electronics & Communication Engineering">ECE</option>
+                  <option value="Biomedical Engineering">BME</option>
+                  <option value="Mechanical Engineering">Mech</option>
+                  <option value="Artificial Intelligence & Data Science">AI & DS</option>
+                  <option value="Robotics and Automation">Robotics</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-1">
+                  Year of Study
+                </label>
+                <select value={regForm.yearOfStudy} onChange={(e) => setRegForm({ ...regForm, yearOfStudy: e.target.value })} className="w-full px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:bg-white focus:border-[#002855] outline-none">
+                  <option value="I Year (2025-2029)">I Year</option>
+                  <option value="II Year (2024-2028)">II Year</option>
+                  <option value="III Year (2023-2027)">III Year</option>
+                  <option value="IV Year (2022-2026)">IV Year</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Technical Societies Selector with Real Prices & Total Live Calculation */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-700">
+                  Select Societies to Enroll ({regForm.selectedSocieties.length} Selected)
+                </label>
+                <span className="text-[10px] font-mono font-bold text-[#002855] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                  Total: ${regForm.selectedSocieties.reduce((acc, name) => {
+                    if (name.includes("Student Branch"))
+                      return acc + 7;
+                    if (name.includes("Computer Society"))
+                      return acc + 8;
+                    if (name.includes("Computational Intelligence"))
+                      return acc + 4;
+                    if (name.includes("Communication Society"))
+                      return acc + 1;
+                    if (name.includes("Medicine and Biology"))
+                      return acc + 1;
+                    if (name.includes("Power Electronics"))
+                      return acc + 5;
+                    if (name.includes("Instrumentation"))
+                      return acc + 5;
+                    return acc;
+                  }, 0)} USD (≈ ₹{regForm.selectedSocieties.reduce((acc, name) => {
+                    if (name.includes("Student Branch"))
+                      return acc + 7;
+                    if (name.includes("Computer Society"))
+                      return acc + 8;
+                    if (name.includes("Computational Intelligence"))
+                      return acc + 4;
+                    if (name.includes("Communication Society"))
+                      return acc + 1;
+                    if (name.includes("Medicine and Biology"))
+                      return acc + 1;
+                    if (name.includes("Power Electronics"))
+                      return acc + 5;
+                    if (name.includes("Instrumentation"))
+                      return acc + 5;
+                    return acc;
+                  }, 0) * 83})
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-36 overflow-y-auto p-2 rounded-2xl bg-slate-50 border border-slate-200">
+                {[
+                  { id: "IEEE Student Branch SREC", name: "IEEE Student Branch SREC", fee: "$7 (Base)", mandatory: true },
+                  { id: "IEEE Women in Engineering (WIE)", name: "IEEE Women in Engineering (WIE)", fee: "FREE ($0)" },
+                  { id: "IEEE Computer Society (CS)", name: "IEEE Computer Society (CS)", fee: "+$8 USD" },
+                  { id: "IEEE Computational Intelligence Society (CIS)", name: "IEEE Computational Intelligence (CIS)", fee: "+$4 USD" },
+                  { id: "IEEE Communication Society (ComSoc)", name: "IEEE Communication Society (ComSoc)", fee: "+$1 USD" },
+                  { id: "IEEE Engineering in Medicine and Biology (EMBS)", name: "IEEE EMBS (MedTech)", fee: "+$1 USD" },
+                  { id: "IEEE Power Electronics Society (PELS)", name: "IEEE Power Electronics (PELS)", fee: "+$5 USD" },
+                  { id: "IEEE Instrumentation and Measurement (IM)", name: "IEEE Instrumentation (IM)", fee: "+$5 USD" },
+                  { id: "IEEE Circuits and Systems Society (CAS)", name: "IEEE Circuits & Systems (CAS)", fee: "+$6 USD" }
+                ].map((soc) => {
+                  const isChecked = regForm.selectedSocieties.includes(soc.id);
+                  return (<label key={soc.id} className={`flex items-center justify-between p-2 rounded-xl text-xs font-bold cursor-pointer transition-all border ${isChecked ? "bg-blue-50 border-[#002855] text-[#002855] shadow-xs" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"}`}>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <input type="checkbox" checked={isChecked} disabled={soc.mandatory} onChange={(e) => {
+                        if (soc.mandatory)
+                          return;
+                        if (e.target.checked) {
+                          setRegForm({
+                            ...regForm,
+                            selectedSocieties: [...regForm.selectedSocieties, soc.id]
+                          });
+                        }
+                        else {
+                          setRegForm({
+                            ...regForm,
+                            selectedSocieties: regForm.selectedSocieties.filter((s) => s !== soc.id)
+                          });
+                        }
+                      }} className="rounded border-slate-300 text-[#002855] focus:ring-0" />
+                      <span className="truncate text-[11px]">{soc.name.replace("IEEE ", "")}</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-black px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 shrink-0">
+                      {soc.fee}
+                    </span>
+                  </label>);
+                })}
+              </div>
+            </div>
+
+            {/* Submit Action */}
+            <div className="pt-2">
+              <button type="submit" disabled={isRegSubmitting} className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#002855] to-[#00629B] hover:from-[#001c3d] hover:to-[#004e8a] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-blue-900/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                {isRegSubmitting ? (<>
+                  <RotateCw size={15} className="animate-spin" />
+                  <span>Saving to Database...</span>
+                </>) : (<>
+                  <ShieldCheck size={15} />
+                  <span>Submit &amp; Activate My 3D ID Card</span>
+                </>)}
+              </button>
+            </div>
+          </form>
         </motion.div>
       </div>
-    )}
-  </AnimatePresence>
+      )}
+    </AnimatePresence>
 
-  {/* ── STICKY BOTTOM NAVIGATION DOCK (WHITE THEME) ─────────────────── */}
-  <MobileBottomNav activeTab={activeTab} onChangeTab={handleTabChange} />
+    {/* ── OFFICIAL IEEE PDF MEMBERSHIP CARD VIEWER MODAL (RESPONSIVE MOBILE) ── */}
+    <AnimatePresence>
+      {isPdfModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] text-slate-900"
+          >
+            {/* Modal Top Header Bar */}
+            <div className="bg-gradient-to-r from-[#001838] via-[#002855] to-[#004899] text-white px-4 py-3.5 flex items-center justify-between gap-2 shrink-0 shadow-md">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/20 shrink-0">
+                  <FileText className="text-cyan-300" size={18} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">
+                    IEEE Membership Card (PDF)
+                  </h3>
+                  <p className="text-[10px] text-sky-200 font-mono truncate">
+                    #{selectedMember?.ieee_id || "98421045"} · {selectedMember?.first_name} {selectedMember?.last_name}
+                  </p>
+                </div>
+              </div>
 
-</div>
+              {/* Close Modal */}
+              <button
+                type="button"
+                onClick={() => setIsPdfModalOpen(false)}
+                className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shrink-0"
+                title="Close viewer"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* PDF Viewer Body */}
+            <div className="p-3 flex-1 overflow-hidden flex flex-col bg-slate-100 gap-2.5">
+              <div className="relative flex-1 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-300 shadow-inner flex flex-col min-h-[48vh]">
+                <iframe
+                  src={`${activePdfUrl}#view=FitH&toolbar=1`}
+                  title="Official IEEE Membership Card PDF"
+                  className="w-full h-full flex-1 rounded-2xl bg-slate-900"
+                />
+              </div>
+
+              {/* Action Toolbar */}
+              <div className="p-2.5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                <a
+                  href={activePdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] uppercase tracking-wider transition-all flex items-center gap-1 border border-slate-200"
+                >
+                  <ExternalLink size={12} />
+                  <span>Open Tab</span>
+                </a>
+
+                <a
+                  href={activePdfUrl}
+                  download={`IEEE_Card_${selectedMember?.ieee_id || selectedMember?.roll_number || "member"}.pdf`}
+                  className="px-3.5 py-2 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-[11px] uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
+                >
+                  <Download size={13} />
+                  <span>Download PDF</span>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+
+    {/* ── INTERACTIVE EVENT DATABASE DETAIL MODAL ────────────────── */}
+    <AnimatePresence>
+      {selectedEventModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] text-slate-900"
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-[#001838] via-[#002855] to-[#004899] text-white px-4 py-3.5 flex items-center justify-between gap-2 shrink-0 shadow-md">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/20 shrink-0">
+                  <Calendar className="text-cyan-300" size={18} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">
+                    {selectedEventModal.badge || "Database Activity"}
+                  </h3>
+                  <p className="text-[10px] text-sky-200 truncate">
+                    {selectedEventModal.society || "IEEE SB SREC"} · {selectedEventModal.category}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedEventModal(null)}
+                className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shrink-0"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
+              {selectedEventModal.image && (
+                <div className="relative h-44 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200">
+                  <img
+                    src={selectedEventModal.image}
+                    alt={selectedEventModal.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                  <div className="absolute top-2.5 left-2.5">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${selectedEventModal.status === "Upcoming"
+                        ? "bg-amber-400 text-slate-950 font-extrabold animate-pulse"
+                        : "bg-emerald-500 text-white"
+                      }`}>
+                      {selectedEventModal.status}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <h3 className="text-base font-black text-slate-900 leading-tight">
+                  {selectedEventModal.title}
+                </h3>
+                {selectedEventModal.subtitle && (
+                  <p className="text-xs text-slate-500 mt-1 font-medium">
+                    {selectedEventModal.subtitle}
+                  </p>
+                )}
+              </div>
+
+              {/* Event Schedule Meta Grid */}
+              <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                <div>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block">Date &amp; Time</span>
+                  <p className="font-extrabold text-slate-900 mt-0.5">{selectedEventModal.date}</p>
+                  <p className="text-[10px] text-slate-500">{selectedEventModal.time || "Full Day"}</p>
+                </div>
+                <div>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block">Venue / Location</span>
+                  <p className="font-extrabold text-slate-900 mt-0.5">{selectedEventModal.venue || "SREC Campus"}</p>
+                </div>
+              </div>
+
+              {/* Chief Guest & Participants (if present) */}
+              {(selectedEventModal.chief_guest || selectedEventModal.participants) && (
+                <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-1">
+                  {selectedEventModal.chief_guest && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500 font-bold uppercase text-[9px]">Chief Guest / Speaker</span>
+                      <strong className="text-slate-900">{selectedEventModal.chief_guest}</strong>
+                    </div>
+                  )}
+                  {selectedEventModal.participants && (
+                    <div className="flex items-center justify-between text-xs pt-1 border-t border-blue-100">
+                      <span className="text-slate-500 font-bold uppercase text-[9px]">Participants Logged</span>
+                      <strong className="text-blue-900">{selectedEventModal.participants}</strong>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Description */}
+              <div className="space-y-1">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">About this Activity</span>
+                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                  {selectedEventModal.description || "Official IEEE Student Branch event proceedings logged in repository database."}
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedEventModal(null)}
+                  className="flex-1 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase tracking-wider transition-all"
+                >
+                  Close
+                </button>
+                {selectedEventModal.link && selectedEventModal.link.startsWith("http") ? (
+                  <a
+                    href={selectedEventModal.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 rounded-2xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-900/20"
+                  >
+                    <span>Portal</span>
+                    <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => {
+                      const l = selectedEventModal.link || "/activities";
+                      setSelectedEventModal(null);
+                      navigate(l);
+                    }}
+                    className="flex-1 py-2.5 rounded-2xl bg-[#002855] hover:bg-[#001c3d] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-900/20"
+                  >
+                    <span>Open Details</span>
+                    <ArrowRight size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+
+    {/* ── STICKY BOTTOM NAVIGATION DOCK (WHITE THEME) ─────────────────── */}
+    <MobileBottomNav activeTab={activeTab} onChangeTab={handleTabChange} />
+
+  </div>
   );
 };
 export default MobileAppPage;
