@@ -607,7 +607,7 @@ const SocietyOfficeBearers = ({ societyName = "Society", isStandalonePage = fals
               )}
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold text-[11px] border border-cyan-400/30">
                 <Briefcase size={12} />
-                <span>{person.academic_year || "Active 2024-2026"}</span>
+                <span>{person.academic_year && person.academic_year !== "2024-2026" ? person.academic_year : "2026-2027"}</span>
               </span>
             </div>
           </div>

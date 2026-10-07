@@ -99,9 +99,23 @@ const ROLES = [
     },
   },
   {
-    match: ["treasurer", "finance"],
+    match: ["secretary", "secretariat"],
     meta: {
       priority: 3,
+      category: "core",
+      tagline: "Governance, Operations & Secretariat",
+      badge: "Secretary",
+      icon: FileText,
+      color: "#38bdf8",
+      glow: "rgba(56,189,248,.6)",
+      bg: "rgba(56,189,248,.14)",
+      border: "rgba(56,189,248,.45)",
+    },
+  },
+  {
+    match: ["treasurer", "finance"],
+    meta: {
+      priority: 4,
       category: "core",
       tagline: "Financial Guardian & Resource Custodian",
       badge: "Treasurer",
@@ -110,20 +124,6 @@ const ROLES = [
       glow: "rgba(251,146,60,.6)",
       bg: "rgba(251,146,60,.14)",
       border: "rgba(251,146,60,.45)",
-    },
-  },
-  {
-    match: ["secretary", "secretariat"],
-    meta: {
-      priority: 4,
-      category: "core",
-      tagline: "Governance, Operations & Secretariat",
-      badge: "Secretary",
-      icon: FileText,
-      color: "#60a5fa",
-      glow: "rgba(96,165,250,.6)",
-      bg: "rgba(96,165,250,.14)",
-      border: "rgba(96,165,250,.45)",
     },
   },
   {
@@ -300,7 +300,7 @@ const FALLBACK_BEARERS = [
     name: "Dr. K. Balamurugan",
     role: "Student Branch Counsellor",
     department: "Associate Professor / EEE",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787503822076.png",
     linkedin_url: "https://www.linkedin.com/in/dr-k-balamurugan-6536b528/",
@@ -326,11 +326,21 @@ const FALLBACK_BEARERS = [
     linkedin_url: "",
   },
   {
+    id: 15,
+    name: "R Vishnu Kaarthik",
+    role: "Secretary",
+    department: "III EEE",
+    academic_year: "2026-2027",
+    image_url:
+      "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787503896400.jpeg",
+    linkedin_url: "https://www.linkedin.com/in/vishnu-kaarthik-r-436329291/",
+  },
+  {
     id: 5,
     name: "D R Prithika",
     role: "Treasurer",
     department: "II EEE B",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504175984.jpeg",
     linkedin_url: "",
@@ -340,7 +350,7 @@ const FALLBACK_BEARERS = [
     name: "S Deepak",
     role: "Activities Coordinator",
     department: "IV EEE",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787503934985.jpeg",
     linkedin_url: "",
@@ -350,7 +360,7 @@ const FALLBACK_BEARERS = [
     name: "S Amirtha Varshini",
     role: "Joint Activity Coordinator",
     department: "III CSE A",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787503956324.jpeg",
     linkedin_url: "",
@@ -360,7 +370,7 @@ const FALLBACK_BEARERS = [
     name: "V Smrthikha",
     role: "Joint Activity Coordinator",
     department: "III BME",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787503995702.jpeg",
     linkedin_url: "",
@@ -370,7 +380,7 @@ const FALLBACK_BEARERS = [
     name: "K S Surya Narayanan",
     role: "Webmaster",
     department: "II EEE B",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504019195.jpeg",
     linkedin_url: "https://www.linkedin.com/in/surya-narayanan-k-s-3a6509289/",
@@ -380,7 +390,7 @@ const FALLBACK_BEARERS = [
     name: "Nithin Annamalai R",
     role: "Editor",
     department: "II EEE B",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504036446.jpeg",
     linkedin_url: "",
@@ -390,7 +400,7 @@ const FALLBACK_BEARERS = [
     name: "S Latisha",
     role: "Editor",
     department: "III CSE B",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504089391.jpeg",
     linkedin_url: "",
@@ -400,7 +410,7 @@ const FALLBACK_BEARERS = [
     name: "Dharshini",
     role: "Editor",
     department: "III IT A",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504138402.jpeg",
     linkedin_url: "",
@@ -413,7 +423,7 @@ const FALLBACK_EXECS = [
     name: "S Mathusri",
     role: "Executive Member",
     department: "III M.Tech CSE",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787761057800.png",
     linkedin_url: "",
@@ -423,7 +433,7 @@ const FALLBACK_EXECS = [
     name: "A Dhivya Tharsana",
     role: "Creative Executive",
     department: "II AI & DS",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504245299.jpeg",
     linkedin_url: "",
@@ -433,7 +443,7 @@ const FALLBACK_EXECS = [
     name: "M Barath",
     role: "Events Executive",
     department: "II EEE A",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504266686.jpeg",
     linkedin_url: "",
@@ -443,7 +453,7 @@ const FALLBACK_EXECS = [
     name: "F Mohammed Aathif",
     role: "Executive Member",
     department: "II EEE A",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504281472.jpeg",
     linkedin_url: "",
@@ -453,7 +463,7 @@ const FALLBACK_EXECS = [
     name: "Bhargavan Balaji",
     role: "Executive Member",
     department: "II EEE A",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504727465.png",
     linkedin_url: "",
@@ -463,7 +473,7 @@ const FALLBACK_EXECS = [
     name: "R Srenithi",
     role: "Executive Member",
     department: "III M.Tech CSE",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504298184.jpeg",
     linkedin_url: "",
@@ -473,7 +483,7 @@ const FALLBACK_EXECS = [
     name: "V Swetha",
     role: "Executive Member",
     department: "III EIE",
-    academic_year: "2024-2026",
+    academic_year: "2026-2027",
     image_url:
       "https://wlbgdlolgjccvbuvutiw.supabase.co/storage/v1/object/public/office_bearers/leadership/society-srec-1787504316490.jpeg",
     linkedin_url: "",
@@ -744,7 +754,7 @@ const CounselorSpotlightCard = ({ counselor, onSelect }) => {
               <MapPin size={14} /> {counselor.department || "AsP / EEE, Sri Ramakrishna Engineering College"}
             </span>
             <span className="hidden sm:inline text-slate-600">•</span>
-            <span className="text-purple-300 font-semibold">Tenure: {counselor.academic_year || "2024 - 2026"}</span>
+            <span className="text-purple-300 font-semibold">Tenure: {counselor.academic_year || "2026 - 2027"}</span>
           </div>
 
           <p className="text-slate-300 text-xs sm:text-sm italic leading-relaxed max-w-3xl mb-5">
@@ -786,6 +796,11 @@ const ModernExecutiveCard = ({ person, onSelect, isProminent = false }) => {
   const imgSrc = getImg(person);
   const showFallback = err || !imgSrc;
 
+  const academicYear =
+    person.academic_year === "2024-2026" || !person.academic_year
+      ? "2026–2027"
+      : person.academic_year;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -794,9 +809,9 @@ const ModernExecutiveCard = ({ person, onSelect, isProminent = false }) => {
       whileHover={{ y: -6, scale: 1.02 }}
       transition={{ duration: 0.25 }}
       onClick={() => onSelect(person)}
-      className="group relative rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-end border transition-all duration-300 shadow-xl"
+      className="group relative w-full rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-end border transition-all duration-300 shadow-xl"
       style={{
-        height: isProminent ? "460px" : "410px",
+        height: isProminent ? "520px" : "480px",
         borderColor: "rgba(255,255,255,0.12)",
         background: "rgba(15,22,41,0.85)",
         boxShadow: `0 15px 35px rgba(0,0,0,0.5), 0 0 20px ${meta.glow ? meta.color + "15" : "transparent"}`,
@@ -807,7 +822,7 @@ const ModernExecutiveCard = ({ person, onSelect, isProminent = false }) => {
         <img
           src={imgSrc}
           alt={person.name || "Member"}
-          className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-110"
+          className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
           onError={() => setErr(true)}
         />
       ) : (
@@ -836,8 +851,8 @@ const ModernExecutiveCard = ({ person, onSelect, isProminent = false }) => {
         </div>
       )}
 
-      {/* Layered Gradient Overlays for High-Contrast Text */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050814] via-[#050814]/60 to-transparent pointer-events-none" />
+      {/* Layered Gradient Overlays for High-Contrast Text - gently faded so entire portrait/poster is visible */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050814] via-[#050814]/35 to-transparent pointer-events-none" />
 
       {/* Active Glowing Border on Hover */}
       <div
@@ -856,31 +871,29 @@ const ModernExecutiveCard = ({ person, onSelect, isProminent = false }) => {
       </div>
 
       {/* Academic Year Tag (Top Right) */}
-      {person.academic_year && (
-        <div className="absolute top-4 right-4 z-10">
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-slate-300 bg-slate-950/70 border border-white/10 backdrop-blur-md">
-            {person.academic_year}
-          </span>
-        </div>
-      )}
+      <div className="absolute top-4 right-4 z-10">
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold text-slate-200 bg-slate-950/80 border border-white/15 backdrop-blur-md">
+          {academicYear}
+        </span>
+      </div>
 
-      {/* Card Info Details (Bottom) */}
-      <div className="relative z-10 p-5 sm:p-6 flex flex-col">
+      {/* Card Info Details (Bottom) - Center Aligned */}
+      <div className="relative z-10 p-5 sm:p-6 flex flex-col items-center text-center">
         <h3
-          className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-snug mb-1"
+          className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-snug mb-1 text-center"
           style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif" }}
         >
           {person.name || "—"}
         </h3>
 
         {person.department && (
-          <p className="text-xs font-semibold text-slate-300 flex items-center gap-1.5 mb-3.5">
+          <p className="text-xs font-semibold text-slate-300 flex items-center justify-center gap-1.5 mb-3.5 text-center">
             <MapPin size={13} className="text-cyan-400 shrink-0" />
             {person.department}
           </p>
         )}
 
-        <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+        <div className="w-full flex items-center justify-center gap-2 pt-2 border-t border-white/10">
           <button
             className="flex-1 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 group-hover:shadow-lg"
             style={{
@@ -1371,7 +1384,7 @@ const ProfileModal = ({ person, allMembers, onSelect, onClose }) => {
                 <CheckCircle2 size={13} className="text-cyan-400" /> Verified Council Member
               </span>
               <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-slate-300 backdrop-blur-sm">
-                <ShieldCheck size={13} className="text-purple-400" /> IEEE SREC {person.academic_year || "2026"}
+                <ShieldCheck size={13} className="text-purple-400" /> IEEE SREC {person.academic_year || "2026-2027"}
               </span>
             </div>
           </div>
@@ -1728,14 +1741,15 @@ export const OfficeBearersPage = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="flex flex-wrap justify-center items-stretch gap-8 max-w-4xl mx-auto">
               {presidency.map((person) => (
-                <ModernExecutiveCard
-                  key={String(person.id)}
-                  person={person}
-                  onSelect={setSelected}
-                  isProminent={true}
-                />
+                <div key={String(person.id)} className="w-full sm:w-[360px] max-w-[400px] flex">
+                  <ModernExecutiveCard
+                    person={person}
+                    onSelect={setSelected}
+                    isProminent={true}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -1758,13 +1772,14 @@ export const OfficeBearersPage = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-center">
+              <div className="flex flex-wrap justify-center items-stretch gap-6 sm:gap-8 max-w-4xl mx-auto">
                 {coreSecretariat.map((person) => (
-                  <ModernExecutiveCard
-                    key={String(person.id)}
-                    person={person}
-                    onSelect={setSelected}
-                  />
+                  <div key={String(person.id)} className="w-full sm:w-[320px] max-w-[340px] flex">
+                    <ModernExecutiveCard
+                      person={person}
+                      onSelect={setSelected}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -1789,13 +1804,14 @@ export const OfficeBearersPage = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+              <div className="flex flex-wrap justify-center items-stretch gap-6 sm:gap-8 max-w-[1400px] mx-auto">
                 {techAndCreatives.map((person) => (
-                  <ModernExecutiveCard
-                    key={String(person.id)}
-                    person={person}
-                    onSelect={setSelected}
-                  />
+                  <div key={String(person.id)} className="w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[280px] max-w-[320px] flex">
+                    <ModernExecutiveCard
+                      person={person}
+                      onSelect={setSelected}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -1819,13 +1835,14 @@ export const OfficeBearersPage = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+              <div className="flex flex-wrap justify-center items-stretch gap-6 sm:gap-8 max-w-[1400px] mx-auto">
                 {execCommittee.map((person) => (
-                  <ModernExecutiveCard
-                    key={String(person.id)}
-                    person={person}
-                    onSelect={setSelected}
-                  />
+                  <div key={String(person.id)} className="w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[280px] max-w-[320px] flex">
+                    <ModernExecutiveCard
+                      person={person}
+                      onSelect={setSelected}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -1901,13 +1918,14 @@ export const OfficeBearersPage = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+            <div className="flex flex-wrap justify-center items-stretch gap-6 sm:gap-8 max-w-[1400px] mx-auto">
               {filteredMembers.map((person) => (
-                <ModernExecutiveCard
-                  key={String(person.id)}
-                  person={person}
-                  onSelect={setSelected}
-                />
+                <div key={String(person.id)} className="w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[280px] max-w-[320px] flex">
+                  <ModernExecutiveCard
+                    person={person}
+                    onSelect={setSelected}
+                  />
+                </div>
               ))}
             </div>
           )}

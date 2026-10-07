@@ -452,7 +452,7 @@ export const OfficeBearerCardsAdmin = () => {
             name: officer.name || "",
             role: officer.role || "",
             department: officer.department || "",
-            academic_year: officer.academic_year || "2024-2026",
+            academic_year: officer.academic_year || "2026-2027",
             ieee_id: officer.ieee_id || "",
             roll_number: officer.roll_number || "",
             card_pdf_url: officer.card_pdf_url || "",
@@ -573,7 +573,7 @@ export const OfficeBearerCardsAdmin = () => {
             o.roll_number ? `"${o.roll_number}"` : "N/A",
             o.phone ? `"${o.phone}"` : "N/A",
             `"${(o.department || "SREC").replace(/"/g, '""')}"`,
-            `"${(o.academic_year || "2024-2026").replace(/"/g, '""')}"`,
+            `"${(o.academic_year || "2026-2027").replace(/"/g, '""')}"`,
             `"${(o.email || "").replace(/"/g, '""')}"`,
             o.is_matched_roster ? "Matched (student_members)" : "Custom Entry",
             `"${(o.card_pdf_url || getPrimaryMemberCardPdfUrl(o)).replace(/"/g, '""')}"`,
@@ -1132,7 +1132,7 @@ export const OfficeBearerCardsAdmin = () => {
                           {/* Simulated Golden Chip */}
                           <div className="w-4.5 h-3 rounded-sm bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-amber-600 shadow-2xs"/>
                           <span className="font-black text-[#002855] uppercase">
-                            OFFICER VALID: {officer.academic_year || "2024-2026"}
+                            OFFICER VALID: {officer.academic_year || "2026-2027"}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 font-mono font-black text-[#002855]">
@@ -1339,7 +1339,7 @@ export const OfficeBearerCardsAdmin = () => {
                       {/* Dept & Year */}
                       <td className="py-3 px-5 text-slate-400 font-medium">
                         <div className="font-semibold text-slate-300">{officer.department || "SREC"}</div>
-                        <div className="text-[10px] font-mono text-slate-500">{officer.academic_year || "2024-2026"}</div>
+                        <div className="text-[10px] font-mono text-slate-500">{officer.academic_year || "2026-2027"}</div>
                       </td>
 
                       {/* Actions */}
@@ -1679,7 +1679,7 @@ export const OfficeBearerCardsAdmin = () => {
                     {/* Bottom */}
                     <div className="relative z-10 flex items-center justify-between pt-2 border-t border-slate-200/80 text-[8.5px] text-slate-600">
                       <span className="font-black text-[#002855] uppercase">OFFICER CREDENTIAL VALID</span>
-                      <span className="font-mono font-black">{previewCardOfficer.academic_year || "2024-2026"}</span>
+                      <span className="font-mono font-black">{previewCardOfficer.academic_year || "2026-2027"}</span>
                     </div>
                   </div>
 
