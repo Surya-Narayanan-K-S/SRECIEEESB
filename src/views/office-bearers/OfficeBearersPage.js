@@ -706,23 +706,6 @@ export const OfficeBearersPage = () => {
     });
   }, [allMembers, activeCategory, search]);
 
-  // Handle Share / Print Action
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "IEEE SREC Executive Council 2026–2027",
-        url: window.location.href,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Executive Council Roster link copied to clipboard!");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col font-sans relative selection:bg-sky-500 selection:text-white overflow-x-hidden">
       <style>{`
@@ -769,9 +752,8 @@ export const OfficeBearersPage = () => {
       ════════════════════════════════════════════════════════════════ */}
       <div className="relative z-10 pt-36 lg:pt-44 flex-1 flex flex-col w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 pb-20">
 
-        {/* ─── 1. INSTITUTIONAL ACCREDITATION & JURISDICTION BAR ─── */}
-        <div className="w-full flex flex-wrap items-center justify-between gap-3 px-6 py-3 rounded-2xl bg-white/70 backdrop-blur-xl border border-slate-200/80 shadow-xs mb-8 text-xs font-semibold text-slate-600 no-print">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+        <div className="w-full flex flex-wrap items-center justify-center gap-3 sm:gap-6 px-6 py-3 rounded-2xl bg-white/70 backdrop-blur-xl border border-slate-200/80 shadow-xs mb-8 text-xs font-semibold text-slate-600 no-print">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
             <span className="flex items-center gap-1.5 text-sky-700 font-bold">
               <Globe size={14} className="text-sky-600" /> IEEE Region 10 (Asia-Pacific)
             </span>
@@ -783,23 +765,6 @@ export const OfficeBearersPage = () => {
             <span className="flex items-center gap-1.5 text-slate-800 font-bold">
               <BadgeCheck size={14} className="text-emerald-600" /> Student Branch STB32131
             </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleShare}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors cursor-pointer"
-              title="Share Roster Link"
-            >
-              <Share2 size={12} /> Share
-            </button>
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors cursor-pointer"
-              title="Print Council Gazette"
-            >
-              <Printer size={12} /> Print
-            </button>
           </div>
         </div>
 

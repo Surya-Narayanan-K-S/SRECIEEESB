@@ -1,5 +1,5 @@
 import http from 'http';
-import { PORT, HOST, DIST_DIR } from './config.js';
+import { DIST_DIR } from './config.js';
 import { handleHealthCheck } from './handlers/healthHandler.js';
 import { handleStaticRequest } from './handlers/staticHandler.js';
 import { handleAiRequest } from './handlers/aiHandler.js';
@@ -27,9 +27,13 @@ const server = http.createServer((req, res) => {
   handleStaticRequest(req, res);
 });
 
+// Configure port for cloud platforms (e.g. Render, Railway, Heroku) & local environments
+const port = process.env.PORT || 3000;
+const app = server;
+
 // Start Server & Autonomous AI Daemon
-server.listen(PORT, HOST, () => {
-  console.log(`[IEEE SREC] Production Server running at http://${HOST}:${PORT}`);
+server.listen(port, () => {
+  console.log(`[IEEE SREC] Production Server running on port ${port}`);
   console.log(`[IEEE SREC] Serving static assets from: ${DIST_DIR}`);
 
   // Automatically start background AI Autopilot worker (runs every 5 mins)
@@ -60,4 +64,5 @@ const handleShutdown = (signal) => {
 
 process.on('SIGTERM', () => handleShutdown('SIGTERM'));
 process.on('SIGINT', () => handleShutdown('SIGINT'));
+export { app, server, port };
 export default server;
