@@ -643,10 +643,10 @@ export const OfficeBearersPage = () => {
       {/* ════════════════════════════════════════════════════════════════
           SPLIT SCREEN CORPORATE EXECUTIVE PORTAL (my IEEE SREC)
       ════════════════════════════════════════════════════════════════ */}
-      <div className="pt-24 lg:pt-28 flex-1 flex flex-col lg:flex-row w-full max-w-[1920px] mx-auto">
+      <div className="pt-32 xl:pt-44 flex-1 flex flex-col lg:flex-row w-full max-w-[1920px] mx-auto">
         
         {/* ─── LEFT COLUMN: EXECUTIVE PASSPORT & SPOTLIGHT CONTROLLER (35%) ─── */}
-        <aside className="w-full lg:w-[380px] xl:w-[440px] 2xl:w-[480px] shrink-0 border-b lg:border-b-0 lg:border-r border-white/10 relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden">
+        <aside className="w-full lg:w-[380px] xl:w-[420px] 2xl:w-[460px] shrink-0 border-b lg:border-b-0 lg:border-r border-white/10 relative p-6 sm:p-8 flex flex-col justify-between overflow-hidden">
           {/* Scenic Background Texture */}
           <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
             <img
@@ -659,7 +659,7 @@ export const OfficeBearersPage = () => {
 
           <div className="relative z-10 flex flex-col items-center text-center">
             {/* Top Brand Header: "my IEEE SREC" */}
-            <div className="w-full flex items-center justify-between pb-6 border-b border-white/10 mb-6">
+            <div className="w-full flex items-center justify-between pb-6 border-b border-white/10 mb-8">
               <div className="flex items-center gap-3">
                 <img src={ieee25Logo} alt="25 Years Logo" className="w-10 h-10 object-contain drop-shadow-md" />
                 <div className="text-left">
@@ -678,8 +678,8 @@ export const OfficeBearersPage = () => {
             </div>
 
             {/* Concentric Halo Circular Portrait of the Active Officer */}
-            <div className="relative my-2 group cursor-pointer" onClick={() => setSelected(spotlightPerson)}>
-              <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full p-1 bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_35px_rgba(6,182,212,0.45)] flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
+            <div className="relative my-4 group cursor-pointer" onClick={() => setSelected(spotlightPerson)}>
+              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1 bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_35px_rgba(6,182,212,0.45)] flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
                 <div className="w-full h-full rounded-full overflow-hidden bg-slate-950 border-2 border-slate-900">
                   <img
                     src={spotlightImg}
@@ -691,7 +691,7 @@ export const OfficeBearersPage = () => {
 
               <div className="absolute -bottom-2 inset-x-0 flex justify-center">
                 <span
-                  className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border shadow-xl backdrop-blur-md"
+                  className="px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border shadow-xl backdrop-blur-md"
                   style={{ background: spotlightMeta.bg, borderColor: spotlightMeta.color, color: spotlightMeta.color }}
                 >
                   <SpotlightIcon size={12} className="inline mr-1" />
@@ -701,81 +701,39 @@ export const OfficeBearersPage = () => {
             </div>
 
             {/* Officer Details */}
-            <div className="mt-5 mb-6">
+            <div className="mt-6 mb-3">
               <h2
                 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight"
                 style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif" }}
               >
                 {spotlightPerson?.name}
               </h2>
-              <p className="text-xs sm:text-sm font-semibold text-cyan-300 flex items-center justify-center gap-1.5 mt-1">
+              <p className="text-xs sm:text-sm font-semibold text-cyan-300 flex items-center justify-center gap-1.5 mt-1.5">
                 <MapPin size={13} /> {spotlightPerson?.department || "Sri Ramakrishna Engineering College"}
-              </p>
-              <p className="text-xs text-slate-400 italic max-w-xs mx-auto mt-2">
-                "{spotlightMeta.tagline}"
               </p>
             </div>
 
-            {/* Action Buttons */}
-            <div className="w-full flex items-center gap-2.5 max-w-xs mb-8">
-              <button
-                onClick={() => setSelected(spotlightPerson)}
-                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-all shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <UserCheck size={14} /> Full Dossier
-              </button>
+            {/* Clean Institutional Credentials Tag */}
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-white/10 border border-white/15 text-slate-300 flex items-center gap-1.5">
+                <ShieldCheck size={12} className="text-cyan-400" /> STB32131 Official
+              </span>
               {spotlightPerson?.linkedin_url && (
                 <a
                   href={spotlightPerson.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-white/10 hover:bg-[#0077b5] text-white border border-white/15 transition-all"
-                  title="Connect on LinkedIn"
+                  className="p-1 rounded-full bg-white/10 hover:bg-[#0077b5] text-white border border-white/15 transition-colors"
+                  title="LinkedIn Profile"
                 >
-                  <Linkedin size={16} />
+                  <Linkedin size={12} />
                 </a>
               )}
-            </div>
-
-            {/* Quick Council Tier Icon Switcher Matrix (2 rows of 4 buttons) */}
-            <div className="w-full pt-6 border-t border-white/10">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 text-left">
-                Council Divisions Quick Select
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {[
-                  { id: "all", label: "All", icon: Users },
-                  { id: "faculty", label: "Mentor", icon: GraduationCap },
-                  { id: "presidency", label: "Chairs", icon: Crown },
-                  { id: "core", label: "Core", icon: FileText },
-                  { id: "leads", label: "Leads", icon: CalendarDays },
-                  { id: "committee", label: "Committee", icon: ShieldCheck },
-                  { id: "tech_design", label: "Web", icon: Code2 },
-                  { id: "editorial", label: "Editor", icon: PenTool },
-                ].map((tier) => {
-                  const TierIcon = tier.icon;
-                  const isActive = activeTier === tier.id;
-                  return (
-                    <button
-                      key={tier.id}
-                      onClick={() => setActiveTier(tier.id)}
-                      className={`p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all border cursor-pointer ${
-                        isActive
-                          ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md"
-                          : "bg-white/[0.04] border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.08]"
-                      }`}
-                    >
-                      <TierIcon size={16} />
-                      <span className="text-[10px] font-bold">{tier.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
             </div>
           </div>
 
           {/* Left Footer Desk Links */}
-          <div className="relative z-10 pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <div className="relative z-10 pt-6 mt-8 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
             <Link to="/about" className="hover:text-cyan-400 transition-colors">About Branch</Link>
             <span>•</span>
             <Link to="/societies/office-bearers" className="hover:text-cyan-400 transition-colors">Societies</Link>
@@ -784,58 +742,92 @@ export const OfficeBearersPage = () => {
           </div>
         </aside>
 
-        {/* ─── RIGHT COLUMN: MAIN ROSTER WORKSPACE & CORPORATE MODULES (65%) ─── */}
-        <main className="flex-1 flex flex-col bg-[#050b1a] overflow-y-auto custom-scrollbar">
+        {/* ─── RIGHT COLUMN: MAIN ROSTER WORKSPACE WITH WHITE BACKGROUND GLASS EFFECT (65%) ─── */}
+        <main className="flex-1 flex flex-col bg-slate-100/95 backdrop-blur-3xl overflow-y-auto custom-scrollbar border-l border-slate-200/80">
           
           {/* 1. Top Corporate Navigation Bar (Solid Executive Teal / Blue) */}
-          <div className="bg-[#0284c7] text-white px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md">
+          <div className="bg-[#0284c7] text-white px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-sm border-b border-sky-600/30">
             <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
               <span className="font-black text-sm uppercase tracking-wider flex items-center gap-2 shrink-0">
                 <Crown size={16} /> Executive Council 2026–2027
               </span>
               <div className="h-4 w-[1px] bg-white/30 shrink-0" />
-              <Link to="/societies/office-bearers" className="text-xs font-bold text-white/80 hover:text-white flex items-center gap-1.5 shrink-0 transition-colors">
+              <Link to="/societies/office-bearers" className="text-xs font-bold text-white/85 hover:text-white flex items-center gap-1.5 shrink-0 transition-colors">
                 <Users size={14} /> Society Chapters
               </Link>
-              <Link to="/activities" className="text-xs font-bold text-white/80 hover:text-white flex items-center gap-1.5 shrink-0 transition-colors">
+              <Link to="/activities" className="text-xs font-bold text-white/85 hover:text-white flex items-center gap-1.5 shrink-0 transition-colors">
                 <CalendarDays size={14} /> IEEE Day & Sportz Day
               </Link>
-              <Link to="/awards" className="text-xs font-bold text-white/80 hover:text-white flex items-center gap-1.5 shrink-0 transition-colors">
+              <Link to="/awards" className="text-xs font-bold text-white/85 hover:text-white flex items-center gap-1.5 shrink-0 transition-colors">
                 <Award size={14} /> Accolades
               </Link>
             </div>
 
-            <span className="text-[11px] font-mono font-bold bg-white/15 px-2.5 py-1 rounded-full uppercase tracking-wider">
+            <span className="text-[11px] font-mono font-bold bg-white/20 px-3 py-1 rounded-full uppercase tracking-wider">
               {filteredMembers.length} Members
             </span>
           </div>
 
-          {/* 2. Search & Filter Bar */}
-          <div className="p-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10">
-            <div className="relative w-full sm:max-w-md">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search by officer name, role, department..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-all"
-              />
-              {search && (
-                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer">
-                  <X size={14} />
-                </button>
-              )}
+          {/* 2. White Frosted Glass Search & Category Filter Dock */}
+          <div className="p-6 pb-4 flex flex-col gap-4 border-b border-slate-200/90 bg-white/80 backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="relative w-full sm:max-w-md">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search by officer name, role, department..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 transition-all shadow-sm"
+                />
+                {search && (
+                  <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Quick Status */}
+              <div className="flex items-center gap-2 text-xs text-slate-500 font-medium self-end sm:self-center">
+                <span>Showing:</span>
+                <span className="text-slate-900 font-bold uppercase tracking-wider">{activeTier === "all" ? "Full Council" : activeTier}</span>
+                <span className="text-slate-400">({filteredMembers.length})</span>
+              </div>
             </div>
 
-            {/* Quick Status */}
-            <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-              <span>Showing:</span>
-              <span className="text-white font-bold uppercase">{activeTier === "all" ? "Full Council" : activeTier}</span>
+            {/* Category Filter Pills (Moved cleanly to filter bar) */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
+              {[
+                { id: "all", label: "All Council", icon: Users },
+                { id: "faculty", label: "Mentor", icon: GraduationCap },
+                { id: "presidency", label: "Chairs", icon: Crown },
+                { id: "core", label: "Core Office", icon: FileText },
+                { id: "leads", label: "Branch Leads", icon: CalendarDays },
+                { id: "committee", label: "Executive Comm.", icon: ShieldCheck },
+                { id: "tech_design", label: "Web", icon: Code2 },
+                { id: "editorial", label: "Editor", icon: PenTool },
+              ].map((tier) => {
+                const TierIcon = tier.icon;
+                const isActive = activeTier === tier.id;
+                return (
+                  <button
+                    key={tier.id}
+                    onClick={() => setActiveTier(tier.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer border ${
+                      isActive
+                        ? "bg-sky-600 border-sky-600 text-white shadow-sm"
+                        : "bg-white/90 border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900 hover:border-slate-300"
+                    }`}
+                  >
+                    <TierIcon size={13} />
+                    <span>{tier.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* 3. The Leadership Cards Grid (Uncropped, Fully Visible Portraits) */}
+          {/* 3. The Leadership Cards Grid with White Background Glass Effect */}
           <div className="p-6 flex-1">
             <div className="flex flex-wrap justify-center items-stretch gap-5">
               {filteredMembers.map((person) => {
@@ -849,14 +841,14 @@ export const OfficeBearersPage = () => {
                     key={String(person.id)}
                     whileHover={{ y: -4 }}
                     onClick={() => setSpotlightPerson(person)}
-                    className={`w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(50%-0.75rem)] xl:w-[250px] 2xl:w-[270px] rounded-2xl p-3 flex flex-col justify-between border cursor-pointer transition-all duration-300 ${
+                    className={`w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(50%-0.75rem)] xl:w-[250px] 2xl:w-[270px] rounded-2xl p-3.5 flex flex-col justify-between border cursor-pointer transition-all duration-300 backdrop-blur-xl ${
                       isSelected
-                        ? "bg-slate-900 border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)]"
-                        : "bg-slate-900/60 hover:bg-slate-900/90 border-white/10 hover:border-white/25 shadow-md"
+                        ? "bg-white border-sky-500 shadow-[0_12px_35px_rgba(2,132,199,0.22)] ring-2 ring-sky-400/40"
+                        : "bg-white/90 hover:bg-white border-slate-200/90 hover:border-sky-300 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_28px_rgba(2,132,199,0.12)]"
                     }`}
                   >
                     {/* Portrait Frame - 100% Uncropped Visibility */}
-                    <div className="relative w-full aspect-[4/4.8] rounded-xl overflow-hidden bg-slate-950 border border-white/5 mb-3">
+                    <div className="relative w-full aspect-[4/4.8] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-3 shadow-inner">
                       <img
                         src={imgSrc}
                         alt={person.name}
@@ -872,7 +864,7 @@ export const OfficeBearersPage = () => {
                         </span>
                       </div>
                       <div className="absolute top-2 right-2">
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold text-slate-200 bg-black/70 border border-white/10 backdrop-blur-md">
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold text-slate-700 bg-white/90 border border-slate-200/80 backdrop-blur-md shadow-xs">
                           2026–2027
                         </span>
                       </div>
@@ -882,28 +874,28 @@ export const OfficeBearersPage = () => {
                     <div className="text-center px-1 flex-1 flex flex-col justify-between">
                       <div>
                         <h4
-                          className="font-black text-white text-base leading-snug truncate hover:text-cyan-300 transition-colors"
+                          className="font-black text-slate-900 text-base leading-snug truncate hover:text-sky-600 transition-colors"
                           style={{ fontFamily: "'Outfit', sans-serif" }}
                         >
                           {person.name}
                         </h4>
                         {person.department && (
-                          <p className="text-[11px] font-semibold text-slate-400 truncate mt-0.5 flex items-center justify-center gap-1">
-                            <MapPin size={10} className="text-cyan-400 shrink-0" />
+                          <p className="text-[11px] font-semibold text-slate-500 truncate mt-0.5 flex items-center justify-center gap-1">
+                            <MapPin size={10} className="text-sky-500 shrink-0" />
                             {person.department}
                           </p>
                         )}
                       </div>
 
                       {/* Card Action Row */}
-                      <div className="pt-2.5 mt-3 border-t border-white/10 flex items-center gap-1.5">
+                      <div className="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelected(person);
                           }}
-                          className="flex-1 py-1.5 px-2 rounded-lg text-[11px] font-bold bg-white/10 hover:bg-cyan-500 hover:text-slate-950 text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          className="flex-1 py-1.5 px-2 rounded-lg text-[11px] font-bold bg-slate-900 hover:bg-sky-600 text-white transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs"
                         >
                           <span>Profile</span>
                           <ExternalLink size={10} />
@@ -914,7 +906,7 @@ export const OfficeBearersPage = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="p-1.5 rounded-lg bg-white/10 hover:bg-[#0077b5] text-white transition-all"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-[#0077b5] text-slate-600 hover:text-white border border-slate-200 transition-all"
                             title="LinkedIn"
                           >
                             <Linkedin size={12} />
@@ -928,48 +920,48 @@ export const OfficeBearersPage = () => {
             </div>
           </div>
 
-          {/* 4. Bottom Corporate Bento Modules (Matching the Behance layout!) */}
+          {/* 4. Bottom Corporate Bento Modules (White Glass Aesthetic) */}
           <div className="p-6 pt-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/10 pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-200/90 pt-6">
               
               {/* Module 1: 25 Years of Student Excellence */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/15 via-slate-900 to-slate-900 border border-amber-400/30 flex items-center gap-3.5">
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-xl border border-amber-200/90 shadow-[0_4px_20px_rgba(245,158,11,0.08)] flex items-center gap-3.5">
                 <img src={ieee25Logo} alt="25 Years Logo" className="w-12 h-12 object-contain shrink-0" />
                 <div>
-                  <h5 className="font-bold text-amber-300 text-xs uppercase tracking-wider">
+                  <h5 className="font-bold text-amber-900 text-xs uppercase tracking-wider">
                     Silver Jubilee • 25 Years
                   </h5>
-                  <p className="text-[11px] text-slate-300 mt-0.5">
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
                     1999/2000–2025/2026 milestone celebrating a quarter century of student brilliance.
                   </p>
                 </div>
               </div>
 
               {/* Module 2: Council Welcome */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-cyan-500/15 via-slate-900 to-slate-900 border border-cyan-400/30 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 flex items-center justify-center shrink-0">
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-xl border border-sky-200/90 shadow-[0_4px_20px_rgba(2,132,199,0.08)] flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-sky-100 text-sky-700 border border-sky-200 flex items-center justify-center shrink-0">
                   <Crown size={22} />
                 </div>
                 <div>
-                  <h5 className="font-bold text-cyan-300 text-xs uppercase tracking-wider">
+                  <h5 className="font-bold text-sky-900 text-xs uppercase tracking-wider">
                     Official Council 2026–2027
                   </h5>
-                  <p className="text-[11px] text-slate-300 mt-0.5">
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
                     Governing student officers steering all technical societies and branch wings.
                   </p>
                 </div>
               </div>
 
               {/* Module 3: Flagship Conclaves */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/15 via-slate-900 to-slate-900 border border-blue-400/30 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-300 border border-blue-400/40 flex items-center justify-center shrink-0">
+              <div className="p-4 rounded-2xl bg-white/90 backdrop-blur-xl border border-blue-200/90 shadow-[0_4px_20px_rgba(37,99,235,0.08)] flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
                   <CalendarDays size={22} />
                 </div>
                 <div>
-                  <h5 className="font-bold text-blue-300 text-xs uppercase tracking-wider">
+                  <h5 className="font-bold text-blue-900 text-xs uppercase tracking-wider">
                     Flagship Events
                   </h5>
-                  <p className="text-[11px] text-slate-300 mt-0.5">
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
                     IEEE Day 2026 (06.10.2026) & IEEE Sportz Day 2026 (18.10.2026).
                   </p>
                 </div>
