@@ -220,18 +220,6 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Subtle Elegant Separator */}
-            <div className="w-[1px] h-4 bg-white/20 mx-1 shrink-0" />
-            <a
-              href="https://ieeextreme20.0.srecieee.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 2xl:px-4 py-1.5 2xl:py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-[11px] 2xl:text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(124,58,237,0.35)] active:scale-95 whitespace-nowrap shrink-0 hover:scale-105"
-            >
-              <Sparkles size={13} className="text-cyan-300 animate-pulse" />
-              <span>IEEE Xtreme 20.0</span>
-            </a>
-
             <a
               href="http://aectsd2027.srecieee.org/"
               target="_blank"
