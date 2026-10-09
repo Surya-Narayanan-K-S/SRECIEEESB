@@ -8,8 +8,10 @@ import EventReportsAdmin from "./EventReportsAdmin";
 import LaunchControlRoom from "@/components/admin/LaunchControlRoom";
 import PageVisibilityAdmin from "@/components/admin/PageVisibilityAdmin";
 import AiAutopilotTab from "./AiAutopilotTab";
+import SleekDarkDashboardOverview, { CloverGridIcon } from "@/components/admin/SleekDarkDashboardOverview";
+import VuesticAdminDashboard from "@/components/admin/VuesticAdminDashboard";
 import { getPrimaryMemberCardPdfUrl, uploadMemberCardPdf } from "@/utils/cardPdfHelper";
-import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv, Lock, Bot } from "lucide-react";
+import { Activity, Users, Settings, Briefcase, FileText, Banknote, ShieldCheck, LayoutDashboard, LogOut, TrendingUp, Search, Bell, Globe, Award, Layers, Download, Trash2, Crown, Cpu, RefreshCw, X, Plus, FileSpreadsheet, Check, ExternalLink, Upload, Eye, Loader2, ArrowRight, CreditCard, Menu, ChevronRight, Sparkles, Database, Rocket, Radio, Tv, Lock, Bot, MessageSquare } from "lucide-react";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1554,7 +1556,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
     { id: "admin_users", label: "Admin Accounts", icon: <ShieldCheck size={18} /> },
   ];
   return (
-    <div className="flex min-h-screen bg-[#f4f7fb] font-sans text-slate-800 selection:bg-blue-600 selection:text-white">
+    <div className="flex min-h-screen bg-[#0b0c10] font-sans text-slate-100 selection:bg-violet-600 selection:text-white relative overflow-x-hidden">
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -1771,15 +1773,15 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
     )}
 
     {/* LEFT SIDEBAR (Desktop Milk White Theme Style) */}
-    <aside className="hidden lg:flex flex-col w-[285px] bg-white border-r border-slate-200/90 shrink-0 h-screen sticky top-0 overflow-y-auto custom-scrollbar shadow-xs">
+    <aside className="hidden lg:flex flex-col w-[285px] bg-[#0e0f17]/95 border-r border-white/10 shrink-0 h-screen sticky top-0 overflow-y-auto custom-scrollbar shadow-2xl backdrop-blur-2xl z-20">
       {/* Brand Logo & Name */}
-      <div className="px-6 py-5 flex items-center gap-3 border-b border-slate-200 bg-slate-50/80">
+      <div className="px-6 py-5 flex items-center gap-3 border-b border-white/10 bg-[#13141f]/80">
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/30">
           <Crown className="h-5 w-5 stroke-[2.5]" />
         </div>
         <div>
-          <h1 className="text-base font-black tracking-tight text-slate-900">IEEE SREC ADMIN</h1>
-          <p className="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Enterprise Suite</p>
+          <h1 className="text-base font-black tracking-tight text-white">IEEE SREC ADMIN</h1>
+          <p className="text-[10px] font-extrabold text-violet-400 uppercase tracking-widest">Enterprise Suite</p>
         </div>
       </div>
 
@@ -1790,8 +1792,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">MISSION CONTROL</p>
           <div className="space-y-1.5">
             <button onClick={() => setActiveTab("overview")} className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "overview"
-              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
+              ? "bg-[#e6e6f2] text-slate-950 font-black shadow-lg border border-white"
+              : "text-slate-400 hover:bg-white/[0.06] hover:text-white"}`}>
               <div className="flex items-center gap-2.5">
                 <LayoutDashboard size={18} />
                 <span>Dashboard Overview</span>
@@ -1836,16 +1838,16 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
               { id: "senior", label: "Senior Members", icon: <ShieldCheck size={18} /> },
               { id: "members", label: "Members Track", icon: <Users size={18} /> },
             ].map((item) => (<button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === item.id
-              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
+              ? "bg-[#e6e6f2] text-slate-950 font-black shadow-lg border border-white"
               : item.highlight
-                ? "text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
+                ? "text-violet-300 bg-violet-500/10 border border-violet-500/20 hover:bg-violet-500/20"
+                : "text-slate-400 hover:bg-white/[0.06] hover:text-white"}`}>
               <div className="flex items-center gap-2.5">
                 {item.icon}
                 <span>{item.label}</span>
               </div>
               {item.count !== undefined && (
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-slate-900/40 text-slate-950" : "bg-[#181926] text-slate-400 border border-white/10"}`}>
                   {item.count}
                 </span>
               )}
@@ -1866,14 +1868,14 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
               { id: "applications", label: "Join Submissions", icon: <FileText size={18} />, count: applications.length },
               { id: "awards", label: "Awards & Honors", icon: <Award size={18} />, count: awards.length }
             ].map((item) => (<button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === item.id
-              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
+              ? "bg-[#e6e6f2] text-slate-950 font-black shadow-lg border border-white"
+              : "text-slate-400 hover:bg-white/[0.06] hover:text-white"}`}>
               <div className="flex items-center gap-2.5">
                 {item.icon}
                 <span>{item.label}</span>
               </div>
               {item.count !== undefined && (
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === item.id ? "bg-slate-900/40 text-slate-950" : "bg-[#181926] text-slate-400 border border-white/10"}`}>
                   {item.count}
                 </span>
               )}
@@ -1890,8 +1892,8 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
               { id: "page_visibility", label: "Page Visibility & Nav", icon: <Eye size={18} /> },
               { id: "admin_users", label: "Admin Accounts", icon: <ShieldCheck size={18} /> },
             ].map((item) => (<button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-bold transition-all ${(activeTab === item.id || (item.id === "cms" && (activeTab === "cms_landing" || activeTab === "cms_about" || activeTab === "cms_contact" || activeTab === "cms_advanced")))
-              ? "bg-slate-900 text-white font-black shadow-md border border-slate-900"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
+              ? "bg-[#e6e6f2] text-slate-950 font-black shadow-lg border border-white"
+              : "text-slate-400 hover:bg-white/[0.06] hover:text-white"}`}>
               <div className="flex items-center gap-2.5">
                 {item.icon}
                 <span>{item.label}</span>
@@ -1904,7 +1906,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
         <div className="space-y-2">
           <p className="px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">DEVELOPER</p>
           <div className="space-y-1">
-            <a href="https://surya-ruddy.vercel.app/" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+            <a href="https://surya-ruddy.vercel.app/" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-white/[0.06] hover:text-white">
               <div className="flex items-center gap-2.5">
                 <Globe size={18} className="text-blue-600" />
                 <span>My Portfolio</span>
@@ -1920,7 +1922,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
           setShowProfileModal(true);
         }}
-        className="mx-4 my-2 p-3 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl flex items-center gap-3 shadow-xs hover:border-blue-500/80 transition-all cursor-pointer group"
+        className="mx-4 my-2 p-3 bg-[#13141f] hover:bg-[#191a28] border border-white/10 rounded-2xl flex items-center gap-3 shadow-sm hover:border-violet-500/50 transition-all cursor-pointer group"
         title="Click to view & change Admin Role Clearance"
       >
         <div className="relative shrink-0">
@@ -1936,7 +1938,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-xs" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-black text-slate-900 truncate group-hover:text-blue-600 transition-colors">{adminProfile.username || "Admin Manager"}</p>
+          <p className="text-xs font-black text-white truncate group-hover:text-violet-300 transition-colors">{adminProfile.username || "Admin Manager"}</p>
           <p className="text-[10px] font-black text-blue-600 uppercase tracking-wider truncate mt-0.5">{adminProfile.role || "MASTER ADMINISTRATOR"}</p>
         </div>
         <button
@@ -1952,12 +1954,12 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       </div>
 
       {/* Promo Card at bottom of sidebar */}
-      <div className="mx-4 my-4 p-4 bg-gradient-to-br from-blue-50/80 to-indigo-50/60 border border-blue-100 rounded-2xl text-center flex flex-col gap-2 shadow-xs">
-        <h4 className="text-xs font-black text-blue-900 flex items-center justify-center gap-1.5">
+      <div className="mx-4 my-4 p-4 bg-gradient-to-br from-[#161726] to-[#11121d] border border-white/10 rounded-2xl text-center flex flex-col gap-2 shadow-sm">
+        <h4 className="text-xs font-black text-white flex items-center justify-center gap-1.5">
           <Sparkles size={13} className="text-blue-600" />
           <span>IEEE SREC Admin Suite</span>
         </h4>
-        <p className="text-[10px] text-slate-600 font-medium">Total registered database members: <strong className="text-blue-700">{studentMembers.length} Students</strong></p>
+        <p className="text-[10px] text-slate-400 font-medium">Total registered database members: <strong className="text-violet-400">{studentMembers.length} Students</strong></p>
         <a href="https://ieee.org" target="_blank" rel="noreferrer" className="rounded-xl bg-blue-600 py-2 text-[11px] font-black text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition">
           Visit IEEE Global
         </a>
@@ -1965,9 +1967,9 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
     </aside>
 
     {/* RIGHT CONTENT CONTAINER */}
-    <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f4f7fb]">
+    <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-[#0b0c10] relative z-10">
       {/* DESKTOP TOP BAR (Milk White) */}
-      <header className="hidden lg:flex bg-white/90 border-b border-slate-200/90 h-16 items-center justify-between px-6 sticky top-0 z-35 backdrop-blur-xl shadow-xs">
+      <header className="hidden lg:flex bg-[#0d0e15]/90 border-b border-white/10 h-16 items-center justify-between px-6 sticky top-0 z-35 backdrop-blur-2xl shadow-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
             <span className="text-slate-400">Dashboard</span>
@@ -1977,9 +1979,9 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5 w-72 bg-slate-100 border border-slate-200/90 rounded-xl px-3.5 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+          <div className="flex items-center gap-2.5 w-80 bg-[#141520] border border-white/10 rounded-full px-4 py-2 focus-within:border-violet-500/60 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
             <Search size={15} className="text-slate-400 shrink-0" />
-            <input type="text" placeholder="Search database or type command..." className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-900 placeholder-slate-400 font-medium" />
+            <input type="text" placeholder="Type to search..." className="w-full text-xs bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-200 placeholder-slate-500 font-medium" />
             <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-0.5 rounded border border-slate-200 bg-white px-1.5 font-mono text-[9px] font-medium text-slate-500 shadow-2xs">
               <span className="text-[10px]">⌘</span>K
             </kbd>
@@ -1988,7 +1990,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
 
         <div className="flex items-center gap-3.5">
           {/* Live System Time Widget */}
-          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-mono font-bold shadow-2xs">
+          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#141520] border border-white/10 text-slate-300 text-xs font-mono font-bold shadow-sm">
             <span className="text-[10px] font-sans font-bold text-slate-400 uppercase">IST</span>
             <span className="text-slate-900 font-extrabold">{currentTime}</span>
           </div>
@@ -1996,7 +1998,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           {/* Total Students Counter in Header */}
           <button
             onClick={() => setActiveTab("student_roster")}
-            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-2xs"
+            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#141520] hover:bg-[#1a1b2a] border border-white/10 text-violet-300 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm"
             title="View Student Roster Directory"
           >
             <Users size={13} className="text-blue-600 animate-admin-float" />
@@ -2006,7 +2008,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           {/* Quick Launch Mode Link */}
           <button
             onClick={() => setActiveTab("launch_control")}
-            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-2xs"
+            className="admin-btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#141520] hover:bg-[#1a1b2a] border border-white/10 text-slate-200 text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm"
           >
             <Rocket size={13} className="text-blue-600 animate-pulse" />
             <span>Launch Remote</span>
@@ -2036,7 +2038,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 setProfileForm({ username: adminProfile.username, role: adminProfile.role, avatar: adminProfile.avatar });
                 setShowProfileModal(true);
               }}
-              className="admin-btn-tactile flex items-center gap-3 bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-2xl shadow-2xs hover:border-blue-400 transition-all cursor-pointer group"
+              className="admin-btn-tactile flex items-center gap-3 bg-[#141520] hover:bg-[#1a1b2a] border border-white/10 px-3.5 py-1.5 rounded-full shadow-sm hover:border-violet-500/60 transition-all cursor-pointer group"
               title="Click to view Admin Profile & Security Clearance"
             >
               <div className="relative shrink-0">
@@ -2053,7 +2055,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
               </div>
 
               <div className="text-left hidden sm:block">
-                <p className="text-xs font-black text-slate-900 leading-tight group-hover:text-blue-700 transition-colors">
+                <p className="text-xs font-black text-white leading-tight group-hover:text-violet-300 transition-colors">
                   {adminProfile.username || "Admin Manager"}
                 </p>
                 <div className="flex items-center gap-1 mt-0.5">
@@ -2076,7 +2078,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       </header>
 
       {/* MOBILE TOP BAR (Milk White Sticky) */}
-      <div className="lg:hidden bg-white/95 border-b border-slate-200 px-4 py-3 sticky top-0 z-40 backdrop-blur-xl flex items-center justify-between shadow-xs">
+      <div className="lg:hidden bg-[#0d0e15]/95 border-b border-white/10 px-4 py-3 sticky top-0 z-40 backdrop-blur-2xl flex items-center justify-between shadow-md">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsDrawerOpen(true)}
@@ -2137,328 +2139,19 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
       </div>
 
       {/* MAIN PANEL */}
-      <div className="flex-1 w-full min-w-0 flex flex-col relative bg-[#f4f7fb]">
+      <div className="flex-1 w-full min-w-0 flex flex-col relative bg-[#0b0c10]">
         <main className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1600px] w-full mx-auto pb-20">
           {activeTab === "ai_autopilot" && <AiAutopilotTab />}
 
           {activeTab === "overview" && (
-            <div className="animate-admin-fade-in space-y-6">
-              {/* Quick Launch Ceremony Banner (Milk White Modern) */}
-              <div className="admin-card-elevated p-6 md:p-7 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/25 animate-admin-float">
-                    <Rocket size={26} className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-black text-slate-900 flex items-center gap-2 flex-wrap">
-                      <span>Grand Launch Ceremony &amp; Stage Remote</span>
-                      <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span> Auditorium Ready
-                      </span>
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-1 font-medium max-w-xl">
-                      Broadcast synchronized countdowns, control the background video, and fire the official website launch remote in real-time.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <button
-                    onClick={() => setActiveTab("launch_control")}
-                    className="admin-btn-tactile flex-1 sm:flex-none px-5 py-3 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Radio size={15} /> Open Remote Controller
-                  </button>
-                  <a
-                    href="/launch"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="admin-btn-tactile px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
-                  >
-                    <Tv size={15} className="text-slate-600" /> Stage View
-                  </a>
-                </div>
-              </div>
-
-              {/* KPI STAT CARDS WITH HOVER DEPTH & MICRO-INTERACTIONS */}
-              <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {/* Hero Stat: Total Student Members */}
-                <div onClick={() => setActiveTab("student_roster")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-blue-50 border border-blue-100 p-3 text-blue-600 shadow-2xs">
-                      <Users size={22} />
-                    </div>
-                    <span className="text-xs font-black text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
-                      <Crown size={12} className="text-blue-600" /> Master Roster
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{studentMembers.length} Students</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Total Registered Members</p>
-                  </div>
-                </div>
-
-                {/* Card 1: Activities */}
-                <div onClick={() => setActiveTab("activities")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-emerald-50 border border-emerald-100 p-3 text-emerald-600 shadow-2xs">
-                      <Activity size={22} />
-                    </div>
-                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
-                      <TrendingUp size={12} /> {activitiesGrowthPercent}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{activities.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Activities Conducted</p>
-                  </div>
-                </div>
-
-                {/* Card 2: Office Bearers */}
-                <div onClick={() => setActiveTab("office")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-purple-50 border border-purple-100 p-3 text-purple-600 shadow-2xs">
-                      <Briefcase size={22} />
-                    </div>
-                    <span className="text-xs font-black text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
-                      <Crown size={12} className="text-purple-600" /> Active Team
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{officeRows.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Office Bearers</p>
-                  </div>
-                </div>
-
-                {/* Card 3: Technical Societies */}
-                <div onClick={() => setActiveTab("societies")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-amber-50 border border-amber-100 p-3 text-amber-600 shadow-2xs">
-                      <Layers size={22} />
-                    </div>
-                    <span className="text-xs font-black text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full shadow-2xs">
-                      Chapters
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{societies.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">IEEE Societies</p>
-                  </div>
-                </div>
-
-                {/* Card 4: Student Join Submissions */}
-                <div onClick={() => setActiveTab("applications")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-blue-50 border border-blue-100 p-3 text-blue-600 shadow-2xs">
-                      <FileText size={22} />
-                    </div>
-                    <span className="text-xs font-black text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full shadow-2xs">
-                      Submissions
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{applications.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Join Requests</p>
-                  </div>
-                </div>
-
-                {/* Card 5: Awards */}
-                <div onClick={() => setActiveTab("awards")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-amber-50 border border-amber-100 p-3 text-amber-600 shadow-2xs">
-                      <Award size={22} />
-                    </div>
-                    <span className="text-xs font-black text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full shadow-2xs">
-                      Honors
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{awards.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Awards &amp; Grants</p>
-                  </div>
-                </div>
-
-                {/* Card 6: Senior Members */}
-                <div onClick={() => setActiveTab("senior")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-emerald-50 border border-emerald-100 p-3 text-emerald-600 shadow-2xs">
-                      <ShieldCheck size={22} />
-                    </div>
-                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shadow-2xs">
-                      Alumni &amp; Seniors
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{seniorMembers.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Senior Members</p>
-                  </div>
-                </div>
-
-                {/* Card 7: Member Track Records */}
-                <div onClick={() => setActiveTab("members")} className="admin-kpi-card flex flex-col justify-between h-40 group">
-                  <div className="flex items-center justify-between">
-                    <div className="kpi-icon-box rounded-2xl bg-indigo-50 border border-indigo-100 p-3 text-indigo-600 shadow-2xs">
-                      <Users size={22} />
-                    </div>
-                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
-                      <TrendingUp size={12} /> {memberGrowthPercent}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">{memberRows.length}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Years Tracked</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* QUICK OPERATIONS COMMAND CENTER */}
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 pt-2">
-                <div onClick={() => setActiveTab("student_roster")} className="admin-quick-tile group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                      <Users size={18} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-slate-900">Student Roster</p>
-                      <p className="text-[10px] text-slate-500 font-semibold">{studentMembers.length} registered</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
-                </div>
-
-                <div onClick={() => setActiveTab("office_cards")} className="admin-quick-tile group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                      <CreditCard size={18} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-slate-900">Officer ID Cards</p>
-                      <p className="text-[10px] text-slate-500 font-semibold">Generate &amp; Download</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
-                </div>
-
-                <div onClick={() => setActiveTab("event_reports")} className="admin-quick-tile group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                      <FileText size={18} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-slate-900">Event Reports (DB)</p>
-                      <p className="text-[10px] text-slate-500 font-semibold">Upload &amp; Archive</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
-                </div>
-
-                <div onClick={() => setActiveTab("cms")} className="admin-quick-tile group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                      <Globe size={18} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-slate-900">Website CMS</p>
-                      <p className="text-[10px] text-slate-500 font-semibold">Live text &amp; images</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} className="tile-arrow text-slate-400" />
-                </div>
-              </div>
-
-              {/* Welcome Executive Card */}
-              <div className="mt-8 rounded-3xl bg-white border border-slate-200 p-6 md:p-8 text-slate-900 shadow-xs relative overflow-hidden">
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Executive Console Live</span>
-                  </div>
-                  <h2 className="text-2xl font-black tracking-tight text-slate-900 mb-2">
-                    IEEE SREC Executive Portal
-                  </h2>
-                  <p className="text-slate-600 max-w-2xl text-sm leading-relaxed font-medium">
-                    Live system overseeing <strong className="text-slate-900 font-black">{studentMembers.length} Student Members</strong>, active activities, office bearer records, annual plans, and website CMS updates in real-time.
-                  </p>
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    <button onClick={() => setActiveTab("student_roster")} className="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-sm transition flex items-center gap-2 cursor-pointer">
-                      <Users size={16} /> View Student Directory ({studentMembers.length})
-                    </button>
-                    <button onClick={() => setActiveTab("activities")} className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition flex items-center gap-2 cursor-pointer">
-                      <Activity size={16} /> Post New Activity
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Visual Analytics Graphs Grid (Milk White) */}
-              <div className="grid gap-6 md:grid-cols-3 mt-8">
-                {/* Monthly Event Engagement Bar Chart */}
-                <div className="md:col-span-2 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xs flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider">Event Engagement</h4>
-                        <p className="text-xs text-slate-500 font-semibold mt-0.5">Real monthly event count from database</p>
-                      </div>
-                      <span className="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full">
-                        Total Events: {activities.length}
-                      </span>
-                    </div>
-
-                    {/* Bar Chart */}
-                    <div className="h-64 flex items-end justify-between gap-2 pt-6">
-                      {(() => {
-                        const maxEventsVal = Math.max(...monthlyEventData.map(d => d.val), 1);
-                        return monthlyEventData.map((item, idx) => (<div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                          <div className="w-full bg-slate-100 rounded-t-xl relative h-48 flex items-end overflow-hidden border-t border-slate-200">
-                            <div style={{ height: `${(item.val / maxEventsVal) * 100}%` }} className="w-full bg-gradient-to-t from-blue-600 via-blue-500 to-indigo-400 rounded-t-xl group-hover:brightness-110 transition-all duration-300 relative shadow-xs">
-                              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap shadow-md">
-                                {item.val} Events
-                              </span>
-                            </div>
-                          </div>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{item.month}</span>
-                        </div>));
-                      })()}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Member Distribution Donut */}
-                <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xs flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-1">Members Distribution</h4>
-                    <p className="text-xs text-slate-500 font-semibold mb-6">Real breakdown (latest tracked year)</p>
-
-                    <div className="flex justify-center items-center py-6 relative">
-                      <svg className="w-40 h-40 transform -rotate-90">
-                        <circle cx="80" cy="80" r="65" stroke="#f1f5f9" strokeWidth="14" fill="transparent" />
-                        <circle cx="80" cy="80" r="65" stroke="#2563eb" strokeWidth="14" fill="transparent" strokeDasharray="408" strokeDashoffset={Math.round(408 - (408 * memberDistribution.studentPercent) / 100)} strokeLinecap="round" className="transition-all duration-500" />
-                      </svg>
-                      <div className="absolute flex flex-col items-center">
-                        <span className="text-3xl font-black text-slate-900">{memberDistribution.studentPercent}%</span>
-                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mt-0.5">Students</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-6 border-t border-slate-100">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="flex items-center gap-2 text-slate-700">
-                          <span className="w-3 h-3 rounded-full bg-blue-600"></span> Student Members ({memberDistribution.studentCount})
-                        </span>
-                        <span className="text-slate-900 font-bold">{memberDistribution.studentPercent}%</span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="flex items-center gap-2 text-slate-700">
-                          <span className="w-3 h-3 rounded-full bg-slate-300"></span> Professional ({memberDistribution.profCount})
-                        </span>
-                        <span className="text-slate-900 font-bold">{memberDistribution.profPercent}%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <VuesticAdminDashboard
+              studentMembers={studentMembers}
+              activities={activities}
+              officeRows={officeRows}
+              societies={societies}
+              applications={applications}
+              onNavigateTab={setActiveTab}
+            />
           )}
 
           {activeTab === "activities" && (<div className="space-y-8">
@@ -4475,15 +4168,15 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
           {/* ADMIN SECURITY CLEARANCE & ROLE PROFILE MODAL */}
           {showProfileModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-              <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="w-full max-w-lg bg-[#12131d]/95 rounded-3xl border border-white/15 shadow-2xl backdrop-blur-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-white">
                 {/* Modal Header */}
-                <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
+                <div className="px-6 py-5 border-b border-white/10 bg-[#161726]/80 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
                       <ShieldCheck size={22} />
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-slate-900">Admin Security Clearance</h3>
+                      <h3 className="text-base font-black text-white">Admin Security Clearance</h3>
                       <p className="text-xs text-slate-500 font-medium">Configure active role constraints &amp; identity</p>
                     </div>
                   </div>
@@ -4498,7 +4191,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                 {/* Modal Body */}
                 <form onSubmit={handleUpdateProfile} className="p-6 space-y-5">
                   {/* Current Identity Preview */}
-                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#161726] border border-white/10">
                     <div className="relative shrink-0">
                       <img
                         src={profileForm.avatar}
@@ -4512,7 +4205,7 @@ const DEFAULT_SENIOR_MEMBERS_DATA = [
                       <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-black text-slate-900">{profileForm.username || "Admin Manager"}</p>
+                      <p className="text-sm font-black text-white">{profileForm.username || "Admin Manager"}</p>
                       <span className="inline-block px-2.5 py-0.5 mt-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-600 text-white shadow-xs">
                         {profileForm.role}
                       </span>

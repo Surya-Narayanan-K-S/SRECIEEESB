@@ -27,7 +27,6 @@ jobs:
   web-deploy:
     name: Deploy site to GoDaddy via FTP
     runs-on: ubuntu-latest
-    environment: SREC IEEE
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

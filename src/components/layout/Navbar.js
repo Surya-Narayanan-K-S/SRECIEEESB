@@ -10,7 +10,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import DownloadAppModal from "@/components/modals/DownloadAppModal";
 import { usePageVisibility } from "@/hooks/usePageVisibility";
 
-// Primary Desktop Navigation Links (Always visible in top capsule - streamlined)
 const coreNavLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -24,7 +23,6 @@ const coreNavLinks = [
   { label: "Register", href: "/membership-registration", icon: UserPlus, desc: "Become a member today" },
 ];
 
-// Clean "More" Dropdown Links (NO DUPLICATIONS with top bar)
 const moreLinks = [
   { label: "Society Leaders", href: "/societies/office-bearers", icon: Crown, desc: "CS, WIE, PELS & chapter leadership" },
   { label: "Executive Team", href: "/team", icon: Compass, desc: "Full executive committee roster" },
@@ -35,7 +33,6 @@ const moreLinks = [
   { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get in touch with branch" },
 ];
 
-// Grid links for mobile overlay menu
 const mobileGridLinks = [
   { label: "Home", href: "/", icon: Home, desc: "Main landing page" },
   { label: "IEEE Xtreme 20.0", href: "https://ieeextreme20.0.srecieee.org", icon: Sparkles, desc: "Virtual Hackathon Portal", isExternal: true },
@@ -63,6 +60,7 @@ const bottomDockItems = [
   { label: "Activities", href: "/activities", icon: Calendar },
   { label: "Team", href: "/team", icon: Compass },
 ];
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
