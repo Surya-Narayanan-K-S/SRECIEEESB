@@ -234,10 +234,15 @@ const StudentDashboardPage = () => {
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [activePdfUrl, setActivePdfUrl] = useState("");
   const [isDownloadingCardImg, setIsDownloadingCardImg] = useState(false);
+  // true = admin has actually uploaded a PDF for this member
+  const [pdfAvailable, setPdfAvailable] = useState(false);
   const handleOpenPdfModal = () => {
     if (!currentUser)
       return;
-    const primary = getPrimaryMemberCardPdfUrl(currentUser);
+    // Only treat as available if the member record has an explicit card_pdf_url set by admin
+    const adminUploaded = !!(currentUser.card_pdf_url && currentUser.card_pdf_url.trim());
+    setPdfAvailable(adminUploaded);
+    const primary = adminUploaded ? currentUser.card_pdf_url.trim() : "";
     setActivePdfUrl(primary);
     setIsPdfModalOpen(true);
   };
@@ -704,19 +709,38 @@ const StudentDashboardPage = () => {
 
             <div className="space-y-2 text-xs">
               {/* Original IEEE PDF Card Quick Row */}
-              <div className="p-3.5 rounded-xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 border border-blue-200 flex items-center justify-between">
-                <div className="min-w-0 pr-2">
-                  <span className="text-[9px] text-[#002855] uppercase font-bold block">Official IEEE Card</span>
-                  <span className="font-mono text-xs font-black text-[#002855] flex items-center gap-1 truncate">
-                    <FileText size={12} className="text-blue-600 shrink-0" />
-                    <span>{currentUser.ieee_id && currentUser.ieee_id !== 'PENDING' ? `${currentUser.ieee_id}.pdf` : 'IEEE_Card.pdf'}</span>
+              {currentUser.card_pdf_url && currentUser.card_pdf_url.trim() ? (
+                <div className="p-3.5 rounded-xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 border border-blue-200 flex items-center justify-between">
+                  <div className="min-w-0 pr-2">
+                    <span className="text-[9px] text-[#002855] uppercase font-bold block">Official IEEE Card</span>
+                    <span className="font-mono text-xs font-black text-[#002855] flex items-center gap-1 truncate">
+                      <FileText size={12} className="text-blue-600 shrink-0" />
+                      <span>{currentUser.ieee_id && currentUser.ieee_id !== 'PENDING' ? `${currentUser.ieee_id}.pdf` : 'IEEE_Card.pdf'}</span>
+                    </span>
+                  </div>
+                  <button type="button" onClick={handleOpenPdfModal} className="px-3 py-1.5 rounded-lg bg-[#002855] text-white hover:bg-[#001c3d] text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer" title="Open Original IEEE Card PDF">
+                    <Eye size={12} />
+                    <span>View PDF</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                      <ShieldAlert size={15} className="text-amber-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[9px] text-amber-700 uppercase font-bold block">Official IEEE Card</span>
+                      <span className="text-[11px] font-semibold text-amber-800 truncate block">
+                        Admin has not uploaded your ID card yet
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-md bg-amber-200 text-amber-800 shrink-0 whitespace-nowrap">
+                    Pending
                   </span>
                 </div>
-                <button type="button" onClick={handleOpenPdfModal} className="px-3 py-1.5 rounded-lg bg-[#002855] text-white hover:bg-[#001c3d] text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer" title="Open Original IEEE Card PDF">
-                  <Eye size={12} />
-                  <span>View PDF</span>
-                </button>
-              </div>
+              )}
 
               <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-200/80 flex items-center justify-between">
                 <div>
@@ -1086,32 +1110,77 @@ const StudentDashboardPage = () => {
               </div>
             </div>
 
-            {/* PDF Viewer Body & Interactive Iframe */}
+            {/* PDF Viewer Body & Interactive Iframe OR Empty State */}
             <div className="p-4 sm:p-5 flex-1 overflow-hidden flex flex-col bg-slate-100 gap-3">
-              <div className="relative flex-1 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-300 shadow-inner flex flex-col min-h-[55vh]">
-                <iframe src={`${activePdfUrl}#view=FitH&toolbar=1`} title="Official IEEE Membership Card PDF" className="w-full h-full flex-1 rounded-2xl bg-slate-900" />
-              </div>
+              {pdfAvailable && activePdfUrl ? (
+                <>
+                  <div className="relative flex-1 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-300 shadow-inner flex flex-col min-h-[55vh]">
+                    <iframe src={`${activePdfUrl}#view=FitH&toolbar=1`} title="Official IEEE Membership Card PDF" className="w-full h-full flex-1 rounded-2xl bg-slate-900" />
+                  </div>
 
-              {/* Bottom Information & Action Bar (Read-Only Official Verification) */}
-              <div className="p-3.5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2 text-slate-700 min-w-0">
-                  <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
-                  <span className="truncate font-medium">
-                    Official Verified Record · <span className="font-bold text-[#002855]">IEEE Student Branch SREC (SB 64581)</span>
-                  </span>
+                  {/* Bottom Information & Action Bar */}
+                  <div className="p-3.5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 text-slate-700 min-w-0">
+                      <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
+                      <span className="truncate font-medium">
+                        Official Verified Record · <span className="font-bold text-[#002855]">IEEE Student Branch SREC (SB 64581)</span>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a href={activePdfUrl} download={`IEEE_Membership_Card_${currentUser.ieee_id || currentUser.roll_number}.pdf`} className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 border border-slate-200 shadow-xs cursor-pointer" title="Download PDF file">
+                        <Download size={13} />
+                        <span>Download PDF</span>
+                      </a>
+                      <button type="button" onClick={() => setIsPdfModalOpen(false)} className="px-4 py-2 rounded-xl bg-[#002855] text-white hover:bg-[#001c3d] font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm">
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* ── NO PDF UPLOADED STATE ── */
+                <div className="flex-1 flex flex-col items-center justify-center py-16 px-6 text-center gap-5">
+                  {/* Animated Shield Icon */}
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-3xl bg-amber-100 border-2 border-amber-200 flex items-center justify-center shadow-lg">
+                      <ShieldAlert size={44} className="text-amber-500" />
+                    </div>
+                    <span className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center text-white text-xs font-black">!</span>
+                  </div>
+
+                  <div className="space-y-2 max-w-sm">
+                    <h3 className="text-lg font-black text-slate-900">
+                      ID Card Not Uploaded Yet
+                    </h3>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                      Your official IEEE membership card PDF has <span className="font-bold text-amber-600">not been uploaded</span> by the admin yet.
+                      Please contact your IEEE SREC branch administrator.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+                    <a
+                      href="mailto:ieee@srec.ac.in"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#002855] hover:bg-[#001c3d] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md"
+                    >
+                      <Mail size={13} />
+                      <span>Contact Admin</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setIsPdfModalOpen(false)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider transition-all border border-slate-200"
+                    >
+                      <X size={13} />
+                      <span>Close</span>
+                    </button>
+                  </div>
+
+                  <p className="text-[10px] text-slate-400 mt-2 font-medium">
+                    IEEE Student Branch SREC · SB 64581 · ieee@srec.ac.in
+                  </p>
                 </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <a href={activePdfUrl} download={`IEEE_Membership_Card_${currentUser.ieee_id || currentUser.roll_number}.pdf`} className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 border border-slate-200 shadow-xs cursor-pointer" title="Download PDF file">
-                    <Download size={13} />
-                    <span>Download PDF</span>
-                  </a>
-
-                  <button type="button" onClick={() => setIsPdfModalOpen(false)} className="px-4 py-2 rounded-xl bg-[#002855] text-white hover:bg-[#001c3d] font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm">
-                    Done
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
           </motion.div>
         </div>)}
