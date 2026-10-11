@@ -579,3 +579,157 @@ export async function getRecentAuditLogs(limit = 20) {
     return [];
   }
 }
+
+/**
+ * 4. AUTOMATED ACTIVITY & EVENT GENERATION
+ * Generates and auto-inserts upcoming technical events, hackathons, and workshops into public.activities
+ */
+export async function autoGenerateActivities(count = 3, category = 'all', customTopic = '') {
+  console.log(`[AI Manager] Auto-generating ${count} activities (Category: ${category}, Topic: ${customTopic || 'none'})...`);
+
+  try {
+    // 1. Get current maximum s_no
+    const { data: maxRow } = await supabase
+      .from('activities')
+      .select('s_no')
+      .order('s_no', { ascending: false })
+      .limit(1);
+
+    let nextSno = (maxRow?.[0]?.s_no || 50) + 1;
+
+    // 2. Curated IEEE activity templates as base or fallback
+    const curatedTemplates = [
+      {
+        event: "IEEE Xtreme 20.0 - 24-Hour Global Virtual Programming Hackathon",
+        date: "24.10.2026 - 25.10.2026",
+        chief_guest: "IEEE Computer Society Global Operations Team & Regional Section Mentors",
+        participants: "150 Teams (450 Students)",
+        image_url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80"
+      },
+      {
+        event: "Hands-on Workshop on Generative AI & Deep Learning Architectures",
+        date: "14.11.2026",
+        chief_guest: "Dr. K. Senthil Kumar, Lead AI Architect, NVIDIA Developer Community",
+        participants: "120 Participants",
+        image_url: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=80"
+      },
+      {
+        event: "Women in Engineering (WIE) Leadership Summit: Breaking Tech Frontiers",
+        date: "05.12.2026",
+        chief_guest: "Ms. Radhika Sundaram, Engineering Director, Qualcomm India",
+        participants: "180 Participants",
+        image_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80"
+      },
+      {
+        event: "National Level Project Expo & Hardware Hackathon: VisionX 2027",
+        date: "18.01.2027",
+        chief_guest: "Mr. Sivakumar Palanisamy, VP Innovation & Ecosystems, StartupTN",
+        participants: "85 Project Teams",
+        image_url: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=80"
+      },
+      {
+        event: "Industrial Masterclass on 6G Communication & Satellite IoT Systems",
+        date: "12.02.2027",
+        chief_guest: "Dr. A. Balamurugan, Principal Research Engineer, ISRO Telemetry Centre",
+        participants: "95 Students",
+        image_url: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&auto=format&fit=crop&q=80"
+      },
+      {
+        event: "Hands-on Bootcamp: EV Powertrain & Smart Grid Integration",
+        date: "06.03.2027",
+        chief_guest: "Mr. Vigneshwaran R., EV Systems Specialist, Bosch Powertrain Solutions",
+        participants: "70 Participants",
+        image_url: "https://images.unsplash.com/photo-1558441719-75c138d68d06?w=800&auto=format&fit=crop&q=80"
+      }
+    ];
+
+    let activitiesToInsert = [];
+
+    // 3. If Gemini API key is available, generate dynamically
+    if (GEMINI_API_KEY) {
+      const prompt = `Generate ${count} realistic, upcoming technical events or workshops for IEEE Student Branch SREC (Sri Ramakrishna Engineering College, Coimbatore).
+Category: ${category}
+${customTopic ? `Focus Topic: ${customTopic}` : ''}
+
+Format as a strict JSON array of objects:
+[
+  {
+    "event": "Full official title of the event",
+    "date": "DD.MM.YYYY (between 2026 and 2027)",
+    "chief_guest": "Name and designation of chief guest / industry mentor",
+    "participants": "e.g. 120 Students or 45 Teams",
+    "image_url": "https://images.unsplash.com/photo-... URL or thematic tech image"
+  }
+]
+Return JSON ONLY, without markdown fences.`;
+
+      const aiResponse = await callGemini(prompt, 'You are an IEEE event director. Output valid JSON array only.');
+      if (aiResponse) {
+        try {
+          const cleanJson = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+          const parsed = JSON.parse(cleanJson);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            activitiesToInsert = parsed.map((item, idx) => ({
+              s_no: nextSno + idx,
+              event: item.event || "IEEE Technical Workshop",
+              date: item.date || "Upcoming 2026",
+              chief_guest: item.chief_guest || "Industry Specialist",
+              participants: item.participants || "100 Students",
+              image_url: item.image_url || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80"
+            }));
+          }
+        } catch (e) {
+          console.warn('[AI Manager] Failed to parse Gemini response for activities, falling back to templates:', e.message);
+        }
+      }
+    }
+
+    // Fallback if AI was unavailable or parse failed
+    if (activitiesToInsert.length === 0) {
+      activitiesToInsert = curatedTemplates.slice(0, count).map((item, idx) => ({
+        s_no: nextSno + idx,
+        event: item.event,
+        date: item.date,
+        chief_guest: item.chief_guest,
+        participants: item.participants,
+        image_url: item.image_url
+      }));
+    }
+
+    // 4. Insert into public.activities in Supabase
+    const { data: inserted, error: insertError } = await supabase
+      .from('activities')
+      .insert(activitiesToInsert)
+      .select();
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    const summary = `Auto-generated and published ${activitiesToInsert.length} upcoming IEEE activities to backend database.`;
+    await writeAuditLog({
+      job_type: 'ACTIVITY_AUTOPILOT',
+      status: 'SUCCESS',
+      summary,
+      items_processed: activitiesToInsert.length,
+      details: { activities: activitiesToInsert.map(a => a.event) }
+    });
+
+    console.log(`[AI Manager] Activities Generated: ${summary}`);
+    return {
+      success: true,
+      count: activitiesToInsert.length,
+      activities: inserted || activitiesToInsert
+    };
+  } catch (err) {
+    console.error('[AI Manager] Error auto-generating activities:', err);
+    await writeAuditLog({
+      job_type: 'ACTIVITY_AUTOPILOT',
+      status: 'FAILED',
+      summary: `Failed to auto-generate activities: ${err.message}`,
+      items_processed: 0
+    });
+    return { success: false, error: err.message };
+  }
+}
+
